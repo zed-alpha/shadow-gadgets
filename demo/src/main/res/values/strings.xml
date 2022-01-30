@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Shadow Gadgets</string>
+
+    <string name="platform_description"><big>Platform <tt>Activity</tt> with <tt>Theme.Material</tt></big>\n\nThis <tt>Activity</tt> uses only platform <tt>View</tt>s. It attaches a helper <tt>Factory</tt> to its <tt>LayoutInflater</tt> before <tt>setContentView()</tt>, and targets any <tt>View</tt> with the <tt>app:clipOutlineShadow</tt> attribute set to <tt>true</tt>.</string>
+    <string name="compat_description"><big><tt>AppCompatActivity</tt> with <tt>Theme.AppCompat</tt></big>\n\nThis library <tt>Activity</tt>\'s inflater helper is attached through the <tt>viewInflaterClass</tt> mechanism, and it targets <tt>View</tt>s based on rules defined in a resource XML file.</string>
+    <string name="material_description"><big><tt>AppCompatActivity</tt> with <tt>Theme.MaterialComponents</tt></big>\n\nThis <tt>AppCompatActivity</tt> setup attaches the inflater helper and builds the matchers programmatically.\nIncludes <tt>FloatingActionButton</tt>s, too, to show the effect on circular <tt>View</tt>s.</string>
+    <string name="launch">Launch</string>
+    <string name="switch_clip_local">Toggle shadow clipping on this page</string>
+
+    <string name="platform_title"><tt>Activity</tt></string>
+    <string name="platform_subtitle"><tt>Theme.Material</tt></string>
+    <string name="platform_summary">This layout was modified to add <tt>app:clipOutlineShadow="true"</tt> attributes to the target <tt>View</tt>s, and the helper is attached in the <tt>Activity</tt>\'s <tt>onCreate()</tt> override.\n\nThe <tt>Button</tt>s below are both similar, except the left one is not fixed, and the right one is.\nThe other two <tt>Activity</tt> examples have similar setups to compare the effects on touch animations.</string>
+
+    <string name="compat_title"><tt>AppCompatActivity</tt></string>
+    <string name="compat_subtitle"><tt>Theme.AppCompat</tt></string>
+    <string name="compat_summary">This setup requires neither the layout nor the <tt>Activity</tt> class be altered. Instead, the helper is set through the <tt>viewInflaterClass</tt> theme attribute, and tag matcher rules are defined in a resource XML file.</string>
+
+    <string name="material_title"><tt>AppCompatActivity</tt></string>
+    <string name="material_subtitle"><tt>Theme.MaterialComponents</tt></string>
+    <string name="material_summary">This example sets the <tt>viewInflaterClass</tt> value in code, before <tt>super.onCreate()</tt>, and the <tt>TagMatcher</tt>s are defined programmatically.\n\nA couple of <tt>FloatingActionButton</tt>s are included, too, to give an idea of how this looks on circular <tt>View</tt>s.</string>
+</resources>

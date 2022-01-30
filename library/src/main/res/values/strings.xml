@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appcompat_shadow_helper">com.zedalpha.shadowgadgets.inflation.AppCompatShadowHelper</string>
+    <string name="material_components_shadow_helper">com.zedalpha.shadowgadgets.inflation.MaterialComponentsShadowHelper</string>
+</resources>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".PlatformActivity">
+
+    <Toolbar
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="#77ffdddd"
+        android:elevation="10dp"
+        android:padding="10dp"
+        android:title="@string/platform_title"
+        android:subtitle="@string/platform_subtitle"
+        app:clipOutlineShadow="true" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/button1"
+        android:layout_below="@id/title"
+        android:layout_margin="10dp"
+        android:background="@drawable/rounded_rectangle"
+        android:backgroundTint="#77ffffff"
+        android:elevation="8dp"
+        android:outlineProvider="background"
+        android:padding="10dp"
+        android:text="@string/platform_summary"
+        app:clipOutlineShadow="true" />
+
+    <View
+        android:id="@+id/center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@id/center"
+        android:layout_margin="10dp"
+        android:backgroundTint="#77aaaaaa" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@id/center"
+        android:layout_margin="10dp"
+        android:backgroundTint="#77aaaaaa"
+        app:clipOutlineShadow="true" />
+
+</RelativeLayout>

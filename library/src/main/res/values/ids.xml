@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="tag_decor_shadow_matchers" type="id" />
+
+    <item name="tag_parent_overlay_shadow_controller" type="id" />
+
+    <item name="tag_target_shadow_xml_attributes" type="id" />
+    <item name="tag_target_overlay_shadow_switch" type="id" />
+    <item name="tag_target_overlay_shadow" type="id" />
+</resources>

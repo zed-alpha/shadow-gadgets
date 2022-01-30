@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="#22000000"
+        android:elevation="12dp"
+        app:title="@string/app_name"
+        app:titleCentered="true" />
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:background="#0f000000"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:padding="10dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_rectangle"
+                android:backgroundTint="@color/see_through_red"
+                android:elevation="6dp"
+                android:outlineProvider="background"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/label_platform"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/platform_description" />
+
+                <Button
+                    android:id="@+id/button_platform"
+                    style="?borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/label_platform"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/launch" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/rounded_rectangle"
+                android:backgroundTint="@color/see_through_green"
+                android:elevation="6dp"
+                android:outlineProvider="background"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/label_appcompat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/compat_description" />
+
+                <Button
+                    android:id="@+id/button_appcompat"
+                    style="?borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/label_appcompat"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/launch" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/rounded_rectangle"
+                android:backgroundTint="@color/see_through_blue"
+                android:elevation="6dp"
+                android:outlineProvider="background"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/label_material"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:text="@string/material_description" />
+
+                <Button
+                    android:id="@+id/button_material"
+                    style="?borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/label_material"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/launch" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_clip_local"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_rectangle"
+        android:backgroundTint="#aaeeeeee"
+        android:elevation="6dp"
+        android:outlineProvider="background"
+        android:paddingStart="10dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="4dp"
+        android:text="@string/switch_clip_local" />
+
+</LinearLayout>

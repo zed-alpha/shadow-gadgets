@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="OverlayShadow">
+        <attr name="clipOutlineShadow" format="boolean" />
+        <attr name="disableShadowAnimation" format="boolean" />
+    </declare-styleable>
+
+    <attr name="shadowTagMatchers" format="reference" />
+
+    <attr name="matchRule" format="enum">
+        <enum name="equals" value="0" />
+        <enum name="contains" value="1" />
+        <enum name="startsWith" value="2" />
+        <enum name="endsWith" value="3" />
+    </attr>
+
+    <declare-styleable name="IdMatcher">
+        <attr name="android:id" />
+        <attr name="android:name" />
+        <attr name="matchRule" />
+    </declare-styleable>
+
+    <declare-styleable name="NameMatcher">
+        <attr name="android:name" />
+        <attr name="matchRule" />
+    </declare-styleable>
+</resources>

@@ -2,7 +2,6 @@
 <resources>
     <declare-styleable name="OverlayShadow">
         <attr name="clipOutlineShadow" format="boolean" />
-        <attr name="disableShadowAnimation" format="boolean" />
     </declare-styleable>
 
     <attr name="shadowTagMatchers" format="reference" />

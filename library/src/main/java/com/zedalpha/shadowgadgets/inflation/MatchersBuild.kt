@@ -1,12 +1,16 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.inflation
 
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.XmlResourceParser
+import android.os.Build
 import android.util.TypedValue
 import android.util.Xml
 import android.view.View
+import androidx.annotation.RequiresApi
+import androidx.annotation.XmlRes
 import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.unwrapActivity
 import org.xmlpull.v1.XmlPullParser
@@ -14,7 +18,7 @@ import org.xmlpull.v1.XmlPullParser
 
 const val META_DATA_TAG_MATCHERS = "com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"
 
-internal fun buildMatchersFromXml(context: Context, xmlResId: Int): List<TagMatcher> {
+internal fun buildMatchersFromXml(context: Context, @XmlRes xmlResId: Int): List<TagMatcher> {
     val matchers = mutableListOf<TagMatcher>()
     val parser = context.resources.getXml(xmlResId)
     try {
@@ -28,37 +32,50 @@ internal fun buildMatchersFromXml(context: Context, xmlResId: Int): List<TagMatc
             }
             event = parser.next()
         }
-        parser.close()
     } catch (e: Exception) {
         /* ignore */
+    } finally {
+        parser.close()
     }
     return matchers
 }
 
 internal fun buildMatchersFromResources(context: Context): List<TagMatcher> {
     val xmlResId =
-        context.themeAttributeValue ?: unwrapActivity(context)?.metaDataValue
-        ?: context.appMetaDataValue ?: 0
+        getThemeAttributeValue(context) ?: getActivityMetaDataValue(context)
+        ?: getApplicationMetaDataValue(context) ?: 0
 
     return if (xmlResId == 0) emptyList() else buildMatchersFromXml(context, xmlResId)
 }
 
-private val Context.themeAttributeValue
-    get() = TypedValue().let {
-        if (theme.resolveAttribute(R.attr.shadowTagMatchers, it, true)) it.resourceId else null
+private fun getThemeAttributeValue(context: Context): Int? {
+    return TypedValue().let {
+        if (context.theme.resolveAttribute(R.attr.shadowTagMatchers, it, true)) {
+            it.resourceId
+        } else {
+            null
+        }
     }
+}
 
-private val Activity.metaDataValue
-    get() = packageManager.getActivityInfo(
-        componentName,
+private fun getActivityMetaDataValue(context: Context): Int? {
+    val activity = unwrapActivity(context)
+    return if (activity != null) {
+        activity.packageManager.getActivityInfo(
+            activity.componentName,
+            PackageManager.GET_META_DATA
+        ).metaData?.getInt(META_DATA_TAG_MATCHERS)
+    } else {
+        null
+    }
+}
+
+private fun getApplicationMetaDataValue(context: Context): Int? {
+    return context.packageManager.getApplicationInfo(
+        context.packageName,
         PackageManager.GET_META_DATA
     ).metaData?.getInt(META_DATA_TAG_MATCHERS)
-
-private val Context.appMetaDataValue
-    get() = packageManager.getApplicationInfo(
-        packageName,
-        PackageManager.GET_META_DATA
-    ).metaData?.getInt(META_DATA_TAG_MATCHERS)
+}
 
 private fun processIdMatcher(
     parser: XmlResourceParser,

@@ -1,8 +1,13 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.inflation
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.RequiresApi
+import androidx.annotation.XmlRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.*
 import com.google.android.material.theme.MaterialComponentsViewInflater
@@ -15,7 +20,7 @@ fun AppCompatActivity.attachMaterialComponentsShadowHelper() {
     attachMaterialComponentsShadowHelper(buildMatchersFromResources(this))
 }
 
-fun AppCompatActivity.attachMaterialComponentsShadowHelper(xmlResId: Int) {
+fun AppCompatActivity.attachMaterialComponentsShadowHelper(@XmlRes xmlResId: Int) {
     attachMaterialComponentsShadowHelper(buildMatchersFromXml(this, xmlResId))
 }
 
@@ -44,7 +49,7 @@ class MaterialComponentsShadowHelper : MaterialComponentsViewInflater() {
 
     override fun createView(context: Context, name: String, attrs: AttributeSet): View? {
         ensureHelper(context)
-        return helper.processTag(name, attrs)
+        return helper.processTag(name, context, attrs)
     }
 
     // Sloppy nullability annotation in MaterialComponentsViewInflater is

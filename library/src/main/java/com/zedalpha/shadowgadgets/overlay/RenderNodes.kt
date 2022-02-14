@@ -7,14 +7,13 @@ import android.os.Build
 import android.view.*
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresApi
-import com.zedalpha.shadowgadgets.overlay.OverlayController.Companion.cacheBoundsF
-import com.zedalpha.shadowgadgets.overlay.OverlayController.Companion.cachePath
+import com.zedalpha.shadowgadgets.animateShadowWhenClipped
 import com.zedalpha.shadowgadgets.rendernode.CanvasReflector
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
-import com.zedalpha.shadowgadgets.shadowXmlAttributes
 
 
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("ViewConstructor")
 internal class RenderNodeController(override val viewGroup: ViewGroup) :
     View(viewGroup.context), View.OnTouchListener, OverlayController<RenderNodeShadow> {
@@ -68,15 +67,11 @@ internal class RenderNodeController(override val viewGroup: ViewGroup) :
     }
 }
 
-
-@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
-private val usesPublicApi = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-private val usesStubs = Build.VERSION.SDK_INT in Build.VERSION_CODES.M..Build.VERSION_CODES.O_MR1
-
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 internal class RenderNodeShadow(view: View) : OverlayShadow(view) {
     private val renderNodeDrawable = when {
-        usesPublicApi -> PublicApiDrawable(this)
-        usesStubs -> StubDrawable(this)
+        UsesPublicApi -> PublicApiDrawable(this)
+        UsesStubs -> StubDrawable(this)
         else -> ReflectorDrawable(this)
     }
 
@@ -96,7 +91,7 @@ internal class RenderNodeShadow(view: View) : OverlayShadow(view) {
     private var registeredForDispatch = false
     fun registerForTouchDispatch(controller: RenderNodeController) {
         val target = targetView
-        if (target.shadowXmlAttributes?.disableAnimation != true && target.stateListAnimator != null) {
+        if (target.stateListAnimator != null && target.animateShadowWhenClipped) {
             target.setOnTouchListener(controller)
             registeredForDispatch = true
         }
@@ -116,17 +111,15 @@ internal class RenderNodeShadow(view: View) : OverlayShadow(view) {
 
     fun isForView(view: View) = targetView == view
 
-    override fun update(
-        left: Int, top: Int, right: Int, bottom: Int,
-        elevation: Float, translationZ: Float
-    ) {
-        renderNodeDrawable.setBounds(left, top, right, bottom)
-        renderNodeDrawable.setElevation(elevation)
-        renderNodeDrawable.setTranslationZ(translationZ)
+    override fun updateShadow(target: View) {
+        renderNodeDrawable.setBounds(target.left, target.top, target.right, target.bottom)
+        renderNodeDrawable.setElevation(target.elevation)
+        renderNodeDrawable.setTranslationZ(target.translationZ)
     }
 }
 
-private class ReflectorDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDrawable(shadow) {
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+private open class ReflectorDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDrawable(shadow) {
     override fun clipAndDraw(canvas: Canvas, path: Path, boundsF: RectF) {
         canvas.save()
         clipOutPath(canvas, path)
@@ -137,6 +130,7 @@ private class ReflectorDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDraw
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.M)
 private class StubDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDrawable(shadow) {
     override fun clipAndDraw(canvas: Canvas, path: Path, boundsF: RectF) {
         canvas as DisplayListCanvas
@@ -162,7 +156,8 @@ private class PublicApiDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDraw
     }
 }
 
-private sealed class RenderNodeShadowDrawable(protected val shadow: RenderNodeShadow) : Drawable() {
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+internal sealed class RenderNodeShadowDrawable(private val shadow: RenderNodeShadow) : Drawable() {
     protected val renderNodeWrapper: RenderNodeWrapper = RenderNodeFactory.newInstance()
 
     fun setElevation(elevation: Float) {
@@ -182,8 +177,8 @@ private sealed class RenderNodeShadowDrawable(protected val shadow: RenderNodeSh
     }
 
     final override fun draw(canvas: Canvas) {
-        val path = cachePath
-        val boundsF = cacheBoundsF
+        val path = CachePath
+        val boundsF = CacheBoundsF
         if (shadow.prepareForDraw(path, boundsF)) clipAndDraw(canvas, path, boundsF)
     }
 
@@ -195,3 +190,9 @@ private sealed class RenderNodeShadowDrawable(protected val shadow: RenderNodeSh
 
     override fun setColorFilter(filter: ColorFilter?) {}
 }
+
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
+private val UsesPublicApi = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.M)
+private val UsesStubs = Build.VERSION.SDK_INT in Build.VERSION_CODES.M..Build.VERSION_CODES.O_MR1

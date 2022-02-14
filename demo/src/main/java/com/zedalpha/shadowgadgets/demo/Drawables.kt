@@ -2,11 +2,12 @@ package com.zedalpha.shadowgadgets.demo
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import androidx.annotation.ColorInt
 
 
 // Q&D background drawables with extra magic.
 
-sealed class PaintingDrawable(color: Int) : Drawable() {
+sealed class PaintingDrawable(@ColorInt color: Int) : Drawable() {
     protected val paint =
         Paint(Paint.ANTI_ALIAS_FLAG or Paint.DITHER_FLAG).apply { this.color = color }
 
@@ -31,54 +32,60 @@ class MainDrawable(private val numCol: Int = 23) : PaintingDrawable(0xff000000.t
     }
 
     override fun draw(canvas: Canvas) {
+        // https://math.stackexchange.com/q/49020
+        val width = bounds.width()
+        val height = bounds.height()
+        val fitWidth = width * 1.1F
+        val fitHeight = height * 1.1F
+
         canvas.save()
-        canvas.rotate(-4F, bounds.width() / 2F, bounds.height() / 2F)
-        val dim = bounds.width() / numCol
-        for (x in 0..numCol) {
-            canvas.drawLine(
-                (dim * x).toFloat(),
-                0F,
-                (dim * x).toFloat(),
-                bounds.height().toFloat(),
-                paint
-            )
+        canvas.translate(-width * .05F, -height * .05F)
+        canvas.rotate(-4F, fitWidth / 2, fitHeight / 2)
+        val dim = fitWidth / numCol
+        for (col in 0..numCol) {
+            val x = (dim * col)
+            canvas.drawLine(x, 0F, x, fitHeight, paint)
         }
         var y = 0F
-        while (y < bounds.height()) {
+        while (y < fitHeight) {
             y += dim
-            canvas.drawLine(0F, y, bounds.width().toFloat(), y, paint)
+            canvas.drawLine(0F, y, fitWidth, y, paint)
         }
         canvas.restore()
     }
 }
 
-class PlatformDrawable : PaintingDrawable(0x33ffbbbb) {
+class PlatformDrawable : PaintingDrawable(0x44ffbbbb) {
     private val path = Path()
 
     override fun draw(canvas: Canvas) {
-        val width = bounds.width().toFloat()
-        val height = bounds.height().toFloat()
+        val outBounds = Rect(bounds).apply { inset(-bounds.width() / 5, -bounds.height() / 5) }
+        val leftRange = (outBounds.left..outBounds.centerX())
+        val rightRange = (outBounds.centerX()..outBounds.right)
+        val topRange = (outBounds.top..outBounds.centerY())
+        val bottomRange = (outBounds.centerY()..outBounds.bottom)
 
-        path.reset()
-        path.moveTo(0F, height * 0.8F)
-        path.lineTo(width, height * 0.1F)
-        path.lineTo(width, height)
-        path.lineTo(0F, height)
-        path.close()
+        path.apply {
+            reset()
+            moveTo(leftRange.random().toFloat(), outBounds.top.toFloat())
+            lineTo(outBounds.right.toFloat(), bottomRange.random().toFloat())
+            lineTo(outBounds.left.toFloat(), bottomRange.random().toFloat())
+            close()
+        }
         canvas.drawPath(path, paint)
 
-        path.reset()
-        path.moveTo(0F, 0F)
-        path.lineTo(width * 0.35F, 0F)
-        path.lineTo(width, height * 0.7F)
-        path.lineTo(width, height)
-        path.lineTo(0F, height)
-        path.close()
+        path.apply {
+            reset()
+            moveTo(outBounds.right.toFloat(), topRange.random().toFloat())
+            lineTo(rightRange.random().toFloat(), outBounds.bottom.toFloat())
+            lineTo(outBounds.left.toFloat(), outBounds.bottom.toFloat())
+            close()
+        }
         canvas.drawPath(path, paint)
     }
 }
 
-class CompatDrawable : PaintingDrawable(0x77bbffbb) {
+class CompatDrawable : PaintingDrawable(0x66bbffbb) {
     private class Circle(val x: Float, val y: Float, val radius: Float)
 
     private val circles = mutableListOf<Circle>()
@@ -86,13 +93,13 @@ class CompatDrawable : PaintingDrawable(0x77bbffbb) {
     override fun onBoundsChange(bounds: Rect) {
         val width = (0..bounds.width())
         val height = (0..bounds.height())
-        val halfWidth = (0..bounds.width() / 2)
+        val halfShort = (0..minOf(bounds.width(), bounds.height()) / 2)
 
         repeat(7) {
             circles += Circle(
                 width.random().toFloat(),
                 height.random().toFloat(),
-                halfWidth.random().toFloat()
+                halfShort.random().toFloat()
             )
         }
     }
@@ -111,7 +118,7 @@ class MaterialDrawable : PaintingDrawable(0x44bbbbff) {
         val halfWidth = (bounds.width() / 2..bounds.width())
         val halfHeight = (bounds.height() / 2..bounds.height())
 
-        repeat(5) {
+        repeat(4) {
             val left = halfWidth.first - width.random()
             val top = halfHeight.first - height.random()
             rectangles += Rect(

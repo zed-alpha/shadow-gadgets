@@ -2,12 +2,14 @@ package com.zedalpha.shadowgadgets.rendernode
 
 import android.graphics.Canvas
 import android.graphics.Outline
+import android.os.Build
 import android.view.DisplayListCanvas
 import android.view.HardwareCanvas
 import android.view.RenderNode
 import androidx.annotation.RequiresApi
 
 
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 internal open class RenderNodeApi21 : RenderNodeWrapper {
     protected val renderNode: RenderNode = RenderNode.create("OverlayShadow", null)
 
@@ -35,7 +37,7 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
     }
 }
 
-@RequiresApi(23)
+@RequiresApi(Build.VERSION_CODES.M)
 internal class RenderNodeApi23 : RenderNodeApi21() {
     override fun draw(canvas: Canvas) {
         (canvas as DisplayListCanvas).drawRenderNode(renderNode)

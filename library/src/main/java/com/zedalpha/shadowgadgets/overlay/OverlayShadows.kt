@@ -1,3 +1,5 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.overlay
 
 import android.annotation.SuppressLint
@@ -7,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import java.lang.reflect.Field
@@ -86,11 +89,6 @@ internal sealed interface OverlayController<T : OverlayShadow> {
     }
 
     fun onRemoveShadow(shadow: T)
-
-    companion object {
-        val cachePath = Path()
-        val cacheBoundsF = RectF()
-    }
 }
 
 internal sealed class OverlayShadow(protected val targetView: View) {
@@ -124,14 +122,11 @@ internal sealed class OverlayShadow(protected val targetView: View) {
 
     val z get() = targetView.z
 
+    @Suppress("LiftReturnOrAssignment")
     fun prepareForDraw(path: Path, boundsF: RectF): Boolean {
         if (!outlineBounds.isEmpty) {
-            // Update shadow.
             val target = targetView
-            update(
-                target.left, target.top, target.right, target.bottom,
-                target.elevation, target.translationZ
-            )
+            updateShadow(target)
 
             // Set path for clip.
             boundsF.set(outlineBounds)
@@ -144,10 +139,7 @@ internal sealed class OverlayShadow(protected val targetView: View) {
         }
     }
 
-    abstract fun update(
-        left: Int, top: Int, right: Int, bottom: Int,
-        elevation: Float, translationZ: Float
-    )
+    abstract fun updateShadow(target: View)
 }
 
 private val getRadius: (Outline) -> Float =
@@ -217,3 +209,7 @@ internal inline val View.debugName: String
         if (id == View.NO_ID) append("NO_ID")
         else append(resources.getResourceEntryName(id))
     }
+
+// Assuming single thread for now.
+internal val CachePath = Path()
+internal val CacheBoundsF = RectF()

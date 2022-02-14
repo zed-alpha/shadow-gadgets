@@ -1,3 +1,5 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.overlay
 
 import android.annotation.SuppressLint
@@ -6,13 +8,13 @@ import android.graphics.ColorFilter
 import android.graphics.Outline
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
-import com.zedalpha.shadowgadgets.overlay.OverlayController.Companion.cacheBoundsF
-import com.zedalpha.shadowgadgets.overlay.OverlayController.Companion.cachePath
-import com.zedalpha.shadowgadgets.shadowXmlAttributes
+import androidx.annotation.RequiresApi
+import com.zedalpha.shadowgadgets.animateShadowWhenClipped
 
 
 @SuppressLint("ViewConstructor")
@@ -52,8 +54,8 @@ internal class ViewController(override val viewGroup: ViewGroup) :
     override fun dispatchDraw(canvas: Canvas) {
         val saveCount = canvas.save()
         shadows.sortedBy { it.z }.forEach {
-            val path = cachePath
-            if (it.prepareForDraw(path, cacheBoundsF)) clipOutPath(canvas, path)
+            val path = CachePath
+            if (it.prepareForDraw(path, CacheBoundsF)) clipOutPath(canvas, path)
         }
         super.dispatchDraw(canvas)
         canvas.restoreToCount(saveCount)
@@ -86,7 +88,7 @@ internal class ViewShadow(view: View) : OverlayShadow(view), View.OnTouchListene
 
     init {
         val animator = view.stateListAnimator
-        if (view.shadowXmlAttributes?.disableAnimation != true && animator != null) {
+        if (animator != null && view.animateShadowWhenClipped) {
             shadowView.stateListAnimator = animator.clone()
             view.setOnTouchListener(this)
         }
@@ -104,13 +106,10 @@ internal class ViewShadow(view: View) : OverlayShadow(view), View.OnTouchListene
         return false
     }
 
-    override fun update(
-        left: Int, top: Int, right: Int, bottom: Int,
-        elevation: Float, translationZ: Float
-    ) {
-        shadowView.layout(left, top, right, bottom)
-        shadowView.elevation = elevation
-        shadowView.translationZ = translationZ
+    override fun updateShadow(target: View) {
+        shadowView.layout(target.left, target.top, target.right, target.bottom)
+        shadowView.elevation = target.elevation
+        shadowView.translationZ = target.translationZ
     }
 
     fun addShadowView(controller: ViewController) {
@@ -122,18 +121,18 @@ internal class ViewShadow(view: View) : OverlayShadow(view), View.OnTouchListene
     }
 }
 
-private object EmptyDrawable : Drawable() {
-    override fun draw(canvas: Canvas) {}
-    override fun setAlpha(alpha: Int) {}
-    override fun setColorFilter(filter: ColorFilter?) {}
-    override fun getOpacity() = PixelFormat.TRANSLUCENT
-}
-
 private class InvalidateRelayDrawable(private val controller: ViewController) : Drawable() {
     override fun draw(canvas: Canvas) {
         controller.invalidate()
     }
 
+    override fun setAlpha(alpha: Int) {}
+    override fun setColorFilter(filter: ColorFilter?) {}
+    override fun getOpacity() = PixelFormat.TRANSLUCENT
+}
+
+private object EmptyDrawable : Drawable() {
+    override fun draw(canvas: Canvas) {}
     override fun setAlpha(alpha: Int) {}
     override fun setColorFilter(filter: ColorFilter?) {}
     override fun getOpacity() = PixelFormat.TRANSLUCENT

@@ -1,9 +1,15 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.inflation
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.AnyRes
+import androidx.annotation.IdRes
+import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.R
 
 
@@ -21,7 +27,7 @@ enum class MatchRule(private val method: String.(String) -> Boolean) {
 }
 
 fun idMatcher(
-    matchId: Int = View.NO_ID,
+    @IdRes matchId: Int = View.NO_ID,
     matchName: String? = null,
     matchRule: MatchRule = MatchRule.Equals
 ): TagMatcher = IdMatcher(matchId, matchName, matchRule)
@@ -32,7 +38,7 @@ fun nameMatcher(
 ): TagMatcher = NameMatcher(matchName, matchRule)
 
 internal class IdMatcher(
-    private val matchId: Int = View.NO_ID,
+    @IdRes private val matchId: Int = View.NO_ID,
     private val matchName: String? = null,
     private val matchRule: MatchRule = MatchRule.Equals
 ) : TagMatcher {
@@ -59,7 +65,7 @@ internal class NameMatcher(
         matchRule.match(tagName, matchName)
 }
 
-private fun Context.resourceEntryName(id: Int): String = resources.getResourceEntryName(id)
+private fun Context.resourceEntryName(@AnyRes id: Int): String = resources.getResourceEntryName(id)
 
 internal var Activity.matchers: List<TagMatcher>?
     @Suppress("UNCHECKED_CAST")

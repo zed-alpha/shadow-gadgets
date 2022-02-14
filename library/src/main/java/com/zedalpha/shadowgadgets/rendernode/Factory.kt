@@ -1,9 +1,12 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.rendernode
 
 import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.graphics.Outline
 import android.os.Build
+import androidx.annotation.RequiresApi
 import java.lang.reflect.Method
 
 

@@ -1,9 +1,13 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets
 
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
 import android.view.View
+import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.overlay.ShadowSwitch
 import com.zedalpha.shadowgadgets.overlay.moveShadowToOverlay
 import com.zedalpha.shadowgadgets.overlay.removeShadowFromOverlay
@@ -12,14 +16,12 @@ import com.zedalpha.shadowgadgets.overlay.removeShadowFromOverlay
 var View.clipOutlineShadow: Boolean
     get() = getTag(R.id.tag_target_overlay_shadow_switch) is ShadowSwitch
     set(value) {
-        if (value) {
-            if (!clipOutlineShadow) {
+        if (value != clipOutlineShadow) {
+            if (value) {
                 setTag(R.id.tag_target_overlay_shadow_switch, ShadowSwitch)
                 addOnAttachStateChangeListener(ShadowSwitch)
                 if (isAttachedToWindow) moveShadowToOverlay(this)
-            }
-        } else {
-            if (clipOutlineShadow) {
+            } else {
                 setTag(R.id.tag_target_overlay_shadow_switch, null)
                 removeOnAttachStateChangeListener(ShadowSwitch)
                 if (isAttachedToWindow) removeShadowFromOverlay(this)
@@ -27,12 +29,17 @@ var View.clipOutlineShadow: Boolean
         }
     }
 
-internal class ShadowXmlAttributes(val clip: Boolean, val disableAnimation: Boolean)
-
-internal var View.shadowXmlAttributes: ShadowXmlAttributes?
-    get() = getTag(R.id.tag_target_shadow_xml_attributes) as? ShadowXmlAttributes
+var View.animateShadowWhenClipped: Boolean
+    get() = getTag(R.id.tag_target_overlay_animate) as? Boolean ?: true
     set(value) {
-        setTag(R.id.tag_target_shadow_xml_attributes, value)
+        if (value != animateShadowWhenClipped) {
+            setTag(R.id.tag_target_overlay_animate, value)
+            // Proper refresh function pending.
+            if (clipOutlineShadow && isAttachedToWindow) {
+                clipOutlineShadow = false
+                clipOutlineShadow = true
+            }
+        }
     }
 
 internal fun unwrapActivity(context: Context): Activity? {

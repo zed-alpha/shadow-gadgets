@@ -2,9 +2,10 @@ package android.view;
 
 import android.graphics.Canvas;
 
-@SuppressWarnings("EmptyMethod")
+import androidx.annotation.NonNull;
+
 public class DisplayListCanvas extends Canvas {
-    public void drawRenderNode(RenderNode renderNode) {}
+    public void drawRenderNode(@NonNull RenderNode renderNode) {}
 
     public void insertReorderBarrier() {}
 

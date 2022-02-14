@@ -1,8 +1,13 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.inflation
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.RequiresApi
+import androidx.annotation.XmlRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatViewInflater
 import androidx.appcompat.widget.*
@@ -12,10 +17,10 @@ import com.zedalpha.shadowgadgets.unwrapActivity
 
 
 fun AppCompatActivity.attachAppCompatShadowHelper() {
-    attachAppCompatShadowHelper(buildMatchersFromResources(this)) // ? (null) instead ?
+    attachAppCompatShadowHelper(buildMatchersFromResources(this))
 }
 
-fun AppCompatActivity.attachAppCompatShadowHelper(xmlResId: Int) {
+fun AppCompatActivity.attachAppCompatShadowHelper(@XmlRes xmlResId: Int) {
     attachAppCompatShadowHelper(buildMatchersFromXml(this, xmlResId))
 }
 
@@ -44,7 +49,7 @@ class AppCompatShadowHelper : AppCompatViewInflater() {
 
     override fun createView(context: Context, name: String, attrs: AttributeSet): View? {
         ensureHelper(context)
-        return helper.processTag(name, attrs)
+        return helper.processTag(name, context, attrs)
     }
 
     override fun createTextView(context: Context, attrs: AttributeSet): AppCompatTextView {

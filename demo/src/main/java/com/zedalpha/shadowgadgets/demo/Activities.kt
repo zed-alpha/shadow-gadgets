@@ -1,6 +1,7 @@
 package com.zedalpha.shadowgadgets.demo
 
 import android.app.Activity
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -16,20 +17,19 @@ class PlatformActivity : Activity() {
         attachShadowHelper()
         setContentView(R.layout.activity_platform)
 
-        findViewById<View>(R.id.root).background = PlatformDrawable()
+        setRootBackground(PlatformDrawable())
     }
 }
 
-class CompatActivity : AppCompatActivity() {
+class CompatActivity : AppCompatActivity(R.layout.activity_compat) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_compat)
 
-        findViewById<View>(R.id.root).background = CompatDrawable()
+        setRootBackground(CompatDrawable())
     }
 }
 
-class MaterialComponentsActivity : AppCompatActivity() {
+class MaterialComponentsActivity : AppCompatActivity(R.layout.activity_material_components) {
     override fun onCreate(savedInstanceState: Bundle?) {
         attachMaterialComponentsShadowHelper(
             listOf(
@@ -37,8 +37,11 @@ class MaterialComponentsActivity : AppCompatActivity() {
             )
         )
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_material_components)
 
-        findViewById<View>(R.id.root).background = MaterialDrawable()
+        setRootBackground(MaterialDrawable())
     }
+}
+
+internal fun Activity.setRootBackground(drawable: Drawable?) {
+    findViewById<View>(R.id.root).background = drawable
 }

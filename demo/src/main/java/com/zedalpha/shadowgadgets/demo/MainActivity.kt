@@ -11,16 +11,19 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.zedalpha.shadowgadgets.clipOutlineShadow
 import kotlin.reflect.KClass
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        findViewById<View>(R.id.root).background = MainDrawable()
+        setRootBackground(MainDrawable())
+
+        setStart(R.id.button_platform, PlatformActivity::class)
+        setStart(R.id.button_appcompat, CompatActivity::class)
+        setStart(R.id.button_material, MaterialComponentsActivity::class)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         val content = findViewById<ViewGroup>(R.id.content)
-        val toggle = findViewById<SwitchMaterial>(R.id.switch_clip_local)
+        val toggle = findViewById<SwitchMaterial>(R.id.toggle)
 
         toggle.setOnCheckedChangeListener { _, isChecked ->
             toolbar.clipOutlineShadow = isChecked
@@ -30,9 +33,7 @@ class MainActivity : AppCompatActivity() {
             toggle.clipOutlineShadow = isChecked
         }
 
-        setStart(R.id.button_platform, PlatformActivity::class)
-        setStart(R.id.button_appcompat, CompatActivity::class)
-        setStart(R.id.button_material, MaterialComponentsActivity::class)
+        if (savedInstanceState == null) toggle.isChecked = true
     }
 
     private fun setStart(id: Int, activity: KClass<out Activity>) {

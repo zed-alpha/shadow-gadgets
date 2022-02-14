@@ -1,3 +1,5 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.inflation
 
 import android.annotation.SuppressLint
@@ -6,10 +8,9 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.R
-import com.zedalpha.shadowgadgets.ShadowXmlAttributes
 import com.zedalpha.shadowgadgets.clipOutlineShadow
-import com.zedalpha.shadowgadgets.shadowXmlAttributes
 import java.lang.reflect.Array
 
 
@@ -18,21 +19,17 @@ internal class ShadowHelper(
     private val matchers: List<TagMatcher>
 ) {
     private val inflater by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ViewInflater(context)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            NewViewInflater(context)
         } else {
             OldViewInflater(context)
         }
     }
 
-    fun processTag(name: String, attrs: AttributeSet): View? {
-        val view = if (name !in IGNORED_TAGS) inflater.tryCreate(name, attrs) else null
-        if (view != null) {
-            val attributes = extractShadowAttributes(context, attrs)
-            if (attributes.clip || checkMatchers(view, name, attrs)) {
-                view.shadowXmlAttributes = attributes
-                view.clipOutlineShadow = true
-            }
+    fun processTag(name: String, context: Context, attrs: AttributeSet): View? {
+        val view = if (name !in IgnoredTags) inflater.tryCreate(name, context, attrs) else null
+        if (view != null && (checkAttribute(context, attrs) || checkMatchers(view, name, attrs))) {
+            view.clipOutlineShadow = true
         }
         return view
     }
@@ -44,46 +41,15 @@ internal class ShadowHelper(
         return false
     }
 
-    private fun extractShadowAttributes(
+    private fun checkAttribute(
         context: Context,
         attrs: AttributeSet
-    ): ShadowXmlAttributes {
+    ): Boolean {
         val array = context.obtainStyledAttributes(attrs, R.styleable.OverlayShadow)
         val clip = array.getBoolean(R.styleable.OverlayShadow_clipOutlineShadow, false)
-        val animate = array.getBoolean(R.styleable.OverlayShadow_disableShadowAnimation, false)
         array.recycle()
-        return ShadowXmlAttributes(clip, animate)
+        return clip
     }
-}
-
-private open class ViewInflater(context: Context) : LayoutInflater(context) {
-    // Duplicate parts of [Phone]LayoutInflater 'cause we're jumping into the middle.
-    open fun tryCreate(name: String, attrs: AttributeSet): View? {
-        return try {
-            if (name.indexOf('.') == -1) {
-                onCreateView(null, name, attrs)
-            } else {
-                createView(name, null, attrs)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-    override fun onCreateView(name: String, attrs: AttributeSet): View {
-        for (prefix in CLASS_PREFIXES) {
-            try {
-                createView(name, prefix, attrs)?.let { return it }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                /* noop */
-            }
-        }
-        return super.onCreateView(name, attrs)
-    }
-
-    override fun cloneInContext(newContext: Context) = throw UnsupportedOperationException()
 }
 
 @SuppressLint("SoonBlockedPrivateApi")
@@ -95,16 +61,57 @@ private class OldViewInflater(context: Context) : ViewInflater(context) {
         null
     }
 
-    override fun tryCreate(name: String, attrs: AttributeSet): View? {
+    override fun tryCreate(name: String, context: Context, attrs: AttributeSet): View? {
         val args = mConstructorArgs
-        val reset = args != null && Array.get(args, 0) == null
-        if (reset) Array.set(args!!, 0, context)
-        val view = super.tryCreate(name, attrs)
-        if (reset) Array.set(args!!, 0, null)
+        val setViewContext = args != null && Array.get(args, 0) == null
+        if (setViewContext) Array.set(args!!, 0, context)
+        val view = try {
+            if (name.indexOf('.') == -1) {
+                onCreateView(null, name, attrs)
+            } else {
+                createView(name, null, attrs)
+            }
+        } catch (e: Exception) {
+            null
+        }
+        if (setViewContext) Array.set(args!!, 0, null)
         return view
     }
 }
 
-private val IGNORED_TAGS = arrayOf("include", "merge", "requestFocus", "tag", "fragment", "blink")
+@RequiresApi(Build.VERSION_CODES.Q)
+private class NewViewInflater(context: Context) : ViewInflater(context) {
+    override fun tryCreate(name: String, context: Context, attrs: AttributeSet): View? {
+        return try {
+            if (name.indexOf('.') == -1) {
+                onCreateView(context, null, name, attrs)
+            } else {
+                createView(context, name, null, attrs)
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
 
-private val CLASS_PREFIXES = arrayOf("android.widget.", "android.webkit.", "android.app.")
+private sealed class ViewInflater(context: Context) : LayoutInflater(context) {
+    abstract fun tryCreate(name: String, context: Context, attrs: AttributeSet): View?
+
+    final override fun onCreateView(name: String, attrs: AttributeSet): View {
+        for (prefix in ClassPrefixes) {
+            try {
+                createView(name, prefix, attrs)?.let { return it }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                /* noop */
+            }
+        }
+        return super.onCreateView(name, attrs)
+    }
+
+    final override fun cloneInContext(newContext: Context) = throw UnsupportedOperationException()
+}
+
+private val IgnoredTags = arrayOf("include", "merge", "requestFocus", "tag", "fragment", "blink")
+
+private val ClassPrefixes = arrayOf("android.widget.", "android.webkit.", "android.app.")

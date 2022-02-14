@@ -2,9 +2,30 @@
 
 A utility library for Android with various tools to fix the elevation shadow artifacts visible on `View`s<sup>*</sup> with transparent or translucent backgrounds.
 
-<img src="images/examples.jpg" width="50%" />
+<img src="images/examples.jpg" width="65%" />
 
 Those particular artifacts are from the hardware-rendered shadows that came with the introduction of Material Design in Lollipop. This library does not affect any other kind of shadow.
+
+## Download
+
+The initial release is available through the handy service JitPack. In the appropriate `repositories`, simply add their Maven URL:
+
+```gradle
+repositories {
+    google()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+```
+
+then add a dependency for the current release:
+
+```gradle
+dependencies {
+    …
+    implementation 'com.github.zed-alpha:shadow-gadgets:1.0.0'
+}
+```
 
 ## Basic usage
 
@@ -16,13 +37,20 @@ if (!view.clipOutlineShadow) view.clipOutlineShadow = true
 
 That's it. It behaves like any other such `View` property. The `if` check is strictly illustrative, and is not required before setting either value.
 
-If you only need this fix for a couple of `View`s, and you're able to add the few necessary lines to your code, then that's possibly all you need to know. The rest of this mainly concerns setting up `LayoutInflater` helpers to set that property automatically for various configurations.
+For those `View`s that animate their shadows with elevation changes due to touches – e.g., `Button` – a pass-through `OnTouchListener` is set to observe events on any that have a `StateListAnimator` present. To disable this behavior, you can set the `animateShadowWhenClipped` property appropriately:
 
----
+```kotlin
+view.animateShadowWhenClipped = false
+```
+
+If you mean to set your own `OnTouchListener` on a target `View`, you must do it _after_ setting the `animateShadowWhenClipped` property to `false`.
+
+That's possibly all you need to know, if you only require this for a couple of `View`s, and you're able to add the few necessary lines to your code. The rest of this file mainly concerns setting up `LayoutInflater` helpers to set those properties automatically for various configurations. Please do consult [the Notes below](#notes), however, for caveats and possible conflicts.
+
 
 ## Adding to layout inflation
 
-For more than a handful of `View`s, setting that property individually in code is tedious and bulky, so the library also offers a few ways to set it automatically by inserting a helper into the layout inflation pipeline. Since a standard setup these days often involves a Material Components theme on an `AppCompatActivity`, we'll use that one to illustrate the main points. The differences in usage for regular AppCompat themes, and for non-library `Activity` classes, follow the description of `TagMatcher`s, which are common to all three arrangements.
+For more than a handful of `View`s, setting that property individually in code is tedious and bulky, so the library also offers a few ways to set it automatically by inserting a helper into the layout inflation pipeline. Since a standard setup these days often involves a Material Components theme on an `AppCompatActivity`, we'll use that one to illustrate the main points. The differences in usage for regular AppCompat themes, and for non-library `Activity` classes, follow the description of Tag Matchers, which are common to all three arrangements.
 
 
 ### Material Components Helper
@@ -49,11 +77,10 @@ The helper class for this version is `MaterialComponentsShadowHelper`, and it ca
     In code, the `attachMaterialComponentsShadowHelper()` extension function on `AppCompatActivity` simply sets that `viewInflaterClass` value dynamically, for the current `Activity` instance only. It must be called _before_ the `super.onCreate()` call.
 
     ```kotlin
-    class MaterialComponentsActivity : AppCompatActivity() {
+    class MaterialComponentsActivity : AppCompatActivity(R.layout.activity_material_components) {
         override fun onCreate(savedInstanceState: Bundle?) {
             attachMaterialComponentsShadowHelper()
             super.onCreate(savedInstanceState)
-            setContentView(R.layout.activity_material_components)
             …
         }
     }
@@ -129,7 +156,7 @@ If you'd rather not modify layout files to add the `clipOutlineShadow` attribute
     The `attachMaterialComponentsShadowHelper()` function has an overload that takes a `List<TagMatcher>`. The two standard matchers can be constructed at runtime with the `idMatcher()` and `nameMatcher()` functions. To demonstrate, the matchers from the XML resource above can be replicated in code like so:
 
     ```kotlin
-    class MaterialComponentsActivity : AppCompatActivity() {
+    class MaterialComponentsActivity : AppCompatActivity(R.layout.activity_material_components) {
         override fun onCreate(savedInstanceState: Bundle?) {
             attachMaterialComponentsShadowHelper(
                 listOf(
@@ -140,13 +167,12 @@ If you'd rather not modify layout files to add the `clipOutlineShadow` attribute
                 )
             )
             super.onCreate(savedInstanceState)
-            setContentView(R.layout.activity_material_components)
             …
         }
     }
     ```
 
-    If you need further or different options for matching, `TagMatcher` is a simple `interface` that you can implement yourself.
+    If you need further and/or different options for matching, `TagMatcher` is a simple `interface` that you can implement yourself.
 
     ```kotlin
     interface TagMatcher {
@@ -154,10 +180,20 @@ If you'd rather not modify layout files to add the `clipOutlineShadow` attribute
     }
     ```
 
-    The first parameter is the `View` object inflated from the XML tag described by the subsequent two parameters. You must return `true` from `matches()` for the shadow to be enabled automatically.
+    The first parameter is the `View` object inflated from the XML tag described by the subsequent two parameters. You must return `true` from `matches()` for the clip to be enabled automatically.
 
-    Additionally, `attachMaterialComponentsShadowHelper()` has a third overload that takes an `R.xml` so you can construct the matchers list from XML at runtime, simply as another configuration option.
++ #### Hybrid
 
+    Additionally, `attachMaterialComponentsShadowHelper()` has one more overload that takes an `R.xml` so you can construct the matchers list from XML at runtime, simply as another configuration option.
+
+    ```kotlin
+    class MaterialComponentsActivity : AppCompatActivity(R.layout.activity_material_components) {
+        override fun onCreate(savedInstanceState: Bundle?) {
+            attachMaterialComponentsShadowHelper(R.xml.matchers)
+            super.onCreate(savedInstanceState)
+            …
+    ```
+    
 Though regular AppCompat themes and platform Activities require different helper classes than Material Components, these `TagMatcher` definitions and implementations are common to all three variations.
 
 
@@ -183,11 +219,10 @@ The only differences between this version and the Material Components one above 
     In code, the relevant function is named `attachAppCompatShadowHelper()` instead.
 
     ```kotlin
-    class CompatActivity : AppCompatActivity() {
+    class CompatActivity : AppCompatActivity(R.layout.activity_compat) {
         override fun onCreate(savedInstanceState: Bundle?) {
             attachAppCompatShadowHelper()
             super.onCreate(savedInstanceState)
-            setContentView(R.layout.activity_compat)
             …
         }
     }
@@ -215,50 +250,51 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 
     Note, however, that the attach function is called immediately _after_ the `super.onCreate()` call this time, though still before the first call to `setContentView()`.
 
-Unfortunately, there is no `viewInflaterClass` attribute in the platform; that is a feature of AppCompat (and therefore Material Components, as well). In order to be able to apply this externally, without needing to modify the `Activity` classes, the attach method can be called on the `Activity` instances as they're passed to an `ActivityLifecycleCallbacks` object registered in a custom `Application` class. For example:
++ #### Through resources
 
-```kotlin
-class ShadowHelperApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        registerActivityLifecycleCallbacks(object : ActivityCreatedCallback {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                activity.attachShadowHelper()
-            }
-        })
+    Unfortunately, there is no `viewInflaterClass` attribute in the platform; that is a feature of AppCompat (and therefore Material Components, as well). In order to be able to apply this externally, without needing to modify the `Activity` classes, the attach method can be called on the `Activity` instances as they're passed to an `ActivityLifecycleCallbacks` object registered in a custom `Application` class. For example:
+
+    ```kotlin
+    class ShadowHelperApplication : Application() {
+        override fun onCreate() {
+            super.onCreate()
+            registerActivityLifecycleCallbacks(object : ActivityCreatedCallback {
+                override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                    activity.attachShadowHelper()
+                }
+            })
+        }
     }
-}
-```
+    ```
 
-where `ActivityCreatedCallback` is an `interface` extending `ActivityLifecycleCallbacks` with empty defaults for the unused functions. This class unconditionally attaches the platform helper to every `Activity`. If that happens to be sufficient for your setup, `ShadowHelperApplication` is actually included in the library, and can be applied like any other custom `Application`.
+    where `ActivityCreatedCallback` is an `interface` extending `ActivityLifecycleCallbacks` with empty defaults for the unused functions. This class unconditionally attaches the platform helper to every `Activity`. If that happens to be sufficient for your setup, `ShadowHelperApplication` is actually included in the library, and can be applied like any other custom `Application`.
 
-```xml
-<application
-    android:name="com.zedalpha.shadowgadgets.inflation.ShadowHelperApplication"
-    … />
-```
+    ```xml
+    <application
+        android:name="com.zedalpha.shadowgadgets.inflation.ShadowHelperApplication"
+        … />
+    ```
 
-If you need to alter that behavior, or to integrate this with an existing `Application` subclass, you can use `ShadowHelperApplication` as just an example, and `ActivityCreatedCallback` is also publicly available, as a convenience.
+    If you need to alter that behavior, or to integrate this with an existing `Application` subclass, you can use `ShadowHelperApplication` as just an example, and `ActivityCreatedCallback` is also publicly available, as a convenience.
 
 
 ### Notes
 
-#### Possible conflicts
++ The `clipOutlineShadow` extension is effectively disabling the target `View`'s inherent shadow and drawing a clipped replica onto its parent's overlay. This means that it is drawing on top of all of the children, and can cause glitches with overlapping sibling `View`s. If you really, _really_ need things to overlap, you could wrap one or more of the siblings in another `ViewGroup`, like a `<FrameLayout>`, but I would imagine that most use cases will be for separate, individual elements like are shown in the demo app.
 
-+ To effect the shadow animations caused by touch events, target `View`s with `StateListAnimator`s present will have "pass-through" `OnTouchListener`s set on them. In this initial release, there is no way to prevent that. It's first on the to-do list, though.
++ Currently, the only way to set the `animateShadowWhenClipped` property is programmatically. If you're unable to modify your existing code, you can set that property in a custom `TagMatcher`'s `matches()` function before returning `true`.
 
 + The AppCompat and Material Components inflation helpers are (obviously) set as the `viewInflaterClass` in their respective configurations. If you're using anything other than the default inflaters that are handled internally by `AppCompatActivity`, then you might need to adapt or modify the helpers here, or possibly forgo them altogether.
 
-#### Forthcoming features
++ Forthcoming features:
 
-+ Disabling touch animations to prevent the setting of `OnTouchListener`s (first minor update)
-+ Shadow colors on applicable API levels (P+) (first minor update)
-+ Custom `ViewGroup` subclass, `ListView`, `RecyclerView` optimizations (subsequent minor updates)
-+ Compose UI integration (first major update)
+    + Compose UI integration
+    + Custom `ViewGroup` subclass, `ListView`, and `RecyclerView` optimizations
 
 ---
 
 <sup><sup>*</sup> Compose UI suffers from the same issue, as it's ultimately using the same `RenderNode` APIs as regular `View`s. However, this library currently works only with the `View` framework. Compose UI integration is the first planned major update, if they haven't rolled their own separate shadow implementation by then, which I suspect they're planning. The platform shadows are rather limited.</sup>
+
 
 ## License
 

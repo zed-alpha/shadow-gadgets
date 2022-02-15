@@ -280,6 +280,10 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 
 ### Notes
 
++ Somehow, accounting for the target's visibility was completely overlooked. Currently, you'll need to turn off the clip manually if you hide the target; i.e., if you set its visibility to anything other than `VISIBLE`.
+
++ In the same vein, this solution currently does not work well with certain kinds of animations; e.g., those seen when hiding and showing a `FloatingActionButton`. This was originally designed only for static `CardView`s, so there are surely other features and behaviors, too, that have been overlooked as of yet.
+
 + The `clipOutlineShadow` extension is effectively disabling the target `View`'s inherent shadow and drawing a clipped replica onto its parent's overlay. This means that it is drawing on top of all of the children, and can cause glitches with overlapping sibling `View`s. If you really, _really_ need things to overlap, you could wrap one or more of the siblings in another `ViewGroup`, like a `<FrameLayout>`, but I would imagine that most use cases will be for separate, individual elements like are shown in the demo app.
 
 + Currently, the only way to set the `animateShadowWhenClipped` property is programmatically. If you're unable to modify your existing code, you can set that property in a custom `TagMatcher`'s `matches()` function before returning `true`.
@@ -289,6 +293,7 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 + Forthcoming features:
 
     + Compose UI integration
+    + Colored shadows on Pie and above.
     + Custom `ViewGroup` subclass, `ListView`, and `RecyclerView` optimizations
 
 ---

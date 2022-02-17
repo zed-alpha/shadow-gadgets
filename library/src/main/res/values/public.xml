@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <public name="clipShadow" type="attr" />
+    <public name="clipOutlineShadow" type="attr" />
     <public name="shadowTagMatchers" type="attr" />
     <public name="matchRule" type="attr" />
 </resources>

@@ -29,19 +29,6 @@ var View.clipOutlineShadow: Boolean
         }
     }
 
-var View.animateShadowWhenClipped: Boolean
-    get() = getTag(R.id.tag_target_overlay_animate) as? Boolean ?: true
-    set(value) {
-        if (value != animateShadowWhenClipped) {
-            setTag(R.id.tag_target_overlay_animate, value)
-            // Proper refresh function pending.
-            if (clipOutlineShadow && isAttachedToWindow) {
-                clipOutlineShadow = false
-                clipOutlineShadow = true
-            }
-        }
-    }
-
 internal fun unwrapActivity(context: Context): Activity? {
     var checkContext: Context? = context
     do {

@@ -5,10 +5,10 @@ package com.zedalpha.shadowgadgets.overlay
 import android.annotation.SuppressLint
 import android.graphics.*
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
@@ -26,17 +26,14 @@ internal object ShadowSwitch : View.OnAttachStateChangeListener {
 }
 
 internal fun moveShadowToOverlay(targetView: View) {
-    if (targetView.outlineProvider != null) {
+    if (targetView.isHardwareAccelerated && targetView.outlineProvider != null) {
         val parent = targetView.parent as? ViewGroup ?: return
         getOrCreateControllerForParent(parent).newShadow(targetView)
-    } else {
-        Log.w("OverlayShadow", "No ViewOutlineProvider on target ${targetView.debugName}")
     }
 }
 
 internal fun removeShadowFromOverlay(targetView: View) {
-    val parent = targetView.parent as? ViewGroup ?: return
-    getControllerForParent(parent)?.removeShadow(targetView)
+    (targetView.getTag(R.id.tag_target_overlay_shadow) as? OverlayShadow)?.detachFromController()
 }
 
 
@@ -57,16 +54,19 @@ private fun createControllerForParent(parent: ViewGroup): OverlayController<*> {
 }
 
 
-internal sealed interface OverlayController<T : OverlayShadow> {
+internal sealed interface OverlayController<T : OverlayShadow> :
+    ViewTreeObserver.OnPreDrawListener {
     val viewGroup: ViewGroup
     val shadows: MutableList<T>
 
     fun attach() {
         viewGroup.setTag(R.id.tag_parent_overlay_shadow_controller, this)
+        viewGroup.viewTreeObserver.addOnPreDrawListener(this)
     }
 
     fun detach() {
         viewGroup.setTag(R.id.tag_parent_overlay_shadow_controller, null)
+        viewGroup.viewTreeObserver.removeOnPreDrawListener(this)
     }
 
     fun newShadow(view: View) {
@@ -89,9 +89,17 @@ internal sealed interface OverlayController<T : OverlayShadow> {
     }
 
     fun onRemoveShadow(shadow: T)
+
+    override fun onPreDraw(): Boolean {
+        shadows.forEach { it.update() }
+        return true
+    }
 }
 
-internal sealed class OverlayShadow(protected val targetView: View) {
+internal sealed class OverlayShadow(
+    private val targetView: View,
+    private val controller: OverlayController<*>
+) {
     private val outlineBounds = Rect()
     private var radius: Float = 0.0F
 
@@ -109,6 +117,10 @@ internal sealed class OverlayShadow(protected val targetView: View) {
         target.outlineProvider = originalProvider
     }
 
+    fun detachFromController() {
+        controller.removeShadow(targetView)
+    }
+
     @Suppress("LiftReturnOrAssignment")
     open fun setOutline(outline: Outline) {
         if (getRect(outline, outlineBounds)) {
@@ -123,20 +135,21 @@ internal sealed class OverlayShadow(protected val targetView: View) {
     val z get() = targetView.z
 
     @Suppress("LiftReturnOrAssignment")
-    fun prepareForDraw(path: Path, boundsF: RectF): Boolean {
+    fun prepareForClip(path: Path, boundsF: RectF): Boolean {
         if (!outlineBounds.isEmpty) {
-            val target = targetView
-            updateShadow(target)
-
             // Set path for clip.
             boundsF.set(outlineBounds)
-            boundsF.offset(target.left.toFloat(), target.top.toFloat())
+            boundsF.offset(targetView.left.toFloat(), targetView.top.toFloat())
             path.rewind()
             path.addRoundRect(boundsF, radius, radius, Path.Direction.CW)
             return true
         } else {
             return false
         }
+    }
+
+    fun update() {
+        updateShadow(targetView)
     }
 
     abstract fun updateShadow(target: View)
@@ -158,19 +171,15 @@ private val getRect: (Outline, Rect) -> Boolean =
 
 @SuppressLint("DiscouragedPrivateApi", "SoonBlockedPrivateApi")
 private object OutlineReflector {
-    val isValid: Boolean
-
     private val mRectField: Field by lazy { Outline::class.java.getDeclaredField("mRect") }
     private val mRadiusField: Field by lazy { Outline::class.java.getDeclaredField("mRadius") }
 
-    init {
-        isValid = try {
-            mRectField
-            mRadiusField
-            true
-        } catch (e: Exception) {
-            false
-        }
+    val isValid = try {
+        mRectField
+        mRadiusField
+        true
+    } catch (e: Error) {
+        false
     }
 
     fun getRect(outline: Outline, outRect: Rect): Boolean {

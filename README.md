@@ -23,7 +23,7 @@ then add a dependency for the current release:
 ```gradle
 dependencies {
     …
-    implementation 'com.github.zed-alpha:shadow-gadgets:1.0.0'
+    implementation 'com.github.zed-alpha:shadow-gadgets:1.0.1'
 }
 ```
 
@@ -36,14 +36,6 @@ if (!view.clipOutlineShadow) view.clipOutlineShadow = true
 ```
 
 That's it. It behaves like any other such `View` property. The `if` check is strictly illustrative, and is not required before setting either value.
-
-For those `View`s that animate their shadows with elevation changes due to touches – e.g., `Button` – a pass-through `OnTouchListener` is set to observe events on any that have a `StateListAnimator` present. To disable this behavior, you can set the `animateShadowWhenClipped` property appropriately:
-
-```kotlin
-view.animateShadowWhenClipped = false
-```
-
-If you mean to set your own `OnTouchListener` on a target `View`, you must do it _after_ setting the `animateShadowWhenClipped` property to `false`.
 
 That's possibly all you need to know, if you only require this for a couple of `View`s, and you're able to add the few necessary lines to your code. The rest of this file mainly concerns setting up `LayoutInflater` helpers to set those properties automatically for various configurations. Please do consult [the Notes below](#notes), however, for caveats and possible conflicts.
 
@@ -280,20 +272,16 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 
 ### Notes
 
-+ Somehow, accounting for the target's visibility was completely overlooked. Currently, you'll need to turn off the clip manually if you hide the target; i.e., if you set its visibility to anything other than `VISIBLE`.
-
-+ In the same vein, this solution currently does not work well with certain kinds of animations; e.g., those seen when hiding and showing a `FloatingActionButton`. This was originally designed only for static `CardView`s, so there are surely other features and behaviors, too, that have been overlooked as of yet.
-
 + The `clipOutlineShadow` extension is effectively disabling the target `View`'s inherent shadow and drawing a clipped replica onto its parent's overlay. This means that it is drawing on top of all of the children, and can cause glitches with overlapping sibling `View`s. If you really, _really_ need things to overlap, you could wrap one or more of the siblings in another `ViewGroup`, like a `<FrameLayout>`, but I would imagine that most use cases will be for separate, individual elements like are shown in the demo app.
 
-+ Currently, the only way to set the `animateShadowWhenClipped` property is programmatically. If you're unable to modify your existing code, you can set that property in a custom `TagMatcher`'s `matches()` function before returning `true`.
-
 + The AppCompat and Material Components inflation helpers are (obviously) set as the `viewInflaterClass` in their respective configurations. If you're using anything other than the default inflaters that are handled internally by `AppCompatActivity`, then you might need to adapt or modify the helpers here, or possibly forgo them altogether.
+
++ Concave Outlines are not yet supported.
 
 + Forthcoming features:
 
     + Compose UI integration
-    + Colored shadows on Pie and above.
+    + Colored shadows on Pie and above
     + Custom `ViewGroup` subclass, `ListView`, and `RecyclerView` optimizations
 
 ---

@@ -69,7 +69,7 @@ private fun Context.resourceEntryName(@AnyRes id: Int): String = resources.getRe
 
 internal var Activity.matchers: List<TagMatcher>?
     @Suppress("UNCHECKED_CAST")
-    get() = window.decorView.getTag(R.id.tag_decor_shadow_matchers) as? List<TagMatcher>
+    get() = window.decorView.getTag(R.id.tag_decor_shadow_tag_matchers) as? List<TagMatcher>
     set(value) {
-        window.decorView.setTag(R.id.tag_decor_shadow_matchers, value)
+        window.decorView.setTag(R.id.tag_decor_shadow_tag_matchers, value)
     }

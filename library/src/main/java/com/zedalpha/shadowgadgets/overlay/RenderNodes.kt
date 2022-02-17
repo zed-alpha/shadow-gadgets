@@ -4,10 +4,13 @@ import android.annotation.SuppressLint
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.view.*
+import android.view.DisplayListCanvas
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewOverlay
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresApi
-import com.zedalpha.shadowgadgets.animateShadowWhenClipped
+import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.rendernode.CanvasReflector
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
@@ -16,11 +19,11 @@ import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("ViewConstructor")
 internal class RenderNodeController(override val viewGroup: ViewGroup) :
-    View(viewGroup.context), View.OnTouchListener, OverlayController<RenderNodeShadow> {
+    OverlayController<RenderNodeShadow> {
 
     override val shadows = mutableListOf<RenderNodeShadow>()
 
-    override fun createShadow(view: View) = RenderNodeShadow(view)
+    override fun createShadow(view: View) = RenderNodeShadow(view, this)
 
     override fun newShadow(view: View) {
         super.newShadow(view)
@@ -29,47 +32,17 @@ internal class RenderNodeController(override val viewGroup: ViewGroup) :
 
     override fun onNewShadow(shadow: RenderNodeShadow) {
         shadows.forEach { it.removeFromOverlay(viewGroup.overlay) }
-        shadow.registerForTouchDispatch(this)
     }
 
     override fun onRemoveShadow(shadow: RenderNodeShadow) {
         shadow.removeFromOverlay(viewGroup.overlay)
-        shadow.unregisterFromTouchDispatch()
-    }
-
-    private var currentShadow: RenderNodeShadow? = null
-    override fun onTouch(view: View, event: MotionEvent): Boolean {
-        val shadow = currentShadow
-        if (shadow == null || !shadow.isForView(view)) {
-            currentShadow = shadows.firstOrNull { it.isForView(view) }
-            stateListAnimator = view.stateListAnimator?.clone()
-            elevation = view.elevation
-            translationZ = view.translationZ
-        }
-
-        when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN -> {
-                isPressed = true
-            }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                isPressed = false
-            }
-        }
-        return false
-    }
-
-    override fun setElevation(elevation: Float) {
-        currentShadow?.setElevation(elevation)
-    }
-
-    override fun setTranslationZ(translationZ: Float) {
-        currentShadow?.setTranslationZ(translationZ)
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-internal class RenderNodeShadow(view: View) : OverlayShadow(view) {
-    private val renderNodeDrawable = when {
+internal class RenderNodeShadow(view: View, controller: RenderNodeController) :
+    OverlayShadow(view, controller) {
+    private val drawable = when {
         UsesPublicApi -> PublicApiDrawable(this)
         UsesStubs -> StubDrawable(this)
         else -> ReflectorDrawable(this)
@@ -77,44 +50,41 @@ internal class RenderNodeShadow(view: View) : OverlayShadow(view) {
 
     override fun setOutline(outline: Outline) {
         super.setOutline(outline)
-        renderNodeDrawable.setOutline(if (outline.isEmpty) null else outline)
+        drawable.setOutline(if (outline.isEmpty) null else outline)
     }
 
     fun addToOverlay(overlay: ViewOverlay) {
-        overlay.add(renderNodeDrawable)
+        overlay.add(drawable)
     }
 
     fun removeFromOverlay(overlay: ViewOverlay) {
-        overlay.remove(renderNodeDrawable)
-    }
-
-    private var registeredForDispatch = false
-    fun registerForTouchDispatch(controller: RenderNodeController) {
-        val target = targetView
-        if (target.stateListAnimator != null && target.animateShadowWhenClipped) {
-            target.setOnTouchListener(controller)
-            registeredForDispatch = true
-        }
-    }
-
-    fun unregisterFromTouchDispatch() {
-        if (registeredForDispatch) targetView.setOnTouchListener(null)
+        overlay.remove(drawable)
     }
 
     fun setElevation(elevation: Float) {
-        renderNodeDrawable.setElevation(elevation)
+        drawable.setElevation(elevation)
     }
 
     fun setTranslationZ(translationZ: Float) {
-        renderNodeDrawable.setTranslationZ(translationZ)
+        drawable.setTranslationZ(translationZ)
     }
 
-    fun isForView(view: View) = targetView == view
-
     override fun updateShadow(target: View) {
-        renderNodeDrawable.setBounds(target.left, target.top, target.right, target.bottom)
-        renderNodeDrawable.setElevation(target.elevation)
-        renderNodeDrawable.setTranslationZ(target.translationZ)
+        drawable.setVisible(target.isVisible, false)
+        drawable.setRenderNodeAlpha(target.alpha)
+        drawable.setCameraDistance(target.cameraDistance)
+        drawable.setElevation(target.elevation)
+        drawable.setPivotX(target.pivotX)
+        drawable.setPivotY(target.pivotY)
+        drawable.setBounds(target.left, target.top, target.right, target.bottom)
+        drawable.setRotationX(target.rotationX)
+        drawable.setRotationY(target.rotationY)
+        drawable.setRotationZ(target.rotation)
+        drawable.setScaleX(target.scaleX)
+        drawable.setScaleY(target.scaleY)
+        drawable.setTranslationX(target.translationX)
+        drawable.setTranslationY(target.translationY)
+        drawable.setTranslationZ(target.translationZ)
     }
 }
 
@@ -124,7 +94,7 @@ private open class ReflectorDrawable(shadow: RenderNodeShadow) : RenderNodeShado
         canvas.save()
         clipOutPath(canvas, path)
         CanvasReflector.insertReorderBarrier(canvas)
-        renderNodeWrapper.draw(canvas)
+        wrapper.draw(canvas)
         CanvasReflector.insertInorderBarrier(canvas)
         canvas.restore()
     }
@@ -138,7 +108,7 @@ private class StubDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDrawable(
         canvas.save()
         clipOutPath(canvas, path)
         canvas.insertReorderBarrier()
-        renderNodeWrapper.draw(canvas)
+        wrapper.draw(canvas)
         canvas.insertInorderBarrier()
         canvas.restore()
     }
@@ -150,7 +120,7 @@ private class PublicApiDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDraw
         canvas.save()
         canvas.enableZ()
         canvas.clipOutPath(path)
-        renderNodeWrapper.draw(canvas)
+        wrapper.draw(canvas)
         canvas.disableZ()
         canvas.restore()
     }
@@ -158,28 +128,72 @@ private class PublicApiDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDraw
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 internal sealed class RenderNodeShadowDrawable(private val shadow: RenderNodeShadow) : Drawable() {
-    protected val renderNodeWrapper: RenderNodeWrapper = RenderNodeFactory.newInstance()
+    protected val wrapper: RenderNodeWrapper = RenderNodeFactory.newInstance()
+
+    fun setRenderNodeAlpha(alpha: Float) {
+        wrapper.setAlpha(alpha)
+    }
+
+    fun setCameraDistance(distance: Float) {
+        wrapper.setCameraDistance(distance)
+    }
 
     fun setElevation(elevation: Float) {
-        renderNodeWrapper.setElevation(elevation)
+        wrapper.setElevation(elevation)
+    }
+
+    fun setPivotX(pivotX: Float) {
+        wrapper.setPivotX(pivotX)
+    }
+
+    fun setPivotY(pivotY: Float) {
+        wrapper.setPivotY(pivotY)
+    }
+
+    fun setRotationX(rotationX: Float) {
+        wrapper.setRotationX(rotationX)
+    }
+
+    fun setRotationY(rotationY: Float) {
+        wrapper.setRotationY(rotationY)
+    }
+
+    fun setRotationZ(rotation: Float) {
+        wrapper.setRotationZ(rotation)
+    }
+
+    fun setTranslationX(translationX: Float) {
+        wrapper.setTranslationZ(translationX)
+    }
+
+    fun setTranslationY(translationY: Float) {
+        wrapper.setTranslationZ(translationY)
     }
 
     fun setTranslationZ(translationZ: Float) {
-        renderNodeWrapper.setTranslationZ(translationZ)
+        wrapper.setTranslationZ(translationZ)
     }
 
     fun setOutline(outline: Outline?) {
-        renderNodeWrapper.setOutline(outline)
+        wrapper.setOutline(outline)
+    }
+
+    fun setScaleX(scaleX: Float) {
+        wrapper.setScaleX(scaleX)
+    }
+
+    fun setScaleY(scaleY: Float) {
+        wrapper.setScaleY(scaleY)
     }
 
     override fun onBoundsChange(bounds: Rect) {
-        renderNodeWrapper.setPosition(bounds.left, bounds.top, bounds.right, bounds.bottom)
+        wrapper.setPosition(bounds.left, bounds.top, bounds.right, bounds.bottom)
     }
 
     final override fun draw(canvas: Canvas) {
         val path = CachePath
         val boundsF = CacheBoundsF
-        if (shadow.prepareForDraw(path, boundsF)) clipAndDraw(canvas, path, boundsF)
+        if (isVisible && shadow.prepareForClip(path, boundsF)) clipAndDraw(canvas, path, boundsF)
     }
 
     abstract fun clipAndDraw(canvas: Canvas, path: Path, boundsF: RectF)

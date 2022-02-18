@@ -1,56 +1,70 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.overlay
 
-import android.annotation.SuppressLint
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.view.DisplayListCanvas
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewOverlay
+import android.view.*
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
+import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.rendernode.CanvasReflector
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
 
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-@SuppressLint("ViewConstructor")
-internal class RenderNodeController(override val viewGroup: ViewGroup) :
-    OverlayController<RenderNodeShadow> {
+internal class RenderNodeController(private val viewGroup: ViewGroup) :
+    OverlayController<RenderNodeShadow>, ViewTreeObserver.OnPreDrawListener {
+    private val shadows = mutableListOf<RenderNodeShadow>()
 
-    override val shadows = mutableListOf<RenderNodeShadow>()
+    override fun attach() {
+        viewGroup.setTag(R.id.tag_parent_overlay_shadow_controller, this)
+        viewGroup.viewTreeObserver.addOnPreDrawListener(this)
+    }
 
-    override fun createShadow(view: View) = RenderNodeShadow(view, this)
+    private fun detach() {
+        viewGroup.setTag(R.id.tag_parent_overlay_shadow_controller, null)
+        viewGroup.viewTreeObserver.removeOnPreDrawListener(this)
+    }
 
     override fun newShadow(view: View) {
-        super.newShadow(view)
+        val shadow = RenderNodeShadow(view, this)
+        shadow.attachToTargetView()
+        shadows.forEach { it.removeFromOverlay(viewGroup.overlay) }
+        shadows.add(shadow)
         shadows.sortedBy { it.z }.forEach { it.addToOverlay(viewGroup.overlay) }
     }
 
-    override fun onNewShadow(shadow: RenderNodeShadow) {
-        shadows.forEach { it.removeFromOverlay(viewGroup.overlay) }
+    override fun removeShadow(view: View) {
+        val shadow = view.getTag(R.id.tag_target_overlay_shadow) as RenderNodeShadow
+        shadow.detachFromTargetView()
+        shadow.removeFromOverlay(viewGroup.overlay)
+        shadows.remove(shadow)
+        if (shadows.isEmpty()) detach()
     }
 
-    override fun onRemoveShadow(shadow: RenderNodeShadow) {
-        shadow.removeFromOverlay(viewGroup.overlay)
+    override fun onPreDraw(): Boolean {
+        shadows.forEach { it.updateShadow() }
+        return true
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-internal class RenderNodeShadow(view: View, controller: RenderNodeController) :
-    OverlayShadow(view, controller) {
+internal class RenderNodeShadow(
+    private val targetView: View,
+    private val controller: OverlayController<*>
+) : OverlayShadow {
+
+    private val outlineBounds = Rect()
+    private var radius: Float = 0.0F
+
+    private val originalProvider: ViewOutlineProvider = targetView.outlineProvider
+
     private val drawable = when {
         UsesPublicApi -> PublicApiDrawable(this)
         UsesStubs -> StubDrawable(this)
         else -> ReflectorDrawable(this)
-    }
-
-    override fun setOutline(outline: Outline) {
-        super.setOutline(outline)
-        drawable.setOutline(if (outline.isEmpty) null else outline)
     }
 
     fun addToOverlay(overlay: ViewOverlay) {
@@ -61,15 +75,53 @@ internal class RenderNodeShadow(view: View, controller: RenderNodeController) :
         overlay.remove(drawable)
     }
 
-    fun setElevation(elevation: Float) {
-        drawable.setElevation(elevation)
+    override fun attachToTargetView() {
+        val target = targetView
+        target.setTag(R.id.tag_target_overlay_shadow, this)
+        target.outlineProvider = ProviderWrapper(originalProvider, this::setOutline)
     }
 
-    fun setTranslationZ(translationZ: Float) {
-        drawable.setTranslationZ(translationZ)
+    override fun detachFromTargetView() {
+        val target = targetView
+        target.setTag(R.id.tag_target_overlay_shadow, null)
+        target.outlineProvider = originalProvider
     }
 
-    override fun updateShadow(target: View) {
+    override fun detachFromController() {
+        controller.removeShadow(targetView)
+    }
+
+    @Suppress("LiftReturnOrAssignment")
+    fun setOutline(outline: Outline) {
+        if (getRect(outline, outlineBounds)) {
+            // outlineBounds set in getRect()
+            radius = getRadius(outline)
+        } else {
+            outlineBounds.setEmpty()
+            radius = 0.0F
+        }
+        drawable.setOutline(if (outline.isEmpty) null else outline)
+    }
+
+    override val z get() = targetView.z
+
+    @Suppress("LiftReturnOrAssignment")
+    fun prepareForClip(path: Path, boundsF: RectF): Boolean {
+        if (!outlineBounds.isEmpty) {
+            updateShadow()
+            // Set path for clip.
+            boundsF.set(outlineBounds)
+            boundsF.offset(targetView.left.toFloat(), targetView.top.toFloat())
+            path.rewind()
+            path.addRoundRect(boundsF, radius, radius, Path.Direction.CW)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    fun updateShadow() {
+        val target = targetView
         drawable.setVisible(target.isVisible, false)
         drawable.setRenderNodeAlpha(target.alpha)
         drawable.setCameraDistance(target.cameraDistance)

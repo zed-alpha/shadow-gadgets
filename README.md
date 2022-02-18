@@ -8,7 +8,7 @@ Those particular artifacts are from the hardware-rendered shadows that came with
 
 ## Download
 
-The initial release is available through the handy service JitPack. In the appropriate `repositories`, simply add their Maven URL:
+The initial releases are available through the handy service JitPack. In the appropriate `repositories`, simply add their Maven URL:
 
 ```gradle
 repositories {
@@ -23,7 +23,7 @@ then add a dependency for the current release:
 ```gradle
 dependencies {
     …
-    implementation 'com.github.zed-alpha:shadow-gadgets:1.0.1'
+    implementation 'com.github.zed-alpha:shadow-gadgets:1.0.2'
 }
 ```
 
@@ -185,7 +185,7 @@ If you'd rather not modify layout files to add the `clipOutlineShadow` attribute
             super.onCreate(savedInstanceState)
             …
     ```
-    
+
 Though regular AppCompat themes and platform Activities require different helper classes than Material Components, these `TagMatcher` definitions and implementations are common to all three variations.
 
 
@@ -274,7 +274,7 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 
 + The `clipOutlineShadow` extension is effectively disabling the target `View`'s inherent shadow and drawing a clipped replica onto its parent's overlay. This means that it is drawing on top of all of the children, and can cause glitches with overlapping sibling `View`s. If you really, _really_ need things to overlap, you could wrap one or more of the siblings in another `ViewGroup`, like a `<FrameLayout>`, but I would imagine that most use cases will be for separate, individual elements like are shown in the demo app.
 
-+ The latest release does "work" with animations and motions, in that the shadows do move and transform along with their targets, but currently the shadows are a bit out of sync, and will lag noticeably with rapid changes.
++ The latest release does work with motions – e.g, drags in `MotionLayout` – but there are certain types of animations that can lag slightly, or leave the shadow out of sync a bit; e.g., showing a `FloatingActionButton` from hidden, shifting a `View` inside a `CoordinatorLayout`, etc.
 
 + The AppCompat and Material Components inflation helpers are (obviously) set as the `viewInflaterClass` in their respective configurations. If you're using anything other than the default inflaters that are handled internally by `AppCompatActivity`, then you might need to adapt or modify the helpers here, or possibly forgo them altogether.
 

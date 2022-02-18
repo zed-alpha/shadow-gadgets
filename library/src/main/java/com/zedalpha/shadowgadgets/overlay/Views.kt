@@ -3,24 +3,23 @@
 package com.zedalpha.shadowgadgets.overlay
 
 import android.annotation.SuppressLint
-import android.graphics.Canvas
-import android.graphics.ColorFilter
-import android.graphics.Outline
-import android.graphics.PixelFormat
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
+import com.zedalpha.shadowgadgets.R
 
 
 @SuppressLint("ViewConstructor")
-internal class ViewController(override val viewGroup: ViewGroup) :
-    ViewGroup(viewGroup.context), View.OnLayoutChangeListener, OverlayController<ViewShadow> {
-
-    override val shadows = mutableListOf<ViewShadow>()
+internal class ViewController(private val viewGroup: ViewGroup) :
+    ViewGroup(viewGroup.context), OverlayController<ViewShadow>,
+    View.OnLayoutChangeListener, ViewTreeObserver.OnPreDrawListener {
+    private val shadows = mutableListOf<ViewShadow>()
 
     init {
         val group = viewGroup
@@ -29,21 +28,32 @@ internal class ViewController(override val viewGroup: ViewGroup) :
         group.overlay.add(this)
     }
 
-    override fun detach() {
-        super.detach()
+    override fun attach() {
+        viewGroup.setTag(R.id.tag_parent_overlay_shadow_controller, this)
+        viewGroup.viewTreeObserver.addOnPreDrawListener(this)
+    }
+
+    private fun detach() {
+        viewGroup.setTag(R.id.tag_parent_overlay_shadow_controller, null)
+        viewGroup.viewTreeObserver.removeOnPreDrawListener(this)
         val group = viewGroup
         group.removeOnLayoutChangeListener(this)
         group.overlay.remove(this)
     }
 
-    override fun createShadow(view: View) = ViewShadow(view, this)
-
-    override fun onNewShadow(shadow: ViewShadow) {
+    override fun newShadow(view: View) {
+        val shadow = ViewShadow(view, this)
+        shadow.attachToTargetView()
         shadow.addShadowView(this)
+        shadows.add(shadow)
     }
 
-    override fun onRemoveShadow(shadow: ViewShadow) {
+    override fun removeShadow(view: View) {
+        val shadow = view.getTag(R.id.tag_target_overlay_shadow) as ViewShadow
+        shadow.detachFromTargetView()
         shadow.removeShadowView(this)
+        shadows.remove(shadow)
+        if (shadows.isEmpty()) detach()
     }
 
     override fun dispatchDraw(canvas: Canvas) {
@@ -69,21 +79,88 @@ internal class ViewController(override val viewGroup: ViewGroup) :
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         /* noop. Child layout is handled manually elsewhere. */
     }
-}
 
-@SuppressLint("ClickableViewAccessibility")
-internal class ViewShadow(view: View, controller: ViewController) :
-    OverlayShadow(view, controller) {
-
-    private val shadowView = View(view.context).apply {
-        background = EmptyDrawable
-        outlineProvider = SurrogateViewProviderWrapper(originalProvider, view)
-        clipToOutline = true
-        elevation = view.elevation
-        translationZ = view.translationZ
+    override fun onPreDraw(): Boolean {
+        shadows.forEach { it.updateShadow() }
+        return true
     }
 
-    override fun updateShadow(target: View) {
+    fun detachShadowView(child: View): Int {
+        val index = indexOfChild(child)
+        detachViewFromParent(child)
+        return index
+    }
+
+    fun reAttachShadowView(child: View, index: Int) {
+        attachViewToParent(child, index, null)
+    }
+}
+
+internal class ViewShadow(
+    private val targetView: View,
+    private val controller: ViewController
+) : OverlayShadow {
+    private val outlineBounds = Rect()
+    private var radius: Float = 0.0F
+
+    private val originalProvider: ViewOutlineProvider = targetView.outlineProvider
+
+    private val shadowView = View(targetView.context).apply {
+        background = EmptyDrawable
+        outlineProvider = SurrogateViewProviderWrapper(originalProvider, targetView)
+        clipToOutline = true
+        elevation = targetView.elevation
+        translationZ = targetView.translationZ
+    }
+
+    override fun attachToTargetView() {
+        val target = targetView
+        target.setTag(R.id.tag_target_overlay_shadow, this)
+        target.outlineProvider = ProviderWrapper(originalProvider, this::setOutline)
+    }
+
+    override fun detachFromTargetView() {
+        val target = targetView
+        target.setTag(R.id.tag_target_overlay_shadow, null)
+        target.outlineProvider = originalProvider
+    }
+
+    override fun detachFromController() {
+        controller.removeShadow(targetView)
+    }
+
+    @Suppress("LiftReturnOrAssignment")
+    fun setOutline(outline: Outline) {
+        if (getRect(outline, outlineBounds)) {
+            // outlineBounds set in getRect()
+            radius = getRadius(outline)
+        } else {
+            outlineBounds.setEmpty()
+            radius = 0.0F
+        }
+    }
+
+    override val z get() = targetView.z
+
+    @Suppress("LiftReturnOrAssignment")
+    fun prepareForClip(path: Path, boundsF: RectF): Boolean {
+        if (!outlineBounds.isEmpty) {
+            updateShadow()
+            // Set path for clip.
+            boundsF.set(outlineBounds)
+            boundsF.offset(targetView.left.toFloat(), targetView.top.toFloat())
+            path.rewind()
+            path.addRoundRect(boundsF, radius, radius, Path.Direction.CW)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    fun updateShadow() {
+        val target = targetView
+        val index = controller.detachShadowView(shadowView)
+
         shadowView.isVisible = target.isVisible
         shadowView.alpha = target.alpha
         shadowView.cameraDistance = target.cameraDistance
@@ -99,6 +176,8 @@ internal class ViewShadow(view: View, controller: ViewController) :
         shadowView.translationX = target.translationX
         shadowView.translationY = target.translationY
         shadowView.translationZ = target.translationZ
+
+        controller.reAttachShadowView(shadowView, index)
     }
 
     fun addShadowView(controller: ViewController) {

@@ -272,9 +272,7 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 
 ### Notes
 
-+ The `clipOutlineShadow` extension is effectively disabling the target `View`'s inherent shadow and drawing a clipped replica onto its parent's overlay. This means that it is drawing on top of all of the children, and can cause glitches with overlapping sibling `View`s. If you really, _really_ need things to overlap, you could wrap one or more of the siblings in another `ViewGroup`, like a `<FrameLayout>`, but I would imagine that most use cases will be for separate, individual elements like are shown in the demo app.
-
-+ The latest release does work with motions – e.g, drags in `MotionLayout` – but there are certain types of animations that can lag slightly, or leave the shadow out of sync a bit; e.g., showing a `FloatingActionButton` from hidden, shifting a `View` inside a `CoordinatorLayout`, etc.
++ Currently, the only known "bug" is the one inherent to the solution: target `View`s with overlapping siblings can cause glitches. The `clipOutlineShadow` extension is effectively disabling the target's inherent shadow and drawing a clipped replica onto its parent's overlay, which means that it's drawing on top of all of the children. If you really need things to overlap, you could wrap the target in another `ViewGroup`, like a `<FrameLayout>`, which would isolate its shadow draw. I would imagine, though, that most use cases will be for separate, individual elements like are shown in the demo app.
 
 + The AppCompat and Material Components inflation helpers are (obviously) set as the `viewInflaterClass` in their respective configurations. If you're using anything other than the default inflaters that are handled internally by `AppCompatActivity`, then you might need to adapt or modify the helpers here, or possibly forgo them altogether.
 
@@ -282,8 +280,8 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 
 + Forthcoming features:
 
-    + Compose UI integration
     + Colored shadows on Pie and above
+    + Compose UI integration
     + Custom `ViewGroup` subclass, `ListView`, and `RecyclerView` optimizations
 
 ---

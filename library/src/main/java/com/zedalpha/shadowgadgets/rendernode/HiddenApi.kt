@@ -1,6 +1,7 @@
 package com.zedalpha.shadowgadgets.rendernode
 
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.Outline
 import android.os.Build
 import android.view.DisplayListCanvas
@@ -23,64 +24,41 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
         RenderNodeReflector.end(renderNode, canvas)
     }
 
-    override fun setAlpha(alpha: Float) {
-        renderNode.setAlpha(alpha)
-    }
+    override fun setAlpha(alpha: Float) = renderNode.setAlpha(alpha)
 
-    override fun setCameraDistance(distance: Float) {
-        renderNode.setCameraDistance(distance)
-    }
+    override fun setCameraDistance(distance: Float) = renderNode.setCameraDistance(distance)
 
-    override fun setElevation(elevation: Float) {
-        renderNode.setElevation(elevation)
-    }
+    override fun setElevation(elevation: Float) = renderNode.setElevation(elevation)
 
-    override fun setOutline(outline: Outline?) {
-        renderNode.setOutline(outline)
-    }
+    override fun setOutline(outline: Outline?) = renderNode.setOutline(outline)
 
-    override fun setPivotX(pivotX: Float) {
-        renderNode.setPivotX(pivotX)
-    }
+    override fun setPivotX(pivotX: Float) = renderNode.setPivotX(pivotX)
 
-    override fun setPivotY(pivotY: Float) {
-        renderNode.setPivotY(pivotY)
-    }
+    override fun setPivotY(pivotY: Float) = renderNode.setPivotY(pivotY)
 
-    override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) {
+    override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
         renderNode.setLeftTopRightBottom(left, top, right, bottom)
-    }
 
-    override fun setRotationX(rotationX: Float) {
-        renderNode.setRotationX(rotationX)
-    }
+    override fun setRotationX(rotationX: Float) = renderNode.setRotationX(rotationX)
 
-    override fun setRotationY(rotationY: Float) {
-        renderNode.setRotationY(rotationY)
-    }
+    override fun setRotationY(rotationY: Float) = renderNode.setRotationY(rotationY)
 
-    override fun setRotationZ(rotation: Float) {
-        renderNode.setRotation(rotation)
-    }
+    override fun setRotationZ(rotation: Float) = renderNode.setRotation(rotation)
 
-    override fun setScaleX(scaleX: Float) {
-        renderNode.setScaleX(scaleX)
-    }
+    override fun setScaleX(scaleX: Float) = renderNode.setScaleX(scaleX)
 
-    override fun setScaleY(scaleY: Float) {
-        renderNode.setScaleY(scaleY)
-    }
+    override fun setScaleY(scaleY: Float) = renderNode.setScaleY(scaleY)
 
-    override fun setTranslationX(translationX: Float) {
-        renderNode.setTranslationX(translationX)
-    }
+    override fun setTranslationX(translationX: Float) = renderNode.setTranslationX(translationX)
 
-    override fun setTranslationY(translationY: Float) {
-        renderNode.setTranslationY(translationY)
-    }
+    override fun setTranslationY(translationY: Float) = renderNode.setTranslationY(translationY)
 
-    override fun setTranslationZ(translationZ: Float) {
-        renderNode.setTranslationZ(translationZ)
+    override fun setTranslationZ(translationZ: Float) = renderNode.setTranslationZ(translationZ)
+
+    override fun hasIdentityMatrix() = renderNode.hasIdentityMatrix()
+
+    override fun getMatrix(outMatrix: Matrix) {
+        renderNode.getMatrix(outMatrix)
     }
 
     override fun draw(canvas: Canvas) {

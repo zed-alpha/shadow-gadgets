@@ -2,263 +2,157 @@
 
 package com.zedalpha.shadowgadgets.overlay
 
+import android.annotation.SuppressLint
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.view.*
+import android.view.DisplayListCanvas
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.RequiresApi
-import androidx.core.view.isVisible
-import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.rendernode.CanvasReflector
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
 
 
-internal class RenderNodeController(private val viewGroup: ViewGroup) :
-    OverlayController<RenderNodeShadow>, ViewTreeObserver.OnPreDrawListener {
-    private val shadows = mutableListOf<RenderNodeShadow>()
+internal class RenderNodeController(override val viewGroup: ViewGroup) :
+    OverlayController<RenderNodeShadow> {
 
-    override fun attach() {
-        viewGroup.setTag(R.id.tag_parent_overlay_shadow_controller, this)
-        viewGroup.viewTreeObserver.addOnPreDrawListener(this)
-    }
+    override val shadows = mutableListOf<RenderNodeShadow>()
 
-    private fun detach() {
-        viewGroup.setTag(R.id.tag_parent_overlay_shadow_controller, null)
-        viewGroup.viewTreeObserver.removeOnPreDrawListener(this)
-    }
-
-    override fun newShadow(view: View) {
-        val shadow = RenderNodeShadow(view, this)
-        shadow.attachToTargetView()
-        shadows.forEach { it.removeFromOverlay(viewGroup.overlay) }
-        shadows.add(shadow)
-        shadows.sortedBy { it.z }.forEach { it.addToOverlay(viewGroup.overlay) }
-    }
-
-    override fun removeShadow(view: View) {
-        val shadow = view.getTag(R.id.tag_target_overlay_shadow) as RenderNodeShadow
-        shadow.detachFromTargetView()
-        shadow.removeFromOverlay(viewGroup.overlay)
-        shadows.remove(shadow)
-        if (shadows.isEmpty()) detach()
-    }
-
-    override fun onPreDraw(): Boolean {
-        shadows.forEach { it.updateShadow() }
-        return true
-    }
+    override fun createShadow(view: View) = RenderNodeShadow(view, this)
 }
 
 internal class RenderNodeShadow(
-    private val targetView: View,
-    private val controller: OverlayController<*>
-) : OverlayShadow {
+    view: View,
+    private val controller: RenderNodeController
+) : OverlayShadow(view, controller) {
 
-    private val outlineBounds = Rect()
-    private var radius: Float = 0.0F
+    private val renderNode = RenderNodeFactory.newInstance()
+    private val drawable = RenderNodeDrawable()
 
-    private val originalProvider: ViewOutlineProvider = targetView.outlineProvider
-
-    private val drawable = when {
-        UsesPublicApi -> PublicApiDrawable(this)
-        UsesStubs -> StubDrawable(this)
-        else -> ReflectorDrawable(this)
+    override fun setOutline(outline: Outline) {
+        super.setOutline(outline)
+        renderNode.setOutline(outline)
     }
 
-    fun addToOverlay(overlay: ViewOverlay) {
-        overlay.add(drawable)
+    override fun attachShadow() {
+        controller.viewGroup.overlay.add(drawable)
     }
 
-    fun removeFromOverlay(overlay: ViewOverlay) {
-        overlay.remove(drawable)
+    override fun detachShadow() {
+        controller.viewGroup.overlay.remove(drawable)
     }
 
-    override fun attachToTargetView() {
-        val target = targetView
-        target.setTag(R.id.tag_target_overlay_shadow, this)
-        target.outlineProvider = ProviderWrapper(originalProvider, this::setOutline)
+    override fun onPreDraw() {
+        if (drawable.updateShadow()) drawable.invalidateSuper()
     }
 
-    override fun detachFromTargetView() {
-        val target = targetView
-        target.setTag(R.id.tag_target_overlay_shadow, null)
-        target.outlineProvider = originalProvider
-    }
+    inner class RenderNodeDrawable : Drawable() {
+        override fun draw(canvas: Canvas) {
+            val target = targetView
+            val path = CachePath
+            val boundsF = CacheBoundsF
 
-    override fun detachFromController() {
-        controller.removeShadow(targetView)
-    }
+            if (this@RenderNodeShadow.willDraw) {
+                updateShadow()
 
-    @Suppress("LiftReturnOrAssignment")
-    fun setOutline(outline: Outline) {
-        if (getRect(outline, outlineBounds)) {
-            // outlineBounds set in getRect()
-            radius = getRadius(outline)
-        } else {
-            outlineBounds.setEmpty()
-            radius = 0.0F
+                boundsF.set(outlineBounds)
+                path.rewind()
+                path.addRoundRect(boundsF, outlineRadius, outlineRadius, Path.Direction.CW)
+
+                val node = renderNode
+                if (!node.hasIdentityMatrix()) {
+                    val matrix = CacheMatrix
+                    node.getMatrix(matrix)
+                    path.transform(matrix)
+                }
+
+                path.offset(target.left.toFloat(), target.top.toFloat())
+
+                clipAndDraw(canvas, renderNode, path)
+            }
         }
-        drawable.setOutline(if (outline.isEmpty) null else outline)
-    }
 
-    override val z get() = targetView.z
-
-    @Suppress("LiftReturnOrAssignment")
-    fun prepareForClip(path: Path, boundsF: RectF): Boolean {
-        if (!outlineBounds.isEmpty) {
-            updateShadow()
-            // Set path for clip.
-            boundsF.set(outlineBounds)
-            boundsF.offset(targetView.left.toFloat(), targetView.top.toFloat())
-            path.rewind()
-            path.addRoundRect(boundsF, radius, radius, Path.Direction.CW)
-            return true
-        } else {
-            return false
+        fun invalidateSuper() {
+            super.invalidateSelf()
         }
+
+        override fun invalidateSelf() {
+            // To stop invalidate call from bounds change; we'll handle it.
+        }
+
+        fun updateShadow(): Boolean {
+            val node = renderNode
+            val target = targetView
+
+            val left = target.left
+            val top = target.top
+            val right = target.right
+            val bottom = target.bottom
+
+            // Possibly unnecessary for proper invalidation.
+            setBounds(left, top, right, bottom)
+
+            // No invalidation for these.
+            node.setAlpha(target.alpha)
+            node.setCameraDistance(target.cameraDistance)
+            node.setElevation(target.elevation)
+            node.setRotationX(target.rotationX)
+            node.setRotationY(target.rotationY)
+            node.setRotationZ(target.rotation)
+            node.setTranslationZ(target.translationZ)
+
+            return node.setPivotX(target.pivotX) or
+                    node.setPivotY(target.pivotY) or
+                    node.setPosition(left, top, right, bottom) or
+                    node.setScaleX(target.scaleX) or
+                    node.setScaleY(target.scaleY) or
+                    node.setTranslationX(target.translationX) or
+                    node.setTranslationY(target.translationY)
+        }
+
+        override fun setAlpha(alpha: Int) {}
+
+        override fun setColorFilter(colorFilter: ColorFilter?) {}
+
+        override fun getOpacity() = PixelFormat.TRANSLUCENT
     }
-
-    fun updateShadow() {
-        val target = targetView
-        drawable.setVisible(target.isVisible, false)
-        drawable.setRenderNodeAlpha(target.alpha)
-        drawable.setCameraDistance(target.cameraDistance)
-        drawable.setElevation(target.elevation)
-        drawable.setPivotX(target.pivotX)
-        drawable.setPivotY(target.pivotY)
-        drawable.setBounds(target.left, target.top, target.right, target.bottom)
-        drawable.setRotationX(target.rotationX)
-        drawable.setRotationY(target.rotationY)
-        drawable.setRotationZ(target.rotation)
-        drawable.setScaleX(target.scaleX)
-        drawable.setScaleY(target.scaleY)
-        drawable.setTranslationX(target.translationX)
-        drawable.setTranslationY(target.translationY)
-        drawable.setTranslationZ(target.translationZ)
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-private open class ReflectorDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDrawable(shadow) {
-    override fun clipAndDraw(canvas: Canvas, path: Path, boundsF: RectF) {
-        canvas.save()
-        clipOutPath(canvas, path)
-        CanvasReflector.insertReorderBarrier(canvas)
-        wrapper.draw(canvas)
-        CanvasReflector.insertInorderBarrier(canvas)
-        canvas.restore()
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.M)
-private class StubDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDrawable(shadow) {
-    override fun clipAndDraw(canvas: Canvas, path: Path, boundsF: RectF) {
-        canvas as DisplayListCanvas
-
-        canvas.save()
-        clipOutPath(canvas, path)
-        canvas.insertReorderBarrier()
-        wrapper.draw(canvas)
-        canvas.insertInorderBarrier()
-        canvas.restore()
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.Q)
-private class PublicApiDrawable(shadow: RenderNodeShadow) : RenderNodeShadowDrawable(shadow) {
-    override fun clipAndDraw(canvas: Canvas, path: Path, boundsF: RectF) {
-        canvas.save()
-        canvas.enableZ()
-        canvas.clipOutPath(path)
-        wrapper.draw(canvas)
-        canvas.disableZ()
-        canvas.restore()
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-internal sealed class RenderNodeShadowDrawable(private val shadow: RenderNodeShadow) : Drawable() {
-    protected val wrapper: RenderNodeWrapper = RenderNodeFactory.newInstance()
-
-    fun setRenderNodeAlpha(alpha: Float) {
-        wrapper.setAlpha(alpha)
-    }
-
-    fun setCameraDistance(distance: Float) {
-        wrapper.setCameraDistance(distance)
-    }
-
-    fun setElevation(elevation: Float) {
-        wrapper.setElevation(elevation)
-    }
-
-    fun setPivotX(pivotX: Float) {
-        wrapper.setPivotX(pivotX)
-    }
-
-    fun setPivotY(pivotY: Float) {
-        wrapper.setPivotY(pivotY)
-    }
-
-    fun setRotationX(rotationX: Float) {
-        wrapper.setRotationX(rotationX)
-    }
-
-    fun setRotationY(rotationY: Float) {
-        wrapper.setRotationY(rotationY)
-    }
-
-    fun setRotationZ(rotation: Float) {
-        wrapper.setRotationZ(rotation)
-    }
-
-    fun setTranslationX(translationX: Float) {
-        wrapper.setTranslationZ(translationX)
-    }
-
-    fun setTranslationY(translationY: Float) {
-        wrapper.setTranslationZ(translationY)
-    }
-
-    fun setTranslationZ(translationZ: Float) {
-        wrapper.setTranslationZ(translationZ)
-    }
-
-    fun setOutline(outline: Outline?) {
-        wrapper.setOutline(outline)
-    }
-
-    fun setScaleX(scaleX: Float) {
-        wrapper.setScaleX(scaleX)
-    }
-
-    fun setScaleY(scaleY: Float) {
-        wrapper.setScaleY(scaleY)
-    }
-
-    override fun onBoundsChange(bounds: Rect) {
-        wrapper.setPosition(bounds.left, bounds.top, bounds.right, bounds.bottom)
-    }
-
-    final override fun draw(canvas: Canvas) {
-        val path = CachePath
-        val boundsF = CacheBoundsF
-        if (isVisible && shadow.prepareForClip(path, boundsF)) clipAndDraw(canvas, path, boundsF)
-    }
-
-    abstract fun clipAndDraw(canvas: Canvas, path: Path, boundsF: RectF)
-
-    override fun getOpacity() = PixelFormat.TRANSLUCENT
-
-    override fun setAlpha(alpha: Int) {}
-
-    override fun setColorFilter(filter: ColorFilter?) {}
 }
 
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
-private val UsesPublicApi = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+internal val UsesPublicApi = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.M)
-private val UsesStubs = Build.VERSION.SDK_INT in Build.VERSION_CODES.M..Build.VERSION_CODES.O_MR1
+internal val UsesStubs = Build.VERSION.SDK_INT in Build.VERSION_CODES.M..Build.VERSION_CODES.O_MR1
+
+@SuppressLint("NewApi")
+private val clipAndDraw: (canvas: Canvas, wrapper: RenderNodeWrapper, path: Path) -> Unit =
+    when {
+        UsesPublicApi -> { canvas, wrapper, path ->
+            canvas.save()
+            canvas.enableZ()
+            canvas.clipOutPath(path)
+            wrapper.draw(canvas)
+            canvas.disableZ()
+            canvas.restore()
+        }
+        UsesStubs -> { canvas, wrapper, path ->
+            canvas as DisplayListCanvas
+            canvas.save()
+            clipOutPath(canvas, path)
+            canvas.insertReorderBarrier()
+            wrapper.draw(canvas)
+            canvas.insertInorderBarrier()
+            canvas.restore()
+        }
+        else -> { canvas, wrapper, path ->
+            canvas.save()
+            clipOutPath(canvas, path)
+            CanvasReflector.insertReorderBarrier(canvas)
+            wrapper.draw(canvas)
+            CanvasReflector.insertInorderBarrier(canvas)
+            canvas.restore()
+        }
+    }

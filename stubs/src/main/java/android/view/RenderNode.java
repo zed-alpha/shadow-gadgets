@@ -1,5 +1,6 @@
 package android.view;
 
+import android.graphics.Matrix;
 import android.graphics.Outline;
 
 import androidx.annotation.ColorInt;
@@ -93,4 +94,10 @@ public class RenderNode {
     public boolean setAmbientShadowColor(@ColorInt int color) {
         throw new UnsupportedOperationException();
     }
+
+    public boolean hasIdentityMatrix() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void getMatrix(@NonNull Matrix outMatrix) {}
 }

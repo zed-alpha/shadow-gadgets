@@ -4,6 +4,7 @@ package com.zedalpha.shadowgadgets.rendernode
 
 import android.annotation.SuppressLint
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.Outline
 import android.os.Build
 import androidx.annotation.ColorInt
@@ -15,24 +16,27 @@ import java.lang.reflect.Method
 internal interface RenderNodeWrapper {
     fun initialize() {}
 
-    fun setAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float)
-    fun setCameraDistance(distance: Float)
-    fun setElevation(elevation: Float)
-    fun setOutline(outline: Outline?)
-    fun setPivotX(pivotX: Float)
-    fun setPivotY(pivotY: Float)
-    fun setPosition(left: Int, top: Int, right: Int, bottom: Int)
-    fun setRotationX(rotationX: Float)
-    fun setRotationY(rotationY: Float)
-    fun setRotationZ(rotation: Float)
-    fun setScaleX(scaleX: Float)
-    fun setScaleY(scaleY: Float)
-    fun setTranslationX(translationX: Float)
-    fun setTranslationY(translationY: Float)
-    fun setTranslationZ(translationZ: Float)
+    fun setAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float): Boolean
+    fun setCameraDistance(distance: Float): Boolean
+    fun setElevation(elevation: Float): Boolean
+    fun setOutline(outline: Outline?): Boolean
+    fun setPivotX(pivotX: Float): Boolean
+    fun setPivotY(pivotY: Float): Boolean
+    fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Boolean
+    fun setRotationX(rotationX: Float): Boolean
+    fun setRotationY(rotationY: Float): Boolean
+    fun setRotationZ(rotation: Float): Boolean
+    fun setScaleX(scaleX: Float): Boolean
+    fun setScaleY(scaleY: Float): Boolean
+    fun setTranslationX(translationX: Float): Boolean
+    fun setTranslationY(translationY: Float): Boolean
+    fun setTranslationZ(translationZ: Float): Boolean
 
-    fun setAmbientShadowColor(@ColorInt color: Int) {}
-    fun setSpotShadowColor(@ColorInt color: Int) {}
+    fun hasIdentityMatrix(): Boolean
+    fun getMatrix(outMatrix: Matrix)
+
+    fun setAmbientShadowColor(@ColorInt color: Int): Boolean = false
+    fun setSpotShadowColor(@ColorInt color: Int): Boolean = false
 
     fun draw(canvas: Canvas)
 }
@@ -66,6 +70,8 @@ internal object RenderNodeFactory {
             setTranslationX(0F)
             setTranslationY(0F)
             setTranslationZ(0F)
+            hasIdentityMatrix()
+            getMatrix(Matrix())
         }
         true
     } catch (e: Error) {

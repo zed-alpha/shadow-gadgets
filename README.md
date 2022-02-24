@@ -18,12 +18,12 @@ repositories {
 }
 ```
 
-then add a dependency for the current release:
+then add a dependency for [the latest release](https://github.com/zed-alpha/shadow-gadgets/releases):
 
 ```gradle
 dependencies {
     …
-    implementation 'com.github.zed-alpha:shadow-gadgets:1.0.2'
+    implementation 'com.github.zed-alpha:shadow-gadgets:[latest-release]'
 }
 ```
 
@@ -272,7 +272,11 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 
 ### Notes
 
-+ Currently, the only known "bug" is the one inherent to the solution: target `View`s with overlapping siblings can cause glitches. The `clipOutlineShadow` extension is effectively disabling the target's inherent shadow and drawing a clipped replica onto its parent's overlay, which means that it's drawing on top of all of the children. If you really need things to overlap, you could wrap the target in another `ViewGroup`, like a `<FrameLayout>`, which would isolate its shadow draw. I would imagine, though, that most use cases will be for separate, individual elements like are shown in the demo app.
++ The only major issue at the moment is the one inherent to the current technique: target `View`s with overlapping siblings can cause glitches. The `clipOutlineShadow` extension is effectively disabling the target's inherent shadow and drawing a clipped replica onto its parent's overlay, which means that it's drawing on top of all of the children. If you really need things to overlap, you could wrap the target in another `ViewGroup` – like a `<FrameLayout>` – which would isolate its shadow draw, and is likely as efficient as the extra processing that would be necessary to handle that internally. I would imagine, though, that most use cases will be for separate, individual elements like are shown in the demo app.
+
++ Colored shadows are now supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colors on shadows _at all_ on Pie, with or without this library involved. The documentation indicates that it should work, and all of the relevant methods and attributes are available starting with that version, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it somehow works for other installations.
+
++ On the Lollipop versions, API levels 21 and 22, the fallback implementation that uses `View`s instead of `RenderNode`s, should the latter fail, has a minor bug in that a target `View` set to `INVISIBLE` or `GONE` while its shadow is clipped can cause an infinite invalidate loop, for as yet unknown reasons.
 
 + The AppCompat and Material Components inflation helpers are (obviously) set as the `viewInflaterClass` in their respective configurations. If you're using anything other than the default inflaters that are handled internally by `AppCompatActivity`, then you might need to adapt or modify the helpers here, or possibly forgo them altogether.
 
@@ -280,7 +284,6 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 
 + Forthcoming features:
 
-    + Colored shadows on Pie and above
     + Compose UI integration
     + Custom `ViewGroup` subclass, `ListView`, and `RecyclerView` optimizations
 

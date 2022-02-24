@@ -21,13 +21,13 @@ internal class RenderNodeController(override val viewGroup: ViewGroup) :
 
     override val shadows = mutableListOf<RenderNodeShadow>()
 
-    override fun createShadow(view: View) = RenderNodeShadow(view, this)
+    override fun createShadow(view: View) = RenderNodeShadow(this, view)
 }
 
 internal class RenderNodeShadow(
-    view: View,
-    private val controller: RenderNodeController
-) : OverlayShadow(view, controller) {
+    private val controller: RenderNodeController,
+    view: View
+) : OverlayShadow(controller, view) {
 
     private val renderNode = RenderNodeFactory.newInstance()
     private val drawable = RenderNodeDrawable()
@@ -104,13 +104,21 @@ internal class RenderNodeShadow(
             node.setRotationZ(target.rotation)
             node.setTranslationZ(target.translationZ)
 
-            return node.setPivotX(target.pivotX) or
+            val colorsChanged = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ShadowColorsHelper.changeColors(node, target)
+            } else {
+                false
+            }
+
+            val areaChanged = node.setPivotX(target.pivotX) or
                     node.setPivotY(target.pivotY) or
                     node.setPosition(left, top, right, bottom) or
                     node.setScaleX(target.scaleX) or
                     node.setScaleY(target.scaleY) or
                     node.setTranslationX(target.translationX) or
                     node.setTranslationY(target.translationY)
+
+            return colorsChanged || areaChanged
         }
 
         override fun setAlpha(alpha: Int) {}

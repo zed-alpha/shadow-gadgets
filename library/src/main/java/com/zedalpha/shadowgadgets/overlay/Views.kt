@@ -3,6 +3,7 @@
 package com.zedalpha.shadowgadgets.overlay
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -19,7 +20,7 @@ internal class ViewController(override val viewGroup: ViewGroup) :
 
     override val shadows = mutableListOf<ViewShadow>()
 
-    override fun createShadow(view: View) = ViewShadow(view, this)
+    override fun createShadow(view: View) = ViewShadow(this, view)
 
     override fun attach() {
         super.attach()
@@ -40,7 +41,7 @@ internal class ViewController(override val viewGroup: ViewGroup) :
         val saveCount = canvas.save()
         shadows.forEach {
             if (it.willDraw) {
-                it.updateShadow(false)
+                it.updateShadow()
                 val path = it.calculateClipPath()
                 clipOutPath(canvas, path)
             }
@@ -76,47 +77,51 @@ internal class ViewController(override val viewGroup: ViewGroup) :
 
 @SuppressLint("ViewConstructor")
 internal class ViewShadow(
-    view: View,
-    private val controller: ViewController
-) : OverlayShadow(view, controller) {
+    private val controller: ViewController,
+    view: View
+) : OverlayShadow(controller, view) {
 
-    private val shadowView = View(view.context).apply {
-        background = EmptyDrawable
+    private val shadowView = ShadowView(view.context).apply {
         outlineProvider = SurrogateViewProviderWrapper(originalProvider, view)
     }
 
     override fun onPreDraw() {
-        updateShadow(true)
+        if (updateShadow()) shadowView.invalidate()
     }
 
-    fun updateShadow(invalidateIfNeeded: Boolean) {
+    fun updateShadow(): Boolean {
         val shadow = shadowView
         val target = targetView
 
-        var index = 0
-        if (!invalidateIfNeeded) {
-            index = controller.detachShadowView(shadow)
-        }
+        val index = controller.detachShadowView(shadow)
 
         shadow.isVisible = target.isVisible
         shadow.alpha = target.alpha
         shadow.cameraDistance = target.cameraDistance
         shadow.elevation = target.elevation
-        shadow.pivotX = target.pivotX
-        shadow.pivotY = target.pivotY
-        shadow.layout(target.left, target.top, target.right, target.bottom)
         shadow.rotationX = target.rotationX
         shadow.rotationY = target.rotationY
         shadow.rotation = target.rotation
-        shadow.scaleX = target.scaleX
-        shadow.scaleY = target.scaleY
-        shadow.translationX = target.translationX
-        shadow.translationY = target.translationY
         shadow.translationZ = target.translationZ
 
-        if (!invalidateIfNeeded) {
-            controller.reAttachShadowView(shadowView, index)
+        val colorsChanged = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ShadowColorsHelper.changeColors(shadow, target)
+        } else {
+            false
         }
+
+        val areaChanged =
+            shadow.changeLayout(target.left, target.top, target.right, target.bottom) or
+                    shadow.changePivotX(target.pivotX) or
+                    shadow.changePivotY(target.pivotY) or
+                    shadow.changeScaleX(target.scaleX) or
+                    shadow.changeScaleY(target.scaleY) or
+                    shadow.changeTranslationX(target.translationX) or
+                    shadow.changeTranslationY(target.translationY)
+
+        controller.reAttachShadowView(shadow, index)
+
+        return colorsChanged || areaChanged
     }
 
     fun calculateClipPath(): Path {
@@ -145,6 +150,32 @@ internal class ViewShadow(
     override fun detachShadow() {
         controller.removeView(shadowView)
     }
+}
+
+private class ShadowView(context: Context) : View(context) {
+    init {
+        background = EmptyDrawable
+    }
+
+    fun changeLayout(l: Int, t: Int, r: Int, b: Int): Boolean {
+        val changed = l != left || t != top || r != right || b != bottom
+        if (changed) layout(l, t, r, b)
+        return changed
+    }
+
+    fun changePivotX(newPivotX: Float) = (newPivotX != pivotX).also { if (it) pivotX = newPivotX }
+
+    fun changePivotY(newPivotY: Float) = (newPivotY != pivotY).also { if (it) pivotY = newPivotY }
+
+    fun changeScaleX(newScaleX: Float) = (newScaleX != scaleX).also { if (it) scaleX = newScaleX }
+
+    fun changeScaleY(newScaleY: Float) = (newScaleY != scaleY).also { if (it) scaleY = newScaleY }
+
+    fun changeTranslationX(newTranslationX: Float) =
+        (newTranslationX != translationX).also { if (it) translationX = newTranslationX }
+
+    fun changeTranslationY(newTranslationY: Float) =
+        (newTranslationY != translationY).also { if (it) translationY = newTranslationY }
 }
 
 private object EmptyDrawable : Drawable() {

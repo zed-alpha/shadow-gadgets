@@ -55,6 +55,10 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
 
     override fun setTranslationZ(translationZ: Float) = renderNode.setTranslationZ(translationZ)
 
+    override fun setAmbientShadowColor(color: Int) = renderNode.setAmbientShadowColor(color)
+
+    override fun setSpotShadowColor(color: Int) = renderNode.setSpotShadowColor(color)
+
     override fun hasIdentityMatrix() = renderNode.hasIdentityMatrix()
 
     override fun getMatrix(outMatrix: Matrix) {

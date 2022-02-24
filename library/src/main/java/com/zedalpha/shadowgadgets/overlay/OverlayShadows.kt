@@ -9,10 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import android.view.ViewTreeObserver
+import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
+import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
 import java.lang.reflect.Field
 
 
@@ -97,8 +99,8 @@ internal sealed interface OverlayController<T : OverlayShadow> :
 }
 
 internal sealed class OverlayShadow(
-    protected val targetView: View,
-    private val controller: OverlayController<*>
+    private val controller: OverlayController<*>,
+    protected val targetView: View
 ) {
     protected val outlineBounds = Rect()
     protected var outlineRadius: Float = 0.0F
@@ -198,6 +200,29 @@ internal val clipOutPath: (Canvas, Path) -> Unit =
         @Suppress("DEPRECATION")
         canvas.clipPath(path, Region.Op.DIFFERENCE)
     }
+
+@RequiresApi(Build.VERSION_CODES.P)
+internal object ShadowColorsHelper {
+    @DoNotInline
+    fun changeColors(renderNode: RenderNodeWrapper, target: View): Boolean {
+        return renderNode.setAmbientShadowColor(target.outlineAmbientShadowColor) or
+                renderNode.setSpotShadowColor(target.outlineSpotShadowColor)
+    }
+
+    @DoNotInline
+    fun changeColors(shadow: View, target: View): Boolean {
+        var changed = false
+        if (shadow.outlineAmbientShadowColor != target.outlineAmbientShadowColor) {
+            shadow.outlineAmbientShadowColor = target.outlineAmbientShadowColor
+            changed = true
+        }
+        if (shadow.outlineSpotShadowColor != target.outlineSpotShadowColor) {
+            shadow.outlineSpotShadowColor = target.outlineSpotShadowColor
+            changed = true
+        }
+        return changed
+    }
+}
 
 // Assuming single thread for now.
 internal val CachePath = Path()

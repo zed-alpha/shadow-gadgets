@@ -35,14 +35,15 @@ internal interface RenderNodeWrapper {
     fun hasIdentityMatrix(): Boolean
     fun getMatrix(outMatrix: Matrix)
 
-    fun setAmbientShadowColor(@ColorInt color: Int): Boolean = false
-    fun setSpotShadowColor(@ColorInt color: Int): Boolean = false
+    fun setAmbientShadowColor(@ColorInt color: Int): Boolean
+    fun setSpotShadowColor(@ColorInt color: Int): Boolean
 
     fun draw(canvas: Canvas)
 }
 
 internal object RenderNodeFactory {
-    val isOpenForBusiness = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || testHiddenApi()
+    val isOpenForBusiness = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ||
+            (Build.VERSION.SDK_INT != Build.VERSION_CODES.P && testHiddenApi())
 
     @SuppressLint("NewApi")
     fun newInstance() = when (Build.VERSION.SDK_INT) {

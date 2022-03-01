@@ -1,16 +1,18 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="Theme.ShadowGadgets" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">#555555</item>
-        <item name="colorPrimaryVariant">#333333</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">#aaaaaa</item>
-        <item name="colorSecondaryVariant">#cccccc</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+    <style name="Theme.ShadowGadgets.Demo" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="infoTextViewStyle">@style/Widget.ShadowGadgets.InfoTextView</item>
+    </style>
+
+    <style name="Widget.ShadowGadgets.InfoTextView" parent="Widget.AppCompat.TextView">
+        <item name="android:background">@drawable/info_text_view_background</item>
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="Widget.ShadowGadgets.Shape" parent="">
+        <item name="android:backgroundTint">#440000FF</item>
+        <item name="android:elevation">12dp</item>
+        <item name="android:outlineProvider">background</item>
     </style>
 
     <style name="Theme.Compat" parent="Theme.AppCompat.Light.NoActionBar">

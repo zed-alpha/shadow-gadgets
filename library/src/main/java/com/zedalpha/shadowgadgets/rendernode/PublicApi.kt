@@ -9,7 +9,7 @@ import androidx.annotation.RequiresApi
 
 
 @RequiresApi(Build.VERSION_CODES.Q)
-internal class RenderNodeApi29 : RenderNodeWrapper {
+internal class RenderNodeApi29 : RenderNodeWrapper, RenderNodeColors {
     private val renderNode = RenderNode("OverlayShadow")
 
     override fun setAlpha(alpha: Float) = renderNode.setAlpha(alpha)

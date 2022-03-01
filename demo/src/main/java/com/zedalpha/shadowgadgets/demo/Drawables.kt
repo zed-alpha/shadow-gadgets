@@ -5,11 +5,9 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
 
 
-// Q&D background drawables with extra magic.
-
-sealed class PaintingDrawable(@ColorInt color: Int) : Drawable() {
+internal sealed class BaseDrawable(@ColorInt color: Int) : Drawable() {
     protected val paint =
-        Paint(Paint.ANTI_ALIAS_FLAG or Paint.DITHER_FLAG).apply { this.color = color }
+        Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
 
     override fun getOpacity() = PixelFormat.TRANSLUCENT
 
@@ -18,31 +16,40 @@ sealed class PaintingDrawable(@ColorInt color: Int) : Drawable() {
     override fun setColorFilter(colorFilter: ColorFilter?) {}
 }
 
-class MainDrawable(private val numCol: Int = 23) : PaintingDrawable(0xff000000.toInt()) {
+internal class SlantGridDrawable(
+    @ColorInt private val startColor: Int,
+    @ColorInt private val endColor: Int,
+    private val columns: Int = 23
+) : BaseDrawable(Color.WHITE) {
     override fun onBoundsChange(bounds: Rect) {
         paint.shader = LinearGradient(
             0F,
             0F,
             bounds.width().toFloat(),
             bounds.height().toFloat(),
-            0x11446688,
-            0x77886644,
+            startColor,
+            endColor,
             Shader.TileMode.CLAMP
         )
     }
 
     override fun draw(canvas: Canvas) {
-        // https://math.stackexchange.com/q/49020
+        val columns = columns
+        val bounds = bounds
+        val paint = paint
+
         val width = bounds.width()
         val height = bounds.height()
+        // https://math.stackexchange.com/q/49020
         val fitWidth = width * 1.1F
         val fitHeight = height * 1.1F
 
         canvas.save()
+        canvas.clipRect(bounds)
         canvas.translate(-width * .05F, -height * .05F)
         canvas.rotate(-4F, fitWidth / 2, fitHeight / 2)
-        val dim = fitWidth / numCol
-        for (col in 0..numCol) {
+        val dim = fitWidth / columns
+        for (col in 0..columns) {
             val x = (dim * col)
             canvas.drawLine(x, 0F, x, fitHeight, paint)
         }
@@ -55,7 +62,7 @@ class MainDrawable(private val numCol: Int = 23) : PaintingDrawable(0xff000000.t
     }
 }
 
-class PlatformDrawable : PaintingDrawable(0x44ffbbbb) {
+internal class PlatformDrawable : BaseDrawable(0x44ffbbbb) {
     private val path = Path()
 
     override fun draw(canvas: Canvas) {
@@ -85,7 +92,7 @@ class PlatformDrawable : PaintingDrawable(0x44ffbbbb) {
     }
 }
 
-class CompatDrawable : PaintingDrawable(0x66bbffbb) {
+internal class CompatDrawable : BaseDrawable(0x66bbffbb) {
     private class Circle(val x: Float, val y: Float, val radius: Float)
 
     private val circles = mutableListOf<Circle>()
@@ -109,7 +116,7 @@ class CompatDrawable : PaintingDrawable(0x66bbffbb) {
     }
 }
 
-class MaterialDrawable : PaintingDrawable(0x44bbbbff) {
+internal class MaterialDrawable : BaseDrawable(0x44bbbbff) {
     private val rectangles = mutableListOf<Rect>()
 
     override fun onBoundsChange(bounds: Rect) {

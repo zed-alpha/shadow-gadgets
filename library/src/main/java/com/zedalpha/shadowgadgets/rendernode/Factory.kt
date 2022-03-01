@@ -35,10 +35,13 @@ internal interface RenderNodeWrapper {
     fun hasIdentityMatrix(): Boolean
     fun getMatrix(outMatrix: Matrix)
 
+    fun draw(canvas: Canvas)
+}
+
+@RequiresApi(Build.VERSION_CODES.P)
+internal interface RenderNodeColors {
     fun setAmbientShadowColor(@ColorInt color: Int): Boolean
     fun setSpotShadowColor(@ColorInt color: Int): Boolean
-
-    fun draw(canvas: Canvas)
 }
 
 internal object RenderNodeFactory {
@@ -49,6 +52,7 @@ internal object RenderNodeFactory {
     fun newInstance() = when (Build.VERSION.SDK_INT) {
         Build.VERSION_CODES.LOLLIPOP, Build.VERSION_CODES.LOLLIPOP_MR1 -> RenderNodeApi21()
         in Build.VERSION_CODES.M..Build.VERSION_CODES.P -> RenderNodeApi23()
+        Build.VERSION_CODES.P -> RenderNodeApi28() // Currently kinda pointless, but maybe later.
         else -> RenderNodeApi29()
     }.apply { initialize() }
 

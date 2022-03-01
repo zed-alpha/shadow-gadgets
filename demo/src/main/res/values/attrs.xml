@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="infoTextViewStyle" format="reference" />
+
+    <declare-styleable name="ZedAlphaControl">
+        <attr name="exampleElevation" format="integer" />
+        <attr name="exampleColor" format="color" />
+        <attr name="exampleTint" format="color" />
+    </declare-styleable>
+</resources>

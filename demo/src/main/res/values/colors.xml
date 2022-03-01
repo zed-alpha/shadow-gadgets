@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="see_through_red">#44ffbbbb</color>
-    <color name="see_through_green">#44bbffbb</color>
-    <color name="see_through_blue">#44bbbbff</color>
+    <color name="see_through_red">#66FF0000</color>
+    <color name="see_through_green">#6600FF00</color>
+    <color name="see_through_blue">#660000FF</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="purple_500">#FF6200EE</color>
 </resources>

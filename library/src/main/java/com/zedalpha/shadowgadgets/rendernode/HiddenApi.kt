@@ -55,10 +55,6 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
 
     override fun setTranslationZ(translationZ: Float) = renderNode.setTranslationZ(translationZ)
 
-    override fun setAmbientShadowColor(color: Int) = renderNode.setAmbientShadowColor(color)
-
-    override fun setSpotShadowColor(color: Int) = renderNode.setSpotShadowColor(color)
-
     override fun hasIdentityMatrix() = renderNode.hasIdentityMatrix()
 
     override fun getMatrix(outMatrix: Matrix) {
@@ -72,7 +68,7 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
 }
 
 @RequiresApi(Build.VERSION_CODES.M)
-internal class RenderNodeApi23 : RenderNodeApi21() {
+internal open class RenderNodeApi23 : RenderNodeApi21() {
     override fun initialize() {
         recordEmptyDisplayList()
     }
@@ -86,6 +82,13 @@ internal class RenderNodeApi23 : RenderNodeApi21() {
         if (!renderNode.isValid) recordEmptyDisplayList()
         (canvas as DisplayListCanvas).drawRenderNode(renderNode)
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.P)
+internal class RenderNodeApi28 : RenderNodeApi23(), RenderNodeColors {
+    override fun setAmbientShadowColor(color: Int) = renderNode.setAmbientShadowColor(color)
+
+    override fun setSpotShadowColor(color: Int) = renderNode.setSpotShadowColor(color)
 }
 
 internal object RenderNodeReflector {

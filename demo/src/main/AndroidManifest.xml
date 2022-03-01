@@ -14,7 +14,9 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.ShadowGadgets">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.ShadowGadgets.Demo"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -31,14 +33,14 @@
         <activity
             android:name=".CompatActivity"
             android:theme="@style/Theme.Compat">
-            <!--            <meta-data-->
-            <!--                android:name="com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"-->
-            <!--                android:resource="@xml/matchers" />-->
+            <!--<meta-data-->
+            <!--    android:name="com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"-->
+            <!--    android:resource="@xml/matchers" />-->
         </activity>
 
-        <!--        <meta-data-->
-        <!--            android:name="com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"-->
-        <!--            android:resource="@xml/matchers" />-->
+        <!--<meta-data-->
+        <!--    android:name="com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"-->
+        <!--    android:resource="@xml/matchers" />-->
 
         <activity
             android:name=".MaterialComponentsActivity"

@@ -1,15 +1,30 @@
 <resources>
     <string name="app_name">Shadow Gadgets</string>
 
+    // Showcase
+    <string name="basics_first">The Clip switch above affects all targets in the Showcase section.\n\nElevation, Alpha, and Color affect only the two on this page.</string>
+    <string name="basics_second">Long-click to drag and drop the target among the three frames. This is meant to demonstrate that the clipped shadow handles moving itself automatically if its target is moved to a new parent.\n\nSince the drag-and-drop is incidental here, this is just using the default <tt>DragShadowBuilder</tt>, so as not to complicate the example unnecessarily.</string>
+
+    <string name="motions_first">This <tt>MotionLayout</tt> is a slight modification to one of the official examples that simply allows you to drag the <tt>View</tt> side to side while it animates some properties proportionally.\n\nThough it might be difficult to spot with a finger in the way, the clipped shadow can be seen to follow the target and adjust for its scaling appropriately.</string>
+    <string name="motions_second">This sample comprises a <tt>CoordinatorLayout</tt> with some <tt>FloatingActionButton</tt>s and a <tt>Snackbar</tt>, to illustrate the behavior with common animations.\n\nHere you might notice the last (known) overall bug. Sometimes, <tt>CoordinatorLayout</tt> (and likely other mechanisms, too) can somehow move the target \"faster\" than the shadow can keep up, leaving it a bit out of sync during an animation.\n\nFurther fine-tuning is in the works.</string>
+
+    <string name="colors_first">Starting with API level 28 (Pie), shadows have a couple of attributes available to tint them slightly for colored ambient and spot sources.\n\nHowever, I\'ve never gotten shadow colors to work at all on Pie itself, with or without this library involved. I can\'t find any other mention of the same error, though, so it apparently works for everybody else? I\'m truly baffled by it, at the moment.\n\nAnyway, this may or may not work on your Pie device. It works as expected for subsequent versions.</string>
+    <string name="colors_second">The dummy buttons below simply serve to provide alternate contrast, and to allow you to see these colored shadows during elevation animations. By default, the relevant values contribute only very slight tinting to the base color, and it can be too subtle to notice.\n\nThe elevation setting above is not applied to these buttons, as they have <tt>StateListAnimator</tt>s to control their z-offsets in response to state changes.</string>
+
+    <string name="limitations_first">Currently, one of the main limitations is that the <tt>clipOutlineShadow</tt> function only works automatically with <tt>View</tt>s whose <tt>Outline</tt>s return <tt>true</tt> for <tt>canClip()</tt>. That means, basically, that it only works with <tt>View</tt>s that are circles, rectangles, or rounded rectangles with the same radius for each corner.\n\nIrregular shapes are possible, but that may require that some relevant <tt>Path</tt> data be handled manually, especially on recent Android versions with their increasing restrictions on reflection and such.</string>
+    <string name="limitations_second">The setups below demonstrate the other main limitation of the current technique: sibling <tt>View</tt>s that overlap targets can cause glitches like those shown here.\n\nOn the left, the red <tt>View</tt> is opaque and elevated above the blue target, but the clipped shadow draws over the red sibling.\n\nThe right side may show incorrect shadows in the <tt>View</tt>s\' area of intersection, or no shadows at all, depending on whether the <tt>RenderNode</tt> or the <tt>View</tt> implementation is running, respectively.</string>
+
+    // Inflation
+    <string name="inflation_description">There\'s not much to see at runtime with these examples of the layout inflation helpers; their benefit is primarily in the code.\n\nEach <tt>Activity</tt> demonstrates the particular helper class for its configuration, and a different option for defining and setting the tag matchers.\n\nThe UIs themselves are non-functional mock-ups.</string>
+
     <string name="platform_description"><big>Platform <tt>Activity</tt> with <tt>Theme.Material</tt></big>\n\nThis <tt>Activity</tt> uses only platform <tt>View</tt>s. It attaches a helper <tt>Factory</tt> to its <tt>LayoutInflater</tt> before <tt>setContentView()</tt>, and targets any <tt>View</tt> with the <tt>app:clipOutlineShadow</tt> attribute set to <tt>true</tt>.</string>
     <string name="compat_description"><big><tt>AppCompatActivity</tt> with <tt>Theme.AppCompat</tt></big>\n\nThis library <tt>Activity</tt>\'s inflater helper is attached through the <tt>viewInflaterClass</tt> mechanism, and it targets <tt>View</tt>s based on rules defined in a resource XML file.</string>
-    <string name="material_description"><big><tt>AppCompatActivity</tt> with <tt>Theme.MaterialComponents</tt></big>\n\nThis <tt>AppCompatActivity</tt> setup attaches the inflater helper and builds the matchers programmatically.\nIncludes <tt>FloatingActionButton</tt>s, too, to show the effect on circular <tt>View</tt>s.</string>
+    <string name="material_description"><big><tt>AppCompatActivity</tt> with <tt>Theme.MaterialComponents</tt></big>\n\nThis <tt>AppCompatActivity</tt> setup attaches the inflater helper and builds the tag matchers programmatically.</string>
     <string name="launch">Launch</string>
-    <string name="switch_clip_local">Toggle shadow clipping on this page</string>
 
     <string name="platform_title"><tt>Activity</tt></string>
     <string name="platform_subtitle"><tt>Theme.Material</tt></string>
-    <string name="platform_summary">This layout was modified to add <tt>app:clipOutlineShadow="true"</tt> attributes to the target <tt>View</tt>s, and the helper is attached in the <tt>Activity</tt>\'s <tt>onCreate()</tt> override.\n\nThe <tt>Button</tt>s below are both similar, except the left one is not fixed, and the right one is.\nThe other two <tt>Activity</tt> examples have similar setups to compare the effects on touch animations.</string>
+    <string name="platform_summary">This layout was modified to add <tt>app:clipOutlineShadow="true"</tt> attributes to the target <tt>View</tt>s, and the helper is attached in the <tt>Activity</tt>\'s <tt>onCreate()</tt> override.\n\nThe <tt>Button</tt>s below are both similar, except the left one is not fixed, and the right one is. The other two <tt>Activity</tt> examples have similar setups to compare.</string>
 
     <string name="compat_title"><tt>AppCompatActivity</tt></string>
     <string name="compat_subtitle"><tt>Theme.AppCompat</tt></string>
@@ -17,5 +32,5 @@
 
     <string name="material_title"><tt>AppCompatActivity</tt></string>
     <string name="material_subtitle"><tt>Theme.MaterialComponents</tt></string>
-    <string name="material_summary">This example sets the <tt>viewInflaterClass</tt> value in code, before <tt>super.onCreate()</tt>, and the <tt>TagMatcher</tt>s are defined programmatically.\n\nA couple of <tt>FloatingActionButton</tt>s are included, too, to give an idea of how this looks on circular <tt>View</tt>s.</string>
+    <string name="material_summary">This example sets the <tt>viewInflaterClass</tt> value in code, before <tt>super.onCreate()</tt>, and the <tt>TagMatcher</tt>s are defined programmatically.</string>
 </resources>

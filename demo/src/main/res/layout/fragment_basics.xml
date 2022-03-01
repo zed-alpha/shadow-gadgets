@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/basics_first" />
+
+    <com.zedalpha.shadowgadgets.demo.ZedAlphaControl
+        android:id="@+id/zac_basics"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:exampleElevation="66"
+        app:exampleColor="#885588aa" />
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/basics_second" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:baselineAligned="false">
+
+        <FrameLayout
+            android:id="@+id/frame_drag_drop_one"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/drag_drop_background">
+
+            <View
+                android:id="@+id/view_drag_drop"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:background="@drawable/target_background"
+                android:elevation="10dp"
+                android:outlineProvider="background" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/frame_drag_drop_two"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/drag_drop_background" />
+
+        <FrameLayout
+            android:id="@+id/frame_drag_drop_three"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/drag_drop_background" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -13,6 +13,7 @@ import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.R
+import com.zedalpha.shadowgadgets.rendernode.RenderNodeColors
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
 import java.lang.reflect.Field
@@ -205,6 +206,7 @@ internal val clipOutPath: (Canvas, Path) -> Unit =
 internal object ShadowColorsHelper {
     @DoNotInline
     fun changeColors(renderNode: RenderNodeWrapper, target: View): Boolean {
+        renderNode as RenderNodeColors
         return renderNode.setAmbientShadowColor(target.outlineAmbientShadowColor) or
                 renderNode.setSpotShadowColor(target.outlineSpotShadowColor)
     }

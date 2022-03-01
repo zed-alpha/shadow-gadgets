@@ -46,8 +46,8 @@
         android:id="@+id/button1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/fab1"
         android:layout_alignEnd="@id/center"
+        android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
         android:backgroundTint="#77aaaaaa" />
 
@@ -55,29 +55,9 @@
         android:id="@+id/button2_shadow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/fab2_shadow"
+        android:layout_alignParentBottom="true"
         android:layout_alignStart="@id/center"
         android:layout_margin="10dp"
         android:backgroundTint="#77aaaaaa" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="25dp"
-        android:layout_marginBottom="10dp"
-        app:backgroundTint="#77aaaaaa" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab2_shadow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="10dp"
-        app:backgroundTint="#77aaaaaa" />
 
 </RelativeLayout>

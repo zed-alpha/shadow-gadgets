@@ -1,42 +1,48 @@
 package com.zedalpha.shadowgadgets.demo
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.switchmaterial.SwitchMaterial
-import com.zedalpha.shadowgadgets.clipOutlineShadow
-import kotlin.reflect.KClass
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setRootBackground(MainDrawable())
+        val manager = supportFragmentManager
 
-        setStart(R.id.button_platform, PlatformActivity::class)
-        setStart(R.id.button_appcompat, CompatActivity::class)
-        setStart(R.id.button_material, MaterialComponentsActivity::class)
+        val showcaseFragment: ShowcaseFragment
+        val inflationFragment: InflationFragment
 
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        val content = findViewById<ViewGroup>(R.id.content)
-        val toggle = findViewById<SwitchMaterial>(R.id.toggle)
-
-        toggle.setOnCheckedChangeListener { _, isChecked ->
-            toolbar.clipOutlineShadow = isChecked
-            for (index in 0 until content.childCount) {
-                content.getChildAt(index).clipOutlineShadow = isChecked
-            }
-            toggle.clipOutlineShadow = isChecked
+        if (savedInstanceState == null) {
+            showcaseFragment = ShowcaseFragment()
+            inflationFragment = InflationFragment()
+            manager.beginTransaction()
+                .add(R.id.container, showcaseFragment, TAG_SHOWCASE)
+                .add(R.id.container, inflationFragment, TAG_INFLATION)
+                .hide(inflationFragment)
+                .commit()
+        } else {
+            showcaseFragment =
+                manager.findFragmentByTag(TAG_SHOWCASE) as ShowcaseFragment
+            inflationFragment =
+                manager.findFragmentByTag(TAG_INFLATION) as InflationFragment
         }
 
-        if (savedInstanceState == null) toggle.isChecked = true
-    }
-
-    private fun setStart(id: Int, activity: KClass<out Activity>) {
-        findViewById<View>(id).setOnClickListener { startActivity(Intent(this, activity.java)) }
+        findViewById<BottomNavigationView>(R.id.nav_view).setOnItemSelectedListener {
+            val showFirst = it.itemId == R.id.item_showcase
+            manager.beginTransaction()
+                .setCustomAnimations(
+                    if (showFirst) R.anim.slide_in_left else R.anim.slide_in_right,
+                    if (showFirst) R.anim.slide_out_right else R.anim.slide_out_left
+                )
+                .show(if (showFirst) showcaseFragment else inflationFragment)
+                .hide(if (showFirst) inflationFragment else showcaseFragment)
+                .commit()
+            true
+        }
     }
 }
+
+private const val TAG_SHOWCASE = "showcase"
+private const val TAG_INFLATION = "inflation"

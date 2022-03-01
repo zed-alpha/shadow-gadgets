@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/item_showcase"
+        android:icon="@drawable/icon_showcase"
+        android:title="Showcase" />
+
+    <item
+        android:id="@+id/item_inflation"
+        android:icon="@drawable/icon_inflation"
+        android:title="Inflation" />
+
+</menu>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <View
+        android:id="@+id/view_example"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/target_background"
+        android:outlineProvider="background" />
+
+    <TextView
+        android:id="@+id/label_elevation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@id/view_example"
+        android:text="Elevation"
+        android:textAlignment="center" />
+
+    <SeekBar
+        android:id="@+id/seek_elevation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_elevation"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@id/view_example"
+        android:progressTint="#dddddd"
+        android:thumbTint="#bbbbbb" />
+
+    <TextView
+        android:id="@+id/label_alpha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seek_elevation"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@id/view_example"
+        android:text="Alpha"
+        android:textAlignment="center" />
+
+    <SeekBar
+        android:id="@+id/seek_alpha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_alpha"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@id/view_example"
+        android:max="255"
+        android:progressTint="#dddddd"
+        android:thumbTint="#bbbbbb" />
+
+    <TextView
+        android:id="@+id/label_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seek_alpha"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@id/view_example"
+        android:text="Color"
+        android:textAlignment="center" />
+
+    <SeekBar
+        android:id="@+id/seek_red"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_color"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@id/view_example"
+        android:max="255"
+        android:progress="84"
+        android:progressTint="#ff8888"
+        android:thumbTint="#ff4444" />
+
+    <SeekBar
+        android:id="@+id/seek_green"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seek_red"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@id/view_example"
+        android:max="255"
+        android:progress="127"
+        android:progressTint="#88ff88"
+        android:thumbTint="#44ff44" />
+
+    <SeekBar
+        android:id="@+id/seek_blue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seek_green"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_toEndOf="@id/view_example"
+        android:max="255"
+        android:progress="168"
+        android:progressTint="#8888ff"
+        android:thumbTint="#4444ff" />
+
+</merge>

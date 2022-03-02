@@ -79,7 +79,7 @@ internal object RenderNodeFactory {
             getMatrix(Matrix())
         }
         true
-    } catch (e: Error) {
+    } catch (e: Throwable) {
         false
     }
 
@@ -128,7 +128,7 @@ internal object CanvasReflector {
         insertReorderBarrierMethod
         insertInorderBarrierMethod
         true
-    } catch (e: Error) {
+    } catch (e: Throwable) {
         false
     }
 

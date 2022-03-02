@@ -1,6 +1,9 @@
 package com.zedalpha.shadowgadgets.demo
 
+import android.content.Context
 import android.os.Bundle
+import android.widget.CheckBox
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -41,8 +44,24 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 .commit()
             true
         }
+
+        if (savedInstanceState == null &&
+            !getPreferences(Context.MODE_PRIVATE).getBoolean(PREF_HIDE_WELCOME, false)
+        ) {
+            val dialog = AlertDialog.Builder(this)
+                .setView(R.layout.dialog_welcome)
+                .setPositiveButton("Close", null)
+                .show()
+            val check = dialog.findViewById<CheckBox>(R.id.check_hide_welcome)
+            check?.setOnCheckedChangeListener { _, isChecked ->
+                getPreferences(Context.MODE_PRIVATE).edit()
+                    .putBoolean(PREF_HIDE_WELCOME, isChecked)
+                    .apply()
+            }
+        }
     }
 }
 
 private const val TAG_SHOWCASE = "showcase"
 private const val TAG_INFLATION = "inflation"
+private const val PREF_HIDE_WELCOME = "hide_welcome"

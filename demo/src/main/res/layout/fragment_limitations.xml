@@ -13,67 +13,6 @@
         android:layout_margin="10dp"
         android:text="@string/limitations_first" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <View
-            android:id="@+id/view_circle"
-            style="@style/Widget.ShadowGadgets.Shape"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/shape_circle"
-            app:layout_constraintBottom_toTopOf="@+id/view_rounded_rectangle"
-            app:layout_constraintEnd_toStartOf="@+id/view_rectangle"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/view_rectangle"
-            style="@style/Widget.ShadowGadgets.Shape"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/shape_rectangle"
-            app:layout_constraintBottom_toTopOf="@+id/view_roundish_rectangle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/view_circle"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/view_rounded_rectangle"
-            style="@style/Widget.ShadowGadgets.Shape"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/shape_rounded_rectangle"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/view_roundish_rectangle"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view_circle" />
-
-        <View
-            android:id="@+id/view_roundish_rectangle"
-            style="@style/Widget.ShadowGadgets.Shape"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/shape_roundish_rectangle"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/view_rounded_rectangle"
-            app:layout_constraintTop_toBottomOf="@+id/view_rectangle" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.zedalpha.shadowgadgets.demo.InfoTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="@string/limitations_second" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -147,5 +86,66 @@
         </FrameLayout>
 
     </LinearLayout>
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/limitations_second" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <View
+            android:id="@+id/view_circle"
+            style="@style/Widget.ShadowGadgets.Shape"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/shape_circle"
+            app:layout_constraintBottom_toTopOf="@+id/view_rounded_rectangle"
+            app:layout_constraintEnd_toStartOf="@+id/view_rectangle"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view_rectangle"
+            style="@style/Widget.ShadowGadgets.Shape"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/shape_rectangle"
+            app:layout_constraintBottom_toTopOf="@+id/view_roundish_rectangle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/view_circle"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view_rounded_rectangle"
+            style="@style/Widget.ShadowGadgets.Shape"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/shape_rounded_rectangle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/view_roundish_rectangle"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view_circle" />
+
+        <View
+            android:id="@+id/view_roundish_rectangle"
+            style="@style/Widget.ShadowGadgets.Shape"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/shape_roundish_rectangle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/view_rounded_rectangle"
+            app:layout_constraintTop_toBottomOf="@+id/view_rectangle" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

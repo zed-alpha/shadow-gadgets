@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import android.view.ViewTreeObserver
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
@@ -17,6 +18,7 @@ import com.zedalpha.shadowgadgets.rendernode.RenderNodeColors
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
 import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 
 internal object ShadowSwitch : View.OnAttachStateChangeListener {
@@ -103,13 +105,11 @@ internal sealed class OverlayShadow(
     private val controller: OverlayController<*>,
     protected val targetView: View
 ) {
-    protected val outlineBounds = Rect()
-    protected var outlineRadius: Float = 0.0F
-
     protected val originalProvider: ViewOutlineProvider = targetView.outlineProvider
+    protected val clipPath = Path()
 
     val willDraw: Boolean
-        get() = targetView.isVisible && !outlineBounds.isEmpty
+        get() = targetView.isVisible && !clipPath.isEmpty
 
     fun attachToTargetView() {
         val target = targetView
@@ -129,12 +129,19 @@ internal sealed class OverlayShadow(
 
     @Suppress("LiftReturnOrAssignment")
     open fun setOutline(outline: Outline) {
+        val path = clipPath
+        path.reset()
+
+        if (outline.isEmpty) return
+
+        val outlineBounds = CacheBounds
         if (getRect(outline, outlineBounds)) {
-            // outlineBounds set in getRect()
-            outlineRadius = getRadius(outline)
+            val boundsF = CacheBoundsF
+            boundsF.set(outlineBounds)
+            val outlineRadius = getRadius(outline)
+            path.addRoundRect(boundsF, outlineRadius, outlineRadius, Path.Direction.CW)
         } else {
-            outlineBounds.setEmpty()
-            outlineRadius = 0.0F
+            OutlinePathReflector.setPath(outline, path)
         }
     }
 
@@ -147,27 +154,32 @@ internal sealed class OverlayShadow(
 private val getRadius: (Outline) -> Float =
     when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> { outline -> outline.radius }
-        OutlineReflector.isValid -> { outline -> OutlineReflector.getRadius(outline) }
+        OutlineRectReflector.hasRectAccess -> { outline -> OutlineRectReflector.getRadius(outline) }
         else -> { _ -> 0F }
     }
 
 private val getRect: (Outline, Rect) -> Boolean =
     when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> { outline, rect -> outline.getRect(rect) }
-        OutlineReflector.isValid -> { outline, rect -> OutlineReflector.getRect(outline, rect) }
+        OutlineRectReflector.hasRectAccess -> { outline, rect ->
+            OutlineRectReflector.getRect(
+                outline,
+                rect
+            )
+        }
         else -> { _, _ -> false }
     }
 
 @SuppressLint("DiscouragedPrivateApi", "SoonBlockedPrivateApi")
-private object OutlineReflector {
+private object OutlineRectReflector {
     private val mRectField: Field by lazy { Outline::class.java.getDeclaredField("mRect") }
     private val mRadiusField: Field by lazy { Outline::class.java.getDeclaredField("mRadius") }
 
-    val isValid = try {
+    val hasRectAccess = try {
         mRectField
         mRadiusField
         true
-    } catch (e: Error) {
+    } catch (e: Throwable) {
         false
     }
 
@@ -180,6 +192,44 @@ private object OutlineReflector {
     }
 
     fun getRadius(outline: Outline) = mRadiusField.getFloat(outline)
+}
+
+@SuppressLint("DiscouragedPrivateApi")
+private object OutlinePathReflector {
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.P)
+    private val requiresDoubleReflection = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+
+    private val getDeclaredField: Method by lazy {
+        Class::class.java.getDeclaredMethod(
+            "getDeclaredField",
+            String::class.java
+        )
+    }
+
+    private val mPathField: Field by lazy {
+        if (requiresDoubleReflection) {
+            getDeclaredField.invoke(
+                Outline::class.java,
+                "mPath"
+            ) as Field
+        } else {
+            Outline::class.java.getDeclaredField("mPath")
+        }
+    }
+
+    private val hasPathAccess = try {
+        mPathField
+        true
+    } catch (e: Throwable) {
+        false
+    }
+
+    fun setPath(outline: Outline, path: Path) {
+        if (hasPathAccess) {
+            val outlinePath = mPathField.get(outline) as? Path ?: return
+            path.set(outlinePath)
+        }
+    }
 }
 
 private class ProviderWrapper(
@@ -228,5 +278,6 @@ internal object ShadowColorsHelper {
 
 // Assuming single thread for now.
 internal val CachePath = Path()
+internal val CacheBounds = Rect()
 internal val CacheBoundsF = RectF()
 internal val CacheMatrix = Matrix()

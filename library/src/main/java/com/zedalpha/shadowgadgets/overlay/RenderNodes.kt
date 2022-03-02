@@ -51,16 +51,11 @@ internal class RenderNodeShadow(
 
     inner class RenderNodeDrawable : Drawable() {
         override fun draw(canvas: Canvas) {
-            val target = targetView
-            val path = CachePath
-            val boundsF = CacheBoundsF
-
             if (this@RenderNodeShadow.willDraw) {
                 updateShadow()
 
-                boundsF.set(outlineBounds)
-                path.rewind()
-                path.addRoundRect(boundsF, outlineRadius, outlineRadius, Path.Direction.CW)
+                val path = CachePath
+                path.set(clipPath)
 
                 val node = renderNode
                 if (!node.hasIdentityMatrix()) {
@@ -69,8 +64,8 @@ internal class RenderNodeShadow(
                     path.transform(matrix)
                 }
 
+                val target = targetView
                 path.offset(target.left.toFloat(), target.top.toFloat())
-
                 clipAndDraw(canvas, renderNode, path)
             }
         }

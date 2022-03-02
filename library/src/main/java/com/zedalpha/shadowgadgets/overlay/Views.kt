@@ -39,11 +39,10 @@ internal class ViewController(override val viewGroup: ViewGroup) :
 
     override fun dispatchDraw(canvas: Canvas) {
         val saveCount = canvas.save()
-        shadows.forEach {
-            if (it.willDraw) {
-                it.updateShadow()
-                val path = it.calculateClipPath()
-                clipOutPath(canvas, path)
+        shadows.forEach { shadow ->
+            if (shadow.willDraw) {
+                shadow.updateShadow()
+                clipOutPath(canvas, shadow.calculateClipPath())
             }
         }
         super.dispatchDraw(canvas)
@@ -125,14 +124,10 @@ internal class ViewShadow(
     }
 
     fun calculateClipPath(): Path {
-        val target = targetView
         val path = CachePath
-        val boundsF = CacheBoundsF
+        path.set(clipPath)
 
-        boundsF.set(outlineBounds)
-        path.rewind()
-        path.addRoundRect(boundsF, outlineRadius, outlineRadius, Path.Direction.CW)
-
+        val target = targetView
         val targetMatrix = target.matrix
         if (!targetMatrix.isIdentity) {
             path.transform(targetMatrix)

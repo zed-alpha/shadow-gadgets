@@ -37,7 +37,7 @@ if (!view.clipOutlineShadow) view.clipOutlineShadow = true
 
 That's it. It behaves like any other such `View` property. The `if` check is strictly illustrative, and is not required before setting either value.
 
-That's possibly all you need to know, if you only require this for a couple of `View`s, and you're able to add the few necessary lines to your code. The rest of this file mainly concerns setting up `LayoutInflater` helpers to set those properties automatically for various configurations. Please do consult [the Notes below](#notes), however, for caveats and possible conflicts.
+That's possibly all you need to know, if you only require this for a couple of `View`s, and you're able to add the few necessary lines to your code. The rest of this file mainly concerns setting up `LayoutInflater` helpers to set those properties automatically for various configurations. Please do consult [the Limitations and Notes below](#limitations), however, for caveats and possible conflicts.
 
 
 ## Adding to layout inflation
@@ -272,9 +272,11 @@ In code, using this with a platform `Activity` class is quite similar to the lib
 
 ### Limitations
 
-+ The main limitation currently is that only `View`s with `Outline`s that return `true` from `canClip()` are supported. That effectively means that the `clipOutlineShadow` function only works automatically with `View`s that are circles, rectangles, or rounded rectangles with a single radius value. Custom `Outline`s will be supported in a future release, in some manner.
++ The main limitation is the one inherent to the current technique: target `View`s with overlapping siblings can cause glitches. The `clipOutlineShadow` extension is effectively disabling the target's inherent shadow and drawing a clipped replica onto its parent's overlay, which means that it's drawing on top of all of the children. If you really need things to overlap, you could wrap the target in another `ViewGroup` – like a `<FrameLayout>` – which would isolate its shadow draw, and is likely as efficient as the extra processing that would be necessary to handle that internally. I would imagine, though, that most use cases will be for separate, individual elements like are shown in the demo app.
 
-+ The other main one at the moment is the one inherent to the current technique: target `View`s with overlapping siblings can cause glitches. The `clipOutlineShadow` extension is effectively disabling the target's inherent shadow and drawing a clipped replica onto its parent's overlay, which means that it's drawing on top of all of the children. If you really need things to overlap, you could wrap the target in another `ViewGroup` – like a `<FrameLayout>` – which would isolate its shadow draw, and is likely as efficient as the extra processing that would be necessary to handle that internally. I would imagine, though, that most use cases will be for separate, individual elements like are shown in the demo app.
++ The other one at the moment is that, starting with Android R, only `View`s with "regular" `Outline`s are automatically supported; i.e., `View`s that are circles, rectangles, or rounded rectangles with the same radius for all corners. The increasing restrictions on non-SDK interfaces that began in Pie have finally removed access to the `Path` object necessary for irregular shapes. A future release will have some alternate method for these newer versions.
+
++ Please refer to the demo app for comparative visuals of these limitations, as they are both illustrated on the last page of the Showcase section there.
 
 ### Notes
 

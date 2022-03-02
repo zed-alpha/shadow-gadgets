@@ -18,7 +18,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         app:exampleElevation="66"
-        app:exampleColor="#885588aa" />
+        app:exampleColor="#7F557FAA" />
 
     <com.zedalpha.shadowgadgets.demo.InfoTextView
         android:layout_width="match_parent"

@@ -433,7 +433,7 @@ then add a dependency for [the latest release](https://github.com/zed-alpha/shad
 ```gradle
 dependencies {
     …
-    implementation 'com.github.zed-alpha:shadow-gadgets:[latest-release]'
+    implementation 'com.github.zed-alpha.shadow-gadgets:library:[latest-release]'
 }
 ```
 

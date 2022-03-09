@@ -1,4 +1,4 @@
-package com.zedalpha.shadowgadgets.demo
+package com.zedalpha.shadowgadgets.demo.topic
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -9,47 +9,43 @@ import android.view.DragEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.annotation.CallSuper
-import androidx.annotation.ColorInt
-import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.core.view.postDelayed
-import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.zedalpha.shadowgadgets.clipOutlineShadow
+import com.zedalpha.shadowgadgets.demo.R
+import com.zedalpha.shadowgadgets.demo.ZedAlphaControl
 
 
-class BasicsFragment : TopicFragment(R.layout.fragment_basics) {
-    override val targetIds = intArrayOf(R.id.view_example, R.id.view_drag_drop)
+class Overlays1Fragment : TopicFragment(R.layout.fragment_overlays_1) {
+    override val targetIds = intArrayOf(R.id.view_overlays, R.id.view_drag_drop)
 
     private var dragDropParentId = R.id.frame_drag_drop_one
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val exampleView = view.findViewById<View>(R.id.view_overlays)
         val dragDropView = view.findViewById<View>(R.id.view_drag_drop)
+        view.findViewById<ZedAlphaControl>(R.id.zac_overlays).listener =
+            object : ZedAlphaControl.Listener {
+                override fun onElevationChange(elevation: Float) {
+                    exampleView.elevation = elevation
+                    dragDropView.elevation = elevation
+                }
 
-        val zac = view.findViewById<ZedAlphaControl>(R.id.zac_basics)
-        zac.listener = object : ZedAlphaControl.Listener {
-            override fun onElevationChange(exampleView: View, elevation: Float) {
-                exampleView.elevation = elevation
-                dragDropView.elevation = elevation
+                override fun onColorChange(color: Int) {
+                    val tint = ColorStateList.valueOf(color)
+                    exampleView.backgroundTintList = tint
+                    dragDropView.backgroundTintList = tint
+                }
             }
 
-            override fun onColorChange(exampleView: View, color: Int) {
-                val tint = ColorStateList.valueOf(color)
-                exampleView.backgroundTintList = tint
-                dragDropView.backgroundTintList = tint
-            }
-        }
-
-        // Drag and drop
         val frameOne = view.findViewById<FrameLayout>(R.id.frame_drag_drop_one)
         val frameTwo = view.findViewById<FrameLayout>(R.id.frame_drag_drop_two)
         val frameThree = view.findViewById<FrameLayout>(R.id.frame_drag_drop_three)
-        val startingId = savedInstanceState?.getInt("drag_drop_parent") ?: dragDropParentId
+        val startingId = savedInstanceState?.getInt(STATE_DRAG_DROP_PARENT) ?: dragDropParentId
         if (startingId != 0 && startingId != R.id.frame_drag_drop_one) {
             view.findViewById<ViewGroup>(startingId)?.let { group ->
                 frameOne.removeView(dragDropView)
@@ -105,7 +101,7 @@ class BasicsFragment : TopicFragment(R.layout.fragment_basics) {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         val parent = view?.findViewById<View>(R.id.view_drag_drop)?.parent as? View
-        outState.putInt("drag_drop_parent", parent?.id ?: 0)
+        outState.putInt(STATE_DRAG_DROP_PARENT, parent?.id ?: 0)
     }
 
     private fun View.scale(scale: Float) {
@@ -114,16 +110,21 @@ class BasicsFragment : TopicFragment(R.layout.fragment_basics) {
     }
 }
 
-class MotionsFragment : TopicFragment(R.layout.fragment_motions) {
+class Overlays2Fragment : TopicFragment(R.layout.fragment_overlays_2) {
     override val targetIds =
-        intArrayOf(R.id.view_motion, R.id.fab_start, R.id.fab_center, R.id.fab_end)
+        intArrayOf(
+            R.id.view_motion,
+            R.id.fab_overlays_start,
+            R.id.fab_overlays_center,
+            R.id.fab_overlays_end
+        )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val fabStart = view.findViewById<FloatingActionButton>(R.id.fab_start)
-        val fabCenter = view.findViewById<ExtendedFloatingActionButton>(R.id.fab_center)
-        val fabEnd = view.findViewById<FloatingActionButton>(R.id.fab_end)
+        val fabStart = view.findViewById<FloatingActionButton>(R.id.fab_overlays_start)
+        val fabCenter = view.findViewById<ExtendedFloatingActionButton>(R.id.fab_overlays_center)
+        val fabEnd = view.findViewById<FloatingActionButton>(R.id.fab_overlays_end)
 
         fabStart.setOnClickListener {
             Snackbar.make(it, "Lorem ipsum", Snackbar.LENGTH_SHORT).show()
@@ -154,59 +155,4 @@ class MotionsFragment : TopicFragment(R.layout.fragment_motions) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.P)
-class ColorsFragment : TopicFragment(R.layout.fragment_colors) {
-    override val targetIds =
-        intArrayOf(R.id.view_example, R.id.fab_start, R.id.fab_center, R.id.fab_end)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val fabStart = view.findViewById<View>(R.id.fab_start)
-        val fabCenter = view.findViewById<View>(R.id.fab_center)
-        val fabEnd = view.findViewById<View>(R.id.fab_end)
-        view.findViewById<ZedAlphaControl>(R.id.zac_colors).listener =
-            object : ZedAlphaControl.Listener {
-                override fun onElevationChange(exampleView: View, elevation: Float) {
-                    exampleView.elevation = elevation
-                }
-
-                override fun onColorChange(exampleView: View, color: Int) {
-                    exampleView.outlineShadowColor(color)
-                    fabStart.outlineShadowColor(color)
-                    fabCenter.outlineShadowColor(color)
-                    fabEnd.outlineShadowColor(color)
-                }
-            }
-    }
-
-    private fun View.outlineShadowColor(@ColorInt color: Int) {
-        outlineAmbientShadowColor = color
-        outlineSpotShadowColor = color
-    }
-}
-
-class LimitationsFragment : TopicFragment(R.layout.fragment_limitations) {
-    override val targetIds =
-        intArrayOf(
-            R.id.view_limitations_one,
-            R.id.view_limitations_two,
-            R.id.view_limitations_three,
-            R.id.view_circle,
-            R.id.view_rectangle,
-            R.id.view_rounded_rectangle,
-            R.id.view_roundish_rectangle
-        )
-}
-
-sealed class TopicFragment(layoutResId: Int) : Fragment(layoutResId) {
-    abstract val targetIds: IntArray
-
-    @CallSuper
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setTargetClippingEnabled((parentFragment as ShowcaseFragment).isClippingEnabled)
-    }
-
-    fun setTargetClippingEnabled(enabled: Boolean) {
-        targetIds.forEach { requireView().findViewById<View>(it).clipOutlineShadow = enabled }
-    }
-}
+private const val STATE_DRAG_DROP_PARENT = "drag_drop_parent"

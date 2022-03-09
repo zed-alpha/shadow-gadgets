@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/containers_top" />
+
+    <com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsCoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_containers_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="20dp"
+            android:tag="@string/clip_outline_shadow_tag_value"
+            app:backgroundTint="@color/see_through_red"
+            app:srcCompat="@drawable/icon_arrow_up"
+            tools:ignore="ContentDescription" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab_containers_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_margin="20dp"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:text="Both"
+            android:textAlignment="center"
+            app:backgroundTint="@color/see_through_green"
+            tools:ignore="HardcodedText">
+
+            <tag
+                android:id="@+id/clip_outline_shadow_tag_id"
+                android:value="@string/clip_outline_shadow_tag_value" />
+
+        </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_containers_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="20dp"
+            android:tag="@string/clip_outline_shadow_tag_value"
+            app:backgroundTint="@color/see_through_blue"
+            app:srcCompat="@drawable/icon_clear"
+            tools:ignore="ContentDescription" />
+
+    </com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsCoordinatorLayout>
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/containers_bottom" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:baselineAligned="false">
+
+        <com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:padding="10dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:ignore="NestedWeights" />
+
+        <com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:clipAllChildShadows="true">
+
+            <View
+                android:id="@+id/center"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_centerInParent="true"
+                android:visibility="invisible" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/center"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_toStartOf="@id/center"
+                android:background="@drawable/target_background"
+                android:backgroundTint="#FF0000"
+                android:elevation="12dp"
+                android:outlineProvider="background" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="40dp"
+                android:background="@drawable/target_background"
+                android:backgroundTint="#440000FF"
+                android:elevation="8dp"
+                android:outlineProvider="background" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/center"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_toEndOf="@id/center"
+                android:background="@drawable/target_background"
+                android:backgroundTint="#44FF0000"
+                android:elevation="12dp"
+                android:outlineProvider="background" />
+
+        </com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

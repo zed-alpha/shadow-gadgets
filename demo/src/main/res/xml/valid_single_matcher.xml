@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <id xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:name="_shadow"
-    app:matchRule="endsWith" />
+    app:matchRule="endsWith"
+    tools:keep="@xml/valid_single_matcher" />

@@ -18,7 +18,7 @@
         android:layout_marginEnd="10dp"
         android:singleLine="false"
         android:maxLines="2"
-        android:text="@string/inflation_description" />
+        android:text="@string/inflation_top" />
 
     <ScrollView
         android:id="@+id/scroll"

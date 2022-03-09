@@ -3,8 +3,7 @@
     <attr name="infoTextViewStyle" format="reference" />
 
     <declare-styleable name="ZedAlphaControl">
-        <attr name="exampleElevation" format="integer" />
-        <attr name="exampleColor" format="color" />
-        <attr name="exampleTint" format="color" />
+        <attr name="zac_elevation" format="integer" />
+        <attr name="zac_color" format="color" />
     </declare-styleable>
 </resources>

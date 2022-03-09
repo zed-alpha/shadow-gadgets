@@ -104,7 +104,7 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="@drawable/shape_circle"
-            app:layout_constraintBottom_toTopOf="@+id/view_rounded_rectangle"
+            app:layout_constraintBottom_toTopOf="@+id/view_round_rectangle"
             app:layout_constraintEnd_toStartOf="@+id/view_rectangle"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -123,11 +123,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
-            android:id="@+id/view_rounded_rectangle"
+            android:id="@+id/view_round_rectangle"
             style="@style/Widget.ShadowGadgets.Shape"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:background="@drawable/shape_rounded_rectangle"
+            android:background="@drawable/shape_round_rectangle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/view_roundish_rectangle"
             app:layout_constraintHorizontal_bias="0.5"
@@ -143,7 +143,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/view_rounded_rectangle"
+            app:layout_constraintStart_toEndOf="@+id/view_round_rectangle"
             app:layout_constraintTop_toBottomOf="@+id/view_rectangle" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

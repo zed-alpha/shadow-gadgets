@@ -10,21 +10,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="@string/basics_first" />
+        android:text="@string/overlays_1_top" />
 
-    <com.zedalpha.shadowgadgets.demo.ZedAlphaControl
-        android:id="@+id/zac_basics"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:exampleElevation="66"
-        app:exampleColor="#7F557FAA" />
+        android:gravity="center_vertical">
+
+        <View
+            android:id="@+id/view_overlays"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/target_background"
+            android:outlineProvider="background" />
+
+        <com.zedalpha.shadowgadgets.demo.ZedAlphaControl
+            android:id="@+id/zac_overlays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            app:zac_color="#7F557FAA"
+            app:zac_elevation="66" />
+
+    </LinearLayout>
 
     <com.zedalpha.shadowgadgets.demo.InfoTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="@string/basics_second" />
+        android:text="@string/overlays_1_bottom" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,7 +62,6 @@
                 android:layout_height="56dp"
                 android:layout_gravity="center"
                 android:background="@drawable/target_background"
-                android:elevation="10dp"
                 android:outlineProvider="background" />
 
         </FrameLayout>

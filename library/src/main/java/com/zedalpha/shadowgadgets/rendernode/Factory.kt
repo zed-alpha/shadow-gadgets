@@ -8,29 +8,55 @@ import android.graphics.Matrix
 import android.graphics.Outline
 import android.os.Build
 import androidx.annotation.ColorInt
-import androidx.annotation.FloatRange
 import androidx.annotation.RequiresApi
+import com.zedalpha.shadowgadgets.shadow.ShadowColorsHelper
 import java.lang.reflect.Method
 
 
 internal interface RenderNodeWrapper {
     fun initialize() {}
 
-    fun setAlpha(@FloatRange(from = 0.0, to = 1.0) alpha: Float): Boolean
+    fun getAlpha(): Float
+    fun setAlpha(alpha: Float): Boolean
+
+    fun getCameraDistance(): Float
     fun setCameraDistance(distance: Float): Boolean
+
+    fun getElevation(): Float
     fun setElevation(elevation: Float): Boolean
-    fun setOutline(outline: Outline?): Boolean
+
+    fun getPivotX(): Float
     fun setPivotX(pivotX: Float): Boolean
+
+    fun getPivotY(): Float
     fun setPivotY(pivotY: Float): Boolean
-    fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Boolean
+
+    fun getRotationX(): Float
     fun setRotationX(rotationX: Float): Boolean
+
+    fun getRotationY(): Float
     fun setRotationY(rotationY: Float): Boolean
-    fun setRotationZ(rotation: Float): Boolean
+
+    fun getRotationZ(): Float
+    fun setRotationZ(rotationZ: Float): Boolean
+
+    fun getScaleX(): Float
     fun setScaleX(scaleX: Float): Boolean
+
+    fun getScaleY(): Float
     fun setScaleY(scaleY: Float): Boolean
+
+    fun getTranslationX(): Float
     fun setTranslationX(translationX: Float): Boolean
+
+    fun getTranslationY(): Float
     fun setTranslationY(translationY: Float): Boolean
+
+    fun getTranslationZ(): Float
     fun setTranslationZ(translationZ: Float): Boolean
+
+    fun setOutline(outline: Outline?): Boolean
+    fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Boolean
 
     fun hasIdentityMatrix(): Boolean
     fun getMatrix(outMatrix: Matrix)
@@ -40,7 +66,14 @@ internal interface RenderNodeWrapper {
 
 @RequiresApi(Build.VERSION_CODES.P)
 internal interface RenderNodeColors {
+    @ColorInt
+    fun getAmbientShadowColor(): Int
+
     fun setAmbientShadowColor(@ColorInt color: Int): Boolean
+
+    @ColorInt
+    fun getSpotShadowColor(): Int
+
     fun setSpotShadowColor(@ColorInt color: Int): Boolean
 }
 
@@ -60,21 +93,26 @@ internal object RenderNodeFactory {
 
     private fun testRenderNode() = try {
         with(newInstance()) {
-            setAlpha(0F)
-            setCameraDistance(0F)
-            setElevation(0F)
+            setAlpha(getAlpha())
+            setCameraDistance(getCameraDistance())
+            setElevation(getElevation())
+            setPivotX(getPivotX())
+            setPivotY(getPivotY())
+            setRotationX(getRotationX())
+            setRotationY(getRotationY())
+            setRotationZ(getRotationZ())
+            setScaleX(getScaleX())
+            setScaleY(getScaleY())
+            setTranslationX(getTranslationX())
+            setTranslationY(getTranslationY())
+            setTranslationZ(getTranslationZ())
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ShadowColorsHelper.testColors(this)
+            }
+
             setOutline(null)
-            setPivotX(0F)
-            setPivotY(0F)
             setPosition(0, 0, 0, 0)
-            setRotationX(0F)
-            setRotationY(0F)
-            setRotationZ(0F)
-            setScaleX(0F)
-            setScaleY(0F)
-            setTranslationX(0F)
-            setTranslationY(0F)
-            setTranslationZ(0F)
             hasIdentityMatrix()
             getMatrix(Matrix())
         }
@@ -85,22 +123,30 @@ internal object RenderNodeFactory {
 
     private fun checkCanvasAccess() =
         Build.VERSION.SDK_INT in Build.VERSION_CODES.M..Build.VERSION_CODES.O_MR1 ||
-                CanvasReflector.isValid
+                IsCanvasReflectorValid
+}
+
+internal val IsCanvasReflectorValid: Boolean by lazy {
+    try {
+        CanvasReflector
+        true
+    } catch (e: Throwable) {
+        false
+    }
 }
 
 @SuppressLint("SoonBlockedPrivateApi")
 internal object CanvasReflector {
     private val requiresDoubleReflection = Build.VERSION.SDK_INT == Build.VERSION_CODES.P
 
-    private val getDeclaredMethod: Method by lazy {
+    private val getDeclaredMethod: Method =
         Class::class.java.getDeclaredMethod(
             "getDeclaredMethod",
             String::class.java,
             arrayOf<Class<*>>()::class.java
         )
-    }
 
-    private val insertReorderBarrierMethod: Method by lazy {
+    private val insertReorderBarrierMethod: Method =
         if (requiresDoubleReflection) {
             getDeclaredMethod.invoke(
                 Canvas::class.java,
@@ -110,9 +156,8 @@ internal object CanvasReflector {
         } else {
             Canvas::class.java.getDeclaredMethod("insertReorderBarrier")
         }
-    }
 
-    private val insertInorderBarrierMethod: Method by lazy {
+    private val insertInorderBarrierMethod: Method =
         if (requiresDoubleReflection) {
             getDeclaredMethod.invoke(
                 Canvas::class.java,
@@ -122,15 +167,6 @@ internal object CanvasReflector {
         } else {
             Canvas::class.java.getDeclaredMethod("insertInorderBarrier")
         }
-    }
-
-    val isValid = try {
-        insertReorderBarrierMethod
-        insertInorderBarrierMethod
-        true
-    } catch (e: Throwable) {
-        false
-    }
 
     fun insertReorderBarrier(canvas: Canvas) {
         insertReorderBarrierMethod.invoke(canvas)

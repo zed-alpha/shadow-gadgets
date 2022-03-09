@@ -1,3 +1,5 @@
+@file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
 package com.zedalpha.shadowgadgets.inflation
 
 import android.app.Activity
@@ -11,22 +13,18 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.XmlRes
 
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 fun Activity.attachShadowHelper() {
     attachShadowHelper(buildMatchersFromResources(this))
 }
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 fun Activity.attachShadowHelper(@XmlRes xmlResId: Int) {
     attachShadowHelper(buildMatchersFromXml(this, xmlResId))
 }
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 fun Activity.attachShadowHelper(matchers: List<TagMatcher>) {
     layoutInflater.factory = ShadowHelperFactory(this, matchers)
 }
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 internal class ShadowHelperFactory(context: Context, matchers: List<TagMatcher>) :
     LayoutInflater.Factory {
     private val helper = ShadowHelper(context, matchers)
@@ -38,7 +36,6 @@ internal class ShadowHelperFactory(context: Context, matchers: List<TagMatcher>)
     ) = helper.processTag(name, context, attrs)
 }
 
-@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class ShadowHelperApplication : Application() {
     override fun onCreate() {
         super.onCreate()

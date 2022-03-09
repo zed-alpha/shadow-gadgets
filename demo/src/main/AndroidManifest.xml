@@ -24,14 +24,14 @@
         </activity>
 
         <activity
-            android:name=".PlatformActivity"
+            android:name=".topic.PlatformActivity"
             android:theme="@android:style/Theme.Material.Light.NoActionBar" />
 
         <!-- Examples of meta-data elements to specify matchers XML. CompatActivity's helper is -->
         <!-- currently getting it from the shadowTagMatchers attribute in Theme.Compat. If -->
         <!-- that's not there, it'll look here, first in the activity and then the application. -->
         <activity
-            android:name=".CompatActivity"
+            android:name=".topic.CompatActivity"
             android:theme="@style/Theme.Compat">
             <!--<meta-data-->
             <!--    android:name="com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"-->
@@ -43,7 +43,7 @@
         <!--    android:resource="@xml/matchers" />-->
 
         <activity
-            android:name=".MaterialComponentsActivity"
+            android:name=".topic.MaterialComponentsActivity"
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
 
     </application>

@@ -34,9 +34,9 @@ internal class SlantGridDrawable(
     }
 
     override fun draw(canvas: Canvas) {
-        val columns = columns
         val bounds = bounds
         val paint = paint
+        val columns = columns
 
         val width = bounds.width()
         val height = bounds.height()

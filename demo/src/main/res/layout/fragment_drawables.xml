@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/drawables_top" />
+
+    <View
+        android:id="@+id/view_drawables"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <com.zedalpha.shadowgadgets.demo.ZedAlphaControl
+        android:id="@+id/zac_drawables"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:zac_color="#7F557FAA"
+        app:zac_elevation="66" />
+
+    <TextView
+        android:id="@+id/label_scale"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Scale"
+        android:textAlignment="center"
+        tools:ignore="HardcodedText" />
+
+    <SeekBar
+        android:id="@+id/seek_scale"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="50" />
+
+    <TextView
+        android:id="@+id/label_rotation_z"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rotation"
+        android:textAlignment="center"
+        tools:ignore="HardcodedText" />
+
+    <SeekBar
+        android:id="@+id/seek_rotation_z"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:progress="50" />
+
+</LinearLayout>

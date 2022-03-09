@@ -6,11 +6,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Build
+import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.RequiresApi
-import com.zedalpha.shadowgadgets.overlay.ShadowSwitch
-import com.zedalpha.shadowgadgets.overlay.moveShadowToOverlay
-import com.zedalpha.shadowgadgets.overlay.removeShadowFromOverlay
+import com.zedalpha.shadowgadgets.shadow.ShadowSwitch
+import com.zedalpha.shadowgadgets.shadow.moveShadowToOverlay
+import com.zedalpha.shadowgadgets.shadow.removeShadowFromOverlay
 
 
 var View.clipOutlineShadow: Boolean
@@ -29,6 +30,7 @@ var View.clipOutlineShadow: Boolean
         }
     }
 
+
 internal fun unwrapActivity(context: Context): Activity? {
     var checkContext: Context? = context
     do {
@@ -37,3 +39,27 @@ internal fun unwrapActivity(context: Context): Activity? {
     } while (checkContext != null)
     return null
 }
+
+
+private fun Context.getAttributeBoolean(
+    attrs: AttributeSet?,
+    attrArray: IntArray
+): Boolean {
+    val array = obtainStyledAttributes(attrs, attrArray)
+    val clip = array.getBoolean(0, false)
+    array.recycle()
+    return clip
+}
+
+private val ClipOutlineShadowAttribute = intArrayOf(R.attr.clipOutlineShadow)
+private val ClipAllChildShadowsAttribute = intArrayOf(R.attr.clipAllChildShadows)
+private val DisableShadowsOnFallbackAttribute = intArrayOf(R.attr.disableShadowsOnFallback)
+
+internal fun Context.getClipOutlineShadow(attrs: AttributeSet?) =
+    getAttributeBoolean(attrs, ClipOutlineShadowAttribute)
+
+internal fun Context.getClipAllChildShadows(attrs: AttributeSet?) =
+    getAttributeBoolean(attrs, ClipAllChildShadowsAttribute)
+
+internal fun Context.getDisableShadowsOnFallback(attrs: AttributeSet?) =
+    getAttributeBoolean(attrs, DisableShadowsOnFallbackAttribute)

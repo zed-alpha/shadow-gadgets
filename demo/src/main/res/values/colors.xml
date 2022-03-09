@@ -3,6 +3,7 @@
     <color name="see_through_red">#66FF0000</color>
     <color name="see_through_green">#6600FF00</color>
     <color name="see_through_blue">#660000FF</color>
+    <color name="see_through_deep_blue">#99446688</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

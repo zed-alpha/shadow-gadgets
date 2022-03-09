@@ -43,15 +43,11 @@ internal class IdMatcher(
     private val matchRule: MatchRule = MatchRule.Equals
 ) : TagMatcher {
     override fun matches(view: View, tagName: String, attrs: AttributeSet): Boolean {
-        val context = view.context
-        val array = context.obtainStyledAttributes(attrs, R.styleable.IdMatcher)
-        val id = array.getResourceId(R.styleable.IdMatcher_android_id, View.NO_ID)
-        array.recycle()
-
+        val id = view.id
         return when {
             id == View.NO_ID -> false
             matchId != View.NO_ID && matchId == id -> true
-            matchName != null && matchRule.match(context.resourceEntryName(id), matchName) -> true
+            matchName != null && matchRule.match(view.context.resourceEntryName(id), matchName) -> true
             else -> false
         }
     }

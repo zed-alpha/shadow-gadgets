@@ -2,66 +2,100 @@ package com.zedalpha.shadowgadgets.demo
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.CheckBox
+import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.core.view.isVisible
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.zedalpha.shadowgadgets.demo.topic.Topic
+import com.zedalpha.shadowgadgets.demo.topic.TopicFragment
+import com.zedalpha.shadowgadgets.demo.topic.Topics
+import com.zedalpha.shadowgadgets.demo.topic.setRootBackground
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
+    private val switch by lazy { findViewById<SwitchMaterial>(R.id.switch_overlays) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val manager = supportFragmentManager
+        setRootBackground(SlantGridDrawable(0xFFEBEBEB.toInt(), 0xFFCECECE.toInt()))
 
-        val showcaseFragment: ShowcaseFragment
-        val inflationFragment: InflationFragment
+        val spinner = findViewById<Spinner>(R.id.spinner)
+        val adapter = ArrayAdapter(this, R.layout.spinner_item, Topics)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+        spinner.adapter = adapter
+        spinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    setDisplayedFragment(Topics[position])
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+        spinner.post { spinner.dropDownWidth = spinner.width }
+
+        switch.setOnCheckedChangeListener { _, isChecked ->
+            displayedFragment?.setTargetClippingEnabled(isChecked)
+        }
 
         if (savedInstanceState == null) {
-            showcaseFragment = ShowcaseFragment()
-            inflationFragment = InflationFragment()
-            manager.beginTransaction()
-                .add(R.id.container, showcaseFragment, TAG_SHOWCASE)
-                .add(R.id.container, inflationFragment, TAG_INFLATION)
-                .hide(inflationFragment)
-                .commit()
-        } else {
-            showcaseFragment =
-                manager.findFragmentByTag(TAG_SHOWCASE) as ShowcaseFragment
-            inflationFragment =
-                manager.findFragmentByTag(TAG_INFLATION) as InflationFragment
-        }
-
-        findViewById<BottomNavigationView>(R.id.nav_view).setOnItemSelectedListener {
-            val showFirst = it.itemId == R.id.item_showcase
-            manager.beginTransaction()
-                .setCustomAnimations(
-                    if (showFirst) R.anim.slide_in_left else R.anim.slide_in_right,
-                    if (showFirst) R.anim.slide_out_right else R.anim.slide_out_left
-                )
-                .show(if (showFirst) showcaseFragment else inflationFragment)
-                .hide(if (showFirst) inflationFragment else showcaseFragment)
-                .commit()
-            true
-        }
-
-        if (savedInstanceState == null &&
-            !getPreferences(Context.MODE_PRIVATE).getBoolean(PREF_HIDE_WELCOME, false)
-        ) {
-            val dialog = AlertDialog.Builder(this)
-                .setView(R.layout.dialog_welcome)
-                .setPositiveButton("Close", null)
-                .show()
-            val check = dialog.findViewById<CheckBox>(R.id.check_hide_welcome)
-            check?.setOnCheckedChangeListener { _, isChecked ->
-                getPreferences(Context.MODE_PRIVATE).edit()
-                    .putBoolean(PREF_HIDE_WELCOME, isChecked)
-                    .apply()
+            if (!getPreferences(Context.MODE_PRIVATE).getBoolean(PREF_HIDE_WELCOME, false)) {
+                val dialog = AlertDialog.Builder(this)
+                    .setView(R.layout.dialog_welcome)
+                    .setPositiveButton("Close", null)
+                    .show()
+                val check = dialog.findViewById<CheckBox>(R.id.check_hide_welcome)
+                check?.setOnCheckedChangeListener { _, isChecked ->
+                    getPreferences(Context.MODE_PRIVATE).edit()
+                        .putBoolean(PREF_HIDE_WELCOME, isChecked)
+                        .apply()
+                }
             }
+            setDisplayedFragment(Topics[0])
+        } else {
+            switch.isVisible = savedInstanceState.getBoolean(STATE_SWITCH_VISIBLE)
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(STATE_SWITCH_VISIBLE, switch.isVisible)
+    }
+
+    private fun setDisplayedFragment(topic: Topic) {
+        val manager = supportFragmentManager
+        val current = displayedFragment
+        if (current?.tag != topic.title) {
+            val transaction = manager.beginTransaction()
+            transaction.setCustomAnimations(R.anim.slide_in_bottom, R.anim.fade_out)
+            if (current != null) transaction.detach(current)
+            val next = manager.findFragmentByTag(topic.title)
+            if (next == null) {
+                transaction.add(R.id.main_content, topic.createFragment(), topic.title)
+            } else {
+                transaction.attach(next)
+            }
+            transaction.commit()
+            switch.isVisible = topic.shouldShowToggle
+        }
+    }
+
+    val isClippingEnabled: Boolean
+        get() = switch.isChecked
+
+    private val displayedFragment: TopicFragment?
+        get() = supportFragmentManager.findFragmentById(R.id.main_content) as? TopicFragment
 }
 
-private const val TAG_SHOWCASE = "showcase"
-private const val TAG_INFLATION = "inflation"
 private const val PREF_HIDE_WELCOME = "hide_welcome"
+private const val STATE_SWITCH_VISIBLE = "switch_visible"

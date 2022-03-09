@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="OverlayShadow">
-        <attr name="clipOutlineShadow" format="boolean" />
-    </declare-styleable>
-
+    <attr name="clipOutlineShadow" format="boolean" />
     <attr name="shadowTagMatchers" format="reference" />
+    <attr name="clipAllChildShadows" format="boolean" />
+    <attr name="disableShadowsOnFallback" format="boolean" />
 
     <attr name="matchRule" format="enum">
         <enum name="equals" value="0" />

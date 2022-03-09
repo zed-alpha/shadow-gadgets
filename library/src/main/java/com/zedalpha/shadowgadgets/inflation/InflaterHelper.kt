@@ -9,8 +9,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RequiresApi
-import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.clipOutlineShadow
+import com.zedalpha.shadowgadgets.getClipOutlineShadow
 import java.lang.reflect.Array
 
 
@@ -28,7 +28,9 @@ internal class ShadowHelper(
 
     fun processTag(name: String, context: Context, attrs: AttributeSet): View? {
         val view = if (name !in IgnoredTags) inflater.tryCreate(name, context, attrs) else null
-        if (view != null && (checkAttribute(context, attrs) || checkMatchers(view, name, attrs))) {
+        if (view != null &&
+            (context.getClipOutlineShadow(attrs) || checkMatchers(view, name, attrs))
+        ) {
             view.clipOutlineShadow = true
         }
         return view
@@ -39,16 +41,6 @@ internal class ShadowHelper(
             if (matcher.matches(view, tagName, attrs)) return true
         }
         return false
-    }
-
-    private fun checkAttribute(
-        context: Context,
-        attrs: AttributeSet
-    ): Boolean {
-        val array = context.obtainStyledAttributes(attrs, R.styleable.OverlayShadow)
-        val clip = array.getBoolean(R.styleable.OverlayShadow_clipOutlineShadow, false)
-        array.recycle()
-        return clip
     }
 }
 
@@ -102,7 +94,7 @@ private sealed class ViewInflater(context: Context) : LayoutInflater(context) {
             try {
                 createView(name, prefix, attrs)?.let { return it }
             } catch (e: Exception) {
-                /* noop */
+                /* no-op */
             }
         }
         return super.onCreateView(name, attrs)

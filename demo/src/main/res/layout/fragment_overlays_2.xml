@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -10,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="@string/motions_first" />
+        android:text="@string/overlays_2_top" />
 
     <androidx.constraintlayout.motion.widget.MotionLayout
         android:layout_width="match_parent"
@@ -35,43 +36,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="@string/motions_second" />
+        android:text="@string/overlays_2_bottom" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layoutDescription="@xml/motions_motions">
+        android:layout_weight="1">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_start"
+            android:id="@+id/fab_overlays_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
             android:layout_margin="20dp"
             app:backgroundTint="@color/see_through_red"
-            app:srcCompat="@drawable/icon_arrow_up" />
+            app:srcCompat="@drawable/icon_arrow_up"
+            tools:ignore="ContentDescription" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab_center"
+            android:id="@+id/fab_overlays_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_margin="20dp"
             android:paddingStart="0dp"
             android:paddingEnd="0dp"
-            android:textAlignment="center"
             android:text="Both"
-            app:backgroundTint="@color/see_through_green" />
+            android:textAlignment="center"
+            app:backgroundTint="@color/see_through_green"
+            tools:ignore="HardcodedText" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_end"
+            android:id="@+id/fab_overlays_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="20dp"
             app:backgroundTint="@color/see_through_blue"
-            app:srcCompat="@drawable/icon_clear" />
+            app:srcCompat="@drawable/icon_clear"
+            tools:ignore="ContentDescription" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

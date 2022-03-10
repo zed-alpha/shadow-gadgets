@@ -14,14 +14,11 @@ import com.zedalpha.shadowgadgets.demo.R
 internal class Topic(
     private val fragmentClass: Class<out TopicFragment>,
     val title: String,
-    isToggleable: Boolean,
     minSdk: Int = Build.VERSION_CODES.LOLLIPOP
 ) {
     private val isAvailable = Build.VERSION.SDK_INT >= minSdk
 
-    val shouldShowToggle = isAvailable && isToggleable
-
-    fun createFragment(): Fragment =
+    fun createFragment(): TopicFragment =
         if (isAvailable) fragmentClass.newInstance() else UnavailableFragment()
 
     override fun toString() = title
@@ -29,17 +26,20 @@ internal class Topic(
 
 @SuppressLint("NewApi")
 internal val Topics = listOf(
-    Topic(Overlays1Fragment::class.java, "Overlays 1", true),
-    Topic(Overlays2Fragment::class.java, "Overlays 2", true),
-    Topic(ContainersFragment::class.java, "Containers", false),
-    Topic(DrawablesFragment::class.java, "Drawables", false),
-    Topic(ColorsFragment::class.java, "Colors", true, Build.VERSION_CODES.P),
-    Topic(InflationFragment::class.java, "Inflation", false),
-    Topic(LimitationsFragment::class.java, "Limitations", true)
+    Topic(Overlays1Fragment::class.java, "Overlays 1"),
+    Topic(Overlays2Fragment::class.java, "Overlays 2"),
+    Topic(ContainersFragment::class.java, "Containers"),
+    Topic(DrawablesFragment::class.java, "Drawables"),
+    Topic(ColorsFragment::class.java, "Colors", Build.VERSION_CODES.P),
+    Topic(InflationFragment::class.java, "Inflation"),
+    Topic(LimitationsFragment::class.java, "Limitations")
 )
 
 sealed class TopicFragment(layoutResId: Int) : Fragment(layoutResId) {
-    abstract val targetIds: IntArray
+    protected abstract val targetIds: IntArray
+
+    val shouldShowToggle: Boolean
+        get() = targetIds.isNotEmpty()
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

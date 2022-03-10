@@ -63,13 +63,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
             setDisplayedFragment(Topics[0])
         } else {
-            switch.isVisible = savedInstanceState.getBoolean(STATE_SWITCH_VISIBLE)
+            switch.isVisible = displayedFragment?.shouldShowToggle == true
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(STATE_SWITCH_VISIBLE, switch.isVisible)
     }
 
     private fun setDisplayedFragment(topic: Topic) {
@@ -79,14 +74,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             val transaction = manager.beginTransaction()
             transaction.setCustomAnimations(R.anim.slide_in_bottom, R.anim.fade_out)
             if (current != null) transaction.detach(current)
-            val next = manager.findFragmentByTag(topic.title)
-            if (next == null) {
-                transaction.add(R.id.main_content, topic.createFragment(), topic.title)
-            } else {
+            val next =
+                manager.findFragmentByTag(topic.title) as? TopicFragment ?: topic.createFragment()
+            if (next.isDetached) {
                 transaction.attach(next)
+            } else {
+                transaction.add(R.id.main_content, next, topic.title)
             }
             transaction.commit()
-            switch.isVisible = topic.shouldShowToggle
+            switch.isVisible = next.shouldShowToggle
         }
     }
 
@@ -98,4 +94,3 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 }
 
 private const val PREF_HIDE_WELCOME = "hide_welcome"
-private const val STATE_SWITCH_VISIBLE = "switch_visible"

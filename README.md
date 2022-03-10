@@ -4,7 +4,7 @@ A utility library for Android with various tools to fix the elevation shadow art
 
 <img src="images/examples_before.png" width="85%" />
 
-Those artifacts are results of the hardware-accelerated shadows that came with the introduction of Material Design in Lollipop. The shadow gradient is left unclipped everywhere, presumably as a performance consideration. These tools use the same classes and methods that the platform uses to render shadows, simply replacing the originals with clipped copies.
+Those artifacts are a result of the hardware-accelerated shadows that came with the introduction of Material Design in Lollipop. The shadow gradient is left un-clipped everywhere, presumably as a performance consideration. These tools use the same classes and methods that the platform uses to render shadows, simply replacing the originals with clipped copies.
 
 <img src="images/examples_after.png" width="85%" />
 
@@ -17,11 +17,11 @@ Those artifacts are results of the hardware-accelerated shadows that came with t
 
 + [Overlay shadows](#overlay-shadows)
 
-    An extension property on `View` allows for easy application of the fix in the form of a clipped shadow replica being drawn onto the target's parent's overlay. Simple and straightforward, it has a few limitations inherent to the technique, but it is indeed sufficient for many, if not most, use cases.
+    An extension property on `View` allows for easy application of the fix in the form of a clipped shadow replica drawn onto the target's parent's overlay. Simple and straightforward, it has a few limitations inherent to the technique, but it is indeed sufficient for many, if not most, use cases.
 
 + [Custom containers](#custom-containers)
 
-    These `ViewGroup`s modify their child draws inline, and so do not suffer some of the limitations of the overlay shadows. At present, they can only be used directly, but they will eventually be added as options to the inflation helpers.
+    These `ViewGroup`s fix their children's shadows by handling them inline, and so do not suffer some of the limitations of the overlay shadows. At present, they can only be used directly, but they will eventually be added as options to the inflation helpers.
 
 + [Drawables](#drawables)
 
@@ -29,15 +29,15 @@ Those artifacts are results of the hardware-accelerated shadows that came with t
 
 + [Layout inflation helpers](#layout-inflation-helpers)
 
-    These helpers insert themselves into the inflation pipeline to automatically enable the overlay fix on selected tags and `View`s. This is handy if you'd like to add it to an existing project with minimal changes, or if you'd just rather not pollute your code with the necessary property settings.
+    These helpers insert themselves into the inflation pipeline to automatically enable the overlay fix on selected tags and `View`s. This is handy if you'd like to add it to an existing project with minimal changes, or if you'd just rather not clutter your code with the necessary property settings.
+
++ [Notes](#notes)
+
+    Overall limitations and conflicts, known bugs, planned features, etc.
 
 + [Download](#download)
 
     Available through JitPack, currently.
-
-+ [Notes](#notes)
-
-    Overall limitations, known bugs and conflicts, feature plans, etc.
 
 + [API reference](#api-reference)
 
@@ -70,15 +70,13 @@ That's it. It behaves like any other such `View` property. The `if` check is str
 
     All three images are of the same basic setup: a blue target z-ordered behind its red sibling. The left shows an opaque red sibling, the right a translucent one, and in the center they are both completely transparent, so it's easier to see exactly what the shadows are doing in the the intersections.
 
-    The fallback method ends up with a slightly different defect:
+    The fallback method ends up with a slightly different defect. With this method, the shadows' interiors are clipped all at once, so they are missing completely from the the overlapping areas here:
 
     <img src="images/overlapping_fallback.png" width="65%" />
 
-    With this method, the shadows' interiors are clipped all at once, so they are missing completely from the the overlapping areas here.
-
     Possibly the simplest remedy for this would be to wrap one or more of the siblings in another `ViewGroup` – e.g., in a `<FrameLayout>` – which would would isolate the shadow draws. The custom containers are in the process of being modified to handle overlapping children, but that feature is not quite ready yet.
 
-+ Certain animations can sometimes cause the overlay shadow to fall out of alignment with the target a bit during the motion. The demo app has a `CoordinatorLayout` setup on the second Overlay page that has the potential to show this defect. The aforementioned [custom containers](#custom-containers) are optimized to avoid this, and should help to alleviate it, if you find that your setup is affected.
++ Certain animations can sometimes cause the overlay shadow to fall out of alignment with the target a bit during the motion. The demo app has a `CoordinatorLayout` setup on the second Overlay page that has the potential to show this defect. The custom containers described in the next section are optimized to avoid this, and should help to alleviate it, if you find that your setup is affected.
 
 + Please also consult [the Notes section below](#notes) for further issues overall.
 
@@ -87,7 +85,7 @@ That's it. It behaves like any other such `View` property. The `if` check is str
 
 [[API reference](#custom-containers-1)]
 
-The library offers a handful of subclasses of common `ViewGroup`s that handle the clipped shadow draws inline with their child draw routines in an effort to avoid some of the limitations of the overlay approach, and to optimize for better performance in ones like `RecyclerView`. They are broadly divided into Regular and Recycling categories, and each is a drop-in replacement for the corresponding platform/androidx class.
+The library offers a handful of subclasses of common `ViewGroup`s that handle the clipped shadows inline with their child draw routines in an effort to avoid some of the limitations of the overlay approach, and to optimize for better performance in ones like `RecyclerView`. They are broadly divided into Regular and Recycling categories, and each is a drop-in replacement for the corresponding platform/androidx class.
 
 ### Regular containers
 
@@ -156,28 +154,30 @@ These three all assume that all of their children will be targets, so the parent
 
 + Currently, the containers' behavior in the Android Studio graphical layout editor is a little flaky. Each will still work as the base `ViewGroup` that it is, but it may or may not fix the shadows there, and sometimes it can interfere with a child's content draw. I'm not yet sure exactly why, but I'm assuming it has something to do with the specialized rendering pipeline for the editor.
 
-+ Please check [the Notes below](#notes) for further issues that can affect the containers.
++ Please check [the Notes](#notes) for further issues that can affect the containers.
 
 
 ## Drawables
 
 [[API reference](#drawables-1)]
 
-The last rendering tool is `ShadowDrawable`, which allows us to create "disembodied" shadows as a further possible option for applying the fix in unforeseen cases, or ones where the other options are insufficient, for whatever reason. It also lets us draw the shadow effect of elevated `View`s without needing actual `View`s, which likely has at least a couple of applications, I would think. Please note that, just like normal `View` shadows, this only works with hardware-accelerated `Canvas`es.
+The last rendering tool is `ShadowDrawable`, which allows us to create "disembodied" shadows as a further possible option for applying the fix in unforeseen cases, or ones where the other options are insufficient, for whatever reason. It also lets us draw the shadow effect of elevated `View`s without needing the actual `View`s, which likely has at least a couple of applications, I would think. Please note that, just like normal `View` shadows, this only works with hardware-accelerated `Canvas`es.
 
 Before creating any instances, you must first check that `ShadowDrawable.isAvailable` returns `true`. For the clipping technique to be applicable through the `Drawable` mechanism, it requires the primary shadow drawing method. If that is not available in the current environment, that property will return `false`, and any use of the factory methods will throw an `IllegalStateException`. However, every effort has been made to make this available on all relevant Android versions, including the use of methods that are too slow for the overlay and container approaches. Since any instances of this would necessarily be controlled directly, it does not have the `View`-tracking overhead of those approaches, so the slower methods are adequate here.
 
-The class offers two factory functions for instantiating the `ShadowDrawable`s: `fromView(view: View)` and `fromPath(path: Path)`. The first will create a snapshot drawable from the `View`'s current state, including its elevation, shadow colors, etc. The second will create an instance with bounds described by `path`, but it will _not_ have any other properties set. That means that its default z-offset will be zero, and it will cast no shadow until its `elevation` and/or its `translationZ` is set to a positive value.
+The class offers two factory functions for instantiating `ShadowDrawable`s: `fromView(view: View)` and `fromPath(path: Path)`. For example:
 
 ```kotlin
 val drawable = if (ShadowDrawable.isAvailable) ShadowDrawable.fromView(fab) else ColorDrawable(Color.WHITE)
 ```
 
+`fromView()` will create a snapshot drawable from the `View`'s current state, including its elevation, shadow colors, etc. `fromPath()` will create an instance with bounds described by `path`, but it will _not_ have any other properties set. That means that its default z-offset will be zero, and it will cast no shadow until its `elevation` and/or its `translationZ` is set to a positive value.
+
 Note that `fromView()` does no check as to the `View`'s current state; it doesn't even ensure that it's been laid out yet. It is very easy to end up with an empty or incorrect drawable from a `View`; e.g., by trying to create it in the `Activity`'s `onCreate()` method, or before the `View` has animated itself fully, etc.
 
-It's also important to note that this drawable's bounds describe its _inner_ border, not its outside edge. It works exactly like a shadow on a `View` with the given bounds, just without the `View` itself in the way.
+It's also important to note that this drawable's bounds describe its _inner_ border, not its outside edge. It works exactly like a shadow on a `View` with the given bounds, just without the `View` itself in the middle.
 
-Most of `ShadowDrawable`'s properties correspond to those in `View` that would affect and transform its shadow; e.g, `elevation`, `rotationX`, `scaleY`, etc. Given that, the only thing for which this `Drawable` uses its bounds is the `left` and `top` positioning. Thought it will automatically center the drawn shadow within its bounds, it will not shrink, or stretch, or any other operation that can be accomplished with those properties.
+After instantiation, you can modify the drawable using the `updateFromView(view: View)` and `updateFromPath(path: Path)` functions, and through several individual properties that correspond to those in the `View` class that normally affect and transform shadows; e.g, `elevation`, `rotationX`, `scaleY`, etc. Given that, the only thing for which this `Drawable` uses its bounds is the `left` and `top` positioning. Though it will automatically center the drawn shadow within its bounds, it will not shrink, or stretch, or any other operation that can be accomplished with those properties.
 
 Also offered is the `var fillPaint: Paint?` property, which provides a simple way to fill the interior after the shadow draw.
 
@@ -416,6 +416,31 @@ In code, using this with a platform `Activity` class is quite similar to the lib
     If you need to alter that behavior, or to integrate this with an existing `Application` subclass, you can use `ShadowHelperApplication` as just an example.
 
 
+## Notes
+
+### Overall limitations and conflicts
+
++ To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped in a custom implementation. This has the possibility of breaking something if some method or component is expecting the `View` to have one of the static platform implementations; i.e., `ViewOutlineProvider.BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`. This shouldn't cause a fatal error, or anything – it's no different than anything else that uses a custom `ViewOutlineProvider` – but you might need to rework some background drawables or the like.
+
++ Starting with Android R, the overlays, the containers, and `ShadowDrawable.fromView()` will only work automatically on `View`s with "regular" `Outline`s; i.e., `View`s that are circles, rectangles, or round rectangles with the same radius for all corners. The increasing restrictions on non-SDK interfaces that began in Pie have finally removed access to the `Path` object necessary for irregular shapes.
+
+    A future release will have some alternate method for these newer versions. In the meantime, you might be able to do something with `ShadowDrawable.fromPath()` instead, since it will still function normally.
+
++ Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows _at all_ on Pie itself, with or without this library involved. The documentation indicates that they should work, and all of the relevant methods and attributes were introduced with that version, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app has a page for colors which would be a quick and easy test for that.
+
++ The AppCompat and Material Components inflation helpers are (obviously) set as the `viewInflaterClass` in their respective configurations. If you're using anything other than the default inflaters that are handled internally by `AppCompatActivity`, then you might need to adapt or modify the helpers here, or possibly forgo them altogether.
+
+### Known bugs
+
++ On the Lollipop versions, API levels 21 and 22, the fallback shadow drawing method has a bug in that a target `View` that is not visible on-screen while its shadow is clipped can cause an infinite invalidate loop, for as yet unknown reasons. This only affects the overlays if they're in fallback mode, but all of the containers are currently using only the fallback method, due to an open issue with primary one.
+
+### Planned features:
+
++ Compose UI integration
+
++ Custom containers as inflation helper options
+
+
 ## Download
 
 The initial releases are available through JitPack. In the appropriate `repositories`, simply add their Maven URL:
@@ -436,26 +461,6 @@ dependencies {
     implementation 'com.github.zed-alpha.shadow-gadgets:library:[latest-release]'
 }
 ```
-
-
-## Notes
-
-+ To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped in a custom implementation. This has the possibility of breaking something if some method or component is expecting the `View` to have one of the static platform implementations; i.e., `ViewOutlineProvider.BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`. This shouldn't cause a fatal error, or anything – it's no different than anything else that uses a custom `ViewOutlineProvider` – but you might need to rework some background drawables or the like.
-
-+ Starting with Android R, the overlays, the containers, and `ShadowDrawable.fromView()` will only work automatically on `View`s with "regular" `Outline`s; i.e., `View`s that are circles, rectangles, or round rectangles with the same radius for all corners. The increasing restrictions on non-SDK interfaces that began in Pie have finally removed access to the `Path` object necessary for irregular shapes.
-
-    A future release will have some alternate method for these newer versions. In the meantime, you might be able to do something with `ShadowDrawable.fromPath()` instead, since it will still function normally.
-
-+ Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows _at all_ on Pie itself, with or without this library involved. The documentation indicates that they should work, and all of the relevant methods and attributes were introduced with that version, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app has a page for colors which would be a quick and easy test for that.
-
-+ On the Lollipop versions, API levels 21 and 22, the fallback shadow drawing method has a bug in that a target `View` that is not visible on-screen while its shadow is clipped can cause an infinite invalidate loop, for as yet unknown reasons. Unfortunately, this affects the overlays as well as the containers, which are currently forced to use the fallback method.
-
-+ The AppCompat and Material Components inflation helpers are (obviously) set as the `viewInflaterClass` in their respective configurations. If you're using anything other than the default inflaters that are handled internally by `AppCompatActivity`, then you might need to adapt or modify the helpers here, or possibly forgo them altogether.
-
-+ Forthcoming features:
-
-    + Compose UI integration
-    + Custom containers as inflation helper options
 
 
 ## API reference
@@ -480,35 +485,44 @@ Package: `com.zedalpha.shadowgadgets.viewgroup`
 + **Classes**
 
     ```kotlin
-    class ClippedShadowsFrameLayout : android.widget.FrameLayout, ClippedShadowsContainer
+    class ClippedShadowsFrameLayout :
+        android.widget.FrameLayout, ClippedShadowsContainer
     ```
 
     ```kotlin
-    class ClippedShadowsRelativeLayout : android.widget.RelativeLayout, ClippedShadowsContainer
+    class ClippedShadowsRelativeLayout :
+        android.widget.RelativeLayout, ClippedShadowsContainer
     ```
 
     ```kotlin
-    class ClippedShadowsCoordinatorLayout : androidx.coordinatorlayout.widget.CoordinatorLayout, ClippedShadowsContainer
+    class ClippedShadowsCoordinatorLayout :
+        androidx.coordinatorlayout.widget.CoordinatorLayout, ClippedShadowsContainer
     ```
 
     ```kotlin
-    class ClippedShadowsListView : android.widget.ListView, ClippedShadowsContainer
+    class ClippedShadowsListView :
+        android.widget.ListView, ClippedShadowsContainer
     ```
 
     ```kotlin
-    class ClippedShadowsGridView : android.widget.GridView, ClippedShadowsContainer
+    class ClippedShadowsGridView :
+        android.widget.GridView, ClippedShadowsContainer
     ```
 
     ```kotlin
-    class ClippedShadowsRecyclerView : androidx.recyclerview.widget.RecyclerView, ClippedShadowsContainer
+    class ClippedShadowsRecyclerView :
+        androidx.recyclerview.widget.RecyclerView, ClippedShadowsContainer
     ```
 
 + **Interfaces**
 
-    | `interface` | `ClippedShadowsContainer` |     |
-    | --- | --- | --- |
-    |     | `Boolean` | `val isUsingShadowsFallback` |
-    |     |     | Indicates whether the `ViewGroup` is using the fallback drawing method due to the primary one being unavailable. |
+    ```kotlin
+    interface ClippedShadowsContainer
+    ```
+    
+    | `Boolean` | `val isUsingShadowsFallback` |
+    | --- | --- |
+    |     | Indicates whether the `ViewGroup` is using the fallback drawing method due to the primary one being unavailable. |
 
 + **XML attributes**
 
@@ -587,7 +601,7 @@ class ShadowDrawable : android.graphics.drawable.Drawable
     | --- | --- |
     |     | Sets or gets the degrees of rotation around the y-axis for the drawable. |
 
-    | `Float` | `var rotation` |
+    | `Float` | `var rotationZ` |
     | --- | --- |
     |     | Sets or gets the degrees of rotation around the z-axis for the drawable. This is the one often referred to as just plain "rotation". |
 
@@ -638,15 +652,22 @@ Package: `com.zedalpha.shadowgadgets.inflation`
 
 + **Interfaces**
 
-    | `interface` | `ActivityCreatedCallback` | `: Application.ActivityLifecycleCallbacks` |
-    | --- | --- | --- |
-    |     | `Unit` | `onActivityCreated(activity: Activity, savedInstanceState: Bundle?)` |
-    |     |     | This is an adapter interface with empty defaults for all of `ActivityLifecycleCallbacks` functions except this one. |
+    ```kotlin
+    interface ActivityCreatedCallback :
+        Application.ActivityLifecycleCallbacks
+    ```
+    
+    | `Unit` | `onActivityCreated(activity: Activity, savedInstanceState: Bundle?)` |
+    | --- | --- |
+    |     | This is an adapter interface with empty defaults for all of `ActivityLifecycleCallbacks` functions except this one. |
 
-    | `interface` | `TagMatcher` |     |
-    | --- | --- | --- |
-    |     | `Boolean` | `matches(view: View, tagName: String, attrs: AttributeSet)` |
-    |     |     | Return `true` to to indicate a match. |
+    ```kotlin
+    interface TagMatcher
+    ```
+    
+    | `Boolean` | `matches(view: View, tagName: String, attrs: AttributeSet)` |
+    | --- | --- |
+    |     | Return `true` to to indicate a match. |
 
 + **XML attributes**
 

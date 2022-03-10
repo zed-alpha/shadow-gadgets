@@ -22,10 +22,6 @@ import com.zedalpha.shadowgadgets.demo.R
 class ContainersFragment : TopicFragment(R.layout.fragment_containers) {
     override val targetIds = intArrayOf()
 
-    class VH(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(R.id.text)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -70,28 +66,33 @@ class ContainersFragment : TopicFragment(R.layout.fragment_containers) {
         )
         snackbar.view.tag = resources.getString(R.string.clip_outline_shadow_tag_value)
 
+        val callback = object : Snackbar.Callback() {
+            override fun onShown(sb: Snackbar?) {
+                fabStart.hide(); fabCenter.hide(); fabEnd.hide()
+                fabCenter.postDelayed(1000) {
+                    fabStart.addOnShowAnimationListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            snackbar.dismiss()
+                        }
+                    })
+                    fabStart.show(); fabCenter.show(); fabEnd.show()
+                }
+            }
+        }
+
         fabStart.setOnClickListener {
             snackbar.duration = Snackbar.LENGTH_SHORT
+            snackbar.removeCallback(callback)
             snackbar.show()
         }
         fabCenter.setOnClickListener {
             snackbar.duration = Snackbar.LENGTH_INDEFINITE
-            snackbar.addCallback(object : Snackbar.Callback() {
-                override fun onShown(sb: Snackbar?) {
-                    fabStart.hide(); fabCenter.hide(); fabEnd.hide()
-                    fabCenter.postDelayed(1000) {
-                        fabStart.addOnShowAnimationListener(object : AnimatorListenerAdapter() {
-                            override fun onAnimationEnd(animation: Animator?) {
-                                snackbar.dismiss()
-                            }
-                        })
-                        fabStart.show(); fabCenter.show(); fabEnd.show()
-                    }
-                }
-            })
+            snackbar.addCallback(callback)
             snackbar.show()
         }
         fabEnd.setOnClickListener {
+            snackbar.duration = Snackbar.LENGTH_SHORT
+            snackbar.removeCallback(callback)
             fabStart.hide(); fabCenter.hide(); fabEnd.hide()
             fabCenter.postDelayed(1000) {
                 fabStart.show(); fabCenter.show(); fabEnd.show()
@@ -100,8 +101,12 @@ class ContainersFragment : TopicFragment(R.layout.fragment_containers) {
     }
 }
 
-const val COUNT = 50
-const val HALF_COUNT = 25
-const val ITEM_RED = 0x44FF0000
-const val ITEM_GREEN = 0x4400FF00
-const val ITEM_BLUE = 0x440000FF
+private class VH(view: View) : RecyclerView.ViewHolder(view) {
+    val textView: TextView = view.findViewById(R.id.text)
+}
+
+private const val COUNT = 50
+private const val HALF_COUNT = 25
+private const val ITEM_RED = 0x44FF0000
+private const val ITEM_GREEN = 0x4400FF00
+private const val ITEM_BLUE = 0x440000FF

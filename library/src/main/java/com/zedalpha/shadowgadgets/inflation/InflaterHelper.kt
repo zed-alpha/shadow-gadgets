@@ -29,7 +29,7 @@ internal class ShadowHelper(
     fun processTag(name: String, context: Context, attrs: AttributeSet): View? {
         val view = if (name !in IgnoredTags) inflater.tryCreate(name, context, attrs) else null
         if (view != null &&
-            (context.getClipOutlineShadow(attrs) || checkMatchers(view, name, attrs))
+            (attrs.getClipOutlineShadow(context) || checkMatchers(view, name, attrs))
         ) {
             view.clipOutlineShadow = true
         }

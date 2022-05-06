@@ -11,14 +11,4 @@
             com.zedalpha.shadowgadgets.inflation.MaterialComponentsShadowHelper
         </item>
     </style>
-
-    <style name="Widget.ShadowGadgets.ClippedShadowsListView" parent="android:Widget.Material.ListView">
-        <item name="android:listSelector">@android:color/transparent</item>
-        <item name="android:cacheColorHint">@android:color/transparent</item>
-    </style>
-
-    <style name="Widget.ShadowGadgets.ClippedShadowsGridView" parent="android:Widget.Material.GridView">
-        <item name="android:listSelector">@android:color/transparent</item>
-        <item name="android:cacheColorHint">@android:color/transparent</item>
-    </style>
 </resources>

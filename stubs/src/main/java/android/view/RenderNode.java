@@ -160,4 +160,12 @@ public class RenderNode {
     }
 
     public void getMatrix(@NonNull Matrix outMatrix) {}
+
+    public boolean setProjectBackwards(boolean shouldProject) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean setProjectionReceiver(boolean shouldReceive) {
+        throw new UnsupportedOperationException();
+    }
 }

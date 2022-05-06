@@ -14,8 +14,6 @@ import java.lang.reflect.Method
 
 
 internal interface RenderNodeWrapper {
-    fun initialize() {}
-
     fun getAlpha(): Float
     fun setAlpha(alpha: Float): Boolean
 
@@ -61,6 +59,12 @@ internal interface RenderNodeWrapper {
     fun hasIdentityMatrix(): Boolean
     fun getMatrix(outMatrix: Matrix)
 
+    fun setProjectBackwards(shouldProject: Boolean): Boolean
+    fun setProjectionReceiver(shouldReceive: Boolean): Boolean
+
+    fun beginRecording(width: Int, height: Int): Canvas
+    fun endRecording(canvas: Canvas)
+
     fun draw(canvas: Canvas)
 }
 
@@ -87,7 +91,7 @@ internal object RenderNodeFactory {
         in Build.VERSION_CODES.M..Build.VERSION_CODES.P -> RenderNodeApi23()
         Build.VERSION_CODES.P -> RenderNodeApi28() // Currently kinda pointless, but maybe later.
         else -> RenderNodeApi29()
-    }.apply { initialize() }
+    }
 
     private fun testHiddenApi() = testRenderNode() && checkCanvasAccess()
 
@@ -107,14 +111,18 @@ internal object RenderNodeFactory {
             setTranslationY(getTranslationY())
             setTranslationZ(getTranslationZ())
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ShadowColorsHelper.testColors(this)
-            }
-
             setOutline(null)
             setPosition(0, 0, 0, 0)
             hasIdentityMatrix()
             getMatrix(Matrix())
+
+            setProjectBackwards(false)
+            setProjectionReceiver(false)
+            endRecording(beginRecording(0, 0))
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ShadowColorsHelper.testColors(this)
+            }
         }
         true
     } catch (e: Throwable) {

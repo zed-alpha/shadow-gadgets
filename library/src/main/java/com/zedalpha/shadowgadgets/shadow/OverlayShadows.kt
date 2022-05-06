@@ -10,6 +10,7 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
@@ -26,14 +27,14 @@ internal object ShadowSwitch : View.OnAttachStateChangeListener {
 }
 
 internal fun moveShadowToOverlay(targetView: View) {
-    if (targetView.isHardwareAccelerated && targetView.outlineProvider != null) {
+    if (targetView.outlineProvider != null) {
         val parent = targetView.parent as? ViewGroup ?: return
         getOrCreateControllerForParent(parent).addShadow(targetView)
     }
 }
 
 internal fun removeShadowFromOverlay(targetView: View) {
-    (targetView.getTag(R.id.tag_target_overlay_shadow) as? OverlayShadow)?.detachFromController()
+    (targetView.getTag(R.id.tag_target_shadow) as? OverlayShadow)?.detachFromController()
 }
 
 
@@ -43,185 +44,176 @@ private fun getOrCreateControllerForParent(parent: ViewGroup) =
 private fun getControllerForParent(parent: ViewGroup) =
     parent.getTag(R.id.tag_parent_overlay_shadow_controller) as? OverlayController<*>
 
-private fun createControllerForParent(parent: ViewGroup): OverlayController<*> {
-    val controller =
-        if (RenderNodeFactory.isOpenForBusiness) {
-            RenderNodeOverlayController(parent)
-        } else {
-            ViewOverlayController(parent)
-        }
-    controller.attach()
-    return controller
-}
+private fun createControllerForParent(parent: ViewGroup) =
+    createController(parent).apply { attach() }
 
-internal sealed interface OverlayShadow {
+private val createController: (ViewGroup) -> OverlayController<*> =
+    if (RenderNodeFactory.isOpenForBusiness) {
+        ::OverlayRenderNodeShadowController
+    } else {
+        ::OverlayViewShadowController
+    }
+
+
+private sealed interface OverlayShadow {
     val controller: OverlayController<*>
 
     fun detachFromController() {
         controller.removeShadow(this)
     }
-
-    fun attachShadowToOverlay()
-    fun detachShadowFromOverlay()
-    fun onPreDraw()
 }
 
-internal sealed class OverlayController<T>(protected val parentView: ViewGroup) :
-    ViewTreeObserver.OnPreDrawListener where T : Shadow, T : OverlayShadow {
+private sealed class OverlayController<T>(protected val parentView: ViewGroup) :
+    View.OnAttachStateChangeListener, ViewTreeObserver.OnDrawListener
+        where T : Shadow, T : OverlayShadow {
 
-    abstract val shadows: MutableList<T>
-
+    @CallSuper
     open fun attach() {
         val parent = parentView
         parent.setTag(R.id.tag_parent_overlay_shadow_controller, this)
-        parent.viewTreeObserver.addOnPreDrawListener(this)
+        if (parent.isAttachedToWindow) addOnDrawListener()
+        parent.addOnAttachStateChangeListener(this)
     }
 
-    protected open fun detach() {
+    @CallSuper
+    open fun detach() {
         val parent = parentView
         parent.setTag(R.id.tag_parent_overlay_shadow_controller, null)
-        parent.viewTreeObserver.removeOnPreDrawListener(this)
+        if (parent.isAttachedToWindow) removeOnDrawListener()
+        parent.removeOnAttachStateChangeListener(this)
     }
-
-    abstract fun createShadow(view: View): T
 
     fun addShadow(view: View) {
         val shadow = createShadow(view)
-        shadow.targetView.setTag(R.id.tag_target_overlay_shadow, shadow)
-        shadow.attachToTargetView()
-        shadow.attachShadowToOverlay()
-        shadows += shadow
+        shadow.attach()
     }
 
     @Suppress("UNCHECKED_CAST")
     fun removeShadow(overlayShadow: OverlayShadow) {
         val shadow = overlayShadow as T
-        shadow.targetView.setTag(R.id.tag_target_overlay_shadow, null)
-        shadow.detachFromTargetView()
-        shadow.detachShadowFromOverlay()
-        shadows -= shadow
-        if (shadows.isEmpty()) detach()
+        shadow.detach()
+        if (isEmpty()) detach()
     }
 
-    override fun onPreDraw(): Boolean {
-        shadows.forEach { it.onPreDraw() }
-        return true
+    override fun onViewAttachedToWindow(v: View) {
+        addOnDrawListener()
     }
+
+    override fun onViewDetachedFromWindow(v: View) {
+        removeOnDrawListener()
+    }
+
+    override fun onDraw() {
+        updateAndInvalidateShadows()
+    }
+
+    private fun addOnDrawListener() {
+        parentView.viewTreeObserver.addOnDrawListener(this)
+    }
+
+    private fun removeOnDrawListener() {
+        parentView.viewTreeObserver.removeOnDrawListener(this)
+    }
+
+    abstract fun createShadow(view: View): T
+    abstract fun updateAndInvalidateShadows()
+    abstract fun isEmpty(): Boolean
 }
 
-internal class RenderNodeOverlayShadow(
+
+private class OverlayViewShadow(
     targetView: View,
-    override val controller: RenderNodeOverlayController
+    override val controller: OverlayViewShadowController
+) : ViewShadow(targetView, controller.viewShadowContainer), OverlayShadow
+
+private class OverlayViewShadowController(parentView: ViewGroup) :
+    OverlayController<OverlayViewShadow>(parentView) {
+
+    val viewShadowContainer = ViewShadowContainer(parentView)
+
+    override fun attach() {
+        super.attach()
+        viewShadowContainer.attach()
+    }
+
+    override fun detach() {
+        super.detach()
+        viewShadowContainer.detach()
+    }
+
+    override fun createShadow(view: View) = OverlayViewShadow(view, this)
+
+    override fun updateAndInvalidateShadows() {
+        viewShadowContainer.updateAndInvalidateShadows()
+    }
+
+    override fun isEmpty() = viewShadowContainer.isEmpty()
+}
+
+
+private class OverlayRenderNodeShadow(
+    targetView: View,
+    override val controller: OverlayRenderNodeShadowController
 ) : RenderNodeShadow(targetView), OverlayShadow {
+    val shadowDrawable: Drawable = RenderNodeDrawable()
 
-    private val drawable = RenderNodeDrawable()
-
-    override fun attachShadowToOverlay() {
-        controller.addShadowDrawable(drawable)
+    override fun attach() {
+        super.attach()
+        controller.add(this)
         targetView.invalidate()
     }
 
-    override fun detachShadowFromOverlay() {
-        controller.removeShadowDrawable(drawable)
+    override fun detach() {
+        super.detach()
+        controller.remove(this)
         targetView.invalidate()
     }
 
-    override fun onPreDraw() {
-        if (updateShadow()) drawable.invalidateSelf()
+    override fun invalidate() {
+        shadowDrawable.invalidateSelf()
     }
 
     inner class RenderNodeDrawable : Drawable() {
         override fun draw(canvas: Canvas) {
-            this@RenderNodeOverlayShadow.draw(canvas)
+            this@OverlayRenderNodeShadow.draw(canvas)
         }
 
         override fun setAlpha(alpha: Int) {}
 
         override fun setColorFilter(colorFilter: ColorFilter?) {}
 
+        @Suppress("OVERRIDE_DEPRECATION")
         override fun getOpacity() = PixelFormat.TRANSLUCENT
     }
 }
 
-internal class RenderNodeOverlayController(parentView: ViewGroup) :
-    OverlayController<RenderNodeOverlayShadow>(parentView) {
+private class OverlayRenderNodeShadowController(parentView: ViewGroup) :
+    OverlayController<OverlayRenderNodeShadow>(parentView) {
 
-    override val shadows = mutableListOf<RenderNodeOverlayShadow>()
+    private val shadows = mutableListOf<OverlayRenderNodeShadow>()
 
-    override fun createShadow(view: View) = RenderNodeOverlayShadow(view, this)
+    override fun createShadow(view: View) = OverlayRenderNodeShadow(view, this)
 
-    fun addShadowDrawable(drawable: Drawable) {
-        parentView.overlay.add(drawable)
+    override fun updateAndInvalidateShadows() {
+        var invalidate = false
+        shadows.forEach { shadow ->
+            if (shadow.update()) {
+                shadow.invalidate()
+                invalidate = true
+            }
+        }
+        if (invalidate) parentView.invalidate()
     }
 
-    fun removeShadowDrawable(drawable: Drawable) {
-        parentView.overlay.remove(drawable)
-    }
-}
+    override fun isEmpty() = shadows.isEmpty()
 
-internal class ViewOverlayShadow(
-    targetView: View,
-    override val controller: ViewOverlayController
-) : ViewShadow(targetView), OverlayShadow {
-
-    override fun attachShadowToOverlay() {
-        controller.addShadowView(shadowView)
+    fun add(shadow: OverlayRenderNodeShadow) {
+        shadows += shadow
+        parentView.overlay.add(shadow.shadowDrawable)
     }
 
-    override fun detachShadowFromOverlay() {
-        controller.removeShadowView(shadowView)
-    }
-
-    override fun onPreDraw() {
-        if (updateShadow()) shadowView.invalidate()
-    }
-
-    override fun updateShadow(): Boolean {
-        val view = shadowView
-        val index = controller.detachShadowView(view)
-        val result = super.updateShadow()
-        controller.reAttachShadowView(view, index)
-        return result
-    }
-}
-
-internal class ViewOverlayController(parentView: ViewGroup) :
-    OverlayController<ViewOverlayShadow>(parentView) {
-
-    override val shadows = mutableListOf<ViewOverlayShadow>()
-
-    override fun createShadow(view: View) = ViewOverlayShadow(view, this)
-
-    private val container = ViewShadowContainer(parentView.context, shadows)
-
-    override fun attach() {
-        super.attach()
-        val parent = parentView
-        val container = container
-        if (parent.isLaidOut) container.layout(0, 0, parent.width, parent.height)
-        parent.addOnLayoutChangeListener(container)
-        parent.overlay.add(container)
-    }
-
-    override fun detach() {
-        super.detach()
-        val parent = parentView
-        val container = container
-        parent.removeOnLayoutChangeListener(container)
-        parent.overlay.remove(container)
-    }
-
-    fun detachShadowView(shadowView: ViewShadow.ShadowView) = container.detachShadowView(shadowView)
-
-    fun reAttachShadowView(shadowView: ViewShadow.ShadowView, index: Int) {
-        container.reAttachShadowView(shadowView, index)
-    }
-
-    fun addShadowView(shadowView: ViewShadow.ShadowView) {
-        container.addView(shadowView)
-    }
-
-    fun removeShadowView(shadowView: ViewShadow.ShadowView) {
-        container.removeView(shadowView)
+    fun remove(shadow: OverlayRenderNodeShadow) {
+        shadows -= shadow
+        parentView.overlay.remove(shadow.shadowDrawable)
     }
 }

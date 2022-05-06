@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="clipOutlineShadow" format="boolean" />
+
+    <declare-styleable name="ClippedShadowsViewGroup">
+        <attr name="clipAllChildShadows" format="boolean" />
+        <attr name="disableChildShadowsOnFallback" format="boolean" />
+        <attr name="childClippedShadowPlane" format="enum">
+            <enum name="foreground" value="0" />
+            <enum name="background" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ClippedShadowsLayoutParams">
+        <attr name="clipOutlineShadow" />
+        <attr name="disableShadowOnFallback" format="boolean" />
+        <attr name="clippedShadowPlane" format="enum">
+            <enum name="foreground" value="0" />
+            <enum name="background" value="1" />
+        </attr>
+    </declare-styleable>
+
     <attr name="shadowTagMatchers" format="reference" />
-    <attr name="clipAllChildShadows" format="boolean" />
-    <attr name="disableShadowsOnFallback" format="boolean" />
 
     <attr name="matchRule" format="enum">
         <enum name="equals" value="0" />

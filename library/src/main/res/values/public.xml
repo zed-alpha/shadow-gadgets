@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <public name="clipOutlineShadow" type="attr" />
+
+    <public name="clipAllChildShadows" type="attr" />
+    <public name="disableChildShadowsOnFallback" type="attr" />
+    <public name="childClippedShadowPlane" type="attr" />
+
+    <public name="disableShadowOnFallback" type="attr" />
+    <public name="clippedShadowPlane" type="attr" />
+
+    <public name="clip_outline_shadow_tag_id" type="id" />
+    <public name="clip_outline_shadow_tag_value" type="string" />
+
     <public name="appcompat_shadow_helper" type="string" />
     <public name="material_components_shadow_helper" type="string" />
     <public name="shadowTagMatchers" type="attr" />
     <public name="matchRule" type="attr" />
-
-    <public name="clipOutlineShadow" type="attr" />
-    <public name="clipAllChildShadows" type="attr" />
-    <!--    <public name="disableShadowsOnFallback" type="attr" />-->
-
-    <public name="clip_outline_shadow_tag_id" type="id" />
-    <public name="clip_outline_shadow_tag_value" type="string" />
 </resources>

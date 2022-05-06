@@ -4,22 +4,24 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import com.zedalpha.shadowgadgets.clipOutlineShadow
 import com.zedalpha.shadowgadgets.demo.MainActivity
 import com.zedalpha.shadowgadgets.demo.R
+import com.zedalpha.shadowgadgets.drawable.ShadowDrawable
 
 
 internal class Topic(
     private val fragmentClass: Class<out TopicFragment>,
     val title: String,
-    minSdk: Int = Build.VERSION_CODES.LOLLIPOP
+    private val isAvailable: Boolean = true,
+    private val unavailableMessage: Int = 0
 ) {
-    private val isAvailable = Build.VERSION.SDK_INT >= minSdk
-
     fun createFragment(): TopicFragment =
-        if (isAvailable) fragmentClass.newInstance() else UnavailableFragment()
+        if (isAvailable) fragmentClass.newInstance()
+        else UnavailableFragment.withMessage(unavailableMessage)
 
     override fun toString() = title
 }
@@ -28,9 +30,19 @@ internal class Topic(
 internal val Topics = listOf(
     Topic(Overlays1Fragment::class.java, "Overlays 1"),
     Topic(Overlays2Fragment::class.java, "Overlays 2"),
-    Topic(ContainersFragment::class.java, "Containers"),
-    Topic(DrawablesFragment::class.java, "Drawables"),
-    Topic(ColorsFragment::class.java, "Colors", Build.VERSION_CODES.P),
+    Topic(ViewGroupsFragment::class.java, "ViewGroups"),
+    Topic(
+        DrawablesFragment::class.java,
+        "Drawables",
+        ShadowDrawable.isAvailable,
+        R.string.unavailable_drawables
+    ),
+    Topic(
+        ColorsFragment::class.java,
+        "Colors",
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P,
+        R.string.unavailable_colors
+    ),
     Topic(InflationFragment::class.java, "Inflation"),
     Topic(LimitationsFragment::class.java, "Limitations")
 )
@@ -51,6 +63,21 @@ sealed class TopicFragment(layoutResId: Int) : Fragment(layoutResId) {
     }
 }
 
-class UnavailableFragment : TopicFragment(R.layout.fragment_unavailable) {
+class UnavailableFragment private constructor() : TopicFragment(R.layout.fragment_unavailable) {
     override val targetIds = intArrayOf()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.findViewById<TextView>(R.id.text).setText(requireArguments().getInt(ARGUMENT_MESSAGE))
+    }
+
+    companion object {
+        const val ARGUMENT_MESSAGE = "message"
+
+        fun withMessage(msgResId: Int) = UnavailableFragment().apply {
+            arguments = Bundle().also {
+                it.putInt(ARGUMENT_MESSAGE, msgResId)
+            }
+        }
+    }
 }

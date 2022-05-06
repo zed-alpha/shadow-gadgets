@@ -66,10 +66,6 @@ internal class PieReflectorWrapper : RenderNodeWrapper, RenderNodeColors {
     private val renderNode: RenderNode =
         createMethod.invoke(null, "OverlayShadow", null) as RenderNode
 
-    override fun initialize() {
-        recordEmptyDisplayList()
-    }
-
     private fun recordEmptyDisplayList() {
         val canvas = startMethod.invoke(renderNode, 0, 0) as DisplayListCanvas
         endMethod.invoke(renderNode, canvas)
@@ -156,6 +152,22 @@ internal class PieReflectorWrapper : RenderNodeWrapper, RenderNodeColors {
 
     override fun getMatrix(outMatrix: Matrix) {
         getMatrixMethod.invoke(renderNode, outMatrix)
+    }
+
+    override fun setProjectBackwards(shouldProject: Boolean): Boolean {
+        throw UnsupportedOperationException()
+    }
+
+    override fun setProjectionReceiver(shouldReceive: Boolean): Boolean {
+        throw UnsupportedOperationException()
+    }
+
+    override fun beginRecording(width: Int, height: Int): Canvas {
+        throw UnsupportedOperationException()
+    }
+
+    override fun endRecording(canvas: Canvas) {
+        throw UnsupportedOperationException()
     }
 
     override fun draw(canvas: Canvas) {

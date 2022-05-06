@@ -1,5 +1,4 @@
 @file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-@file:Suppress("MemberVisibilityCanBePrivate")
 
 package com.zedalpha.shadowgadgets.drawable
 
@@ -63,6 +62,7 @@ class ShadowDrawable private constructor() : Drawable() {
 
     override fun getIntrinsicHeight() = defaultHeight
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun getOpacity() = PixelFormat.TRANSLUCENT
 
     override fun draw(canvas: Canvas) {

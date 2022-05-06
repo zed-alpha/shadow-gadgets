@@ -8,17 +8,17 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import android.widget.RelativeLayout.LayoutParams
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsViewGroup.ShadowPlane
 
-class ClippedShadowsRelativeLayout @JvmOverloads constructor(
+class ClippedShadowsMotionLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0
-) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes), ClippedShadowsViewGroup {
+    defStyleAttr: Int = 0
+) : MotionLayout(context, attrs, defStyleAttr), ClippedShadowsViewGroup {
     private val manager = RegularManager(this, attrs)
 
     override val isUsingShadowsFallback = manager.isUsingFallback
@@ -79,7 +79,7 @@ class ClippedShadowsRelativeLayout @JvmOverloads constructor(
 
     override fun generateLayoutParams(lp: ViewGroup.LayoutParams?) = LayoutParams(lp)
 
-    class LayoutParams : RelativeLayout.LayoutParams, ClippedShadowsLayoutParams {
+    class LayoutParams : ConstraintLayout.LayoutParams, ClippedShadowsLayoutParams {
         override var clipOutlineShadow: Boolean = false
         override var disableShadowOnFallback: Boolean = false
         override var clippedShadowPlane: Int = ClippedShadowsViewGroup.FOREGROUND

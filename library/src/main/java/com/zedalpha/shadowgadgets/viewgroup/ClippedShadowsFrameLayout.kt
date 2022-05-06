@@ -11,41 +11,39 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
-import androidx.core.view.children
-import com.zedalpha.shadowgadgets.getClipOutlineShadow
-import com.zedalpha.shadowgadgets.shadow.RenderNodeShadow
-import com.zedalpha.shadowgadgets.shadow.ViewShadow
+import com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsViewGroup.ShadowPlane
 
 class ClippedShadowsFrameLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr, defStyleRes), ClippedShadowsContainer {
-
-    private val manager = StandardContainerManager(this, attrs)
+) : FrameLayout(context, attrs, defStyleAttr, defStyleRes), ClippedShadowsViewGroup {
+    private val manager = RegularManager(this, attrs)
 
     override val isUsingShadowsFallback = manager.isUsingFallback
 
-    init {
-        viewTreeObserver.addOnPreDrawListener {
-            children.forEach { child ->
-                val shadow = child.inlineShadow
-                if (shadow != null && shadow.updateShadow()) {
-                    if (shadow is RenderNodeShadow) {
-                        child.invalidate()
-                    } else if (shadow is ViewShadow) {
-                        shadow.shadowView.invalidate()
-                    }
-                }
-            }
-            true
-        }
+    override var clipAllChildShadows by manager::clipAllChildShadows
+    override var disableChildShadowsOnFallback by manager::disableChildShadowsOnFallback
+    override var childClippedShadowPlane by manager::childClippedShadowPlane
+
+    override fun setChildClipOutlineShadow(
+        child: View,
+        clipOutlineShadow: Boolean,
+        disableShadowOnFallback: Boolean,
+        @ShadowPlane clippedShadowPlane: Int
+    ) {
+        manager.setChildClipOutlineShadow(
+            child,
+            clipOutlineShadow,
+            disableShadowOnFallback,
+            clippedShadowPlane
+        )
     }
 
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
-        manager.onViewAdded(child, child.childLayoutParams.clipOutlineShadow)
+        manager.onViewAdded(child)
     }
 
     override fun onViewRemoved(child: View) {
@@ -53,11 +51,26 @@ class ClippedShadowsFrameLayout @JvmOverloads constructor(
         manager.onViewRemoved(child)
     }
 
-    override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
-        val result = super.drawChild(canvas, child, drawingTime)
-        manager.drawChild(canvas, child)
-        return result
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        manager.onAttachedToWindow()
     }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        manager.onDetachedFromWindow()
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        manager.onSizeChanged(w, h)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.wrapDispatchDraw(canvas) { super.dispatchDraw(canvas) }
+    }
+
+    override fun checkLayoutParams(p: ViewGroup.LayoutParams) = p is LayoutParams
 
     override fun generateDefaultLayoutParams() =
         LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -66,11 +79,13 @@ class ClippedShadowsFrameLayout @JvmOverloads constructor(
 
     override fun generateLayoutParams(lp: ViewGroup.LayoutParams?) = LayoutParams(lp)
 
-    class LayoutParams : FrameLayout.LayoutParams {
-        internal var clipOutlineShadow: Boolean = false
+    class LayoutParams : FrameLayout.LayoutParams, ClippedShadowsLayoutParams {
+        override var clipOutlineShadow: Boolean = false
+        override var disableShadowOnFallback: Boolean = false
+        override var clippedShadowPlane: Int = ClippedShadowsViewGroup.FOREGROUND
 
         constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-            clipOutlineShadow = context.getClipOutlineShadow(attrs)
+            attrs.extractClippedShadowsLayoutParamsValues(context, this)
         }
 
         constructor(width: Int, height: Int) : super(width, height)
@@ -79,8 +94,7 @@ class ClippedShadowsFrameLayout @JvmOverloads constructor(
         constructor(source: MarginLayoutParams) : super(source)
         constructor(source: LayoutParams) : super(source) {
             this.clipOutlineShadow = source.clipOutlineShadow
+            this.disableShadowOnFallback = source.disableShadowOnFallback
         }
     }
-
-    private val View.childLayoutParams get() = layoutParams as LayoutParams
 }

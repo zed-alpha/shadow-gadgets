@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="@string/containers_top" />
+        android:text="@string/view_groups_top" />
 
     <com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsCoordinatorLayout
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
         android:layout_weight="2">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_containers_start"
+            android:id="@+id/fab_view_groups_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
@@ -30,7 +30,7 @@
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab_containers_center"
+            android:id="@+id/fab_view_groups_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
@@ -49,7 +49,7 @@
         </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_containers_end"
+            android:id="@+id/fab_view_groups_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -65,7 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="@string/containers_bottom" />
+        android:text="@string/view_groups_bottom" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -104,7 +104,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_toStartOf="@id/center"
                 android:background="@drawable/target_background"
-                android:backgroundTint="#FF0000"
+                android:backgroundTint="#44FF0000"
                 android:elevation="12dp"
                 android:outlineProvider="background" />
 
@@ -127,7 +127,7 @@
                 android:layout_marginBottom="20dp"
                 android:layout_toEndOf="@id/center"
                 android:background="@drawable/target_background"
-                android:backgroundTint="#44FF0000"
+                android:backgroundTint="#FF4444"
                 android:elevation="12dp"
                 android:outlineProvider="background" />
 

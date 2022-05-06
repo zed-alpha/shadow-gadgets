@@ -14,15 +14,11 @@ import java.lang.reflect.Method
 
 
 internal open class RenderNodeApi21 : RenderNodeWrapper {
-    protected val renderNode: RenderNode = RenderNode.create("OverlayShadow", null)
+    protected val renderNode: RenderNode = RenderNode.create("ShadowGadgets", null)
 
     private fun recordEmptyDisplayList() {
         val canvas = RenderNodeReflector.start(renderNode, 0, 0)
         RenderNodeReflector.end(renderNode, canvas)
-    }
-
-    override fun initialize() {
-        recordEmptyDisplayList()
     }
 
     override fun getAlpha(): Float = renderNode.alpha
@@ -92,6 +88,19 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
         renderNode.getMatrix(outMatrix)
     }
 
+    override fun setProjectBackwards(shouldProject: Boolean): Boolean =
+        renderNode.setProjectBackwards(shouldProject)
+
+    override fun setProjectionReceiver(shouldReceive: Boolean): Boolean =
+        renderNode.setProjectionReceiver(shouldReceive)
+
+    override fun beginRecording(width: Int, height: Int): Canvas =
+        RenderNodeReflector.start(renderNode, width, height)
+
+    override fun endRecording(canvas: Canvas) {
+        RenderNodeReflector.end(renderNode, canvas as HardwareCanvas)
+    }
+
     override fun draw(canvas: Canvas) {
         if (!renderNode.isValid) recordEmptyDisplayList()
         (canvas as HardwareCanvas).drawRenderNode(renderNode)
@@ -100,13 +109,16 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
 
 @RequiresApi(Build.VERSION_CODES.M)
 internal open class RenderNodeApi23 : RenderNodeApi21() {
-    override fun initialize() {
-        recordEmptyDisplayList()
-    }
-
     private fun recordEmptyDisplayList() {
         val canvas = renderNode.start(0, 0)
         renderNode.end(canvas)
+    }
+
+    override fun beginRecording(width: Int, height: Int): Canvas =
+        renderNode.start(0, 0)
+
+    override fun endRecording(canvas: Canvas) {
+        renderNode.end(canvas as DisplayListCanvas)
     }
 
     override fun draw(canvas: Canvas) {

@@ -4,7 +4,9 @@ A utility library for Android with various tools to fix the elevation shadow art
 
 <img src="images/examples_before.png" width="85%" />
 
-Those artifacts are a result of the hardware-accelerated shadows that came with the introduction of Material Design in Lollipop. The shadow gradient is left un-clipped everywhere, presumably as a performance consideration. These tools use the same classes and methods that the platform uses to render shadows, simply replacing the originals with clipped copies.
+Those artifacts are a result of the hardware-accelerated shadows that came with the introduction of Material Design in Lollipop. The shadow gradient is left un-clipped everywhere, presumably as a performance consideration.
+
+These tools use the same classes and methods that the platform uses to render shadows, simply replacing the originals with clipped copies.
 
 <img src="images/examples_after.png" width="85%" />
 
@@ -15,35 +17,35 @@ Those artifacts are a result of the hardware-accelerated shadows that came with 
 
 ## Sections
 
-+ [Overlay shadows](#overlay-shadows)
++ [**Overlay shadows**](#overlay-shadows)
 
     An extension property on `View` allows for easy application of the fix in the form of a clipped shadow replica drawn onto the target's parent's overlay. Simple and straightforward, it has a few limitations inherent to the technique, but it is indeed sufficient for many, if not most, use cases.
 
-+ [Custom containers](#custom-containers)
++ [**Custom containers**](#custom-containers)
 
     These `ViewGroup`s fix their children's shadows by handling them inline, and so do not suffer some of the limitations of the overlay shadows. At present, they can only be used directly, but they will eventually be added as options to the inflation helpers.
 
-+ [Drawables](#drawables)
++ [**Drawables**](#drawables)
 
     A relatively simple `Drawable` class is provided to create "independent" shadows from either a `View` or a `Path`. Hopefully this might help to cover any unforeseen cases, or any for which the other solutions may be insufficient or inappropriate.
 
-+ [Layout inflation helpers](#layout-inflation-helpers)
++ [**Layout inflation helpers**](#layout-inflation-helpers)
 
     These helpers insert themselves into the inflation pipeline to automatically enable the overlay fix on selected tags and `View`s. This is handy if you'd like to add it to an existing project with minimal changes, or if you'd just rather not clutter your code with the necessary property settings.
 
-+ [Notes](#notes)
++ [**Notes**](#notes)
 
     Overall limitations and conflicts, known bugs, planned features, etc.
 
-+ [Download](#download)
++ [**Download**](#download)
 
     Available through JitPack, currently.
 
-+ [API reference](#api-reference)
++ [**API reference**](#api-reference)
 
     Complete listing of the public API.
 
-+ [License](#license)
++ [**License**](#license)
 
     Standard MIT.
 
@@ -74,7 +76,7 @@ That's it. It behaves like any other such `View` property. The `if` check is str
 
     <img src="images/overlapping_fallback.png" width="65%" />
 
-    Possibly the simplest remedy for this would be to wrap one or more of the siblings in another `ViewGroup` – e.g., in a `<FrameLayout>` – which would would isolate the shadow draws. The custom containers are in the process of being modified to handle overlapping children, but that feature is not quite ready yet.
+    Possibly the simplest remedy for this would be to wrap one or more of the siblings in another `ViewGroup` – e.g., in a `<FrameLayout>` – which would isolate the shadow draws. The custom containers are in the process of being modified to handle overlapping children, but that feature is not quite ready yet.
 
 + Certain animations can sometimes cause the overlay shadow to fall out of alignment with the target a bit during the motion. The demo app has a `CoordinatorLayout` setup on the second Overlay page that has the potential to show this defect. The custom containers described in the next section are optimized to avoid this, and should help to alleviate it, if you find that your setup is affected.
 
@@ -150,7 +152,7 @@ These three all assume that all of their children will be targets, so the parent
 
 ### Limitations
 
-+ At present, all of the containers always use the fallback drawing method, as there is an unforeseen issue with z-ordering in the primary method. That means that overlapping children will be missing the shadows altogether inside the intersections, as described in [the overlays' limitations](#limitations-and-conflicts).
++ At present, all of the containers always use the fallback drawing method, as there is an unforeseen issue with z-ordering in the primary method. That means that overlapping children will be missing the shadows altogether inside the intersections, as described in [the Overlays' limitations](#limitations-and-conflicts).
 
 + Currently, the containers' behavior in the Android Studio graphical layout editor is a little flaky. Each will still work as the base `ViewGroup` that it is, but it may or may not fix the shadows there, and sometimes it can interfere with a child's content draw. I'm not yet sure exactly why, but I'm assuming it has something to do with the specialized rendering pipeline for the editor.
 

@@ -9,6 +9,7 @@ internal sealed class BaseDrawable(@ColorInt color: Int) : Drawable() {
     protected val paint =
         Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun getOpacity() = PixelFormat.TRANSLUCENT
 
     override fun setAlpha(alpha: Int) {}

@@ -12,7 +12,7 @@ import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.Q)
 internal class RenderNodeApi29 : RenderNodeWrapper, RenderNodeColors {
-    private val renderNode = RenderNode("OverlayShadow")
+    private val renderNode = RenderNode("ShadowGadgets")
 
     override fun getAlpha(): Float = renderNode.alpha
 
@@ -79,15 +79,28 @@ internal class RenderNodeApi29 : RenderNodeWrapper, RenderNodeColors {
 
     override fun setSpotShadowColor(color: Int): Boolean = renderNode.setSpotShadowColor(color)
 
-    override fun setOutline(outline: Outline?) = renderNode.setOutline(outline)
+    override fun setOutline(outline: Outline?): Boolean = renderNode.setOutline(outline)
 
     override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
         renderNode.setPosition(left, top, right, bottom)
 
-    override fun hasIdentityMatrix() = renderNode.hasIdentityMatrix()
+    override fun hasIdentityMatrix(): Boolean = renderNode.hasIdentityMatrix()
 
     override fun getMatrix(outMatrix: Matrix) {
         renderNode.getMatrix(outMatrix)
+    }
+
+    override fun setProjectBackwards(shouldProject: Boolean): Boolean =
+        renderNode.setProjectBackwards(shouldProject)
+
+    override fun setProjectionReceiver(shouldReceive: Boolean): Boolean =
+        renderNode.setProjectionReceiver(shouldReceive)
+
+    override fun beginRecording(width: Int, height: Int): Canvas =
+        renderNode.beginRecording(width, height)
+
+    override fun endRecording(canvas: Canvas) {
+        renderNode.endRecording()
     }
 
     override fun draw(canvas: Canvas) {

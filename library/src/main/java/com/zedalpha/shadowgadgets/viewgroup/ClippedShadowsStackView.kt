@@ -7,14 +7,16 @@ import android.graphics.Canvas
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
+import android.widget.StackView
 import androidx.annotation.RequiresApi
-import androidx.recyclerview.widget.RecyclerView
 import com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsViewGroup.ShadowPlane
 
-class ClippedShadowsRecyclerView @JvmOverloads constructor(
+class ClippedShadowsStackView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
-) : RecyclerView(context, attrs), ClippedShadowsViewGroup {
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = android.R.attr.stackViewStyle,
+    defStyleRes: Int = 0
+) : StackView(context, attrs, defStyleAttr, defStyleRes), ClippedShadowsViewGroup {
     private val manager = RecyclingManager(this, attrs)
 
     override val isUsingShadowsFallback = manager.isUsingFallback

@@ -14,7 +14,7 @@ import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.clipOutlineShadow
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
-import com.zedalpha.shadowgadgets.shadow.*
+import com.zedalpha.shadowgadgets.shadow.shadow
 import com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsViewGroup.ShadowPlane
 import kotlin.properties.Delegates
 
@@ -48,11 +48,7 @@ internal sealed class ViewGroupManager(
         array.recycle()
     }
 
-    private val container: ViewGroupContainer<*> = if (isUsingFallback) {
-        ViewGroupViewShadowContainer(viewGroup)
-    } else {
-        ViewGroupRenderNodeShadowContainer(viewGroup)
-    }
+    private val container: ViewGroupContainer<*> = createContainer(viewGroup)
 
     private val onDrawListener = ViewTreeObserver.OnDrawListener {
         container.updateAndInvalidateShadows()
@@ -119,9 +115,11 @@ internal sealed class ViewGroupManager(
     }
 
     private fun <T> verifyUnattached(initialValue: T) =
-        Delegates.vetoable(initialValue) { _, _, _ ->
+        Delegates.vetoable(initialValue) { property, _, _ ->
             if (viewGroup.isAttachedToWindow) {
-                throw IllegalStateException("Must be set before View is attached to Window.")
+                throw IllegalStateException(
+                    "${property.name} must be set before View is attached to Window."
+                )
             }
             true
         }
@@ -134,6 +132,13 @@ internal sealed class ViewGroupManager(
         child.outlineProvider = ZeroAlphaProviderWrapper(child.outlineProvider)
     }
 }
+
+private val createContainer: (ViewGroup) -> ViewGroupContainer<*> =
+    if (RenderNodeFactory.isOpenForBusiness) {
+        ::ViewGroupRenderNodeShadowContainer
+    } else {
+        ::ViewGroupViewShadowContainer
+    }
 
 internal class RegularManager(
     viewGroup: ViewGroup,

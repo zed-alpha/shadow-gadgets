@@ -71,62 +71,80 @@ internal class PieReflectorWrapper : RenderNodeWrapper, RenderNodeColors {
         endMethod.invoke(renderNode, canvas)
     }
 
-    override fun getAlpha(): Float = getAlphaMethod.invoke(renderNode) as Float
+    override fun getAlpha(): Float =
+        getAlphaMethod.invoke(renderNode) as Float
 
-    override fun setAlpha(alpha: Float) = setAlphaMethod.invoke(renderNode, alpha) as Boolean
+    override fun setAlpha(alpha: Float) =
+        setAlphaMethod.invoke(renderNode, alpha) as Boolean
 
-    override fun getCameraDistance(): Float = getCameraDistanceMethod.invoke(renderNode) as Float
+    override fun getCameraDistance(): Float =
+        getCameraDistanceMethod.invoke(renderNode) as Float
 
     override fun setCameraDistance(distance: Float) =
         setCameraDistanceMethod.invoke(renderNode, distance) as Boolean
 
-    override fun getElevation(): Float = getElevationMethod.invoke(renderNode) as Float
+    override fun getElevation(): Float =
+        getElevationMethod.invoke(renderNode) as Float
 
     override fun setElevation(elevation: Float) =
         setElevationMethod.invoke(renderNode, elevation) as Boolean
 
-    override fun getPivotX(): Float = getPivotXMethod.invoke(renderNode) as Float
+    override fun getPivotX(): Float =
+        getPivotXMethod.invoke(renderNode) as Float
 
-    override fun setPivotX(pivotX: Float) = setPivotXMethod.invoke(renderNode, pivotX) as Boolean
+    override fun setPivotX(pivotX: Float) =
+        setPivotXMethod.invoke(renderNode, pivotX) as Boolean
 
-    override fun getPivotY(): Float = getPivotYMethod.invoke(renderNode) as Float
+    override fun getPivotY(): Float =
+        getPivotYMethod.invoke(renderNode) as Float
 
-    override fun setPivotY(pivotY: Float) = setPivotYMethod.invoke(renderNode, pivotY) as Boolean
+    override fun setPivotY(pivotY: Float) =
+        setPivotYMethod.invoke(renderNode, pivotY) as Boolean
 
-    override fun getRotationX(): Float = getRotationXMethod.invoke(renderNode) as Float
+    override fun getRotationX(): Float =
+        getRotationXMethod.invoke(renderNode) as Float
 
     override fun setRotationX(rotationX: Float) =
         setRotationXMethod.invoke(renderNode, rotationX) as Boolean
 
-    override fun getRotationY(): Float = getRotationYMethod.invoke(renderNode) as Float
+    override fun getRotationY(): Float =
+        getRotationYMethod.invoke(renderNode) as Float
 
     override fun setRotationY(rotationY: Float) =
         setRotationYMethod.invoke(renderNode, rotationY) as Boolean
 
-    override fun getRotationZ(): Float = getRotationMethod.invoke(renderNode) as Float
+    override fun getRotationZ(): Float =
+        getRotationMethod.invoke(renderNode) as Float
 
     override fun setRotationZ(rotationZ: Float) =
         setRotationMethod.invoke(renderNode, rotationZ) as Boolean
 
-    override fun getScaleX(): Float = getScaleXMethod.invoke(renderNode) as Float
+    override fun getScaleX(): Float =
+        getScaleXMethod.invoke(renderNode) as Float
 
-    override fun setScaleX(scaleX: Float) = setScaleXMethod.invoke(renderNode, scaleX) as Boolean
+    override fun setScaleX(scaleX: Float) =
+        setScaleXMethod.invoke(renderNode, scaleX) as Boolean
 
-    override fun getScaleY(): Float = getScaleYMethod.invoke(renderNode) as Float
+    override fun getScaleY(): Float =
+        getScaleYMethod.invoke(renderNode) as Float
 
-    override fun setScaleY(scaleY: Float) = setScaleYMethod.invoke(renderNode, scaleY) as Boolean
+    override fun setScaleY(scaleY: Float) =
+        setScaleYMethod.invoke(renderNode, scaleY) as Boolean
 
-    override fun getTranslationX(): Float = getTranslationXMethod.invoke(renderNode) as Float
+    override fun getTranslationX(): Float =
+        getTranslationXMethod.invoke(renderNode) as Float
 
     override fun setTranslationX(translationX: Float) =
         setTranslationXMethod.invoke(renderNode, translationX) as Boolean
 
-    override fun getTranslationY(): Float = getTranslationYMethod.invoke(renderNode) as Float
+    override fun getTranslationY(): Float =
+        getTranslationYMethod.invoke(renderNode) as Float
 
     override fun setTranslationY(translationY: Float) =
         setTranslationYMethod.invoke(renderNode, translationY) as Boolean
 
-    override fun getTranslationZ(): Float = getTranslationZMethod.invoke(renderNode) as Float
+    override fun getTranslationZ(): Float =
+        getTranslationZMethod.invoke(renderNode) as Float
 
     override fun setTranslationZ(translationZ: Float) =
         setTranslationZMethod.invoke(renderNode, translationZ) as Boolean
@@ -137,7 +155,8 @@ internal class PieReflectorWrapper : RenderNodeWrapper, RenderNodeColors {
     override fun setAmbientShadowColor(color: Int) =
         setAmbientShadowColorMethod.invoke(renderNode, color) as Boolean
 
-    override fun getSpotShadowColor(): Int = getSpotShadowColorMethod.invoke(renderNode) as Int
+    override fun getSpotShadowColor(): Int =
+        getSpotShadowColorMethod.invoke(renderNode) as Int
 
     override fun setSpotShadowColor(color: Int) =
         setSpotShadowColorMethod.invoke(renderNode, color) as Boolean
@@ -148,7 +167,8 @@ internal class PieReflectorWrapper : RenderNodeWrapper, RenderNodeColors {
     override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
         setLeftTopRightBottomMethod(renderNode, left, top, right, bottom) as Boolean
 
-    override fun hasIdentityMatrix() = hasIdentityMatrixMethod.invoke(renderNode) as Boolean
+    override fun hasIdentityMatrix() =
+        hasIdentityMatrixMethod.invoke(renderNode) as Boolean
 
     override fun getMatrix(outMatrix: Matrix) {
         getMatrixMethod.invoke(renderNode, outMatrix)

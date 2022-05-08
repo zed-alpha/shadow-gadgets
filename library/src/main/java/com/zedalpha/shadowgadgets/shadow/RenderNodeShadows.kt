@@ -9,7 +9,7 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 
-internal sealed class RenderNodeShadow(targetView: View) : Shadow(targetView) {
+internal abstract class RenderNodeShadow(targetView: View) : Shadow(targetView) {
     private val renderNode = RenderNodeFactory.newInstance()
 
     private var showing = true

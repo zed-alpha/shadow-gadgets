@@ -11,16 +11,16 @@ import androidx.annotation.IntRange
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeColors
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
+import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
 import com.zedalpha.shadowgadgets.shadow.*
 
 class ShadowDrawable private constructor() : Drawable() {
     companion object {
-        val isAvailable: Boolean
-            get() = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
-                IsPieReflectionAvailable
-            } else {
-                RenderNodeFactory.isOpenForBusiness
-            }
+        val isAvailable = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
+            IsPieReflectionAvailable
+        } else {
+            RenderNodeFactory.isOpenForBusiness
+        }
 
         fun fromView(view: View): ShadowDrawable {
             checkAvailability()
@@ -43,12 +43,8 @@ class ShadowDrawable private constructor() : Drawable() {
         }
     }
 
-    private val renderNode =
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
-            PieReflectorWrapper()
-        } else {
-            RenderNodeFactory.newInstance()
-        }
+    private val renderNode: RenderNodeWrapper = createRenderNodeAndTryExtraHard()
+
     private val clipPath = Path()
     private var renderNodeRight = 0
     private var renderNodeBottom = 0
@@ -290,3 +286,10 @@ class ShadowDrawable private constructor() : Drawable() {
     private val cacheRect = Rect()
     private val cacheMatrix = Matrix()
 }
+
+private val createRenderNodeAndTryExtraHard: () -> RenderNodeWrapper =
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
+        ::PieReflectorWrapper
+    } else {
+        RenderNodeFactory::newInstance
+    }

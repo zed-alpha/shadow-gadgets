@@ -2,7 +2,9 @@
 
 package com.zedalpha.shadowgadgets.inflation
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.content.res.XmlResourceParser
 import android.os.Build
@@ -12,7 +14,6 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.annotation.XmlRes
 import com.zedalpha.shadowgadgets.R
-import com.zedalpha.shadowgadgets.unwrapActivity
 import org.xmlpull.v1.XmlPullParser
 
 
@@ -105,3 +106,12 @@ private fun processNameMatcher(
 }
 
 private fun ruleForValue(value: Int) = MatchRule.values().getOrElse(value) { MatchRule.Equals }
+
+internal fun unwrapActivity(context: Context): Activity? {
+    var checkContext: Context? = context
+    do {
+        if (checkContext is Activity) return checkContext
+        checkContext = (checkContext as? ContextWrapper)?.baseContext
+    } while (checkContext != null)
+    return null
+}

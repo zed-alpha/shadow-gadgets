@@ -72,12 +72,10 @@ internal interface RenderNodeWrapper {
 internal interface RenderNodeColors {
     @ColorInt
     fun getAmbientShadowColor(): Int
-
     fun setAmbientShadowColor(@ColorInt color: Int): Boolean
 
     @ColorInt
     fun getSpotShadowColor(): Int
-
     fun setSpotShadowColor(@ColorInt color: Int): Boolean
 }
 

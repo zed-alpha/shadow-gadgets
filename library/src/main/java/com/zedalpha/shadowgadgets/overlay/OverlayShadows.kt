@@ -1,6 +1,6 @@
 @file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 
-package com.zedalpha.shadowgadgets.shadow
+package com.zedalpha.shadowgadgets.overlay
 
 import android.graphics.Canvas
 import android.graphics.ColorFilter
@@ -14,9 +14,10 @@ import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
+import com.zedalpha.shadowgadgets.shadow.*
 
 
-internal object ShadowSwitch : View.OnAttachStateChangeListener {
+internal object OverlayShadowSwitch : View.OnAttachStateChangeListener {
     override fun onViewAttachedToWindow(view: View) {
         moveShadowToOverlay(view)
     }
@@ -34,7 +35,7 @@ internal fun moveShadowToOverlay(targetView: View) {
 }
 
 internal fun removeShadowFromOverlay(targetView: View) {
-    (targetView.getTag(R.id.tag_target_shadow) as? OverlayShadow)?.detachFromController()
+    (targetView.shadow as? OverlayShadow)?.detachFromController()
 }
 
 
@@ -155,8 +156,6 @@ private class OverlayRenderNodeShadow(
     targetView: View,
     override val controller: OverlayRenderNodeShadowController
 ) : RenderNodeShadow(targetView), OverlayShadow {
-    val shadowDrawable: Drawable = RenderNodeDrawable()
-
     override fun attach() {
         super.attach()
         controller.add(this)
@@ -168,40 +167,30 @@ private class OverlayRenderNodeShadow(
         controller.remove(this)
         targetView.invalidate()
     }
-
-    override fun invalidate() {
-        shadowDrawable.invalidateSelf()
-    }
-
-    inner class RenderNodeDrawable : Drawable() {
-        override fun draw(canvas: Canvas) {
-            this@OverlayRenderNodeShadow.draw(canvas)
-        }
-
-        override fun setAlpha(alpha: Int) {}
-
-        override fun setColorFilter(colorFilter: ColorFilter?) {}
-
-        @Suppress("OVERRIDE_DEPRECATION")
-        override fun getOpacity() = PixelFormat.TRANSLUCENT
-    }
 }
 
 private class OverlayRenderNodeShadowController(parentView: ViewGroup) :
     OverlayController<OverlayRenderNodeShadow>(parentView) {
 
+    private val containerDrawable: Drawable = RenderNodeShadowContainerDrawable()
+
     private val shadows = mutableListOf<OverlayRenderNodeShadow>()
+
+    override fun attach() {
+        super.attach()
+        parentView.overlay.add(containerDrawable)
+    }
+
+    override fun detach() {
+        super.detach()
+        parentView.overlay.remove(containerDrawable)
+    }
 
     override fun createShadow(view: View) = OverlayRenderNodeShadow(view, this)
 
     override fun updateAndInvalidateShadows() {
         var invalidate = false
-        shadows.forEach { shadow ->
-            if (shadow.update()) {
-                shadow.invalidate()
-                invalidate = true
-            }
-        }
+        shadows.forEach { if (it.update()) invalidate = true }
         if (invalidate) parentView.invalidate()
     }
 
@@ -209,11 +198,20 @@ private class OverlayRenderNodeShadowController(parentView: ViewGroup) :
 
     fun add(shadow: OverlayRenderNodeShadow) {
         shadows += shadow
-        parentView.overlay.add(shadow.shadowDrawable)
     }
 
     fun remove(shadow: OverlayRenderNodeShadow) {
         shadows -= shadow
-        parentView.overlay.remove(shadow.shadowDrawable)
+    }
+
+    inner class RenderNodeShadowContainerDrawable : Drawable() {
+        override fun draw(canvas: Canvas) {
+            this@OverlayRenderNodeShadowController.shadows.forEach { it.draw(canvas) }
+        }
+
+        @Suppress("OVERRIDE_DEPRECATION")
+        override fun getOpacity() = PixelFormat.TRANSLUCENT
+        override fun setAlpha(alpha: Int) {}
+        override fun setColorFilter(colorFilter: ColorFilter?) {}
     }
 }

@@ -94,6 +94,7 @@ class ClippedShadowsMotionLayout @JvmOverloads constructor(
         constructor(source: LayoutParams) : super(source) {
             this.clipOutlineShadow = source.clipOutlineShadow
             this.disableShadowOnFallback = source.disableShadowOnFallback
+            this.clippedShadowPlane = source.clippedShadowPlane
         }
     }
 }

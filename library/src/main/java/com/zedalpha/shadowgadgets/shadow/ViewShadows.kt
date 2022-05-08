@@ -14,7 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 
 
-internal sealed class ViewShadow(
+internal abstract class ViewShadow(
     targetView: View,
     private val container: ViewShadowContainer
 ) : Shadow(targetView) {
@@ -67,16 +67,16 @@ internal sealed class ViewShadow(
         return colorsChanged || areaChanged
     }
 
-    override fun invalidate() {
-        shadowView.invalidate()
-    }
-
     override fun show() {
         container.add(this)
     }
 
     override fun hide() {
         container.remove(this)
+    }
+
+    fun invalidate() {
+        shadowView.invalidate()
     }
 
     fun calculateClipPath(): Path {
@@ -165,9 +165,9 @@ internal open class ViewShadowContainer(private val viewGroup: ViewGroup) :
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         /* No-op. Child layout is handled manually elsewhere. */
     }
-
-    private object EmptyLayoutParams : ViewGroup.LayoutParams(0, 0)
 }
+
+private val EmptyLayoutParams = ViewGroup.LayoutParams(0, 0)
 
 internal class ShadowView(context: Context) : View(context) {
     init {

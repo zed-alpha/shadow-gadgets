@@ -1,7 +1,6 @@
 @file:RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 
-
-package com.zedalpha.shadowgadgets.shadow
+package com.zedalpha.shadowgadgets.viewgroup
 
 import android.annotation.SuppressLint
 import android.graphics.Canvas
@@ -11,7 +10,10 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
-import com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsViewGroup
+import com.zedalpha.shadowgadgets.shadow.RenderNodeShadow
+import com.zedalpha.shadowgadgets.shadow.Shadow
+import com.zedalpha.shadowgadgets.shadow.ViewShadow
+import com.zedalpha.shadowgadgets.shadow.ViewShadowContainer
 import com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsViewGroup.ShadowPlane
 
 
@@ -26,6 +28,7 @@ internal sealed interface ViewGroupContainer<T> where T : Shadow, T : ViewGroupS
 
     fun onSizeChanged(w: Int, h: Int)
 }
+
 
 internal class ViewGroupViewShadow(
     targetView: View,
@@ -67,6 +70,7 @@ internal class ViewGroupRenderNodeShadow(
                 container.remove(this)
                 field = value
                 container.add(this)
+                container.invalidate()
             }
         }
 
@@ -79,13 +83,12 @@ internal class ViewGroupRenderNodeShadow(
         super.detach()
         container.remove(this)
     }
-
-    override fun invalidate() {}
 }
 
 
 internal class ViewGroupRenderNodeShadowContainer(private val viewGroup: ViewGroup) :
     ViewGroupContainer<ViewGroupRenderNodeShadow> {
+
     private val foregroundShadows = mutableListOf<ViewGroupRenderNodeShadow>()
     private val backgroundShadows = mutableListOf<ViewGroupRenderNodeShadow>()
 
@@ -111,6 +114,10 @@ internal class ViewGroupRenderNodeShadowContainer(private val viewGroup: ViewGro
         } else {
             backgroundShadows -= shadow
         }
+    }
+
+    fun invalidate() {
+        viewGroup.invalidate()
     }
 
     override fun createShadow(child: View, clippedShadowPlane: Int?) =

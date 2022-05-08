@@ -53,7 +53,6 @@ internal sealed class Shadow(protected val targetView: View) {
     }
 
     abstract fun update(): Boolean
-    abstract fun invalidate()
     abstract fun show()
     abstract fun hide()
 }

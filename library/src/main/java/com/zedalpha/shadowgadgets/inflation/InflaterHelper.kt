@@ -9,8 +9,8 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RequiresApi
+import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.clipOutlineShadow
-import com.zedalpha.shadowgadgets.getClipOutlineShadow
 import java.lang.reflect.Array
 
 
@@ -18,13 +18,7 @@ internal class ShadowHelper(
     private val context: Context,
     private val matchers: List<TagMatcher>
 ) {
-    private val inflater by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            NewViewInflater(context)
-        } else {
-            OldViewInflater(context)
-        }
-    }
+    private val inflater: ViewInflater by lazy { createInflater(context) }
 
     fun processTag(name: String, context: Context, attrs: AttributeSet): View? {
         val view = if (name !in IgnoredTags) inflater.tryCreate(name, context, attrs) else null
@@ -43,6 +37,13 @@ internal class ShadowHelper(
         return false
     }
 }
+
+private val createInflater: (Context) -> ViewInflater =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        ::NewViewInflater
+    } else {
+        ::OldViewInflater
+    }
 
 @SuppressLint("SoonBlockedPrivateApi")
 private class OldViewInflater(context: Context) : ViewInflater(context) {
@@ -106,3 +107,12 @@ private sealed class ViewInflater(context: Context) : LayoutInflater(context) {
 private val IgnoredTags = arrayOf("include", "merge", "requestFocus", "tag", "fragment", "blink")
 
 private val ClassPrefixes = arrayOf("android.widget.", "android.webkit.", "android.app.")
+
+private val ClipOutlineShadowAttribute = intArrayOf(R.attr.clipOutlineShadow)
+
+private fun AttributeSet?.getClipOutlineShadow(context: Context): Boolean {
+    val array = context.obtainStyledAttributes(this, ClipOutlineShadowAttribute)
+    val value = array.getBoolean(0, false)
+    array.recycle()
+    return value
+}

@@ -13,7 +13,6 @@ import androidx.appcompat.widget.*
 import com.google.android.material.theme.MaterialComponentsViewInflater
 import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.clipOutlineShadow
-import com.zedalpha.shadowgadgets.unwrapActivity
 
 
 fun AppCompatActivity.attachMaterialComponentsShadowHelper() {

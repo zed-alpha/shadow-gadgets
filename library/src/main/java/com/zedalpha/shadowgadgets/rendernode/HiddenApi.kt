@@ -21,68 +21,92 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
         RenderNodeReflector.end(renderNode, canvas)
     }
 
-    override fun getAlpha(): Float = renderNode.alpha
+    override fun getAlpha(): Float =
+        renderNode.alpha
 
-    override fun setAlpha(alpha: Float): Boolean = renderNode.setAlpha(alpha)
+    override fun setAlpha(alpha: Float): Boolean =
+        renderNode.setAlpha(alpha)
 
-    override fun getCameraDistance(): Float = renderNode.cameraDistance
+    override fun getCameraDistance(): Float =
+        renderNode.cameraDistance
 
     override fun setCameraDistance(distance: Float): Boolean =
         renderNode.setCameraDistance(distance)
 
-    override fun getElevation(): Float = renderNode.elevation
+    override fun getElevation(): Float =
+        renderNode.elevation
 
-    override fun setElevation(elevation: Float): Boolean = renderNode.setElevation(elevation)
+    override fun setElevation(elevation: Float): Boolean =
+        renderNode.setElevation(elevation)
 
-    override fun getPivotX(): Float = renderNode.pivotX
+    override fun getPivotX(): Float =
+        renderNode.pivotX
 
-    override fun setPivotX(pivotX: Float): Boolean = renderNode.setPivotX(pivotX)
+    override fun setPivotX(pivotX: Float): Boolean =
+        renderNode.setPivotX(pivotX)
 
-    override fun getPivotY(): Float = renderNode.pivotY
+    override fun getPivotY(): Float =
+        renderNode.pivotY
 
-    override fun setPivotY(pivotY: Float): Boolean = renderNode.setPivotY(pivotY)
+    override fun setPivotY(pivotY: Float): Boolean =
+        renderNode.setPivotY(pivotY)
 
-    override fun getRotationX(): Float = renderNode.rotationX
+    override fun getRotationX(): Float =
+        renderNode.rotationX
 
-    override fun setRotationX(rotationX: Float): Boolean = renderNode.setRotationX(rotationX)
+    override fun setRotationX(rotationX: Float): Boolean =
+        renderNode.setRotationX(rotationX)
 
-    override fun getRotationY(): Float = renderNode.rotationY
+    override fun getRotationY(): Float =
+        renderNode.rotationY
 
-    override fun setRotationY(rotationY: Float): Boolean = renderNode.setRotationY(rotationY)
+    override fun setRotationY(rotationY: Float): Boolean =
+        renderNode.setRotationY(rotationY)
 
-    override fun getRotationZ(): Float = renderNode.rotation
+    override fun getRotationZ(): Float =
+        renderNode.rotation
 
-    override fun setRotationZ(rotationZ: Float): Boolean = renderNode.setRotation(rotationZ)
+    override fun setRotationZ(rotationZ: Float): Boolean =
+        renderNode.setRotation(rotationZ)
 
-    override fun getScaleX(): Float = renderNode.scaleX
+    override fun getScaleX(): Float =
+        renderNode.scaleX
 
-    override fun setScaleX(scaleX: Float): Boolean = renderNode.setScaleX(scaleX)
+    override fun setScaleX(scaleX: Float): Boolean =
+        renderNode.setScaleX(scaleX)
 
-    override fun getScaleY(): Float = renderNode.scaleY
+    override fun getScaleY(): Float =
+        renderNode.scaleY
 
-    override fun setScaleY(scaleY: Float): Boolean = renderNode.setScaleY(scaleY)
+    override fun setScaleY(scaleY: Float): Boolean =
+        renderNode.setScaleY(scaleY)
 
-    override fun getTranslationX(): Float = renderNode.translationX
+    override fun getTranslationX(): Float =
+        renderNode.translationX
 
     override fun setTranslationX(translationX: Float): Boolean =
         renderNode.setTranslationX(translationX)
 
-    override fun getTranslationY(): Float = renderNode.translationY
+    override fun getTranslationY(): Float =
+        renderNode.translationY
 
     override fun setTranslationY(translationY: Float): Boolean =
         renderNode.setTranslationY(translationY)
 
-    override fun getTranslationZ(): Float = renderNode.translationZ
+    override fun getTranslationZ(): Float =
+        renderNode.translationZ
 
     override fun setTranslationZ(translationZ: Float): Boolean =
         renderNode.setTranslationZ(translationZ)
 
-    override fun setOutline(outline: Outline?) = renderNode.setOutline(outline)
+    override fun setOutline(outline: Outline?) =
+        renderNode.setOutline(outline)
 
     override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
         renderNode.setLeftTopRightBottom(left, top, right, bottom)
 
-    override fun hasIdentityMatrix() = renderNode.hasIdentityMatrix()
+    override fun hasIdentityMatrix() =
+        renderNode.hasIdentityMatrix()
 
     override fun getMatrix(outMatrix: Matrix) {
         renderNode.getMatrix(outMatrix)
@@ -129,13 +153,17 @@ internal open class RenderNodeApi23 : RenderNodeApi21() {
 
 @RequiresApi(Build.VERSION_CODES.P)
 internal class RenderNodeApi28 : RenderNodeApi23(), RenderNodeColors {
-    override fun getAmbientShadowColor() = renderNode.ambientShadowColor
+    override fun getAmbientShadowColor() =
+        renderNode.ambientShadowColor
 
-    override fun setAmbientShadowColor(color: Int) = renderNode.setAmbientShadowColor(color)
+    override fun setAmbientShadowColor(color: Int) =
+        renderNode.setAmbientShadowColor(color)
 
-    override fun getSpotShadowColor() = renderNode.spotShadowColor
+    override fun getSpotShadowColor() =
+        renderNode.spotShadowColor
 
-    override fun setSpotShadowColor(color: Int) = renderNode.setSpotShadowColor(color)
+    override fun setSpotShadowColor(color: Int) =
+        renderNode.setSpotShadowColor(color)
 }
 
 internal object RenderNodeReflector {

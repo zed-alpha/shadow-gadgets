@@ -2,14 +2,103 @@
 
 package com.zedalpha.shadowgadgets.shadow
 
-import android.graphics.Canvas
-import android.graphics.Outline
+import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 
-internal abstract class RenderNodeShadow(targetView: View) : Shadow(targetView) {
+
+internal class RenderNodeShadowController(parentView: ViewGroup) :
+    ShadowController<RenderNodeShadow, RenderNodeShadowContainer>(parentView) {
+
+    override val shadowContainer = RenderNodeShadowContainer(parentView, this)
+
+    override fun createShadowForView(view: View) = RenderNodeShadow(view, this)
+}
+
+
+internal class RenderNodeShadowContainer(
+    parentView: ViewGroup,
+    controller: RenderNodeShadowController
+) : ShadowContainer<RenderNodeShadow>(parentView, controller) {
+
+    private val foregroundDrawable = ForegroundShadowDrawable()
+
+    private val backgroundLazy = lazy {
+        val drawable = BackgroundShadowDrawable()
+        parentView.overlay.add(drawable)
+        if (parentView.isLaidOut) drawable.setSize(parentView.width, parentView.height)
+        if (parentView.background == null) parentView.background = EmptyDrawable
+        drawable
+    }
+
+    override fun attachToParent() {
+        val parent = parentView
+        parent.overlay.add(foregroundDrawable)
+    }
+
+    override fun detachFromParent() {
+        val parent = parentView
+        parent.overlay.remove(foregroundDrawable)
+
+        if (backgroundLazy.isInitialized()) {
+            parent.overlay.remove(backgroundLazy.value)
+            if (parent.background == EmptyDrawable) parent.background = null
+        }
+    }
+
+    override fun addShadow(shadow: RenderNodeShadow) {
+        super.addShadow(shadow)
+        if (shadow.isForeground) {
+            foregroundDrawable.foregroundShadows += shadow
+        } else {
+            backgroundLazy.value.backgroundShadows += shadow
+        }
+    }
+
+    override fun removeShadow(shadow: RenderNodeShadow) {
+        super.removeShadow(shadow)
+        if (shadow.isForeground) {
+            foregroundDrawable.foregroundShadows -= shadow
+        } else {
+            backgroundLazy.value.backgroundShadows -= shadow
+        }
+    }
+
+    override fun setSize(width: Int, height: Int) {
+        if (backgroundLazy.isInitialized()) backgroundLazy.value.setSize(width, height)
+    }
+
+    private inner class ForegroundShadowDrawable : Drawable() {
+        val foregroundShadows = mutableListOf<RenderNodeShadow>()
+
+        override fun draw(canvas: Canvas) {
+            foregroundShadows.forEach { it.draw(canvas) }
+        }
+
+        @Suppress("OVERRIDE_DEPRECATION")
+        override fun getOpacity() = PixelFormat.TRANSLUCENT
+        override fun setAlpha(alpha: Int) {}
+        override fun setColorFilter(colorFilter: ColorFilter?) {}
+    }
+
+    private inner class BackgroundShadowDrawable : OverlayProjectorDrawable() {
+        val backgroundShadows = mutableListOf<RenderNodeShadow>()
+
+        override fun drawProjectedContent(canvas: Canvas) {
+            backgroundShadows.forEach { it.draw(canvas) }
+        }
+    }
+}
+
+
+internal class RenderNodeShadow(
+    targetView: View,
+    shadowController: RenderNodeShadowController
+) : Shadow(targetView, shadowController) {
     private val renderNode = RenderNodeFactory.newInstance()
 
     private var showing = true
@@ -53,14 +142,6 @@ internal abstract class RenderNodeShadow(targetView: View) : Shadow(targetView) 
         return colorsChanged || areaChanged
     }
 
-    override fun show() {
-        showing = true
-    }
-
-    override fun hide() {
-        showing = false
-    }
-
     fun draw(canvas: Canvas) {
         if (willDraw && showing) {
             update()
@@ -80,4 +161,57 @@ internal abstract class RenderNodeShadow(targetView: View) : Shadow(targetView) 
             clipAndDraw(canvas, path, renderNode)
         }
     }
+
+    override fun show() {
+        showing = true
+    }
+
+    override fun hide() {
+        showing = false
+    }
 }
+
+
+private sealed class OverlayProjectorDrawable : Drawable() {
+    private val baseNode = RenderNodeFactory.newInstance().apply {
+        setClipToBounds(false)
+    }
+
+    private val projectorNode = RenderNodeFactory.newInstance().apply {
+        setClipToBounds(false)
+        setProjectBackwards(true)
+    }
+
+    protected abstract fun drawProjectedContent(canvas: Canvas)
+
+    final override fun draw(canvas: Canvas) {
+        val width = bounds.width()
+        val height = bounds.height()
+        val baseCanvas = baseNode.beginRecording(width, height)
+        try {
+            val projectedCanvas = projectorNode.beginRecording(width, height)
+            try {
+                drawProjectedContent(projectedCanvas)
+            } finally {
+                projectorNode.endRecording(projectedCanvas)
+            }
+            projectorNode.draw(baseCanvas)
+        } finally {
+            baseNode.endRecording(baseCanvas)
+        }
+        baseNode.draw(canvas)
+    }
+
+    fun setSize(width: Int, height: Int) {
+        setBounds(0, 0, width, height)
+        baseNode.setPosition(0, 0, width, height)
+        projectorNode.setPosition(0, 0, width, height)
+    }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun getOpacity() = PixelFormat.TRANSLUCENT
+    override fun setAlpha(alpha: Int) {}
+    override fun setColorFilter(filter: ColorFilter?) {}
+}
+
+private val CacheMatrix = Matrix()

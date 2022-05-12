@@ -168,4 +168,8 @@ public class RenderNode {
     public boolean setProjectionReceiver(boolean shouldReceive) {
         throw new UnsupportedOperationException();
     }
+
+    public boolean setClipToBounds(boolean clipToBounds) {
+        throw new UnsupportedOperationException();
+    }
 }

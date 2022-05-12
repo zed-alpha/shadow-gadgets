@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="tag_target_shadow" type="id" />
-    <item name="tag_target_overlay_shadow_switch" type="id" />
-    <item name="tag_parent_overlay_shadow_controller" type="id" />
+    <item name="tag_target_clip_outline_shadow" type="id" />
+    <item name="tag_target_clipped_shadow_plane" type="id" />
+    <item name="tag_target_disable_shadow_on_fallback" type="id" />
+    <item name="tag_target_recycling_view_group_child" type="id" />
+    <item name="tag_parent_shadow_controller" type="id" />
     <item name="tag_decor_shadow_tag_matchers" type="id" />
     <item name="clip_outline_shadow_tag_id" type="id" />
 </resources>

@@ -14,7 +14,7 @@ import java.lang.reflect.Method
 
 
 internal open class RenderNodeApi21 : RenderNodeWrapper {
-    protected val renderNode: RenderNode = RenderNode.create("ShadowGadgets", null)
+    protected val renderNode = RenderNode.create("ShadowGadgets", null)
 
     private fun recordEmptyDisplayList() {
         val canvas = RenderNodeReflector.start(renderNode, 0, 0)
@@ -125,6 +125,12 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
         RenderNodeReflector.end(renderNode, canvas as HardwareCanvas)
     }
 
+    override fun setClipToBounds(clipToBounds: Boolean): Boolean =
+        renderNode.setClipToBounds(clipToBounds)
+
+    override fun hasDisplayList(): Boolean =
+        renderNode.isValid
+
     override fun draw(canvas: Canvas) {
         if (!renderNode.isValid) recordEmptyDisplayList()
         (canvas as HardwareCanvas).drawRenderNode(renderNode)
@@ -139,7 +145,7 @@ internal open class RenderNodeApi23 : RenderNodeApi21() {
     }
 
     override fun beginRecording(width: Int, height: Int): Canvas =
-        renderNode.start(0, 0)
+        renderNode.start(width, height)
 
     override fun endRecording(canvas: Canvas) {
         renderNode.end(canvas as DisplayListCanvas)

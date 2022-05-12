@@ -4,37 +4,144 @@ package com.zedalpha.shadowgadgets.shadow
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
-import android.graphics.drawable.Drawable
+import android.graphics.Canvas
+import android.graphics.Outline
+import android.graphics.Path
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
+import com.zedalpha.shadowgadgets.disableShadowOnFallback
+import com.zedalpha.shadowgadgets.isDisableShadowOnFallbackExplicitlySet
+import com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsViewGroup
+import com.zedalpha.shadowgadgets.viewgroup.clippedShadowsLayoutParams
 
 
-internal abstract class ViewShadow(
+internal class ViewShadowController(parentView: ViewGroup) :
+    ShadowController<ViewShadow, ViewShadowContainer>(parentView) {
+
+    override val shadowContainer = ViewShadowContainer(parentView, this)
+
+    override fun createShadowForView(view: View) = ViewShadow(view, this)
+}
+
+
+@SuppressLint("ViewConstructor")
+internal class ViewShadowContainer(
+    parentView: ViewGroup,
+    controller: ViewShadowController
+) : ShadowContainer<ViewShadow>(parentView, controller) {
+
+    private val shadowViewGroup = ShadowViewGroup()
+
+    override fun attachToParent() {
+        parentView.overlay.add(shadowViewGroup)
+    }
+
+    override fun detachFromParent() {
+        parentView.overlay.remove(shadowViewGroup)
+    }
+
+    override fun setSize(width: Int, height: Int) {
+        shadowViewGroup.layout(0, 0, width, height)
+    }
+
+    fun addShadowView(shadowView: ShadowView) {
+        shadowViewGroup.addView(shadowView, EmptyLayoutParams)
+    }
+
+    fun removeShadowView(shadowView: ShadowView) {
+        shadowViewGroup.removeView(shadowView)
+    }
+
+    fun detachShadowView(child: ShadowView) =
+        shadowViewGroup.detachShadowView(child)
+
+    fun reattachShadowView(child: ShadowView, index: Int) {
+        shadowViewGroup.reattachShadowView(child, index)
+    }
+
+    inner class ShadowViewGroup : ViewGroup(parentView.context) {
+        override fun dispatchDraw(canvas: Canvas) {
+            val saveCount = canvas.save()
+            shadows.forEach { shadow ->
+                if (shadow.willDraw) {
+                    shadow.update()
+                    clipOutPath(canvas, shadow.calculateClipPath())
+                }
+            }
+            super.dispatchDraw(canvas)
+            canvas.restoreToCount(saveCount)
+        }
+
+        fun detachShadowView(child: ShadowView): Int {
+            val index = indexOfChild(child)
+            detachViewFromParent(child)
+            return index
+        }
+
+        fun reattachShadowView(child: ShadowView, index: Int) {
+            attachViewToParent(child, index, EmptyLayoutParams)
+        }
+
+        override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+            /* No-op. Child layout is handled manually elsewhere. */
+        }
+    }
+}
+
+
+internal class ViewShadow(
     targetView: View,
-    private val container: ViewShadowContainer
-) : Shadow(targetView) {
-    val shadowView = ShadowView(targetView.context).apply {
-        outlineProvider = SurrogateViewProviderWrapper(originalProvider, targetView)
+    shadowController: ViewShadowController
+) : Shadow(targetView, shadowController) {
+
+    private val disabled: Boolean
+
+    init {
+        val shadowsParent = targetView.parent as? ClippedShadowsViewGroup
+        disabled =
+            if (shadowsParent != null && !targetView.isDisableShadowOnFallbackExplicitlySet) {
+                targetView.clippedShadowsLayoutParams?.disableShadowOnFallback
+                    ?: shadowsParent.disableChildShadowsOnFallback
+            } else {
+                targetView.disableShadowOnFallback
+            }
     }
 
-    override fun attach() {
-        super.attach()
-        container.add(this)
+    private val container = shadowController.shadowContainer
+
+    private val shadowView = lazy {
+        ShadowView(targetView.context).apply {
+            outlineProvider = SurrogateViewProviderWrapper(originalProvider, targetView)
+        }
     }
 
-    override fun detach() {
-        super.detach()
-        container.remove(this)
+    override fun attachToTarget() {
+        super.attachToTarget()
+        if (!disabled) container.addShadowView(shadowView.value)
+    }
+
+    override fun wrapOutlineProvider(targetView: View) {
+        if (disabled) {
+            targetView.outlineProvider = ZeroAlphaProviderWrapper(originalProvider)
+        } else {
+            super.wrapOutlineProvider(targetView)
+        }
+    }
+
+    override fun detachFromTarget() {
+        super.detachFromTarget()
+        if (!disabled) container.removeShadowView(shadowView.value)
     }
 
     override fun update(): Boolean {
+        if (disabled) return false
+
         val target = targetView
-        val shadow = shadowView
+        val shadow = shadowView.value
 
         val index = container.detachShadowView(shadow)
 
@@ -62,21 +169,17 @@ internal abstract class ViewShadow(
                     shadow.changeTranslationX(target.translationX) or
                     shadow.changeTranslationY(target.translationY)
 
-        container.reAttachShadowView(shadow, index)
+        container.reattachShadowView(shadow, index)
 
         return colorsChanged || areaChanged
     }
 
     override fun show() {
-        container.add(this)
+        if (!disabled) container.addShadowView(shadowView.value)
     }
 
     override fun hide() {
-        container.remove(this)
-    }
-
-    fun invalidate() {
-        shadowView.invalidate()
+        if (!disabled) container.removeShadowView(shadowView.value)
     }
 
     fun calculateClipPath(): Path {
@@ -95,79 +198,6 @@ internal abstract class ViewShadow(
     }
 }
 
-@SuppressLint("ViewConstructor")
-internal open class ViewShadowContainer(private val viewGroup: ViewGroup) :
-    ViewGroup(viewGroup.context), View.OnLayoutChangeListener {
-
-    private val shadows = mutableListOf<ViewShadow>()
-
-    fun attach() {
-        val group = viewGroup
-        if (group.isLaidOut) layout(0, 0, group.width, group.height)
-        group.addOnLayoutChangeListener(this)
-        group.overlay.add(this)
-    }
-
-    fun detach() {
-        val group = viewGroup
-        group.removeOnLayoutChangeListener(this)
-        group.overlay.remove(this)
-    }
-
-    fun isEmpty() = shadows.isEmpty()
-
-    fun add(shadow: ViewShadow) {
-        shadows += shadow
-        addView(shadow.shadowView, EmptyLayoutParams)
-    }
-
-    fun remove(shadow: ViewShadow) {
-        shadows -= shadow
-        removeView(shadow.shadowView)
-    }
-
-    fun updateAndInvalidateShadows() {
-        shadows.forEach { if (it.update()) it.invalidate() }
-    }
-
-    fun detachShadowView(child: ShadowView): Int {
-        val index = indexOfChild(child)
-        detachViewFromParent(child)
-        return index
-    }
-
-    fun reAttachShadowView(child: ShadowView, index: Int) {
-        attachViewToParent(child, index, EmptyLayoutParams)
-    }
-
-    override fun dispatchDraw(canvas: Canvas) {
-        val saveCount = canvas.save()
-        shadows.forEach { shadow ->
-            if (shadow.willDraw) {
-                shadow.update()
-                clipOutPath(canvas, shadow.calculateClipPath())
-            }
-        }
-        super.dispatchDraw(canvas)
-        canvas.restoreToCount(saveCount)
-    }
-
-    override fun onLayoutChange(
-        v: View, l: Int, t: Int, r: Int, b: Int, ol: Int, ot: Int, or: Int, ob: Int
-    ) {
-        val newWidth = r - l
-        val newHeight = b - t
-        if (width != newWidth || height != newHeight) {
-            layout(0, 0, newWidth, newHeight)
-        }
-    }
-
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        /* No-op. Child layout is handled manually elsewhere. */
-    }
-}
-
-private val EmptyLayoutParams = ViewGroup.LayoutParams(0, 0)
 
 internal class ShadowView(context: Context) : View(context) {
     init {
@@ -199,15 +229,6 @@ internal class ShadowView(context: Context) : View(context) {
         (newTranslationY != translationY).also { if (it) translationY = newTranslationY }
 }
 
-private object EmptyDrawable : Drawable() {
-    override fun draw(canvas: Canvas) {}
-    override fun setAlpha(alpha: Int) {}
-    override fun setColorFilter(filter: ColorFilter?) {}
-
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun getOpacity() = PixelFormat.TRANSLUCENT
-}
-
 private class SurrogateViewProviderWrapper(
     private val wrapped: ViewOutlineProvider,
     private val surrogate: View
@@ -216,3 +237,5 @@ private class SurrogateViewProviderWrapper(
         wrapped.getOutline(surrogate, outline)
     }
 }
+
+private val EmptyLayoutParams = ViewGroup.LayoutParams(0, 0)

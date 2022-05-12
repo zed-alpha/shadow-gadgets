@@ -190,6 +190,14 @@ internal class PieReflectorWrapper : RenderNodeWrapper, RenderNodeColors {
         throw UnsupportedOperationException()
     }
 
+    override fun setClipToBounds(clipToBounds: Boolean): Boolean {
+        throw UnsupportedOperationException()
+    }
+
+    override fun hasDisplayList(): Boolean {
+        throw UnsupportedOperationException()
+    }
+
     override fun draw(canvas: Canvas) {
         if (!renderNode.isValid) recordEmptyDisplayList()
         (canvas as DisplayListCanvas).drawRenderNode(renderNode)

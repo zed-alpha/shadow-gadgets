@@ -3,18 +3,60 @@
 package com.zedalpha.shadowgadgets.shadow
 
 import android.annotation.SuppressLint
-import android.graphics.Canvas
-import android.graphics.Path
-import android.graphics.Region
+import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.DisplayListCanvas
 import android.view.View
+import android.view.ViewOutlineProvider
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
+import com.zedalpha.shadowgadgets.R
 import com.zedalpha.shadowgadgets.rendernode.CanvasReflector
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeColors
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeWrapper
+
+
+internal var View.shadow: Shadow?
+    get() = getTag(R.id.tag_target_shadow) as? Shadow
+    set(value) {
+        setTag(R.id.tag_target_shadow, value)
+    }
+
+
+internal class CallbackProviderWrapper(
+    private val wrapped: ViewOutlineProvider,
+    private val shadow: Shadow
+) : ViewOutlineProvider() {
+    override fun getOutline(view: View, outline: Outline) {
+        wrapped.getOutline(view, outline)
+        shadow.setOutline(outline)
+        outline.alpha = 0.0F
+    }
+}
+
+
+internal class ZeroAlphaProviderWrapper(
+    private val wrapped: ViewOutlineProvider
+) : ViewOutlineProvider() {
+    override fun getOutline(view: View, outline: Outline) {
+        wrapped.getOutline(view, outline)
+        outline.alpha = 0.0F
+    }
+}
+
+
+internal object EmptyDrawable : Drawable() {
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun getOpacity() = PixelFormat.TRANSLUCENT
+    override fun setAlpha(alpha: Int) {}
+    override fun setColorFilter(filter: ColorFilter?) {}
+    override fun draw(canvas: Canvas) {}
+}
+
+
+internal val CachePath = Path()
 
 
 internal val clipOutPath: (Canvas, Path) -> Unit =

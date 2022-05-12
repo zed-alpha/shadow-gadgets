@@ -130,6 +130,12 @@ internal class RenderNodeApi29 : RenderNodeWrapper, RenderNodeColors {
         renderNode.endRecording()
     }
 
+    override fun setClipToBounds(clipToBounds: Boolean): Boolean =
+        renderNode.setClipToBounds(clipToBounds)
+
+    override fun hasDisplayList(): Boolean =
+        renderNode.hasDisplayList()
+
     override fun draw(canvas: Canvas) {
         canvas.drawRenderNode(renderNode)
     }

@@ -4,20 +4,20 @@
 
     <declare-styleable name="ClippedShadowsViewGroup">
         <attr name="clipAllChildShadows" format="boolean" />
-        <attr name="disableChildShadowsOnFallback" format="boolean" />
-        <attr name="childClippedShadowPlane" format="enum">
+        <attr name="childClippedShadowsPlane" format="enum">
             <enum name="foreground" value="0" />
             <enum name="background" value="1" />
         </attr>
+        <attr name="disableChildShadowsOnFallback" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ClippedShadowsLayoutParams">
         <attr name="clipOutlineShadow" />
-        <attr name="disableShadowOnFallback" format="boolean" />
         <attr name="clippedShadowPlane" format="enum">
             <enum name="foreground" value="0" />
             <enum name="background" value="1" />
         </attr>
+        <attr name="disableShadowOnFallback" format="boolean" />
     </declare-styleable>
 
     <attr name="shadowTagMatchers" format="reference" />

@@ -3,7 +3,6 @@
 package com.zedalpha.shadowgadgets.viewgroup
 
 import android.content.Context
-import android.graphics.Canvas
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
@@ -12,62 +11,24 @@ import androidx.annotation.RequiresApi
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
-import com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsViewGroup.ShadowPlane
+import com.zedalpha.shadowgadgets.ClippedShadowPlane
 
 class ClippedShadowsMotionLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : MotionLayout(context, attrs, defStyleAttr), ClippedShadowsViewGroup {
-    private val manager = RegularManager(this, attrs)
+    private val manager = ViewGroupShadowManager(this, attrs)
 
     override val isUsingShadowsFallback = manager.isUsingFallback
 
     override var clipAllChildShadows by manager::clipAllChildShadows
+    override var childClippedShadowsPlane by manager::childClippedShadowsPlane
     override var disableChildShadowsOnFallback by manager::disableChildShadowsOnFallback
-    override var childClippedShadowPlane by manager::childClippedShadowPlane
-
-    override fun setChildClipOutlineShadow(
-        child: View,
-        clipOutlineShadow: Boolean,
-        disableShadowOnFallback: Boolean,
-        @ShadowPlane clippedShadowPlane: Int
-    ) {
-        manager.setChildClipOutlineShadow(
-            child,
-            clipOutlineShadow,
-            disableShadowOnFallback,
-            clippedShadowPlane
-        )
-    }
 
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
-    }
-
-    override fun onViewRemoved(child: View) {
-        super.onViewRemoved(child)
-        manager.onViewRemoved(child)
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        manager.onAttachedToWindow()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        manager.onDetachedFromWindow()
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        manager.onSizeChanged(w, h)
-    }
-
-    override fun dispatchDraw(canvas: Canvas) {
-        manager.wrapDispatchDraw(canvas) { super.dispatchDraw(canvas) }
     }
 
     override fun checkLayoutParams(p: ViewGroup.LayoutParams) = p is LayoutParams
@@ -80,9 +41,9 @@ class ClippedShadowsMotionLayout @JvmOverloads constructor(
     override fun generateLayoutParams(lp: ViewGroup.LayoutParams?) = LayoutParams(lp)
 
     class LayoutParams : ConstraintLayout.LayoutParams, ClippedShadowsLayoutParams {
-        override var clipOutlineShadow: Boolean = false
-        override var disableShadowOnFallback: Boolean = false
-        override var clippedShadowPlane: Int = ClippedShadowsViewGroup.FOREGROUND
+        override var clipOutlineShadow: Boolean? = null
+        override var clippedShadowPlane: ClippedShadowPlane? = null
+        override var disableShadowOnFallback: Boolean? = null
 
         constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
             attrs.extractClippedShadowsLayoutParamsValues(context, this)

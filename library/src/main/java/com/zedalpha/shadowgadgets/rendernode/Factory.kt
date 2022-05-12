@@ -65,6 +65,9 @@ internal interface RenderNodeWrapper {
     fun beginRecording(width: Int, height: Int): Canvas
     fun endRecording(canvas: Canvas)
 
+    fun setClipToBounds(clipToBounds: Boolean): Boolean
+    fun hasDisplayList(): Boolean
+
     fun draw(canvas: Canvas)
 }
 

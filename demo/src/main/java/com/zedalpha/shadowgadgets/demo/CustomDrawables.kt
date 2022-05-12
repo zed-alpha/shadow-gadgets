@@ -11,9 +11,7 @@ internal sealed class BaseDrawable(@ColorInt color: Int) : Drawable() {
 
     @Suppress("OVERRIDE_DEPRECATION")
     override fun getOpacity() = PixelFormat.TRANSLUCENT
-
     override fun setAlpha(alpha: Int) {}
-
     override fun setColorFilter(colorFilter: ColorFilter?) {}
 }
 

@@ -3,9 +3,9 @@
     <item name="tag_target_shadow" type="id" />
     <item name="tag_target_clip_outline_shadow" type="id" />
     <item name="tag_target_clipped_shadow_plane" type="id" />
-    <item name="tag_target_disable_shadow_on_fallback" type="id" />
+    <item name="tag_target_shadow_fallback_strategy" type="id" />
+    <item name="tag_target_shadow_clip_path_provider" type="id" />
     <item name="tag_target_recycling_view_group_child" type="id" />
     <item name="tag_parent_shadow_controller" type="id" />
     <item name="tag_decor_shadow_tag_matchers" type="id" />
-    <item name="clip_outline_shadow_tag_id" type="id" />
 </resources>

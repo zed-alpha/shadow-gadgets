@@ -89,7 +89,7 @@ private fun processIdMatcher(
     val rule = array.getInt(R.styleable.IdMatcher_matchRule, 0)
     array.recycle()
 
-    if (id != View.NO_ID || name != null) matchers += IdMatcher(id, name, ruleForValue(rule))
+    if (id != View.NO_ID || name != null) matchers += IdMatcher(id, name, MatchRule.forValue(rule))
 }
 
 private fun processNameMatcher(
@@ -102,10 +102,8 @@ private fun processNameMatcher(
     val rule = array.getInt(R.styleable.NameMatcher_matchRule, 0)
     array.recycle()
 
-    if (name != null) matchers += NameMatcher(name, ruleForValue(rule))
+    if (name != null) matchers += NameMatcher(name, MatchRule.forValue(rule))
 }
-
-private fun ruleForValue(value: Int) = MatchRule.values().getOrElse(value) { MatchRule.Equals }
 
 internal fun unwrapActivity(context: Context): Activity? {
     var checkContext: Context? = context

@@ -24,8 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
             android:layout_margin="20dp"
-            android:tag="@string/clip_outline_shadow_tag_value"
             app:backgroundTint="@color/see_through_red"
+            app:clipOutlineShadow="true"
             app:srcCompat="@drawable/icon_arrow_up"
             tools:ignore="ContentDescription" />
 
@@ -40,13 +40,8 @@
             android:text="Both"
             android:textAlignment="center"
             app:backgroundTint="@color/see_through_green"
-            tools:ignore="HardcodedText">
-
-            <tag
-                android:id="@+id/clip_outline_shadow_tag_id"
-                android:value="@string/clip_outline_shadow_tag_value" />
-
-        </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
+            app:clipOutlineShadow="true"
+            tools:ignore="HardcodedText" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_view_groups_end"
@@ -54,8 +49,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="20dp"
-            android:tag="@string/clip_outline_shadow_tag_value"
             app:backgroundTint="@color/see_through_blue"
+            app:clipOutlineShadow="true"
             app:srcCompat="@drawable/icon_clear"
             tools:ignore="ContentDescription" />
 

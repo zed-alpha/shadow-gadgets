@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.zedalpha.shadowgadgets.clipOutlineShadow
 import com.zedalpha.shadowgadgets.demo.R
 
 
@@ -33,7 +34,7 @@ class ViewGroupsFragment : TopicFragment(R.layout.fragment_view_groups) {
         snackbar.view.backgroundTintList = ColorStateList.valueOf(
             ContextCompat.getColor(requireContext(), R.color.see_through_deep_blue)
         )
-        snackbar.view.tag = resources.getString(R.string.clip_outline_shadow_tag_value)
+        snackbar.view.clipOutlineShadow = true
 
         val callback = object : Snackbar.Callback() {
             override fun onShown(sb: Snackbar?) {

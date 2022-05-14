@@ -17,24 +17,22 @@ import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.ClippedShadowPlane
 import com.zedalpha.shadowgadgets.ClippedShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.R
-import com.zedalpha.shadowgadgets.clippedShadowPlane
-import com.zedalpha.shadowgadgets.isClippedShadowPlaneExplicitlySet
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
-import com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsViewGroup
-import com.zedalpha.shadowgadgets.viewgroup.clippedShadowsLayoutParams
 
 
-internal abstract class ShadowController<S : Shadow, C : ShadowContainer<S>>(
-    private val parentView: ViewGroup
-) : View.OnAttachStateChangeListener, View.OnLayoutChangeListener, ViewTreeObserver.OnDrawListener {
+internal class ShadowController(private val parentView: ViewGroup) :
+    View.OnAttachStateChangeListener, View.OnLayoutChangeListener,
+    ViewTreeObserver.OnDrawListener {
 
-    abstract val shadowContainer: C
-
-    abstract fun createShadowForView(view: View): S
+    private val shadowContainer = if (RenderNodeFactory.isOpenForBusiness) {
+        RenderNodeShadowContainer(parentView, this)
+    } else {
+        ViewShadowContainer(parentView, this)
+    }
 
     fun attachToParent() {
         val parent = parentView
-        parentView.shadowController = this
+        parent.shadowController = this
         if (parent.isAttachedToWindow) addLayoutDrawListeners()
         parent.addOnAttachStateChangeListener(this)
         shadowContainer.attachToParent()
@@ -42,7 +40,7 @@ internal abstract class ShadowController<S : Shadow, C : ShadowContainer<S>>(
 
     fun detachFromParent() {
         val parent = parentView
-        parentView.shadowController = null
+        parent.shadowController = null
         if (parent.isAttachedToWindow) removeLayoutDrawListeners()
         parent.removeOnAttachStateChangeListener(this)
         shadowContainer.detachFromParent()
@@ -50,16 +48,12 @@ internal abstract class ShadowController<S : Shadow, C : ShadowContainer<S>>(
 
     fun addShadowForView(targetView: View) {
         if (targetView.outlineProvider != null) {
-            val shadow = createShadowForView(targetView)
-            shadowContainer.addShadow(shadow)
-            shadow.attachToTarget()
+            shadowContainer.addShadowForView(targetView)
         }
     }
 
     fun removeShadow(shadow: Shadow) {
-        @Suppress("UNCHECKED_CAST")
-        shadowContainer.removeShadow(shadow as S)
-        shadow.detachFromTarget()
+        shadowContainer.removeShadow(shadow)
     }
 
     fun notifyAttributeChanged(shadow: Shadow, targetView: View) {
@@ -69,7 +63,7 @@ internal abstract class ShadowController<S : Shadow, C : ShadowContainer<S>>(
     }
 
     fun refreshAll() {
-        shadowContainer.shadows.forEach { it.notifyAttributeChanged() }
+        shadowContainer.refreshAll()
     }
 
     override fun onViewAttachedToWindow(v: View) {
@@ -117,57 +111,74 @@ internal abstract class ShadowController<S : Shadow, C : ShadowContainer<S>>(
 }
 
 
-internal sealed class ShadowContainer<S : Shadow>(
-    protected val parentView: ViewGroup,
-    private val controller: ShadowController<*, *>
-) {
-    val shadows = mutableListOf<S>()
+@Suppress("UNCHECKED_CAST")
+internal sealed interface Plane<S : Shadow> {
+    val shadows: MutableList<S>
 
-    @CallSuper
-    open fun addShadow(shadow: S) {
-        shadows += shadow
+    fun addShadow(shadow: Shadow) {
+        shadows += shadow as S
     }
 
-    @CallSuper
-    open fun removeShadow(shadow: S) {
-        shadows -= shadow
-        if (shadows.isEmpty()) controller.detachFromParent()
+    fun removeShadow(shadow: Shadow) {
+        shadows -= shadow as S
+    }
+
+    fun isEmpty() = shadows.isEmpty()
+
+    fun updateAndInvalidateShadows()
+}
+
+
+internal sealed class ShadowContainer<S : Shadow, P : Plane<S>>(
+    protected val parentView: ViewGroup,
+    protected val controller: ShadowController
+) {
+    abstract val backgroundPlane: P
+    abstract val foregroundPlane: P
+
+    fun addShadowForView(targetView: View) {
+        val plane = if (determinePlane(targetView) == Foreground) {
+            foregroundPlane
+        } else {
+            backgroundPlane
+        }
+        createShadow(targetView, plane).attachToTarget()
+    }
+
+    fun removeShadow(shadow: Shadow) {
+        shadow.detachFromTarget()
+
+        if (foregroundPlane.isEmpty() && backgroundPlane.isEmpty()) {
+            controller.detachFromParent()
+        }
     }
 
     fun updateAndInvalidateShadows() {
-        var invalidate = false
-        shadows.forEach { if (it.update()) invalidate = true }
-        if (invalidate) parentView.invalidate()
+        backgroundPlane.updateAndInvalidateShadows()
+        foregroundPlane.updateAndInvalidateShadows()
+    }
+
+    fun refreshAll() {
+        backgroundPlane.shadows.forEach { it.notifyAttributeChanged() }
+        foregroundPlane.shadows.forEach { it.notifyAttributeChanged() }
     }
 
     abstract fun attachToParent()
     abstract fun detachFromParent()
     abstract fun setSize(width: Int, height: Int)
+    abstract fun createShadow(targetView: View, plane: P): S
+    abstract fun determinePlane(targetView: View): ClippedShadowPlane
 }
 
 
 internal sealed class Shadow(
     protected val targetView: View,
-    private val shadowController: ShadowController<*, *>
+    private val controller: ShadowController,
+    private val plane: Plane<*>
 ) {
     protected val originalProvider: ViewOutlineProvider = targetView.outlineProvider
 
     protected val clipPath = Path()
-
-    private val clippedShadowPlane: ClippedShadowPlane
-
-    init {
-        val shadowsParent = targetView.parent as? ClippedShadowsViewGroup
-        clippedShadowPlane =
-            if (shadowsParent != null && !targetView.isClippedShadowPlaneExplicitlySet) {
-                targetView.clippedShadowsLayoutParams?.clippedShadowPlane
-                    ?: shadowsParent.childClippedShadowsPlane
-            } else {
-                targetView.clippedShadowPlane
-            }
-    }
-
-    val isForeground = clippedShadowPlane == Foreground
 
     val willDraw: Boolean
         get() = targetView.isVisible && !clipPath.isEmpty
@@ -175,8 +186,9 @@ internal sealed class Shadow(
     @CallSuper
     open fun attachToTarget() {
         val target = targetView
-        wrapOutlineProvider(target)
         target.shadow = this
+        wrapOutlineProvider(target)
+        plane.addShadow(this)
     }
 
     open fun wrapOutlineProvider(targetView: View) {
@@ -188,6 +200,7 @@ internal sealed class Shadow(
         val target = targetView
         target.shadow = null
         target.outlineProvider = originalProvider
+        plane.removeShadow(this)
     }
 
     @CallSuper
@@ -208,35 +221,36 @@ internal sealed class Shadow(
         }
     }
 
+    @CallSuper
+    open fun show() {
+        plane.addShadow(this)
+    }
+
+    @CallSuper
+    open fun hide() {
+        plane.removeShadow(this)
+    }
+
     fun notifyDetach() {
-        shadowController.removeShadow(this)
+        controller.removeShadow(this)
     }
 
     fun notifyAttributeChanged() {
-        shadowController.notifyAttributeChanged(this, targetView)
+        controller.notifyAttributeChanged(this, targetView)
     }
 
     abstract fun update(): Boolean
-    abstract fun show()
-    abstract fun hide()
 }
 
 
-internal var ViewGroup.shadowController: ShadowController<*, *>?
-    get() = getTag(R.id.tag_parent_shadow_controller) as? ShadowController<*, *>
+internal var ViewGroup.shadowController: ShadowController?
+    get() = getTag(R.id.tag_parent_shadow_controller) as? ShadowController
     set(value) {
         setTag(R.id.tag_parent_shadow_controller, value)
     }
 
 internal fun getOrCreateController(parentView: ViewGroup) =
-    parentView.shadowController ?: createController(parentView).apply { attachToParent() }
-
-private val createController: (ViewGroup) -> ShadowController<*, *> =
-    if (RenderNodeFactory.isOpenForBusiness) {
-        ::RenderNodeShadowController
-    } else {
-        ::ViewShadowController
-    }
+    parentView.shadowController ?: ShadowController(parentView).apply { attachToParent() }
 
 private val CacheRect = Rect()
 private val CacheRectF = RectF()

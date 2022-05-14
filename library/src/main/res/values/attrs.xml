@@ -8,16 +8,25 @@
             <enum name="foreground" value="0" />
             <enum name="background" value="1" />
         </attr>
-        <attr name="disableChildShadowsOnFallback" format="boolean" />
+        <attr name="childShadowsFallbackStrategy" format="enum">
+            <enum name="none" value="0" />
+            <enum name="foregroundOnly" value="1" />
+            <enum name="disable" value="2" />
+        </attr>
     </declare-styleable>
 
-    <declare-styleable name="ClippedShadowsLayoutParams">
+    <declare-styleable name="ClippedShadowAttributes">
+        <attr name="android:id" />
         <attr name="clipOutlineShadow" />
         <attr name="clippedShadowPlane" format="enum">
             <enum name="foreground" value="0" />
             <enum name="background" value="1" />
         </attr>
-        <attr name="disableShadowOnFallback" format="boolean" />
+        <attr name="shadowFallbackStrategy" format="enum">
+            <enum name="normal" value="0" />
+            <enum name="foregroundOnly" value="1" />
+            <enum name="disable" value="2" />
+        </attr>
     </declare-styleable>
 
     <attr name="shadowTagMatchers" format="reference" />

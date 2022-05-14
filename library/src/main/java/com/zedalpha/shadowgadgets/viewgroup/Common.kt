@@ -8,64 +8,30 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import com.zedalpha.shadowgadgets.ClippedShadowPlane
-import com.zedalpha.shadowgadgets.ClippedShadowPlane.Foreground
-import com.zedalpha.shadowgadgets.R
-import com.zedalpha.shadowgadgets.clipOutlineShadow
-import com.zedalpha.shadowgadgets.isRecyclingViewGroupChild
+import com.zedalpha.shadowgadgets.*
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
-import com.zedalpha.shadowgadgets.shadow.shadowController
-import kotlin.properties.Delegates
 
 
 sealed interface ClippedShadowsViewGroup {
     val isUsingShadowsFallback: Boolean
-    var clipAllChildShadows: Boolean
-    var childClippedShadowsPlane: ClippedShadowPlane
-    var disableChildShadowsOnFallback: Boolean
+    val clipAllChildShadows: Boolean
+    val childClippedShadowsPlane: ClippedShadowPlane
+    val childShadowsFallbackStrategy: ShadowFallbackStrategy
 }
 
-internal sealed interface ClippedShadowsLayoutParams {
-    var clipOutlineShadow: Boolean?
-    var clippedShadowPlane: ClippedShadowPlane?
-    var disableShadowOnFallback: Boolean?
-}
 
-internal val View.clippedShadowsLayoutParams: ClippedShadowsLayoutParams?
-    get() = layoutParams as? ClippedShadowsLayoutParams
-
-internal fun AttributeSet?.extractClippedShadowsLayoutParamsValues(
-    context: Context,
-    params: ClippedShadowsLayoutParams
-) {
-    val array = context.obtainStyledAttributes(this, R.styleable.ClippedShadowsLayoutParams)
-    if (array.hasValue(R.styleable.ClippedShadowsLayoutParams_clipOutlineShadow)) {
-        params.clipOutlineShadow =
-            array.getBoolean(R.styleable.ClippedShadowsLayoutParams_clipOutlineShadow, false)
-    }
-    if (array.hasValue(R.styleable.ClippedShadowsLayoutParams_clippedShadowPlane)) {
-        params.clippedShadowPlane = ClippedShadowPlane.forValue(
-            array.getInt(R.styleable.ClippedShadowsLayoutParams_clippedShadowPlane, 0)
-        )
-    }
-    if (array.hasValue(R.styleable.ClippedShadowsLayoutParams_disableShadowOnFallback)) {
-        params.disableShadowOnFallback =
-            array.getBoolean(R.styleable.ClippedShadowsLayoutParams_disableShadowOnFallback, false)
-    }
-    array.recycle()
-}
-
-internal class ViewGroupShadowManager(
-    private val parentView: ViewGroup,
-    attributeSet: AttributeSet?
-) {
+internal class ViewGroupShadowManager<T>(
+    private val parentView: T,
+    attributeSet: AttributeSet?,
+    private val isRecyclingViewGroup: Boolean = false
+) where T : ViewGroup, T : ClippedShadowsViewGroup {
     val isUsingFallback: Boolean = !RenderNodeFactory.isOpenForBusiness
 
-    var clipAllChildShadows: Boolean by refreshable(false)
+    val clipAllChildShadows: Boolean
 
-    var childClippedShadowsPlane: ClippedShadowPlane by refreshable(Foreground)
+    val childClippedShadowsPlane: ClippedShadowPlane
 
-    var disableChildShadowsOnFallback: Boolean by refreshable(false)
+    val childShadowsFallbackStrategy: ShadowFallbackStrategy
 
     init {
         val array = parentView.context.obtainStyledAttributes(
@@ -79,35 +45,85 @@ internal class ViewGroupShadowManager(
         childClippedShadowsPlane = ClippedShadowPlane.forValue(
             array.getInt(R.styleable.ClippedShadowsViewGroup_childClippedShadowsPlane, 0)
         )
-        disableChildShadowsOnFallback = array.getBoolean(
-            R.styleable.ClippedShadowsViewGroup_disableChildShadowsOnFallback,
-            false
+        childShadowsFallbackStrategy = ShadowFallbackStrategy.forValue(
+            array.getInt(R.styleable.ClippedShadowsViewGroup_childShadowsFallbackStrategy, 0)
         )
         array.recycle()
     }
 
-    fun onViewAdded(child: View, recyclingViewGroup: Boolean = false) {
-        if (recyclingViewGroup) {
+    private val generatedAttributes = mutableMapOf<Int, ClippedShadowAttributes>()
+
+    fun generateLayoutParams(attributeSet: AttributeSet?) {
+        val attributes = attributeSet.extractShadowAttributes(parentView.context)
+        if (attributes != null && attributes.id != View.NO_ID) {
+            generatedAttributes += attributes.id to attributes
+        }
+    }
+
+    fun onViewAdded(child: View) {
+        if (isRecyclingViewGroup) {
             if (!child.isRecyclingViewGroupChild) {
                 child.isRecyclingViewGroupChild = true
                 child.clipOutlineShadow = true
             }
         } else {
-            val shadowsParent = child.parent as? ClippedShadowsViewGroup
-            child.clipOutlineShadow = (child.clippedShadowsLayoutParams?.clipOutlineShadow
-                ?: shadowsParent?.clipAllChildShadows) == true || child.isTaggedForClipping
+            val parent = parentView as ClippedShadowsViewGroup
+            val attributes = generatedAttributes.remove(child.id)
+            if (!child.isClippedShadowPlaneExplicitlySet) {
+                child.clippedShadowPlane =
+                    attributes?.clippedShadowPlane ?: parent.childClippedShadowsPlane
+            }
+            if (!child.isShadowFallbackStrategyExplicitlySet) {
+                child.shadowFallbackStrategy =
+                    attributes?.shadowFallbackStrategy ?: parent.childShadowsFallbackStrategy
+            }
+            if (!child.isClipOutlineShadowExplicitlySet) {
+                child.clipOutlineShadow =
+                    attributes?.clipOutlineShadow ?: parent.clipAllChildShadows
+            }
         }
-    }
-
-    private fun <T> refreshable(initialValue: T) =
-        Delegates.observable(initialValue) { _, oldValue, newValue ->
-            if (oldValue != newValue) parentView.shadowController?.refreshAll()
-        }
-
-    private val View.isTaggedForClipping: Boolean
-        get() = clipText.let { it == tag || it == getTag(R.id.clip_outline_shadow_tag_id) }
-
-    private val clipText by lazy {
-        parentView.resources.getText(R.string.clip_outline_shadow_tag_value)
     }
 }
+
+
+private data class ClippedShadowAttributes(
+    val id: Int,
+    val clipOutlineShadow: Boolean? = null,
+    val clippedShadowPlane: ClippedShadowPlane? = null,
+    val shadowFallbackStrategy: ShadowFallbackStrategy? = null
+)
+
+
+private fun AttributeSet?.extractShadowAttributes(context: Context): ClippedShadowAttributes? {
+    val array = context.obtainStyledAttributes(this, R.styleable.ClippedShadowAttributes)
+    return if (array.hasValue(R.styleable.ClippedShadowAttributes_android_id)) {
+        ClippedShadowAttributes(
+            array.getResourceId(R.styleable.ClippedShadowAttributes_android_id, View.NO_ID),
+            if (array.hasValue(R.styleable.ClippedShadowAttributes_clipOutlineShadow)) {
+                array.getBoolean(R.styleable.ClippedShadowAttributes_clipOutlineShadow, false)
+            } else null,
+            if (array.hasValue(R.styleable.ClippedShadowAttributes_clippedShadowPlane)) {
+                ClippedShadowPlane.forValue(
+                    array.getInt(R.styleable.ClippedShadowAttributes_clippedShadowPlane, 0)
+                )
+            } else null,
+            if (array.hasValue(R.styleable.ClippedShadowAttributes_shadowFallbackStrategy)) {
+                ShadowFallbackStrategy.forValue(
+                    array.getInt(R.styleable.ClippedShadowAttributes_shadowFallbackStrategy, 0)
+                )
+            } else null
+        )
+    } else {
+        null
+    }.also { array.recycle() }
+}
+
+
+private val View.isClipOutlineShadowExplicitlySet: Boolean
+    get() = getTag(R.id.tag_target_clip_outline_shadow) is Boolean
+
+private val View.isClippedShadowPlaneExplicitlySet: Boolean
+    get() = getTag(R.id.tag_target_clipped_shadow_plane) is ClippedShadowPlane
+
+private val View.isShadowFallbackStrategyExplicitlySet: Boolean
+    get() = getTag(R.id.tag_target_shadow_fallback_strategy) is Boolean

@@ -24,6 +24,15 @@ enum class MatchRule(private val method: String.(String) -> Boolean) {
     EndsWith(String::endsWith);
 
     internal fun match(s1: String, s2: String) = s1.method(s2)
+
+    internal companion object {
+        fun forValue(value: Int) = when (value) {
+            1 -> Contains
+            2 -> StartsWith
+            3 -> EndsWith
+            else -> Equals
+        }
+    }
 }
 
 fun idMatcher(

@@ -18,9 +18,14 @@ class ClippedShadowsCoordinatorLayout @JvmOverloads constructor(
 
     override val isUsingShadowsFallback = manager.isUsingFallback
 
-    override var clipAllChildShadows by manager::clipAllChildShadows
-    override var childClippedShadowsPlane by manager::childClippedShadowsPlane
-    override var disableChildShadowsOnFallback by manager::disableChildShadowsOnFallback
+    override val clipAllChildShadows by manager::clipAllChildShadows
+    override val childClippedShadowsPlane by manager::childClippedShadowsPlane
+    override val childShadowsFallbackStrategy by manager::childShadowsFallbackStrategy
+
+    override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
+        manager.generateLayoutParams(attrs)
+        return super.generateLayoutParams(attrs)
+    }
 
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)

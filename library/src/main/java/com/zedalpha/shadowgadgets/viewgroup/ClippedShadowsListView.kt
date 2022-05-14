@@ -15,16 +15,16 @@ class ClippedShadowsListView @JvmOverloads constructor(
     defStyleAttr: Int = android.R.attr.listViewStyle,
     defStyleRes: Int = 0
 ) : ListView(context, attrs, defStyleAttr, defStyleRes), ClippedShadowsViewGroup {
-    private val manager = ViewGroupShadowManager(this, attrs)
+    private val manager = ViewGroupShadowManager(this, attrs, true)
 
     override val isUsingShadowsFallback = manager.isUsingFallback
 
-    override var clipAllChildShadows by manager::clipAllChildShadows
-    override var childClippedShadowsPlane by manager::childClippedShadowsPlane
-    override var disableChildShadowsOnFallback by manager::disableChildShadowsOnFallback
+    override val clipAllChildShadows by manager::clipAllChildShadows
+    override val childClippedShadowsPlane by manager::childClippedShadowsPlane
+    override val childShadowsFallbackStrategy by manager::childShadowsFallbackStrategy
 
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
-        manager.onViewAdded(child, true)
+        manager.onViewAdded(child)
     }
 }

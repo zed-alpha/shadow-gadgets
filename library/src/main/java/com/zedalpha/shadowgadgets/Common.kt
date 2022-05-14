@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.ClippedShadowPlane.Foreground
+import com.zedalpha.shadowgadgets.ShadowFallbackStrategy.None
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.shadow.ViewShadow
 import com.zedalpha.shadowgadgets.shadow.getOrCreateController
@@ -29,11 +30,11 @@ var View.clippedShadowPlane: ClippedShadowPlane
         shadow?.notifyAttributeChanged()
     }
 
-var View.disableShadowOnFallback: Boolean
-    get() = getTag(R.id.tag_target_disable_shadow_on_fallback) as? Boolean ?: false
+var View.shadowFallbackStrategy: ShadowFallbackStrategy
+    get() = getTag(R.id.tag_target_shadow_fallback_strategy) as? ShadowFallbackStrategy ?: None
     set(value) {
-        if (value == disableShadowOnFallback) return
-        setTag(R.id.tag_target_disable_shadow_on_fallback, value)
+        if (value == shadowFallbackStrategy) return
+        setTag(R.id.tag_target_shadow_fallback_strategy, value)
         (shadow as? ViewShadow)?.notifyAttributeChanged()
     }
 
@@ -42,6 +43,18 @@ enum class ClippedShadowPlane {
 
     internal companion object {
         fun forValue(value: Int) = if (value == 1) Background else Foreground
+    }
+}
+
+enum class ShadowFallbackStrategy {
+    None, ForegroundOnly, Disable;
+
+    internal companion object {
+        fun forValue(value: Int) = when (value) {
+            1 -> ForegroundOnly
+            2 -> Disable
+            else -> None
+        }
     }
 }
 
@@ -63,13 +76,9 @@ private object ShadowSwitch : View.OnAttachStateChangeListener {
 
     private fun onAttached(view: View) {
         val parent = view.parent as? ViewGroup ?: return
-        if (view.isRecyclingViewGroupChild) {
-            val shadow = view.shadow
-            if (shadow == null) {
-                getOrCreateController(parent).addShadowForView(view)
-            } else {
-                shadow.show()
-            }
+        val shadow = view.shadow
+        if (view.isRecyclingViewGroupChild && shadow != null) {
+            shadow.show()
         } else {
             getOrCreateController(parent).addShadowForView(view)
         }
@@ -98,9 +107,3 @@ internal var View.isRecyclingViewGroupChild: Boolean
     set(value) {
         setTag(R.id.tag_target_recycling_view_group_child, value)
     }
-
-internal val View.isClippedShadowPlaneExplicitlySet: Boolean
-    get() = getTag(R.id.tag_target_clipped_shadow_plane) is ClippedShadowPlane
-
-internal val View.isDisableShadowOnFallbackExplicitlySet: Boolean
-    get() = getTag(R.id.tag_target_disable_shadow_on_fallback) is Boolean

@@ -111,14 +111,12 @@ internal object RenderNodeFactory {
             setTranslationX(getTranslationX())
             setTranslationY(getTranslationY())
             setTranslationZ(getTranslationZ())
-
             setOutline(null)
             setPosition(0, 0, 0, 0)
-            hasIdentityMatrix()
-            getMatrix(Matrix())
-
             setProjectBackwards(false)
             setProjectionReceiver(false)
+            getMatrix(Matrix())
+            hasIdentityMatrix()
             endRecording(beginRecording(0, 0))
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

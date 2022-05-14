@@ -47,11 +47,15 @@ internal class ZeroAlphaProviderWrapper(
 }
 
 
-internal object EmptyDrawable : Drawable() {
+internal abstract class BaseDrawable : Drawable() {
     @Suppress("OVERRIDE_DEPRECATION")
     override fun getOpacity() = PixelFormat.TRANSLUCENT
     override fun setAlpha(alpha: Int) {}
     override fun setColorFilter(filter: ColorFilter?) {}
+}
+
+
+internal object EmptyDrawable : BaseDrawable() {
     override fun draw(canvas: Canvas) {}
 }
 

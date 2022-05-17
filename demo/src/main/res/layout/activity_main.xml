@@ -25,11 +25,11 @@
             android:backgroundTint="@color/white" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switch_overlays"
+            android:id="@+id/switch_clip_shadows"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:text="Overlays"
+            android:text="Clip"
             android:textColor="@color/white"
             tools:ignore="HardcodedText" />
 

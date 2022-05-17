@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
@@ -28,9 +29,9 @@ class InfoTextView @JvmOverloads constructor(
     override fun performClick(): Boolean {
         super.performClick()
         AlertDialog.Builder(context)
-            .setMessage(text)
+            .setView(R.layout.internal_info_text_view)
             .setPositiveButton("Close", null)
-            .show()
+            .show().findViewById<TextView>(R.id.text)?.text = text
         return true
     }
 }

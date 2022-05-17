@@ -2,7 +2,9 @@
 
 package com.zedalpha.shadowgadgets
 
+import android.content.Context
 import android.os.Build
+import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -38,29 +40,42 @@ var View.shadowFallbackStrategy: ShadowFallbackStrategy
         (shadow as? ViewShadow)?.notifyAttributeChanged()
     }
 
+var ViewGroup.forceShadowsFallbackMethod: Boolean
+    get() = getTag(R.id.tag_parent_force_shadows_fallback_method) as? Boolean ?: false
+    set(value) {
+        setTag(R.id.tag_parent_force_shadows_fallback_method, value)
+    }
+
+
 enum class ClippedShadowPlane {
     Foreground, Background;
 
+    val otherPlane: ClippedShadowPlane
+        get() = if (this == Foreground) Background else Foreground
+
     internal companion object {
-        fun forValue(value: Int) = if (value == 1) Background else Foreground
+        fun forValue(value: Int) =
+            if (value == 1) Background else Foreground
     }
 }
 
 enum class ShadowFallbackStrategy {
-    None, ForegroundOnly, Disable;
+    None, ChangePlane, DisableShadow;
 
     internal companion object {
         fun forValue(value: Int) = when (value) {
-            1 -> ForegroundOnly
-            2 -> Disable
+            1 -> ChangePlane
+            2 -> DisableShadow
             else -> None
         }
     }
 }
 
+
 object ShadowGadgets {
-    val isUsingShadowsFallback = !RenderNodeFactory.isOpenForBusiness
+    val isPrimaryMethodAvailable = RenderNodeFactory.isOpenForBusiness
 }
+
 
 private object ShadowSwitch : View.OnAttachStateChangeListener {
     fun notifyClipChanged(view: View, turnOn: Boolean) {
@@ -79,7 +94,7 @@ private object ShadowSwitch : View.OnAttachStateChangeListener {
         val shadow = view.shadow
         if (view.isRecyclingViewGroupChild && shadow != null) {
             shadow.show()
-        } else {
+        } else if (view.outlineProvider != null) {
             getOrCreateController(parent).addShadowForView(view)
         }
     }
@@ -102,8 +117,44 @@ private object ShadowSwitch : View.OnAttachStateChangeListener {
     }
 }
 
+
+internal val ViewGroup.shouldUseFallbackMethod: Boolean
+    get() = !RenderNodeFactory.isOpenForBusiness || forceShadowsFallbackMethod
+
+
 internal var View.isRecyclingViewGroupChild: Boolean
     get() = getTag(R.id.tag_target_recycling_view_group_child) as? Boolean ?: false
     set(value) {
         setTag(R.id.tag_target_recycling_view_group_child, value)
     }
+
+
+internal data class ClippedShadowAttributes(
+    val id: Int,
+    val clipOutlineShadow: Boolean? = null,
+    val clippedShadowPlane: ClippedShadowPlane? = null,
+    val shadowFallbackStrategy: ShadowFallbackStrategy? = null
+)
+
+internal fun AttributeSet?.extractShadowAttributes(context: Context): ClippedShadowAttributes {
+    val array = context.obtainStyledAttributes(this, R.styleable.ClippedShadowAttributes)
+    return ClippedShadowAttributes(
+        array.getResourceId(R.styleable.ClippedShadowAttributes_android_id, View.NO_ID),
+        if (array.hasValue(R.styleable.ClippedShadowAttributes_clipOutlineShadow)) {
+            array.getBoolean(R.styleable.ClippedShadowAttributes_clipOutlineShadow, false)
+        } else null,
+        if (array.hasValue(R.styleable.ClippedShadowAttributes_clippedShadowPlane)) {
+            ClippedShadowPlane.forValue(
+                array.getInt(R.styleable.ClippedShadowAttributes_clippedShadowPlane, 0)
+            )
+        } else null,
+        if (array.hasValue(R.styleable.ClippedShadowAttributes_shadowFallbackStrategy)) {
+            ShadowFallbackStrategy.forValue(
+                array.getInt(R.styleable.ClippedShadowAttributes_shadowFallbackStrategy, 0)
+            )
+        } else null
+    ).also { array.recycle() }
+}
+
+
+internal const val RenderNodeName = "ShadowGadgets"

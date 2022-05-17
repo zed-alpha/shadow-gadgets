@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroupOverlay
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.clippedShadowPlane
 import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
@@ -18,53 +19,61 @@ internal class RenderNodeShadowContainer(
     parentView: ViewGroup,
     controller: ShadowController
 ) : ShadowContainer<RenderNodeShadow, RenderNodeShadowPlane>(parentView, controller) {
-    override val backgroundPlane = DrawablePlane()
-    private val overlayProjector = OverlayProjectorDrawable(backgroundPlane)
+    override val foregroundPlane = RenderNodeShadowPlane(parentView)
 
-    override val foregroundPlane = DrawablePlane()
-
-    override fun attachToParent() {
-        val parent = parentView
-        parent.overlay.add(overlayProjector)
-        if (parent.isLaidOut) overlayProjector.setSize(parent.width, parent.height)
-        if (parent.background == null) parent.background = EmptyDrawable
-
-        parent.overlay.add(foregroundPlane)
-    }
-
-    override fun detachFromParent() {
-        val parent = parentView
-        parent.overlay.remove(overlayProjector)
-        if (parent.background == EmptyDrawable) parent.background = null
-
-        parent.overlay.remove(foregroundPlane)
-    }
+    override val backgroundPlane = BackgroundRenderNodeShadowPlane(parentView)
 
     override fun createShadow(targetView: View, plane: RenderNodeShadowPlane) =
         RenderNodeShadow(targetView, controller, plane)
 
     override fun determinePlane(targetView: View) =
         targetView.clippedShadowPlane
+}
 
-    override fun setSize(width: Int, height: Int) {
-        overlayProjector.setSize(width, height)
+
+internal open class RenderNodeShadowPlane(parentView: ViewGroup) :
+    ContainerPlane<RenderNodeShadow>(parentView) {
+
+    protected val renderNodeShadowDrawable = RenderNodeShadowDrawable()
+
+    override fun addToOverlay(overlay: ViewGroupOverlay) {
+        overlay.add(renderNodeShadowDrawable)
     }
 
-    inner class DrawablePlane : RenderNodeShadowPlane() {
-        override fun updateAndInvalidateShadows() {
-            var invalidate = false
-            shadows.forEach { if (it.update()) invalidate = true }
-            if (invalidate) parentView.invalidate()
+    override fun removeFromOverlay(overlay: ViewGroupOverlay) {
+        overlay.remove(renderNodeShadowDrawable)
+    }
+
+    override fun updateShadowsAndInvalidate() {
+        var invalidate = false
+        shadows.forEach { if (it.update()) invalidate = true }
+        if (invalidate) parentView.invalidate()
+    }
+
+    inner class RenderNodeShadowDrawable : BaseDrawable() {
+        override fun draw(canvas: Canvas) {
+            shadows.forEach { it.draw(canvas) }
         }
     }
 }
 
+internal class BackgroundRenderNodeShadowPlane(parentView: ViewGroup) :
+    RenderNodeShadowPlane(parentView) {
 
-internal sealed class RenderNodeShadowPlane : BaseDrawable(), Plane<RenderNodeShadow> {
-    override val shadows = mutableListOf<RenderNodeShadow>()
+    private val overlayProjector = OverlayProjectorDrawable(renderNodeShadowDrawable)
 
-    override fun draw(canvas: Canvas) {
-        shadows.forEach { it.draw(canvas) }
+    override fun addToOverlay(overlay: ViewGroupOverlay) {
+        overlay.add(overlayProjector)
+        checkAddProjectionReceiver()
+    }
+
+    override fun removeFromOverlay(overlay: ViewGroupOverlay) {
+        overlay.remove(overlayProjector)
+        checkRemoveProjectionReceiver()
+    }
+
+    override fun setSize(width: Int, height: Int) {
+        overlayProjector.setSize(width, height)
     }
 }
 

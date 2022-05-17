@@ -8,11 +8,12 @@ import android.graphics.Outline
 import android.graphics.RenderNode
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.zedalpha.shadowgadgets.RenderNodeName
 
 
 @RequiresApi(Build.VERSION_CODES.Q)
 internal class RenderNodeApi29 : RenderNodeWrapper, RenderNodeColors {
-    private val renderNode = RenderNode("ShadowGadgets")
+    private val renderNode = RenderNode(RenderNodeName)
 
     override fun getAlpha(): Float =
         renderNode.alpha

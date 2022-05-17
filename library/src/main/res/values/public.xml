@@ -2,14 +2,11 @@
 <resources>
     <public name="clipOutlineShadow" type="attr" />
     <public name="clippedShadowPlane" type="attr" />
-    <public name="disableShadowOnFallback" type="attr" />
+    <public name="shadowFallbackStrategy" type="attr" />
 
     <public name="clipAllChildShadows" type="attr" />
     <public name="childClippedShadowsPlane" type="attr" />
-    <public name="disableChildShadowsOnFallback" type="attr" />
-
-    <public name="clip_outline_shadow_tag_id" type="id" />
-    <public name="clip_outline_shadow_tag_value" type="string" />
+    <public name="childShadowsFallbackStrategy" type="attr" />
 
     <public name="appcompat_shadow_helper" type="string" />
     <public name="material_components_shadow_helper" type="string" />

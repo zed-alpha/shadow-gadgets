@@ -9,8 +9,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RequiresApi
-import com.zedalpha.shadowgadgets.R
-import com.zedalpha.shadowgadgets.clipOutlineShadow
+import com.zedalpha.shadowgadgets.*
 import java.lang.reflect.Array
 
 
@@ -18,14 +17,23 @@ internal class ShadowHelper(
     private val context: Context,
     private val matchers: List<TagMatcher>
 ) {
-    private val inflater: ViewInflater by lazy { createInflater(context) }
+    private val inflater: ViewInflater by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            NewViewInflater(context)
+        } else {
+            OldViewInflater(context)
+        }
+    }
 
     fun processTag(name: String, context: Context, attrs: AttributeSet): View? {
         val view = if (name !in IgnoredTags) inflater.tryCreate(name, context, attrs) else null
-        if (view != null &&
-            (attrs.getClipOutlineShadow(context) || checkMatchers(view, name, attrs))
-        ) {
-            view.clipOutlineShadow = true
+        if (view != null) {
+            val attributes = attrs.extractShadowAttributes(context)
+            if (attributes.clipOutlineShadow == true || checkMatchers(view, name, attrs)) {
+                view.clipOutlineShadow = true
+                attributes.clippedShadowPlane?.let { view.clippedShadowPlane = it }
+                attributes.shadowFallbackStrategy?.let { view.shadowFallbackStrategy = it }
+            }
         }
         return view
     }
@@ -37,13 +45,6 @@ internal class ShadowHelper(
         return false
     }
 }
-
-private val createInflater: (Context) -> ViewInflater =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        ::NewViewInflater
-    } else {
-        ::OldViewInflater
-    }
 
 @SuppressLint("SoonBlockedPrivateApi")
 private class OldViewInflater(context: Context) : ViewInflater(context) {

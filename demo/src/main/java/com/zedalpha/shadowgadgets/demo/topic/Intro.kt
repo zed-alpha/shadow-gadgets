@@ -1,7 +1,5 @@
 package com.zedalpha.shadowgadgets.demo.topic
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
@@ -10,25 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
-import androidx.core.view.postDelayed
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.ZedAlphaControl
 
 
-class Overlays1Fragment : TopicFragment(R.layout.fragment_overlays_1) {
-    override val targetIds = intArrayOf(R.id.view_overlays, R.id.view_drag_drop)
+class IntroFragment : TopicFragment(R.layout.fragment_intro) {
+    override val targetIds = intArrayOf(R.id.view_intro, R.id.view_drag_drop)
 
     private var dragDropParentId = R.id.frame_drag_drop_one
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val exampleView = view.findViewById<View>(R.id.view_overlays)
+        val exampleView = view.findViewById<View>(R.id.view_intro)
         val dragDropView = view.findViewById<View>(R.id.view_drag_drop)
-        view.findViewById<ZedAlphaControl>(R.id.zac_overlays).listener =
+        view.findViewById<ZedAlphaControl>(R.id.zac_intro).listener =
             object : ZedAlphaControl.Listener {
                 override fun onElevationChange(elevation: Float) {
                     exampleView.elevation = elevation
@@ -107,51 +101,6 @@ class Overlays1Fragment : TopicFragment(R.layout.fragment_overlays_1) {
     private fun View.scale(scale: Float) {
         scaleX = scale
         scaleY = scale
-    }
-}
-
-class Overlays2Fragment : TopicFragment(R.layout.fragment_overlays_2) {
-    override val targetIds =
-        intArrayOf(
-            R.id.view_motion,
-            R.id.fab_overlays_start,
-            R.id.fab_overlays_center,
-            R.id.fab_overlays_end
-        )
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val fabStart = view.findViewById<FloatingActionButton>(R.id.fab_overlays_start)
-        val fabCenter = view.findViewById<ExtendedFloatingActionButton>(R.id.fab_overlays_center)
-        val fabEnd = view.findViewById<FloatingActionButton>(R.id.fab_overlays_end)
-
-        fabStart.setOnClickListener {
-            Snackbar.make(it, "Lorem ipsum", Snackbar.LENGTH_SHORT).show()
-        }
-        fabCenter.setOnClickListener {
-            val snack = Snackbar.make(it, "Lorem ipsum", Snackbar.LENGTH_INDEFINITE)
-            snack.addCallback(object : Snackbar.Callback() {
-                override fun onShown(sb: Snackbar?) {
-                    fabStart.hide(); fabCenter.hide(); fabEnd.hide()
-                    fabCenter.postDelayed(1000) {
-                        fabStart.addOnShowAnimationListener(object : AnimatorListenerAdapter() {
-                            override fun onAnimationEnd(animation: Animator?) {
-                                snack.dismiss()
-                            }
-                        })
-                        fabStart.show(); fabCenter.show(); fabEnd.show()
-                    }
-                }
-            })
-            snack.show()
-        }
-        fabEnd.setOnClickListener {
-            fabStart.hide(); fabCenter.hide(); fabEnd.hide()
-            fabCenter.postDelayed(1000) {
-                fabStart.show(); fabCenter.show(); fabEnd.show()
-            }
-        }
     }
 }
 

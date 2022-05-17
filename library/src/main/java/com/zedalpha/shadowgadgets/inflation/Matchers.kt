@@ -56,7 +56,10 @@ internal class IdMatcher(
         return when {
             id == View.NO_ID -> false
             matchId != View.NO_ID && matchId == id -> true
-            matchName != null && matchRule.match(view.context.resourceEntryName(id), matchName) -> true
+            matchName != null && matchRule.match(
+                view.context.resourceEntryName(id),
+                matchName
+            ) -> true
             else -> false
         }
     }

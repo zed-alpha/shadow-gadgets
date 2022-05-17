@@ -5,6 +5,8 @@
     <color name="see_through_blue">#660000FF</color>
     <color name="see_through_deep_blue">#99446688</color>
 
+    <color name="activated_item">#5544ffff</color>
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 

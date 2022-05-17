@@ -17,7 +17,7 @@
 
     <style name="Widget.ShadowGadgets.Shape" parent="">
         <item name="android:backgroundTint">#440000FF</item>
-        <item name="android:elevation">12dp</item>
+        <item name="android:elevation">15dp</item>
         <item name="android:outlineProvider">background</item>
     </style>
 

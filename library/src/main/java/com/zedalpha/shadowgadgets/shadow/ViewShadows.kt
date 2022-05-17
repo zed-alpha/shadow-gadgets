@@ -3,21 +3,21 @@
 package com.zedalpha.shadowgadgets.shadow
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Outline
 import android.graphics.Path
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroupOverlay
 import android.view.ViewOutlineProvider
+import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.ClippedShadowPlane
-import com.zedalpha.shadowgadgets.ShadowFallbackStrategy.Disable
-import com.zedalpha.shadowgadgets.ShadowFallbackStrategy.ForegroundOnly
+import com.zedalpha.shadowgadgets.ShadowFallbackStrategy.ChangePlane
+import com.zedalpha.shadowgadgets.ShadowFallbackStrategy.DisableShadow
 import com.zedalpha.shadowgadgets.clippedShadowPlane
-import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.shadowFallbackStrategy
 
 
@@ -26,105 +26,148 @@ internal class ViewShadowContainer(
     parentView: ViewGroup,
     controller: ShadowController
 ) : ShadowContainer<ViewShadow, ViewShadowPlane>(parentView, controller) {
-    override val backgroundPlane = BackgroundViewShadowPlane()
-    private val overlayProjector = OverlayProjectorView(backgroundPlane)
+    override val foregroundPlane = ForegroundViewShadowPlane(parentView)
 
-    override val foregroundPlane = ForegroundViewShadowPlane()
-
-    override fun attachToParent() {
-        val parent = parentView
-        parent.overlay.add(overlayProjector)
-        if (parent.background == null) parent.background = EmptyDrawable
-
-        parent.overlay.add(foregroundPlane)
-    }
-
-    override fun detachFromParent() {
-        val parent = parentView
-        parent.overlay.remove(overlayProjector)
-        if (parent.background == EmptyDrawable) parent.background = null
-
-        parent.overlay.remove(foregroundPlane)
-    }
+    override val backgroundPlane = BackgroundViewShadowPlane(parentView)
 
     override fun createShadow(targetView: View, plane: ViewShadowPlane) =
         ViewShadow(targetView, controller, plane)
 
-    override fun determinePlane(targetView: View) =
-        if (!RenderNodeFactory.isOpenForBusiness &&
-            targetView.shadowFallbackStrategy == ForegroundOnly
-        ) {
-            ClippedShadowPlane.Foreground
+    override fun determinePlane(targetView: View): ClippedShadowPlane =
+        if (targetView.shadowFallbackStrategy == ChangePlane) {
+            targetView.clippedShadowPlane.otherPlane
         } else {
             targetView.clippedShadowPlane
         }
-
-    override fun setSize(width: Int, height: Int) {
-        backgroundPlane.layout(0, 0, width, height)
-        overlayProjector.layout(0, 0, width, height)
-
-        foregroundPlane.layout(0, 0, width, height)
-    }
-
-    inner class BackgroundViewShadowPlane : ViewShadowPlane(parentView.context) {
-        override fun updateAndInvalidateShadows() {
-            var invalidate = false
-            overlayProjector.detachProjectedView()
-            shadows.forEach { if (it.update()) invalidate = true }
-            overlayProjector.reattachProjectedView()
-            if (invalidate) overlayProjector.invalidate()
-        }
-    }
-
-    inner class ForegroundViewShadowPlane : ViewShadowPlane(parentView.context) {
-        override fun updateAndInvalidateShadows() {
-            var invalidate = false
-            shadows.forEach { if (it.update()) invalidate = true }
-            if (invalidate) parentView.invalidate()
-        }
-    }
 }
 
 
-@SuppressLint("ViewConstructor")
-internal sealed class ViewShadowPlane(context: Context) :
-    ViewGroup(context), Plane<ViewShadow> {
+internal class ForegroundViewShadowPlane(parentView: ViewGroup) : ViewShadowPlane(parentView) {
+    override fun updateShadowsAndInvalidate() {
+        var invalidate = false
+        shadows.forEach { if (it.update()) invalidate = true }
+        if (invalidate) parentView.invalidate()
+    }
+}
 
-    override val shadows = mutableListOf<ViewShadow>()
+internal class BackgroundViewShadowPlane(parentView: ViewGroup) : ViewShadowPlane(parentView) {
+    private val overlayProjector = OverlayProjectorView(viewShadowGroup)
 
-    override fun dispatchDraw(canvas: Canvas) {
-        val saveCount = canvas.save()
-        shadows.forEach { shadow ->
-            if (shadow.willDraw) {
-                shadow.update()
-                clipOutPath(canvas, shadow.calculateClipPath())
-            }
+    override fun addToOverlay(overlay: ViewGroupOverlay) {
+        overlay.add(overlayProjector)
+        checkAddProjectionReceiver()
+    }
+
+    override fun removeFromOverlay(overlay: ViewGroupOverlay) {
+        overlay.remove(overlayProjector)
+        checkRemoveProjectionReceiver()
+    }
+
+    override fun setSize(width: Int, height: Int) {
+        super.setSize(width, height)
+        overlayProjector.layout(0, 0, width, height)
+    }
+
+    override fun updateShadowsAndInvalidate() {
+        var invalidate = false
+        overlayProjector.detachProjectedView()
+        shadows.forEach { if (it.update()) invalidate = true }
+        overlayProjector.reattachProjectedView()
+        if (invalidate) overlayProjector.invalidate()
+    }
+}
+
+internal sealed class ViewShadowPlane(parentView: ViewGroup) :
+    ContainerPlane<ViewShadow>(parentView) {
+
+    protected val viewShadowGroup = ViewShadowGroup()
+
+    override fun addToOverlay(overlay: ViewGroupOverlay) {
+        overlay.add(viewShadowGroup)
+    }
+
+    override fun removeFromOverlay(overlay: ViewGroupOverlay) {
+        overlay.remove(viewShadowGroup)
+    }
+
+    @CallSuper
+    override fun setSize(width: Int, height: Int) {
+        viewShadowGroup.layout(0, 0, width, height)
+    }
+
+    fun createShadowView() = ShadowView()
+
+    inner class ViewShadowGroup : ViewGroup(parentView.context) {
+        fun detachShadowView(child: ShadowView): Int {
+            val index = indexOfChild(child)
+            detachViewFromParent(child)
+            return index
         }
-        super.dispatchDraw(canvas)
-        canvas.restoreToCount(saveCount)
+
+        fun reattachShadowView(child: ShadowView, index: Int) {
+            attachViewToParent(child, index, EmptyLayoutParams)
+        }
+
+        override fun dispatchDraw(canvas: Canvas) {
+            val saveCount = canvas.save()
+            shadows.forEach { shadow ->
+                if (shadow.willDraw) {
+                    shadow.update()
+                    clipOutPath(canvas, shadow.calculateClipPath())
+                }
+            }
+            super.dispatchDraw(canvas)
+            canvas.restoreToCount(saveCount)
+        }
+
+        override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
     }
 
-    fun createShadowView() = ShadowView(this)
+    @SuppressLint("ViewConstructor")
+    inner class ShadowView : View(parentView.context) {
+        init {
+            background = EmptyDrawable
+        }
 
-    fun addShadowView(shadowView: ShadowView) {
-        addView(shadowView, EmptyLayoutParams)
+        fun addToGroup() {
+            viewShadowGroup.addView(this, EmptyLayoutParams)
+        }
+
+        fun removeFromGroup() {
+            viewShadowGroup.removeView(this)
+        }
+
+        fun detachFromGroup() =
+            viewShadowGroup.detachShadowView(this)
+
+        fun reattachToGroup(index: Int) {
+            viewShadowGroup.reattachShadowView(this, index)
+        }
+
+        fun changeLayout(l: Int, t: Int, r: Int, b: Int): Boolean {
+            val changed = l != left || t != top || r != right || b != bottom
+            if (changed) layout(l, t, r, b)
+            return changed
+        }
+
+        fun changePivotX(newPivotX: Float) =
+            (newPivotX != pivotX).also { if (it) pivotX = newPivotX }
+
+        fun changePivotY(newPivotY: Float) =
+            (newPivotY != pivotY).also { if (it) pivotY = newPivotY }
+
+        fun changeScaleX(newScaleX: Float) =
+            (newScaleX != scaleX).also { if (it) scaleX = newScaleX }
+
+        fun changeScaleY(newScaleY: Float) =
+            (newScaleY != scaleY).also { if (it) scaleY = newScaleY }
+
+        fun changeTranslationX(newTranslationX: Float) =
+            (newTranslationX != translationX).also { if (it) translationX = newTranslationX }
+
+        fun changeTranslationY(newTranslationY: Float) =
+            (newTranslationY != translationY).also { if (it) translationY = newTranslationY }
     }
-
-    fun removeShadowView(shadowView: ShadowView) {
-        removeView(shadowView)
-    }
-
-    fun detachShadowView(child: ShadowView): Int {
-        val index = indexOfChild(child)
-        detachViewFromParent(child)
-        return index
-    }
-
-    fun reattachShadowView(child: ShadowView, index: Int) {
-        attachViewToParent(child, index, EmptyLayoutParams)
-    }
-
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 }
 
 
@@ -133,9 +176,9 @@ internal class ViewShadow(
     controller: ShadowController,
     viewShadowPlane: ViewShadowPlane
 ) : Shadow(targetView, controller, viewShadowPlane) {
-    private val disabled = targetView.shadowFallbackStrategy == Disable
+    private val disabled = targetView.shadowFallbackStrategy == DisableShadow
 
-    private val shadowViewLazy = lazy {
+    private val shadowView by lazy {
         viewShadowPlane.createShadowView().apply {
             outlineProvider = SurrogateViewProviderWrapper(originalProvider, targetView)
         }
@@ -143,7 +186,7 @@ internal class ViewShadow(
 
     override fun attachToTarget() {
         super.attachToTarget()
-        if (!disabled) shadowViewLazy.value.addToPlane()
+        if (!disabled) shadowView.addToGroup()
     }
 
     override fun wrapOutlineProvider(targetView: View) {
@@ -156,16 +199,16 @@ internal class ViewShadow(
 
     override fun detachFromTarget() {
         super.detachFromTarget()
-        if (!disabled) shadowViewLazy.value.removeFromPlane()
+        if (!disabled) shadowView.removeFromGroup()
     }
 
     override fun update(): Boolean {
         if (disabled) return false
 
         val target = targetView
-        val shadow = shadowViewLazy.value
+        val shadow = shadowView
 
-        val index = shadow.detachFromPlane()
+        val index = shadow.detachFromGroup()
 
         shadow.isVisible = target.isVisible
         shadow.alpha = target.alpha
@@ -191,19 +234,19 @@ internal class ViewShadow(
                     shadow.changeTranslationX(target.translationX) or
                     shadow.changeTranslationY(target.translationY)
 
-        shadow.reattachToPlane(index)
+        shadow.reattachToGroup(index)
 
         return colorsChanged || areaChanged
     }
 
     override fun show() {
         super.show()
-        if (!disabled) shadowViewLazy.value.addToPlane()
+        if (!disabled) shadowView.addToGroup()
     }
 
     override fun hide() {
         super.hide()
-        if (!disabled) shadowViewLazy.value.removeFromPlane()
+        if (!disabled) shadowView.removeFromGroup()
     }
 
     fun calculateClipPath(): Path {
@@ -220,55 +263,6 @@ internal class ViewShadow(
 
         return path
     }
-}
-
-
-@SuppressLint("ViewConstructor")
-internal class ShadowView(private val viewShadowPlane: ViewShadowPlane) :
-    View(viewShadowPlane.context) {
-
-    init {
-        background = EmptyDrawable
-    }
-
-    fun addToPlane() {
-        viewShadowPlane.addShadowView(this)
-    }
-
-    fun removeFromPlane() {
-        viewShadowPlane.removeShadowView(this)
-    }
-
-    fun detachFromPlane() =
-        viewShadowPlane.detachShadowView(this)
-
-    fun reattachToPlane(index: Int) {
-        viewShadowPlane.reattachShadowView(this, index)
-    }
-
-    fun changeLayout(l: Int, t: Int, r: Int, b: Int): Boolean {
-        val changed = l != left || t != top || r != right || b != bottom
-        if (changed) layout(l, t, r, b)
-        return changed
-    }
-
-    fun changePivotX(newPivotX: Float) =
-        (newPivotX != pivotX).also { if (it) pivotX = newPivotX }
-
-    fun changePivotY(newPivotY: Float) =
-        (newPivotY != pivotY).also { if (it) pivotY = newPivotY }
-
-    fun changeScaleX(newScaleX: Float) =
-        (newScaleX != scaleX).also { if (it) scaleX = newScaleX }
-
-    fun changeScaleY(newScaleY: Float) =
-        (newScaleY != scaleY).also { if (it) scaleY = newScaleY }
-
-    fun changeTranslationX(newTranslationX: Float) =
-        (newTranslationX != translationX).also { if (it) translationX = newTranslationX }
-
-    fun changeTranslationY(newTranslationY: Float) =
-        (newTranslationY != translationY).also { if (it) translationY = newTranslationY }
 }
 
 

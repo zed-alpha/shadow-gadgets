@@ -2,7 +2,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,87 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="@string/limitations_first" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:baselineAligned="false"
-        tools:ignore="NestedWeights">
-
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <View
-                android:id="@+id/view_limitations_one"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="50dp"
-                android:background="@drawable/target_background"
-                android:backgroundTint="#440000ff"
-                android:elevation="8dp"
-                android:outlineProvider="background" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="50dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/target_background"
-                android:backgroundTint="#ff4444"
-                android:elevation="12dp"
-                android:outlineProvider="background" />
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <View
-                android:id="@+id/view_limitations_two"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="50dp"
-                android:background="@drawable/target_background"
-                android:backgroundTint="#440000ff"
-                android:elevation="8dp"
-                android:outlineProvider="background" />
-
-            <View
-                android:id="@+id/view_limitations_three"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="50dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/target_background"
-                android:backgroundTint="#44ff0000"
-                android:elevation="12dp"
-                android:outlineProvider="background" />
-
-        </FrameLayout>
-
-    </LinearLayout>
-
-    <com.zedalpha.shadowgadgets.demo.InfoTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="@string/limitations_second" />
+        android:text="@string/limitations_top" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -101,8 +20,8 @@
         <View
             android:id="@+id/view_circle"
             style="@style/Widget.ShadowGadgets.Shape"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:background="@drawable/shape_circle"
             app:layout_constraintBottom_toTopOf="@+id/view_round_rectangle"
             app:layout_constraintEnd_toStartOf="@+id/view_rectangle"
@@ -113,8 +32,8 @@
         <View
             android:id="@+id/view_rectangle"
             style="@style/Widget.ShadowGadgets.Shape"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:background="@drawable/shape_rectangle"
             app:layout_constraintBottom_toTopOf="@+id/view_roundish_rectangle"
             app:layout_constraintEnd_toEndOf="parent"
@@ -125,8 +44,8 @@
         <View
             android:id="@+id/view_round_rectangle"
             style="@style/Widget.ShadowGadgets.Shape"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:background="@drawable/shape_round_rectangle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/view_roundish_rectangle"
@@ -137,8 +56,8 @@
         <View
             android:id="@+id/view_roundish_rectangle"
             style="@style/Widget.ShadowGadgets.Shape"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:background="@drawable/shape_roundish_rectangle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -147,5 +66,13 @@
             app:layout_constraintTop_toBottomOf="@+id/view_rectangle" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:maxLines="2"
+        android:singleLine="false"
+        android:text="@string/limitations_bottom" />
 
 </LinearLayout>

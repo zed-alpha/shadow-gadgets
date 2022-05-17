@@ -5,4 +5,5 @@
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeightSmall"
     android:singleLine="true"
+    android:background="@drawable/activated_item_background"
     android:textAlignment="center" />

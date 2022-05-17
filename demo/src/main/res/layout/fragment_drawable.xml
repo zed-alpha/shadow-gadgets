@@ -14,13 +14,13 @@
         android:text="@string/drawables_top" />
 
     <View
-        android:id="@+id/view_drawables"
+        android:id="@+id/view_drawable"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
     <com.zedalpha.shadowgadgets.demo.ZedAlphaControl
-        android:id="@+id/zac_drawables"
+        android:id="@+id/zac_drawable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:zac_color="#7F557FAA"

@@ -10,6 +10,7 @@ import android.view.DisplayListCanvas
 import android.view.RenderNode
 import android.view.View
 import androidx.annotation.RequiresApi
+import com.zedalpha.shadowgadgets.RenderNodeName
 import com.zedalpha.shadowgadgets.drawable.RenderNodeReflectorPie.createMethod
 import com.zedalpha.shadowgadgets.drawable.RenderNodeReflectorPie.endMethod
 import com.zedalpha.shadowgadgets.drawable.RenderNodeReflectorPie.getAlphaMethod
@@ -64,7 +65,7 @@ internal val IsPieReflectionAvailable: Boolean by lazy {
 
 internal class PieReflectorWrapper : RenderNodeWrapper, RenderNodeColors {
     private val renderNode: RenderNode =
-        createMethod.invoke(null, "OverlayShadow", null) as RenderNode
+        createMethod.invoke(null, RenderNodeName, null) as RenderNode
 
     private fun recordEmptyDisplayList() {
         val canvas = startMethod.invoke(renderNode, 0, 0) as DisplayListCanvas

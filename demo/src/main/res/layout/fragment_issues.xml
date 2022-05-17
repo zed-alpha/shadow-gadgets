@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/issues_top" />
+
+    <com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <View
+            android:id="@+id/center"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"
+            android:visibility="invisible" />
+
+        <View
+            android:id="@+id/view_z_minus"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/center"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toStartOf="@id/center"
+            android:background="@drawable/target_background"
+            android:backgroundTint="@color/see_through_blue"
+            android:elevation="5dp"
+            android:outlineProvider="background"
+            app:clipOutlineShadow="true" />
+
+        <View
+            android:id="@+id/view_z_middle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/target_background"
+            android:backgroundTint="#ff4444"
+            android:elevation="10dp"
+            android:outlineProvider="background" />
+
+        <View
+            android:id="@+id/view_z_plus"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/center"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_toEndOf="@id/center"
+            android:background="@drawable/target_background"
+            android:backgroundTint="@color/see_through_blue"
+            android:elevation="15dp"
+            android:outlineProvider="background"
+            app:clipOutlineShadow="true" />
+
+    </com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout>
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/issues_bottom" />
+
+    <com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:clipAllChildShadows="true"
+        app:forceShadowsFallbackMethod="true">
+
+        <View
+            android:id="@+id/circle_left"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#117f7f7f"
+            android:elevation="10dp"
+            android:outlineProvider="background"
+            android:translationX="-50dp" />
+
+        <View
+            android:id="@+id/circle_right"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="#117f7f7f"
+            android:elevation="12dp"
+            android:outlineProvider="background"
+            android:translationX="50dp" />
+
+    </com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsFrameLayout>
+
+</LinearLayout>

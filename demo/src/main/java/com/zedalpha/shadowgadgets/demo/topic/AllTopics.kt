@@ -16,6 +16,7 @@ import com.zedalpha.shadowgadgets.drawable.ShadowDrawable
 internal class Topic(
     private val fragmentClass: Class<out TopicFragment>,
     val title: String,
+    val showFallbackWarning: Boolean = false,
     private val isAvailable: Boolean = true,
     private val unavailableMessage: Int = 0
 ) {
@@ -28,23 +29,25 @@ internal class Topic(
 
 @SuppressLint("NewApi")
 internal val Topics = listOf(
-    Topic(Overlays1Fragment::class.java, "Overlays 1"),
-    Topic(Overlays2Fragment::class.java, "Overlays 2"),
+    Topic(IntroFragment::class.java, "Intro"),
+    Topic(MotionsFragment::class.java, "Motions"),
     Topic(ViewGroupsFragment::class.java, "ViewGroups"),
-    Topic(
-        DrawablesFragment::class.java,
-        "Drawables",
-        ShadowDrawable.isAvailable,
-        R.string.unavailable_drawables
-    ),
+    Topic(LimitationsFragment::class.java, "Limitations"),
+    Topic(IssuesFragment::class.java, "Issues", showFallbackWarning = true),
+    Topic(OptionsFragment::class.java, "Options", showFallbackWarning = true),
+    Topic(InflationFragment::class.java, "Inflation"),
     Topic(
         ColorsFragment::class.java,
         "Colors",
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P,
-        R.string.unavailable_colors
+        isAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P,
+        unavailableMessage = R.string.unavailable_colors
     ),
-    Topic(InflationFragment::class.java, "Inflation"),
-    Topic(LimitationsFragment::class.java, "Limitations")
+    Topic(
+        DrawableFragment::class.java,
+        "Drawable",
+        isAvailable = ShadowDrawable.isAvailable,
+        unavailableMessage = R.string.unavailable_drawables
+    )
 )
 
 sealed class TopicFragment(layoutResId: Int) : Fragment(layoutResId) {
@@ -63,7 +66,7 @@ sealed class TopicFragment(layoutResId: Int) : Fragment(layoutResId) {
     }
 }
 
-class UnavailableFragment private constructor() : TopicFragment(R.layout.fragment_unavailable) {
+class UnavailableFragment : TopicFragment(R.layout.fragment_unavailable) {
     override val targetIds = intArrayOf()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

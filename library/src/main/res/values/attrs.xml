@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="clipOutlineShadow" format="boolean" />
-
     <declare-styleable name="ClippedShadowsViewGroup">
         <attr name="clipAllChildShadows" format="boolean" />
         <attr name="childClippedShadowsPlane" format="enum">
@@ -10,22 +8,23 @@
         </attr>
         <attr name="childShadowsFallbackStrategy" format="enum">
             <enum name="none" value="0" />
-            <enum name="foregroundOnly" value="1" />
-            <enum name="disable" value="2" />
+            <enum name="changePlane" value="1" />
+            <enum name="disableShadow" value="2" />
         </attr>
+        <attr name="forceShadowsFallbackMethod" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ClippedShadowAttributes">
         <attr name="android:id" />
-        <attr name="clipOutlineShadow" />
+        <attr name="clipOutlineShadow" format="boolean" />
         <attr name="clippedShadowPlane" format="enum">
             <enum name="foreground" value="0" />
             <enum name="background" value="1" />
         </attr>
         <attr name="shadowFallbackStrategy" format="enum">
-            <enum name="normal" value="0" />
-            <enum name="foregroundOnly" value="1" />
-            <enum name="disable" value="2" />
+            <enum name="none" value="0" />
+            <enum name="changePlane" value="1" />
+            <enum name="disableShadow" value="2" />
         </attr>
     </declare-styleable>
 

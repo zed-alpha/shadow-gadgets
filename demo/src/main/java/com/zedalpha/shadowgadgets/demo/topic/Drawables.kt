@@ -12,19 +12,19 @@ import com.zedalpha.shadowgadgets.demo.ZedAlphaControl
 import com.zedalpha.shadowgadgets.drawable.ShadowDrawable
 
 
-class DrawablesFragment : TopicFragment(R.layout.fragment_drawables) {
+class DrawableFragment : TopicFragment(R.layout.fragment_drawable) {
     override val targetIds = intArrayOf()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val exampleView = view.findViewById<View>(R.id.view_drawables)
+        val exampleView = view.findViewById<View>(R.id.view_drawable)
         val shadowDrawable = ShadowDrawable.fromPath(DemoPath)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         shadowDrawable.fillPaint = paint
         exampleView.background = shadowDrawable
 
-        val zac = view.findViewById<ZedAlphaControl>(R.id.zac_drawables)
+        val zac = view.findViewById<ZedAlphaControl>(R.id.zac_drawable)
         zac.listener =
             object : ZedAlphaControl.Listener {
                 override fun onElevationChange(elevation: Float) {

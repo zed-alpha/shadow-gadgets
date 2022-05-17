@@ -7,49 +7,43 @@ import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Build
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewOutlineProvider
-import android.view.ViewTreeObserver
+import android.view.*
 import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.ClippedShadowPlane
 import com.zedalpha.shadowgadgets.ClippedShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.R
-import com.zedalpha.shadowgadgets.rendernode.RenderNodeFactory
+import com.zedalpha.shadowgadgets.shouldUseFallbackMethod
 
 
 internal class ShadowController(private val parentView: ViewGroup) :
-    View.OnAttachStateChangeListener, View.OnLayoutChangeListener,
-    ViewTreeObserver.OnDrawListener {
+    View.OnAttachStateChangeListener, ViewTreeObserver.OnDrawListener {
 
-    private val shadowContainer = if (RenderNodeFactory.isOpenForBusiness) {
-        RenderNodeShadowContainer(parentView, this)
-    } else {
+    val isUsingFallbackMethod = parentView.shouldUseFallbackMethod
+
+    private val shadowContainer = if (isUsingFallbackMethod) {
         ViewShadowContainer(parentView, this)
+    } else {
+        RenderNodeShadowContainer(parentView, this)
     }
 
     fun attachToParent() {
         val parent = parentView
         parent.shadowController = this
-        if (parent.isAttachedToWindow) addLayoutDrawListeners()
+        if (parent.isAttachedToWindow) addDrawListener()
         parent.addOnAttachStateChangeListener(this)
-        shadowContainer.attachToParent()
     }
 
     fun detachFromParent() {
         val parent = parentView
         parent.shadowController = null
-        if (parent.isAttachedToWindow) removeLayoutDrawListeners()
+        if (parent.isAttachedToWindow) removeDrawListener()
         parent.removeOnAttachStateChangeListener(this)
-        shadowContainer.detachFromParent()
     }
 
     fun addShadowForView(targetView: View) {
-        if (targetView.outlineProvider != null) {
-            shadowContainer.addShadowForView(targetView)
-        }
+        shadowContainer.addShadowForView(targetView)
     }
 
     fun removeShadow(shadow: Shadow) {
@@ -62,79 +56,34 @@ internal class ShadowController(private val parentView: ViewGroup) :
         getOrCreateController(parentView).addShadowForView(targetView)
     }
 
-    fun refreshAll() {
-        shadowContainer.refreshAll()
-    }
-
     override fun onViewAttachedToWindow(v: View) {
-        addLayoutDrawListeners()
+        addDrawListener()
     }
 
     override fun onViewDetachedFromWindow(v: View) {
-        removeLayoutDrawListeners()
+        removeDrawListener()
     }
 
     override fun onDraw() {
-        shadowContainer.updateAndInvalidateShadows()
+        shadowContainer.updateShadowsAndInvalidate()
     }
 
-    override fun onLayoutChange(
-        v: View,
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int,
-        oldLeft: Int,
-        oldTop: Int,
-        oldRight: Int,
-        oldBottom: Int
-    ) {
-        setSize(right - left, bottom - top)
+    private fun addDrawListener() {
+        parentView.viewTreeObserver.addOnDrawListener(this)
     }
 
-    private fun addLayoutDrawListeners() {
-        val parent = parentView
-        if (parent.isLaidOut) setSize(parent.width, parent.height)
-        parent.addOnLayoutChangeListener(this)
-        parent.viewTreeObserver.addOnDrawListener(this)
-    }
-
-    private fun removeLayoutDrawListeners() {
-        val parent = parentView
-        parent.removeOnLayoutChangeListener(this)
-        parent.viewTreeObserver.removeOnDrawListener(this)
-    }
-
-    private fun setSize(width: Int, height: Int) {
-        shadowContainer.setSize(width, height)
+    private fun removeDrawListener() {
+        parentView.viewTreeObserver.removeOnDrawListener(this)
     }
 }
 
 
-@Suppress("UNCHECKED_CAST")
-internal sealed interface Plane<S : Shadow> {
-    val shadows: MutableList<S>
-
-    fun addShadow(shadow: Shadow) {
-        shadows += shadow as S
-    }
-
-    fun removeShadow(shadow: Shadow) {
-        shadows -= shadow as S
-    }
-
-    fun isEmpty() = shadows.isEmpty()
-
-    fun updateAndInvalidateShadows()
-}
-
-
-internal sealed class ShadowContainer<S : Shadow, P : Plane<S>>(
-    protected val parentView: ViewGroup,
+internal sealed class ShadowContainer<S : Shadow, P : ContainerPlane<S>>(
+    private val parentView: ViewGroup,
     protected val controller: ShadowController
 ) {
-    abstract val backgroundPlane: P
     abstract val foregroundPlane: P
+    abstract val backgroundPlane: P
 
     fun addShadowForView(targetView: View) {
         val plane = if (determinePlane(targetView) == Foreground) {
@@ -147,34 +96,89 @@ internal sealed class ShadowContainer<S : Shadow, P : Plane<S>>(
 
     fun removeShadow(shadow: Shadow) {
         shadow.detachFromTarget()
-
         if (foregroundPlane.isEmpty() && backgroundPlane.isEmpty()) {
             controller.detachFromParent()
         }
     }
 
-    fun updateAndInvalidateShadows() {
-        backgroundPlane.updateAndInvalidateShadows()
-        foregroundPlane.updateAndInvalidateShadows()
+    fun updateShadowsAndInvalidate() {
+        backgroundPlane.updateShadowsAndInvalidate()
+        foregroundPlane.updateShadowsAndInvalidate()
     }
 
-    fun refreshAll() {
-        backgroundPlane.shadows.forEach { it.notifyAttributeChanged() }
-        foregroundPlane.shadows.forEach { it.notifyAttributeChanged() }
-    }
-
-    abstract fun attachToParent()
-    abstract fun detachFromParent()
-    abstract fun setSize(width: Int, height: Int)
     abstract fun createShadow(targetView: View, plane: P): S
     abstract fun determinePlane(targetView: View): ClippedShadowPlane
+}
+
+
+internal sealed class ContainerPlane<S : Shadow>(protected val parentView: ViewGroup) :
+    View.OnLayoutChangeListener {
+
+    protected val shadows = mutableListOf<S>()
+
+    fun isEmpty() = shadows.isEmpty()
+
+    fun addShadow(shadow: Shadow) {
+        if (shadows.isEmpty()) attachToParent()
+        @Suppress("UNCHECKED_CAST")
+        shadows += shadow as S
+    }
+
+    private fun attachToParent() {
+        val parent = parentView
+        if (parent.isLaidOut) setSize(parent.width, parent.height)
+        parent.addOnLayoutChangeListener(this)
+        addToOverlay(parent.overlay)
+    }
+
+    abstract fun addToOverlay(overlay: ViewGroupOverlay)
+
+    protected fun checkAddProjectionReceiver() {
+        if (parentView.background == null) parentView.background = EmptyDrawable
+    }
+
+    fun removeShadow(shadow: Shadow) {
+        @Suppress("UNCHECKED_CAST")
+        shadows -= shadow as S
+        if (shadows.isEmpty()) detachFromParent()
+    }
+
+    private fun detachFromParent() {
+        val parent = parentView
+        parent.removeOnLayoutChangeListener(this)
+        removeFromOverlay(parent.overlay)
+    }
+
+    abstract fun removeFromOverlay(overlay: ViewGroupOverlay)
+
+    protected fun checkRemoveProjectionReceiver() {
+        if (parentView.background == EmptyDrawable) parentView.background = null
+    }
+
+    override fun onLayoutChange(
+        v: View?,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int,
+        oldLeft: Int,
+        oldTop: Int,
+        oldRight: Int,
+        oldBottom: Int
+    ) {
+        setSize(right - left, bottom - top)
+    }
+
+    open fun setSize(width: Int, height: Int) {}
+
+    abstract fun updateShadowsAndInvalidate()
 }
 
 
 internal sealed class Shadow(
     protected val targetView: View,
     private val controller: ShadowController,
-    private val plane: Plane<*>
+    private val plane: ContainerPlane<*>
 ) {
     protected val originalProvider: ViewOutlineProvider = targetView.outlineProvider
 

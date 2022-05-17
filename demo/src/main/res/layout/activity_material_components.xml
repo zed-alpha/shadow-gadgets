@@ -2,12 +2,10 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
-    tools:context=".topic.MaterialComponentsActivity">
+    android:padding="10dp">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/title_shadow"
@@ -54,8 +52,8 @@
         android:id="@+id/button2_shadow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignStart="@id/center"
+        android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
         android:backgroundTint="#77aaaaaa" />
 

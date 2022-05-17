@@ -2,11 +2,9 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".topic.PlatformActivity">
+    android:layout_height="match_parent">
 
     <Toolbar
         android:id="@+id/title"
@@ -16,8 +14,8 @@
         android:background="#77ffdddd"
         android:elevation="10dp"
         android:padding="10dp"
-        android:title="@string/platform_title"
         android:subtitle="@string/platform_subtitle"
+        android:title="@string/platform_title"
         app:clipOutlineShadow="true" />
 
     <TextView
@@ -46,8 +44,8 @@
         android:id="@+id/button1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignEnd="@id/center"
+        android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
         android:backgroundTint="#77aaaaaa" />
 
@@ -55,8 +53,8 @@
         android:id="@+id/button2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignStart="@id/center"
+        android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
         android:backgroundTint="#77aaaaaa"
         app:clipOutlineShadow="true" />

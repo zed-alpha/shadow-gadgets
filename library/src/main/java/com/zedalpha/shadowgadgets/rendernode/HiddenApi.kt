@@ -10,11 +10,12 @@ import android.view.DisplayListCanvas
 import android.view.HardwareCanvas
 import android.view.RenderNode
 import androidx.annotation.RequiresApi
+import com.zedalpha.shadowgadgets.RenderNodeName
 import java.lang.reflect.Method
 
 
 internal open class RenderNodeApi21 : RenderNodeWrapper {
-    protected val renderNode = RenderNode.create("ShadowGadgets", null)
+    protected val renderNode = RenderNode.create(RenderNodeName, null)
 
     private fun recordEmptyDisplayList() {
         val canvas = RenderNodeReflector.start(renderNode, 0, 0)

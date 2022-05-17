@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:orientation="vertical">
 
     <com.zedalpha.shadowgadgets.demo.InfoTextView
         android:layout_width="match_parent"
@@ -16,8 +14,8 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:singleLine="false"
         android:maxLines="2"
+        android:singleLine="false"
         android:text="@string/inflation_top" />
 
     <ScrollView
@@ -25,9 +23,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:fillViewport="true"
         android:padding="10dp"
-        android:scrollbars="none"
-        android:fillViewport="true">
+        android:scrollbars="none">
 
         <LinearLayout
             android:id="@+id/content"
@@ -119,5 +117,13 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <com.zedalpha.shadowgadgets.demo.InfoTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:maxLines="2"
+        android:singleLine="false"
+        android:text="@string/inflation_bottom" />
 
 </LinearLayout>

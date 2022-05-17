@@ -11,13 +11,12 @@ import com.zedalpha.shadowgadgets.demo.ZedAlphaControl
 
 @RequiresApi(Build.VERSION_CODES.P)
 class ColorsFragment : TopicFragment(R.layout.fragment_colors) {
-    override val targetIds =
-        intArrayOf(
-            R.id.view_colors,
-            R.id.fab_colors_start,
-            R.id.fab_colors_center,
-            R.id.fab_colors_end
-        )
+    override val targetIds = intArrayOf(
+        R.id.view_colors,
+        R.id.fab_colors_start,
+        R.id.fab_colors_center,
+        R.id.fab_colors_end
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

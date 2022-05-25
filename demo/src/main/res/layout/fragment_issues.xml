@@ -12,26 +12,19 @@
         android:layout_margin="10dp"
         android:text="@string/issues_top" />
 
-    <com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout
+    <com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsFrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
         <View
-            android:id="@+id/center"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_centerInParent="true"
-            android:visibility="invisible" />
-
-        <View
             android:id="@+id/view_z_minus"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/center"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_toStartOf="@id/center"
+            android:layout_marginEnd="60dp"
+            android:layout_marginBottom="60dp"
             android:background="@drawable/target_background"
             android:backgroundTint="@color/see_through_blue"
             android:elevation="5dp"
@@ -42,30 +35,16 @@
             android:id="@+id/view_z_middle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="50dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/target_background"
             android:backgroundTint="#ff4444"
             android:elevation="10dp"
             android:outlineProvider="background" />
 
-        <View
-            android:id="@+id/view_z_plus"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/center"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_toEndOf="@id/center"
-            android:background="@drawable/target_background"
-            android:backgroundTint="@color/see_through_blue"
-            android:elevation="15dp"
-            android:outlineProvider="background"
-            app:clipOutlineShadow="true" />
-
-    </com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout>
+    </com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsFrameLayout>
 
     <com.zedalpha.shadowgadgets.demo.InfoTextView
         android:layout_width="match_parent"

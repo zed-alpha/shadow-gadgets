@@ -96,7 +96,7 @@ private sealed class ViewInflater(context: Context) : LayoutInflater(context) {
             try {
                 createView(name, prefix, attrs)?.let { return it }
             } catch (e: Exception) {
-                /* no-op */
+                /* ignore */
             }
         }
         return super.onCreateView(name, attrs)

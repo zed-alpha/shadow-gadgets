@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="see_through_red">#66FF0000</color>
-    <color name="see_through_green">#6600FF00</color>
-    <color name="see_through_blue">#660000FF</color>
+    <color name="see_through_red">#55FF0000</color>
+    <color name="see_through_green">#5500FF00</color>
+    <color name="see_through_blue">#550000FF</color>
     <color name="see_through_deep_blue">#99446688</color>
 
     <color name="activated_item">#5544ffff</color>

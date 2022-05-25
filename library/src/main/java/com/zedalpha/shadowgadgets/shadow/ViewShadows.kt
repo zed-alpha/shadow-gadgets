@@ -14,14 +14,12 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
-import com.zedalpha.shadowgadgets.ClippedShadowPlane
 import com.zedalpha.shadowgadgets.ShadowFallbackStrategy.ChangePlane
 import com.zedalpha.shadowgadgets.ShadowFallbackStrategy.DisableShadow
 import com.zedalpha.shadowgadgets.clippedShadowPlane
 import com.zedalpha.shadowgadgets.shadowFallbackStrategy
 
 
-@SuppressLint("ViewConstructor")
 internal class ViewShadowContainer(
     parentView: ViewGroup,
     controller: ShadowController
@@ -33,7 +31,7 @@ internal class ViewShadowContainer(
     override fun createShadow(targetView: View, plane: ViewShadowPlane) =
         ViewShadow(targetView, controller, plane)
 
-    override fun determinePlane(targetView: View): ClippedShadowPlane =
+    override fun determinePlane(targetView: View) =
         if (targetView.shadowFallbackStrategy == ChangePlane) {
             targetView.clippedShadowPlane.otherPlane
         } else {

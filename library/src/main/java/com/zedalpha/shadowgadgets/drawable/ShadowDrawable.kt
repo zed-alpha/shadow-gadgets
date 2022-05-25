@@ -90,7 +90,7 @@ class ShadowDrawable private constructor() : Drawable() {
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        /* no-op, for now */
+        /* No-op, for now */
     }
 
     private fun setRenderNodePosition(right: Int, bottom: Int): Boolean {

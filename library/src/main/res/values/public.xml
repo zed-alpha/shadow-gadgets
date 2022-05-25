@@ -7,6 +7,7 @@
     <public name="clipAllChildShadows" type="attr" />
     <public name="childClippedShadowsPlane" type="attr" />
     <public name="childShadowsFallbackStrategy" type="attr" />
+    <public name="forceShadowsFallbackMethod" type="attr" />
 
     <public name="appcompat_shadow_helper" type="string" />
     <public name="material_components_shadow_helper" type="string" />

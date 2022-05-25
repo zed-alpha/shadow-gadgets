@@ -10,9 +10,7 @@ import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.zedalpha.shadowgadgets.ShadowGadgets
 import com.zedalpha.shadowgadgets.demo.topic.Topic
 import com.zedalpha.shadowgadgets.demo.topic.TopicFragment
 import com.zedalpha.shadowgadgets.demo.topic.Topics
@@ -21,14 +19,6 @@ import com.zedalpha.shadowgadgets.demo.topic.setRootBackground
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private val switch by lazy { findViewById<SwitchMaterial>(R.id.switch_clip_shadows) }
-
-    private val fallbackSnackbar by lazy {
-        Snackbar.make(
-            findViewById(R.id.root),
-            "Fallback method in effect. Primary method examples are incorrect.",
-            Snackbar.LENGTH_INDEFINITE
-        ).setAction("OK") {}
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,11 +83,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
             transaction.commit()
             switch.isVisible = next.shouldShowToggle
-            if (!ShadowGadgets.isPrimaryMethodAvailable && topic.showFallbackWarning) {
-                if (!fallbackSnackbar.isShownOrQueued) fallbackSnackbar.show()
-            } else {
-                if (fallbackSnackbar.isShownOrQueued) fallbackSnackbar.dismiss()
-            }
         }
     }
 

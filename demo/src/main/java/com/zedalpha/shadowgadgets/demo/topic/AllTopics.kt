@@ -16,7 +16,6 @@ import com.zedalpha.shadowgadgets.drawable.ShadowDrawable
 internal class Topic(
     private val fragmentClass: Class<out TopicFragment>,
     val title: String,
-    val showFallbackWarning: Boolean = false,
     private val isAvailable: Boolean = true,
     private val unavailableMessage: Int = 0
 ) {
@@ -33,20 +32,20 @@ internal val Topics = listOf(
     Topic(MotionsFragment::class.java, "Motions"),
     Topic(ViewGroupsFragment::class.java, "ViewGroups"),
     Topic(LimitationsFragment::class.java, "Limitations"),
-    Topic(IssuesFragment::class.java, "Issues", showFallbackWarning = true),
-    Topic(OptionsFragment::class.java, "Options", showFallbackWarning = true),
+    Topic(IssuesFragment::class.java, "Issues"),
+    Topic(OptionsFragment::class.java, "Options"),
     Topic(InflationFragment::class.java, "Inflation"),
     Topic(
         ColorsFragment::class.java,
         "Colors",
-        isAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P,
-        unavailableMessage = R.string.unavailable_colors
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P,
+        R.string.unavailable_colors
     ),
     Topic(
         DrawableFragment::class.java,
         "Drawable",
-        isAvailable = ShadowDrawable.isAvailable,
-        unavailableMessage = R.string.unavailable_drawables
+        ShadowDrawable.isAvailable,
+        R.string.unavailable_drawables
     )
 )
 

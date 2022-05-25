@@ -36,8 +36,8 @@ internal class RegularShadowManager(parentView: ViewGroup, attributeSet: Attribu
     }
 
     fun onAttachedToWindow() {
-        generatedAttributes.clear()
         attached = true
+        generatedAttributes.clear()
     }
 
     override fun onViewAdded(child: View) {
@@ -88,39 +88,43 @@ internal sealed class ViewGroupShadowManager(
             attributeSet,
             R.styleable.ClippedShadowsViewGroup
         )
-        clipAllChildShadows =
-            if (array.hasValue(R.styleable.ClippedShadowsViewGroup_clipAllChildShadows)) {
-                array.getBoolean(R.styleable.ClippedShadowsViewGroup_clipAllChildShadows, false)
-            } else null
-        childClippedShadowsPlane =
-            if (array.hasValue(R.styleable.ClippedShadowsViewGroup_childClippedShadowsPlane)) {
-                ClippedShadowPlane.forValue(
-                    array.getInt(R.styleable.ClippedShadowsViewGroup_childClippedShadowsPlane, 0)
+        if (array.hasValue(R.styleable.ClippedShadowsViewGroup_clipAllChildShadows)) {
+            clipAllChildShadows =
+                array.getBoolean(
+                    R.styleable.ClippedShadowsViewGroup_clipAllChildShadows,
+                    false
                 )
-            } else null
-        childShadowsFallbackStrategy =
-            if (array.hasValue(R.styleable.ClippedShadowsViewGroup_childShadowsFallbackStrategy)) {
+        }
+        if (array.hasValue(R.styleable.ClippedShadowsViewGroup_childClippedShadowsPlane)) {
+            childClippedShadowsPlane =
+                ClippedShadowPlane.forValue(
+                    array.getInt(
+                        R.styleable.ClippedShadowsViewGroup_childClippedShadowsPlane,
+                        0
+                    )
+                )
+        }
+        if (array.hasValue(R.styleable.ClippedShadowsViewGroup_childShadowsFallbackStrategy)) {
+            childShadowsFallbackStrategy =
                 ShadowFallbackStrategy.forValue(
                     array.getInt(
                         R.styleable.ClippedShadowsViewGroup_childShadowsFallbackStrategy,
                         0
                     )
                 )
-            } else null
-        parentView.forceShadowsFallbackMethod =
-            array.getBoolean(R.styleable.ClippedShadowsViewGroup_forceShadowsFallbackMethod, false)
+        }
+        if (array.hasValue(R.styleable.ClippedShadowsViewGroup_forceShadowsFallbackMethod)) {
+            parentView.forceShadowsFallbackMethod =
+                array.getBoolean(
+                    R.styleable.ClippedShadowsViewGroup_forceShadowsFallbackMethod,
+                    false
+                )
+        }
         array.recycle()
     }
 
     abstract fun onViewAdded(child: View)
 
     private fun <T> verifyUnattached() =
-        Delegates.observable(null as T?) { property, _, _ ->
-            if (parentView.isAttachedToWindow) {
-                throw IllegalStateException(
-                    "${property.name} must be set before ${parentView.javaClass.simpleName}" +
-                            "is attached to a Window."
-                )
-            }
-        }
+        Delegates.vetoable(null as T?) { _, _, _ -> !parentView.isAttachedToWindow }
 }

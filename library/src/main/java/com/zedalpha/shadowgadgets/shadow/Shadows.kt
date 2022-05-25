@@ -189,9 +189,8 @@ internal sealed class Shadow(
 
     @CallSuper
     open fun attachToTarget() {
-        val target = targetView
-        target.shadow = this
-        wrapOutlineProvider(target)
+        targetView.shadow = this
+        wrapOutlineProvider(targetView)
         plane.addShadow(this)
     }
 
@@ -201,9 +200,8 @@ internal sealed class Shadow(
 
     @CallSuper
     open fun detachFromTarget() {
-        val target = targetView
-        target.shadow = null
-        target.outlineProvider = originalProvider
+        targetView.shadow = null
+        targetView.outlineProvider = originalProvider
         plane.removeShadow(this)
     }
 

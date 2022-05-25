@@ -1,6 +1,6 @@
 # Shadow Gadgets
 
-A utility library for Android with various tools to fix the elevation shadow artifacts visible on `View`s<sup>*</sup> with transparent or translucent backgrounds.
+A utility library for Android with various tools to help fix the elevation shadow artifacts visible on `View`s<sup>*</sup> with transparent or translucent backgrounds.
 
 <img src="images/examples_before.png" width="85%" />
 
@@ -12,158 +12,175 @@ These tools use the same classes and methods that the platform uses to render sh
 
 ---
 
-<sup><sup>*</sup> Compose UI suffers from the same issue, as it's ultimately using the same `RenderNode` APIs as the `View` framework. However, this library currently works only with `View`s. Compose UI integration is the first planned major update, if they haven't rolled their own separate shadow implementation by then, which I suspect they're planning. The platform shadows are rather limited.</sup>
+<sup><sup>*</sup> Jetpack Compose suffers from the same issue, as it's ultimately using the same `RenderNode` APIs as the `View` framework. However, this library currently works only with `View`s. Independent solutions in Compose, and the arguable merits of including them in the library, are noted on [the home wiki page](https://github.com/zed-alpha/shadow-gadgets/wiki#jetpack-compose).</sup>
+
+<br />
+
+
+## Basic usage
+
+<sup>[[Download](#download)]</sup>
+
+Nobody wants to mess with a whole library for such a small thing that should've already been handled in the native UI framework, so this was designed to be as simple and familiar as possible:
+
+```kotlin
+view.clipOutlineShadow = true
+```
+
+That's it. Unless your setup requires that a _sibling_ `View` overlap a target of the fix, or it involves a target with an irregular shape on Android R or above, that's possibly all you need.
+
+The `Boolean`-value `clipOutlineShadow` extension property is basically a switch to toggle the fix on `View`s individually, and it's designed to mimic an intrinsic property as much as possible. Though the shadow is actually being handled and drawn in the parent `ViewGroup`, the property can be set on the target `View` at any time, even while it's unattached, so there's no need to worry about timing. Additionally, the clipped shadow automatically animates and transforms along with its target, and it will handle moving itself to any new parents, should the target be moved.
+
+It is hoped that that simple usage should cover most cases, but for the situations mentioned above, the library offers a couple of configuration options as possible recourses. Those and a few other features and tools are discussed in the following:
 
 
 ## Sections
 
-+ [**Overlay shadows**](#overlay-shadows)
++ [**Limitations and recourses**](#limitations-and-recourses)
 
-    An extension property on `View` allows for easy application of the fix in the form of a clipped shadow replica drawn onto the target's parent's overlay. Simple and straightforward, it has a few limitations inherent to the technique, but it is indeed sufficient for many, if not most, use cases.
+    Android's continuing lockdown on reflection makes irregular shapes a bit of a problem on R+, but the only real Achilles' heel to the overall technique is overlapping sibling `View`s.
 
-+ [**Custom containers**](#custom-containers)
++ [**ViewGroups**](#viewgroups)
 
-    These `ViewGroup`s fix their children's shadows by handling them inline, and so do not suffer some of the limitations of the overlay shadows. At present, they can only be used directly, but they will eventually be added as options to the inflation helpers.
+    The library offers a few customized Recycling `ViewGroup`s that are optimized for handling these clipped shadows on all of their children, and several Regular ones that are mainly meant to allow the shadow properties to be set on their children from corresponding attributes in layout XML.
 
-+ [**Drawables**](#drawables)
++ [**Drawable**](#drawable)
 
-    A relatively simple `Drawable` class is provided to create "independent" shadows from either a `View` or a `Path`. Hopefully this might help to cover any unforeseen cases, or any for which the other solutions may be insufficient or inappropriate.
-
-+ [**Layout inflation helpers**](#layout-inflation-helpers)
-
-    These helpers insert themselves into the inflation pipeline to automatically enable the overlay fix on selected tags and `View`s. This is handy if you'd like to add it to an existing project with minimal changes, or if you'd just rather not clutter your code with the necessary property settings.
+    A relatively simple `Drawable` class is provided to create "independent" shadows from `View`s or `Path`s. This may be useful as another fix option, or even as a design element on its own.
 
 + [**Notes**](#notes)
 
-    Overall limitations and conflicts, known bugs, planned features, etc.
+    General notes, caveats, etc.
 
 + [**Download**](#download)
 
     Available through JitPack, currently.
 
-+ [**API reference**](#api-reference)
++ [**API reference**](https://github.com/zed-alpha/shadow-gadgets/wiki#api-reference)
 
     Complete listing of the public API.
 
-+ [**License**](#license)
-
-    Standard MIT.
+<br />
 
 
-## Overlay shadows
+## Limitations and recourses
 
-[[API reference](#overlay-shadows-1)]
+For context here, the library's overall technique is essentially disabling the target's built-in shadow, and drawing a clipped copy in its place.
 
-This functionality is provided by a `Boolean`-value extension property on `View` called `clipOutlineShadow`, in keeping with similar platform method names. It's essentially a switch to toggle the overlay fix on `View`s individually. For example:
+### Irregular Shapes on Android R+
 
+The first limitation comes on Android R and above, when creating the copy for `View`s with irregular shapes; i.e., `View`'s that aren't rectangles, regular round rectangles, or circles. Reflection is required to get at the `Path` that describes those irregular shapes, and the increasing restrictions on non-SDK interfaces have finally made that field inaccessible. There is no direct workaround option for this yet – the next release will have something that works automatically with common Jetpack components – but you might be able to do something with `ShapeDrawable` in the meantime, if you really need it, though you will have to provide the `Path`.
+
+### Overlapping Sibling Views
+
+<sup>[[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Clipped_Shadows#clippedShadowPlane)]</sup>
+
+The second and main limitation is inherent to the technique. The clipped shadow copies are drawn outside of the normal child draw routine of the parent `ViewGroup`, and by default are overlaid on top of its content. In many cases this is just fine, and is visually indistinguishable from the shadow being drawn normally. The issue comes when a target is overlapped by a sibling `View`, which can cause different kinds of unwanted artifacts.
+
+<img src="images/glitch_examples.png" />
+
+<sup>_On the left, blue's shadow overlays its higher sibling. On the right, shadows are missing within their bounds._</sup>
+
+It is important to note that this is an issue only for _siblings_ of the target. `View`s in separate parent `ViewGroup`s have separate draws and won't interfere with each other. Indeed, in some cases the most straightforward solution is to simply wrap a target or sibling in another `ViewGroup`, like a plain old `FrameLayout`. There are certainly cases where siblings must overlap, however, hence the other two core properties and the corresponding enum classes: `ClippedShadowPlane` and `ShadowFallbackStrategy`.
+
+<br />
+
+#### ClippedShadowPlane
 ```kotlin
-if (!view.clipOutlineShadow) view.clipOutlineShadow = true
+enum class ClippedShadowPlane { Foreground, Background }
 ```
 
-That's it. It behaves like any other such `View` property. The `if` check is strictly illustrative, and is not required before setting either value.
+The `View.clippedShadowPlane` extension property sets the "plane" on which the clipped shadow will be drawn: the parent `ViewGroup`'s `Foreground` or `Background`.
 
-### Limitations and conflicts
+For example, in the left image above, directing the blue target's shadow to draw on the background plane – e.g., `blueView.clippedShadowPlane = Background` – fixes its clipped shadow which was being incorrectly drawn over the red sibling.
 
-+ As mentioned, this tool draws a clipped replica of the target's shadow onto its parent's overlay, after disabling the inherent shadow. This has the benefit of requiring no other setup or management, but since the shadows are effectively pulled to the front of the parent, overlapping sibling `View`s can cause flaws in the resulting draw.
+<img src="images/plane_fix.png" />
 
-    The library actually has two different methods to draw the clipped shadows, to help ensure that it works on every relevant Android version. With the primary method, overlapping siblings would look something like this:
+Just like `View.clipOutlineShadow`, and `View.shadowFallbackStrategy` below, this property can be set on the target `View` at any time.
 
-    <img src="images/overlapping_primary.png" width="65%" />
+<br />
 
-    All three images are of the same basic setup: a blue target z-ordered behind its red sibling. The left shows an opaque red sibling, the right a translucent one, and in the center they are both completely transparent, so it's easier to see exactly what the shadows are doing in the the intersections.
+#### ShadowFallbackStrategy
+```kotlin
+enum class ShadowFallbackStrategy { None, ChangePlane, DisableShadow }
+```
 
-    The fallback method ends up with a slightly different defect. With this method, the shadows' interiors are clipped all at once, so they are missing completely from the the overlapping areas here:
+The second property is a little more subtle. The library actually uses two different drawing methods to help ensure that it works on all relevant Android versions. The primary method is always preferred but may not be available on Android versions before Q (API level 29). The `View.shadowFallbackStrategy` extension property offers a way to set an action to take if the fallback method is in use, should that method end up having undesirable effects in a given setup.
 
-    <img src="images/overlapping_fallback.png" width="65%" />
+Because the fallback method clips and draws all of the shadows in a plane at once instead of individually, any clipped shadows within the bounds of overlapping targets get clipped out, too. That is, the shadows are missing underneath the targets.
 
-    Possibly the simplest remedy for this would be to wrap one or more of the siblings in another `ViewGroup` – e.g., in a `<FrameLayout>` – which would isolate the shadow draws. The custom containers are in the process of being modified to handle overlapping children, but that feature is not quite ready yet.
+The first option, `ChangePlane`, can be used to direct one of the clipped shadows that would normally be drawn on the default `Foreground` plane to draw to the `Background` instead, bringing back the missing shadows, as shown in the first image.
 
-+ Certain animations can sometimes cause the overlay shadow to fall out of alignment with the target a bit during the motion. The demo app has a `CoordinatorLayout` setup on the second Overlay page that has the potential to show this defect. The custom containers described in the next section are optimized to avoid this, and should help to alleviate it, if you find that your setup is affected.
+<img src="images/fallback_strategies.png" />
 
-+ Please also consult [the Notes section below](#notes) for further issues overall.
+If the fallback is going to cause more problems than it fixes, the `DisableShadow` value will turn a target's shadow off and omit the fix altogether, as illustrated in the second image.
+
+The app in the `demo` module has a couple of pages that demonstrate these properties' effects at runtime.
+
+<br />
 
 
-## Custom containers
+## ViewGroups
 
-[[API reference](#custom-containers-1)]
+There are two general categories of `ViewGroup` subclasses: Recycling and Regular.
 
-The library offers a handful of subclasses of common `ViewGroup`s that handle the clipped shadows inline with their child draw routines in an effort to avoid some of the limitations of the overlay approach, and to optimize for better performance in ones like `RecyclerView`. They are broadly divided into Regular and Recycling categories, and each is a drop-in replacement for the corresponding platform/androidx class.
+### Recycling ViewGroups
 
-### Regular containers
+<sup>[[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Recycling_ViewGroups)]</sup>
 
-+ `ClippedShadowsFrameLayout`
-+ `ClippedShadowsRelativeLayout`
-+ `ClippedShadowsCoordinatorLayout`
+By default, the library's shadow objects clean up after themselves whenever the target `View` is detached from the hierarchy. Since certain `ViewGroup`s like `ListView` and `RecyclerView` continually detach and reattach their children during scroll events, this would cause some rather inefficient handling with the default behavior. To that end, the library offers a handful of customized Recycling `ViewGroup` subclasses that are optimized for clipped shadows on all of their children.
 
-By default, all of the regular ones apply the fix selectively; i.e., they fix only the children that are marked to be. The `clipAllChildShadows` attribute is available to change that behavior. For example:
+The list of available Recycling `ViewGroup`s can be found on [their page in the API reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Recycling_ViewGroups). Each implements a common library interface but otherwise behaves exactly like its superclass, and is a drop-in replacement in both code and XML. For example:
+
+```xml
+<com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRecyclerView
+    android:id="@+id/recycler_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    … />
+```
+
+There is no special setup necessary, other than providing the `Adapter` that creates elevated, translucent items.
+
+### Regular ViewGroups
+
+<sup>[[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Regular_ViewGroups)]</sup>
+
+The Regular ones are meant merely to aid in setting the library's clipped shadow properties on children from corresponding attributes in layout XML. To that end, they each recognize the following three attributes on child tags:
+
++ `app:clipOutlineShadow`
++ `app:clippedShadowPlane`
++ `app:shadowFallbackStrategy`
+
+The XML values for each correspond to the code values just as one would expect. For example:
 
 ```xml
 <com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root"
-    …
-    app:clipAllChildShadows="true">
-```
-
-Otherwise, there are two ways to mark a child as a target for the fix: with a custom attribute, or with a specific tag value. The first way is quite familiar:
-
-```xml
-<com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout …>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Button
+        android:id="@+id/translucent_button"
         …
-        app:clipOutlineShadow="true" />
+        app:clipOutlineShadow="true"
+        app:clippedShadowPlane="background"
+        app:shadowFallbackStrategy="changePlane" />
+
+</com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout>
 ```
 
-Unfortunately, `CoordinatorLayout` does not allow custom `LayoutParams` to be inflated from XML so the `clipOutlineShadow` attribute won't work for its children, thus the need for a second method. As an alternative, `ClippedShadowsCoordinatorLayout` (and therefore the other regular ones, as well) will look for children with a specific tag value:
+For the purposes of consistent behavior across all of the different `ViewGroup` types, these three attributes will work properly _only_ on `View`s with IDs that are unique within the `ViewGroup`. They are ignored on children that do not have an `android:id`.
 
-```xml
-<com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsCoordinatorLayout …>
+Each `ViewGroup` also has a few properties from the common interface, `ClippedShadowsViewGroup`, most of them simply conveniences for setting shadow properties on all of their children. The details for those can be found on [the relevant reference pages on the wiki](https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups).
 
-    <Button
-        …
-        android:tag="@string/clip_outline_shadow_tag_value" />
-```
-
-If you're already using the `android:tag` attribute for something else, that value can instead be added as a `<tag>` keyed with a specific library ID:
-
-```xml
-<com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsCoordinatorLayout …>
-
-    <Button …>
-
-        <tag
-            android:id="@id/clip_outline_shadow_tag_id"
-            android:value="@string/clip_outline_shadow_tag_value" />
-
-    </Button>
-```
-
-### Recycling containers
-
-The other main container category is recycling `ViewGroup`s, and they are as follows:
-
-+ `ClippedShadowsListView`
-+ `ClippedShadowsGridView`
-+ `ClippedShadowsRecyclerView`
-
-These three all assume that all of their children will be targets, so the parent attribute and child markings described for the regular `ViewGroup`s are ignored here. It should be mentioned that `ClippedShadowsListView` and `ClippedShadowsGridView` both have default styles that set `android:listSelector` and `android:cacheColorHint` to be fully transparent, due to possible conflicts caused in part by the `ViewOutlineProvider` caveat described in [the Notes section](#notes).
-
-### Limitations
-
-+ At present, all of the containers always use the fallback drawing method, as there is an unforeseen issue with z-ordering in the primary method. That means that overlapping children will be missing the shadows altogether inside the intersections, as described in [the Overlays' limitations](#limitations-and-conflicts).
-
-+ Currently, the containers' behavior in the Android Studio graphical layout editor is a little flaky. Each will still work as the base `ViewGroup` that it is, but it may or may not fix the shadows there, and sometimes it can interfere with a child's content draw. I'm not yet sure exactly why, but I'm assuming it has something to do with the specialized rendering pipeline for the editor.
-
-+ Please check [the Notes](#notes) for further issues that can affect the containers.
+<br />
 
 
-## Drawables
+## Drawable
 
-[[API reference](#drawables-1)]
+<sup>[[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowDrawable)]</sup>
 
-The last rendering tool is `ShadowDrawable`, which allows us to create "disembodied" shadows as a further possible option for applying the fix in unforeseen cases, or ones where the other options are insufficient, for whatever reason. It also lets us draw the shadow effect of elevated `View`s without needing the actual `View`s, which likely has at least a couple of applications, I would think. Please note that, just like normal `View` shadows, this only works with hardware-accelerated `Canvas`es.
+The last rendering tool is `ShadowDrawable`, which allows us to create "disembodied" shadows as a further possible option for applying the fix in unforeseen cases, or ones where the other options are insufficient, for whatever reason. It also lets us draw the shadow effect of elevated `View`s without needing the actual `View`s, which likely has at least a couple of applications, I would think. Please note that, like normal `View` shadows, this only works with hardware-accelerated `Canvas`es.
 
 Before creating any instances, you must first check that `ShadowDrawable.isAvailable` returns `true`. For the clipping technique to be applicable through the `Drawable` mechanism, it requires the primary shadow drawing method. If that is not available in the current environment, that property will return `false`, and any use of the factory methods will throw an `IllegalStateException`. However, every effort has been made to make this available on all relevant Android versions, including the use of methods that are too slow for the overlay and container approaches. Since any instances of this would necessarily be controlled directly, it does not have the `View`-tracking overhead of those approaches, so the slower methods are adequate here.
 
@@ -185,262 +202,24 @@ Also offered is the `var fillPaint: Paint?` property, which provides a simple wa
 
 `Drawable`'s required `setColorFilter()` override is currently a no-op here.
 
-
-## Layout inflation helpers
-
-[[API reference](#layout-inflation-helpers-1)]
-
-For more than a handful of `View`s, setting the overlay property individually in code is tedious and bulky, so the library also offers a few ways to set it automatically by inserting a helper into the layout inflation pipeline. Since a standard setup these days often involves a Material Components theme on an `AppCompatActivity`, we'll use that one to illustrate the main points. The differences in usage for regular AppCompat themes, and for non-library `Activity` classes, follow the description of Tag Matchers, which are common to all three arrangements.
-
-
-### Material Components Helper
-
-The helper class for this version is `MaterialComponentsShadowHelper`, and it can be attached either through resources, or programmatically in the `Activity` itself.
-
-+ #### Through resources
-
-    In the relevant theme, this helper class is set as the `viewInflaterClass`.
-
-    ```xml
-    <style name="Theme.YourApp" parent="Theme.MaterialComponents…">
-        …
-        <!-- You can use either the fully qualified class name… -->
-        <item name="viewInflaterClass">com.zedalpha.shadowgadgets.inflation.MaterialComponentsShadowHelper</item>
-
-        <!-- Or, a string resource of that name is also provided, as a convenience. -->
-        <item name="viewInflaterClass">@string/material_components_shadow_helper</item>
-    </style>
-    ```
-
-+ #### Programmatically
-
-    In code, the `attachMaterialComponentsShadowHelper()` extension function on `AppCompatActivity` simply sets that `viewInflaterClass` value dynamically, for the current `Activity` instance only. It must be called _before_ the `super.onCreate()` call.
-
-    ```kotlin
-    class MaterialComponentsActivity : AppCompatActivity(R.layout.activity_material_components) {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            attachMaterialComponentsShadowHelper()
-            super.onCreate(savedInstanceState)
-            …
-        }
-    }
-    ```
-
-By default, the helper looks for any `View` tag with the `clipOutlineShadow` attribute set to `true`. For example:
-
-```xml
-<com.google.android.material.button.MaterialButton
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/translucent_button"
-    …
-    app:clipOutlineShadow="true" />
-```
-
-
-### Common: Tag Matchers
-
-If you'd rather not modify layout files to add the `clipOutlineShadow` attribute, you can instead create `TagMatcher`s to select certain tags on which to enable the fix. These `TagMatcher`s can be defined in resource XML (`R.xml`) files, or in code.
-
-+ #### In resource XML
-
-    Standard matchers can be defined in XML files, with a very simple set of available elements and attributes. For example:
-
-    ```xml
-    <matchers
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-
-        <id android:id="@id/translucent_button" />
-        <id android:name="translucent_button" />
-        <id android:name="translucent_" app:matchRule="startsWith" />
-        <name android:name="Button" app:matchRule="endsWith" />
-    </matchers>
-    ```
-
-    The parser is quite lenient and basically ignores everything except the `<id>` and `<name>` tags, and the `android:id`, `android:name`, and `app:matchRule` attributes. All of the example elements shown above will match the aforementioned `<com.google.android.material.button.MaterialButton>` tag.
-
-    IDs can be matched either by exact reference with the normal syntax, as shown in the first `<id>` element, or by name with a string matching rule, as shown in the next two. The default rule is `equals` (which need not be specified) and the others are `contains`, `startsWith`, and `endsWith`.
-
-    Name matchers are valid only with an `android:name` attribute. Similar to IDs the default rule is `equals`, and the other rules are all applicable to this, as well.
-
-    The XML resource can be specified to the helper through resources either with the `shadowTagMatchers` theme attribute:
-
-    ```xml
-    <style name="Theme.YourApp" parent="Theme.MaterialComponents…">
-        …
-        <item name="viewInflaterClass">@string/material_components_shadow_helper</item>
-        <item name="shadowTagMatchers">@xml/matchers</item>
-    </style>
-    ```
-
-    Or with a `<meta-data>` element in the manifest:
-
-    ```xml
-    <application …>
-
-        <activity
-            android:name=".MaterialComponentsActivity"
-            android:theme="@style/Theme.MaterialComponents…">
-            <meta-data
-                android:name="com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"
-                android:resource="@xml/matchers" />
-        </activity>
-
-    </application>
-    ```
-
-    The helper first looks for the theme attribute to obtain the appropriate XML resource. If the attribute is not present, it will look for a `<meta-data>` tag in the `<activity>` element, and then for a `<meta-data>` in the `<application>` element.
-
-+ #### Programmatically
-
-    The `attachMaterialComponentsShadowHelper()` function has an overload that takes a `List<TagMatcher>`. The two standard matchers can be constructed at runtime with the `idMatcher()` and `nameMatcher()` functions. To demonstrate, the matchers from the XML resource above can be replicated in code like so:
-
-    ```kotlin
-    class MaterialComponentsActivity : AppCompatActivity(R.layout.activity_material_components) {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            attachMaterialComponentsShadowHelper(
-                listOf(
-                    idMatcher(R.id.translucent_button),
-                    idMatcher(matchName = "translucent_button"),
-                    idMatcher(matchName = "translucent_", matchRule = MatchRule.StartsWith),
-                    nameMatcher("Button", MatchRule.EndsWith)
-                )
-            )
-            super.onCreate(savedInstanceState)
-            …
-        }
-    }
-    ```
-
-    If you need further and/or different options for matching, `TagMatcher` is a simple `interface` that you can implement yourself.
-
-    ```kotlin
-    interface TagMatcher {
-        fun matches(view: View, tagName: String, attrs: AttributeSet): Boolean
-    }
-    ```
-
-    The first parameter is the `View` object inflated from the XML tag described by the subsequent two parameters. You must return `true` from `matches()` for the clip to be enabled automatically.
-
-+ #### Hybrid
-
-    Additionally, `attachMaterialComponentsShadowHelper()` has one more overload that takes an `R.xml` so you can construct the matchers list from XML at runtime, simply as another configuration option.
-
-    ```kotlin
-    class MaterialComponentsActivity : AppCompatActivity(R.layout.activity_material_components) {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            attachMaterialComponentsShadowHelper(R.xml.matchers)
-            super.onCreate(savedInstanceState)
-            …
-    ```
-
-Though regular AppCompat themes and platform Activities require different helper classes than Material Components, these `TagMatcher` definitions and implementations are common to all three variations.
-
-
-### AppCompat Helper
-
-The only differences between this version and the Material Components one above are the names of the helper class and attach function. They are kept wholly separate mainly to allow those not using Material Components to have the pertinent components stripped at build time.
-
-+ #### Through resources
-
-    ```xml
-    <style name="Theme.YourApp" parent="Theme.AppCompat…">
-        …
-        <!-- Either -->
-        <item name="viewInflaterClass">com.zedalpha.shadowgadgets.inflation.AppCompatShadowHelper</item>
-
-        <!-- Or -->
-        <item name="viewInflaterClass">@string/appcompat_shadow_helper</item>
-    </style>
-    ```
-
-+ #### Programmatically
-
-    In code, the relevant function is named `attachAppCompatShadowHelper()` instead.
-
-    ```kotlin
-    class CompatActivity : AppCompatActivity(R.layout.activity_compat) {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            attachAppCompatShadowHelper()
-            super.onCreate(savedInstanceState)
-            …
-        }
-    }
-    ```
-
-    It also must be called before the `super.onCreate()` call, and has available the same overloads as `attachMaterialComponentsHelper()`.
-
-
-### Platform Helper
-
-In code, using this with a platform `Activity` class is quite similar to the library setups, the analogous function named simply `attachShadowHelper()` in this case.
-
-+ #### Programmatically
-
-    ```kotlin
-    class PlatformActivity : Activity() {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            attachShadowHelper()
-            setContentView(R.layout.activity_platform)
-            …
-        }
-    }
-    ```
-
-    Note, however, that the attach function is called immediately _after_ the `super.onCreate()` call this time, though still before the first call to `setContentView()`.
-
-+ #### Through resources
-
-    Unfortunately, there is no `viewInflaterClass` attribute in the platform; that is a feature of AppCompat (and therefore Material Components, as well). In order to be able to apply this externally, without needing to modify the `Activity` classes, the attach function can be called on the `Activity` instances as they're passed to an `ActivityLifecycleCallbacks` object registered in a custom `Application` class. For example:
-
-    ```kotlin
-    class ShadowHelperApplication : Application() {
-        override fun onCreate() {
-            super.onCreate()
-            registerActivityLifecycleCallbacks(object : ActivityCreatedCallback {
-                override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                    activity.attachShadowHelper()
-                }
-            })
-        }
-    }
-    ```
-
-    where `ActivityCreatedCallback` is an `interface` extending `ActivityLifecycleCallbacks` with empty defaults for the unused functions. This class unconditionally attaches the platform helper to every `Activity`. If that happens to be sufficient for your setup, `ShadowHelperApplication` is actually included in the library, and can be applied like any other custom `Application`.
-
-    ```xml
-    <application
-        android:name="com.zedalpha.shadowgadgets.inflation.ShadowHelperApplication"
-        … />
-    ```
-
-    If you need to alter that behavior, or to integrate this with an existing `Application` subclass, you can use `ShadowHelperApplication` as just an example.
+<br />
 
 
 ## Notes
 
-### Overall limitations and conflicts
++ Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows to work _at all_ on Pie itself, with or without this library involved. The documentation indicates that they should work, and all of the relevant methods and attributes were introduced with that version, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app has a page for colors which would be a quick and easy test for that.
 
 + To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped in a custom implementation. This has the possibility of breaking something if some method or component is expecting the `View` to have one of the static platform implementations; i.e., `ViewOutlineProvider.BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`. This shouldn't cause a fatal error, or anything – it's no different than anything else that uses a custom `ViewOutlineProvider` – but you might need to rework some background drawables or the like.
 
-+ Starting with Android R, the overlays, the containers, and `ShadowDrawable.fromView()` will only work automatically on `View`s with "regular" `Outline`s; i.e., `View`s that are circles, rectangles, or round rectangles with the same radius for all corners. The increasing restrictions on non-SDK interfaces that began in Pie have finally removed access to the `Path` object necessary for irregular shapes.
+    This also means that if you are using a custom `ViewOutlineProvider` of your own on a target, it should be set _before_ enabling the clipped shadow (or at least before the target `View` attaches to its `Window`).
 
-    A future release will have some alternate method for these newer versions. In the meantime, you might be able to do something with `ShadowDrawable.fromPath()` instead, since it will still function normally.
++ To be able to draw the clipped shadows in the `Background` plane, the parent `ViewGroup` itself must have a background set. If it does not have one set at the time that such a shadow is added, a special library `object` is set automatically. For efficiency, this is the only time it is checked, so you should _not_ set the parent's background to specifically `null` any time it has `Background` shadows active. Any other non-`null` value is perfectly fine, but otherwise, the clipped shadows in that plane may end up drawing on the wrong background.
 
-+ Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows _at all_ on Pie itself, with or without this library involved. The documentation indicates that they should work, and all of the relevant methods and attributes were introduced with that version, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app has a page for colors which would be a quick and easy test for that.
++ The layout inflation helpers' description and demonstration have been wholly removed to the wiki. They are a rather niche tool, unlikely of use to many others, and probably won't be updated any further.
 
-+ The AppCompat and Material Components inflation helpers are (obviously) set as the `viewInflaterClass` in their respective configurations. If you're using anything other than the default inflaters that are handled internally by `AppCompatActivity`, then you might need to adapt or modify the helpers here, or possibly forgo them altogether.
++ The demo app was designed and tested on 1080x1920 xxhdpi devices and not much else, so things might not look that great on other configurations. Just a heads up.
 
-### Known bugs
-
-+ On the Lollipop versions, API levels 21 and 22, the fallback shadow drawing method has a bug in that a target `View` that is not visible on-screen while its shadow is clipped can cause an infinite invalidate loop, for as yet unknown reasons. This only affects the overlays if they're in fallback mode, but all of the containers are currently using only the fallback method, due to an open issue with primary one.
-
-### Planned features:
-
-+ Compose UI integration
-
-+ Custom containers as inflation helper options
+<br />
 
 
 ## Download
@@ -464,298 +243,7 @@ dependencies {
 }
 ```
 
-
-## API reference
-
-All types are non-null unless explcitly indicated with `?`.
-
-### Overlay shadows
-
-Package: `com.zedalpha.shadowgadgets`
-
-+ **Extension properties**
-
-    | `Boolean` | `var View.clipOutlineShadow` |
-    | --- | --- |
-    |     | Sets or gets the status of the overlay shadow fix on the receiver `View`. |
-
-
-### Custom containers
-
-Package: `com.zedalpha.shadowgadgets.viewgroup`
-
-+ **Classes**
-
-    ```kotlin
-    class ClippedShadowsFrameLayout :
-        android.widget.FrameLayout, ClippedShadowsContainer
-    ```
-
-    ```kotlin
-    class ClippedShadowsRelativeLayout :
-        android.widget.RelativeLayout, ClippedShadowsContainer
-    ```
-
-    ```kotlin
-    class ClippedShadowsCoordinatorLayout :
-        androidx.coordinatorlayout.widget.CoordinatorLayout, ClippedShadowsContainer
-    ```
-
-    ```kotlin
-    class ClippedShadowsListView :
-        android.widget.ListView, ClippedShadowsContainer
-    ```
-
-    ```kotlin
-    class ClippedShadowsGridView :
-        android.widget.GridView, ClippedShadowsContainer
-    ```
-
-    ```kotlin
-    class ClippedShadowsRecyclerView :
-        androidx.recyclerview.widget.RecyclerView, ClippedShadowsContainer
-    ```
-
-+ **Interfaces**
-
-    ```kotlin
-    interface ClippedShadowsContainer
-    ```
-    
-    | `Boolean` | `val isUsingShadowsFallback` |
-    | --- | --- |
-    |     | Indicates whether the `ViewGroup` is using the fallback drawing method due to the primary one being unavailable. |
-
-+ **XML attributes**
-
-    | `boolean` | `app:clipOutlineShadow` | 
-    | --- | --- |
-    |     | Child attribute. Indicates whether to enable the fix for the given `<View>`. |
-
-    | `boolean` | `app:clipAllChildShadows` | 
-    | --- | --- |
-    |     | Parent attribute. Indicates whether to enable the fix for all children of the parent. |
-
-+ **Resources**
-
-    | `id` | `clip_outline_shadow_tag_id` | 
-    | --- | --- |
-    |     | ID for use as the `android:id` in a `<tag>` to mark the child as a target for the fix. |
-
-    | `string` | `clip_outline_shadow_tag_value` | 
-    | --- | --- |
-    |     | String for use as the value in an `android:tag` attribute, or as the `android:value` in a `<tag>`, to mark the child as a target for the fix. |
-
-
-### Drawables
-
-Package: `com.zedalpha.shadowgadgets.drawable`
-
-```kotlin
-class ShadowDrawable : android.graphics.drawable.Drawable
-```
-
-+ **Companion properties**
-
-    | `static Boolean` | `val isAvailable` |
-    | --- | --- |
-    |     | Indicates whether `ShadowDrawable` can be used in the current environment. Must be checked before creating any instances. |
-
-+ **Companion functions**
-
-    | `static ShadowDrawable` | `fromView(view: View)` |
-    | --- | --- |
-    |     | Creates a drawable from the `View`'s current outline and state. |
-
-    | `static ShadowDrawable` | `fromPath(path: Path)` |
-    | --- | --- |
-    |     | Creates a drawable with the bounds described by `path`. Only convex `Path`s are supported before API level 29 (Q), per platform restrictions. |
-
-+ **Functions**
-
-    | `Unit` | `updateFromView(target: View)` |
-    | --- | --- |
-    |     | Updates the instance from the `View`'s current outline and state. |
-
-    | `Unit` | `updateFromPath(path: Path)` |
-    | --- | --- |
-    |     | Updates the instance with the given `Path`. This will only have affect on the shape and size of the shadow. Other properties are unmodified. |
-
-+ **Properties**
-
-    | `Float` | `var elevation` |
-    | --- | --- |
-    |     | Sets or gets the base z-offset for this drawable, in pixels. |
-
-    | `Float` | `var pivotX` |
-    | --- | --- |
-    |     | Sets or gets the x-axis pivot point for the drawable. |
-
-    | `Float` | `var pivotY` |
-    | --- | --- |
-    |     | Sets or gets the y-axis pivot point for the drawable. |
-
-    | `Float` | `var rotationX` |
-    | --- | --- |
-    |     | Sets or gets the degrees of rotation around the x-axis for the drawable. |
-
-    | `Float` | `var rotationY` |
-    | --- | --- |
-    |     | Sets or gets the degrees of rotation around the y-axis for the drawable. |
-
-    | `Float` | `var rotationZ` |
-    | --- | --- |
-    |     | Sets or gets the degrees of rotation around the z-axis for the drawable. This is the one often referred to as just plain "rotation". |
-
-    | `Float` | `var scaleX` |
-    | --- | --- |
-    |     | Sets or gets the horizontal scaling factor for the drawable. |
-
-    | `Float` | `var scaleY` |
-    | --- | --- |
-    |     | Sets or gets the vertical scaling factor for the drawable. |
-
-    | `Float` | `var translationX` |
-    | --- | --- |
-    |     | Sets or gets the x-axis offset for the drawable. |
-
-    | `Float` | `var translationY` |
-    | --- | --- |
-    |     | Sets or gets the y-axis offset for the drawable. |
-
-    | `Float` | `var translationZ` |
-    | --- | --- |
-    |     | Sets or gets the z-axis offset for the drawable. |
-
-    | `Int` | `var ambientShadowColor` |
-    | --- | --- |
-    |     | Sets or gets the color for the shadow's ambient light source. Only available on API level 28 and above. |
-
-    | `Int` | `var spotShadowColor` |
-    | --- | --- |
-    |     | Sets or gets the color for the shadow's spot light source. Only available on API level 28 and above. |
-
-    | `Paint?` | `var fillPaint` |
-    | --- | --- |
-    |     | Sets or gets the (optional) `Paint` object used to fill the drawable's inner area after the shadow draw. |
-
-
-### Layout inflation helpers
-
-Package: `com.zedalpha.shadowgadgets.inflation`
-
-+ **Classes**
-
-    ```kotlin
-    class ShadowHelperApplication : android.app.Application
-    ```
-
-    A simple `Application` subclass that unconditionally sets the platform shadow inflater helper on every `Activity` instance that is created. Included mainly for illustrative purposes.
-
-+ **Interfaces**
-
-    ```kotlin
-    interface ActivityCreatedCallback :
-        Application.ActivityLifecycleCallbacks
-    ```
-    
-    | `Unit` | `onActivityCreated(activity: Activity, savedInstanceState: Bundle?)` |
-    | --- | --- |
-    |     | This is an adapter interface with empty defaults for all of `ActivityLifecycleCallbacks` functions except this one. |
-
-    ```kotlin
-    interface TagMatcher
-    ```
-    
-    | `Boolean` | `matches(view: View, tagName: String, attrs: AttributeSet)` |
-    | --- | --- |
-    |     | Return `true` to to indicate a match. |
-
-+ **XML attributes**
-
-    | `boolean` | `app:clipOutlineShadow` | 
-    | --- | --- |
-    |     | Child attribute. Indicates whether to enable the fix for the given `<View>`. |
-
-    | `reference` | `app:shadowTagMatchers` | 
-    | --- | --- |
-    |     | Theme attribute. Used to point to an XML resource from which to build tag matchers. |
-
-    | `enum` | `app:matchRule` |
-    | --- | --- |
-    |     | Tag matcher attribute. Indicates comparison rule for string matching. |
-
-    | `matchRule` | Runtime value |
-    | --- | --- |
-    | `equals` | `MatchRule.Equals` |
-    | `contains` | `MatchRule.Contains` |
-    | `startsWith` | `MatchRule.StartsWith` |
-    | `endsWith` | `MatchRule.EndsWith` |
-
-+ **Enums**
-
-    | `enum class` | `MatchRule` |
-    | --- | --- |
-    |     | `Equals` corresponds to `String::equals`. |
-    |     | `Contains` corresponds to `String::contains`. |
-    |     | `StartsWith` corresponds to `String::startsWith`. |
-    |     | `EndsWith` corresponds to `String::endsWith`. |
-
-+ **Constants**
-
-    | `String` | `META_DATA_TAG_MATCHERS` |
-    | --- | --- |
-    |     | Constant of the `name` for manifest `<meta-data>` elements that point to XML resources for tag matchers.<br />Value: "com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS" |
-
-+ **Extension functions**
-
-    | `Unit` | `Activity.attachShadowHelper()` |
-    | --- | --- |
-    |     | Attaches the platform helper, and searches the theme and manifest for the (optional) matchers XML reference. Must be called before `setContentView()`. |
-
-    | `Unit` | `Activity.attachShadowHelper(@XmlRes xmlResId: Int)` |
-    | --- | --- |
-    |     | Attaches the platform helper with matchers built from the provided XML resource. Must be called before `setContentView()`. |
-
-    | `Unit` | `Activity.attachShadowHelper(matchers: List<TagMatcher>)` |
-    | --- | --- |
-    |     | Attaches the platform helper with the given list of matchers. Must be called before `setContentView()`. |
-
-    | `Unit` | `AppCompatActivity.attachAppCompatShadowHelper()` |
-    | --- | --- |
-    |     | Attaches the helper for AppCompat themes, and searches the theme and manifest for the (optional) matchers XML reference. Must be called before `super.onCreate()`. |
-
-    | `Unit` | `AppCompatActivity.attachAppCompatShadowHelper(@XmlRes xmlResId: Int)` |
-    | --- | --- |
-    |     | Attaches the helper for AppCompat themes with matchers built from the provided XML resource. Must be called before `super.onCreate()`. |
-
-    | `Unit` | `AppCompatActivity.attachAppCompatShadowHelper(matchers: List<TagMatcher>)` |
-    | --- | --- |
-    |     | Attaches the helper for AppCompat themes with the given list of matchers. Must be called before `super.onCreate()`. |
-
-    | `Unit` | `AppCompatActivity.attachMaterialComponentsShadowHelper()` |
-    | --- | --- |
-    |     | Attaches the helper for Material Components themes, and searches the theme and manifest for the (optional) matchers XML reference. Must be called before `super.onCreate()`. |
-
-    | `Unit` | `AppCompatActivity.attachMaterialComponentsShadowHelper(@XmlRes xmlResId: Int)` |
-    | --- | --- |
-    |     | Attaches the helper for Material Components themes with matchers built from the provided XML resource. Must be called before `super.onCreate()`. |
-
-    | `Unit` | `AppCompatActivity.attachMaterialComponentsShadowHelper(matchers: List<TagMatcher>)` |
-    | --- | --- |
-    |     | Attaches the helper for Material Components themes with the given list of matchers. Must be called before `super.onCreate()`. |
-
-+ **Functions**
-
-    | `TagMatcher` | `idMatcher(@IdRes matchId: Int = View.NO_ID, matchName: String? = null, matchRule: MatchRule = MatchRule.Equals)` |
-    | --- | --- |
-    |     | Creates a matcher to match a specific `R.id` exactly, or to match (possibly mutiple) ID names by a given comparison rule. |
-
-    | `TagMatcher` | `nameMatcher(matchName: String, matchRule: MatchRule = MatchRule.Equals)` |
-    | --- | --- |
-    |     | Creates a matcher to match (possibly mutiple) tag names by a given comparison rule. |
-
-The `AppCompatShadowHelper` and `MaterialComponentsShadowHelper` classes are both public in order to be accessible to the AppCompat framework. However, for the time being, they are not documented, intentionally.
+<br />
 
 
 ## License

@@ -39,7 +39,7 @@ class MotionsFragment : TopicFragment(R.layout.fragment_motions) {
                 fabStart.hide(); fabCenter.hide(); fabEnd.hide()
                 fabCenter.postDelayed(1000) {
                     fabStart.addOnShowAnimationListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
+                        override fun onAnimationEnd(animation: Animator) {
                             snackbar.dismiss()
                         }
                     })

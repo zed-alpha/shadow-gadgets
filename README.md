@@ -19,7 +19,7 @@ These tools use the same classes and methods that the platform uses to render sh
 
 ## Basic usage
 
-<sup>[[Download](#download)]</sup>
+<sup>[[Download](#download)] [[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Clipped_Shadows)]</sup>
 
 Nobody wants to mess with a whole library for such a small thing that should've already been handled in the native UI framework, so this was designed to be as simple and familiar as possible:
 
@@ -69,7 +69,7 @@ For context here, the library's overall technique is essentially disabling the t
 
 ### Irregular Shapes on Android R+
 
-The first limitation comes on Android R and above, when creating the copy for `View`s with irregular shapes; i.e., `View`'s that aren't rectangles, regular round rectangles, or circles. Reflection is required to get at the `Path` that describes those irregular shapes, and the increasing restrictions on non-SDK interfaces have finally made that field inaccessible. There is no direct workaround option for this yet – the next release will have something that works automatically with common Jetpack components – but you might be able to do something with `ShapeDrawable` in the meantime, if you really need it, though you will have to provide the `Path`.
+The first limitation comes on Android R and above, when creating the copy for `View`s with irregular shapes; i.e., `View`s that aren't rectangles, regular round rectangles, or circles. Reflection is required to get at the `Path` that describes those irregular shapes, and the increasing restrictions on non-SDK interfaces have finally made that field inaccessible. There is no direct workaround option for this yet – the next release will have something that works automatically with common Jetpack components – but you might be able to do something with `ShapeDrawable` in the meantime, if you really need it, though you will have to provide the `Path`.
 
 ### Overlapping Sibling Views
 
@@ -187,7 +187,11 @@ Before creating any instances, you must first check that `ShadowDrawable.isAvail
 The class offers two factory functions for instantiating `ShadowDrawable`s: `fromView(view: View)` and `fromPath(path: Path)`. For example:
 
 ```kotlin
-val drawable = if (ShadowDrawable.isAvailable) ShadowDrawable.fromView(fab) else ColorDrawable(Color.WHITE)
+val drawable = if (ShadowDrawable.isAvailable) {
+    ShadowDrawable.fromView(fab)
+} else {
+    ColorDrawable(Color.WHITE)
+}
 ```
 
 `fromView()` will create a snapshot drawable from the `View`'s current state, including its elevation, shadow colors, etc. `fromPath()` will create an instance with bounds described by `path`, but it will _not_ have any other properties set. That means that its default z-offset will be zero, and it will cast no shadow until its `elevation` and/or its `translationZ` is set to a positive value.
@@ -206,6 +210,8 @@ Also offered is the `var fillPaint: Paint?` property, which provides a simple wa
 
 
 ## Notes
+
++ If you only need this fix for a simple static setup or two – e.g., a basic `CardView` – you might prefer to put something together from the core techniques demonstrated in [this Stack Overflow answer](https://stackoverflow.com/a/70076301). The main benefits of this library are its additional features on top of those methods, like its automatic handling of target state and animations. If that core solution is sufficient, you probably don't want the overhead here.
 
 + Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows to work _at all_ on Pie itself, with or without this library involved. The documentation indicates that they should work, and all of the relevant methods and attributes were introduced with that version, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app has a page for colors which would be a quick and easy test for that.
 

@@ -1,15 +1,16 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    compileSdk 31
+    namespace 'com.zedalpha.shadowgadgets.demo'
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.zedalpha.shadowgadgets.demo"
         minSdk 21
-        targetSdk 31
+        targetSdk 33
         versionCode 1
         versionName "1.0"
     }
@@ -27,12 +28,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    namespace 'com.zedalpha.shadowgadgets.demo'
 }
 
 dependencies {
-    implementation project(":library")
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation project(':library')
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'com.google.android.material:material:1.8.0'
 }

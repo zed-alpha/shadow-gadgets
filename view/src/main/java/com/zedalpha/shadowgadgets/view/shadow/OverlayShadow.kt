@@ -8,7 +8,6 @@ import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.core.PathProvider
 import com.zedalpha.shadowgadgets.core.ShadowForge
 import com.zedalpha.shadowgadgets.core.ViewShadowColors28
-import com.zedalpha.shadowgadgets.view.clippedShadowPlane
 import com.zedalpha.shadowgadgets.view.pathProvider
 
 internal class OverlayShadow(
@@ -22,8 +21,6 @@ internal class OverlayShadow(
     private val provider: ViewOutlineProvider = targetView.outlineProvider
 
     private val willDraw get() = targetView.isVisible
-
-    val clippedShadowPlane get() = targetView.clippedShadowPlane
 
     fun attachToTarget() {
         val target = targetView

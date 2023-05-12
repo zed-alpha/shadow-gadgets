@@ -1,28 +1,9 @@
 <resources>
     <style name="Theme.ShadowGadgets.Demo" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="infoTextViewStyle">@style/Widget.ShadowGadgets.InfoTextView</item>
-        <item name="seekBarStyle">@style/Widget.ShadowGadgets.Seekbar</item>
-    </style>
-
-    <style name="Widget.ShadowGadgets.InfoTextView" parent="Widget.AppCompat.TextView">
-        <item name="android:background">@drawable/info_text_view_background</item>
-        <item name="android:textAppearance">?android:textAppearanceSmall</item>
-        <item name="android:singleLine">true</item>
-    </style>
-
-    <style name="Widget.ShadowGadgets.Seekbar" parent="Widget.AppCompat.SeekBar">
-        <item name="android:progressTint">#dddddd</item>
-        <item name="android:thumbTint">#bbbbbb</item>
-    </style>
-
-    <style name="Widget.ShadowGadgets.Shape" parent="">
-        <item name="android:backgroundTint">#440000FF</item>
-        <item name="android:elevation">15dp</item>
-        <item name="android:outlineProvider">background</item>
-    </style>
-
-    <style name="Theme.Compat" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="viewInflaterClass">@string/appcompat_shadow_helper</item>
-        <item name="shadowTagMatchers">@xml/matchers</item>
+        <item name="android:windowBackground">@color/bluish_white</item>
+        <!-- Default ambient value: 0.039 -->
+        <item name="android:ambientShadowAlpha">0.2</item>
+        <!-- Default spot value: 0.19 -->
+        <item name="android:spotShadowAlpha">0.4</item>
     </style>
 </resources>

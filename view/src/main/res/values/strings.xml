@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="appcompat_shadow_helper" tools:keep="@string/appcompat_shadow_helper">com.zedalpha.shadowgadgets.view.inflation.AppCompatShadowHelper</string>
+    <string name="material_components_shadow_helper" tools:keep="@string/material_components_shadow_helper">com.zedalpha.shadowgadgets.view.inflation.MaterialComponentsShadowHelper</string>
+</resources>

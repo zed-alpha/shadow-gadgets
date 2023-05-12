@@ -1,107 +1,153 @@
 package com.zedalpha.shadowgadgets.demo.topic
 
-import android.content.res.ColorStateList
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Build
-import android.os.Bundle
 import android.view.DragEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.demo.R
-import com.zedalpha.shadowgadgets.demo.ZedAlphaControl
+import com.zedalpha.shadowgadgets.demo.databinding.FragmentIntroBinding
+import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 
 
-class IntroFragment : TopicFragment(R.layout.fragment_intro) {
-    override val targetIds = intArrayOf(R.id.view_intro, R.id.view_drag_drop)
+internal object Intro : Topic {
 
-    private var dragDropParentId = R.id.frame_drag_drop_one
+    override val descriptionResId = R.string.description_intro
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun createContentFragment() = Content()
 
-        val exampleView = view.findViewById<View>(R.id.view_intro)
-        val dragDropView = view.findViewById<View>(R.id.view_drag_drop)
-        view.findViewById<ZedAlphaControl>(R.id.zac_intro).listener =
-            object : ZedAlphaControl.Listener {
-                override fun onElevationChange(elevation: Float) {
-                    exampleView.elevation = elevation
-                    dragDropView.elevation = elevation
-                }
+    class Content : ContentFragment(R.layout.fragment_intro) {
 
-                override fun onColorChange(color: Int) {
-                    val tint = ColorStateList.valueOf(color)
-                    exampleView.backgroundTintList = tint
-                    dragDropView.backgroundTintList = tint
-                }
+        override fun loadUi(view: View) {
+            val ui = FragmentIntroBinding.bind(view)
+
+            ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
+                ui.target.clipOutlineShadow = isChecked
             }
 
-        val frameOne = view.findViewById<FrameLayout>(R.id.frame_drag_drop_one)
-        val frameTwo = view.findViewById<FrameLayout>(R.id.frame_drag_drop_two)
-        val frameThree = view.findViewById<FrameLayout>(R.id.frame_drag_drop_three)
-        val startingId = savedInstanceState?.getInt(STATE_DRAG_DROP_PARENT) ?: dragDropParentId
-        if (startingId != 0 && startingId != R.id.frame_drag_drop_one) {
-            view.findViewById<ViewGroup>(startingId)?.let { group ->
-                frameOne.removeView(dragDropView)
-                group.addView(dragDropView)
+            // Drag and drop
+            val dragListener = SimpleDragListener(ui.target)
+            ui.frameOne.setOnDragListener(dragListener)
+            ui.frameTwo.setOnDragListener(dragListener)
+            ui.target.setOnLongClickListener { target ->
+                target.startDragging(GrayShadow(target), target.parent)
+                true
             }
+
+            // Color and elevation
+            val seekListener = object : SeekChangeListener {
+                override fun onChange(progress: Int) = updateTarget(ui)
+            }
+            ui.seekAlpha.setOnSeekBarChangeListener(seekListener)
+            ui.seekRed.setOnSeekBarChangeListener(seekListener)
+            ui.seekGreen.setOnSeekBarChangeListener(seekListener)
+            ui.seekBlue.setOnSeekBarChangeListener(seekListener)
+            ui.seekElevation.setOnSeekBarChangeListener(seekListener)
+            ui.colorSelect.setOnCheckedChangeListener { _, checkedId ->
+                val color = if (checkedId == R.id.view_radio) {
+                    ui.target.tag as? Int ?: Color.TRANSPARENT
+                } else if (Build.VERSION.SDK_INT >= 28) {
+                    ui.target.outlineAmbientShadowColor
+                } else {
+                    return@setOnCheckedChangeListener
+                }
+                ui.seekAlpha.progress = Color.alpha(color)
+                ui.seekRed.progress = Color.red(color)
+                ui.seekGreen.progress = Color.green(color)
+                ui.seekBlue.progress = Color.blue(color)
+            }
+
+            updateTarget(ui)
         }
-        dragDropView.setOnLongClickListener {
-            val dragShadowBuilder = View.DragShadowBuilder(dragDropView)
-            val parent = dragDropView.parent
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                dragDropView.startDragAndDrop(null, dragShadowBuilder, parent, 0)
-            } else {
-                @Suppress("DEPRECATION")
-                dragDropView.startDrag(null, dragShadowBuilder, parent, 0)
-            }
-            dragDropView.isVisible = false
-            true
-        }
-        val listener = View.OnDragListener { viewOver, event ->
-            when (event.action) {
-                DragEvent.ACTION_DRAG_STARTED -> {
-                    if (viewOver == event.localState) viewOver.scale(0.95F)
-                }
-                DragEvent.ACTION_DRAG_ENTERED -> {
-                    if (viewOver != event.localState) viewOver.scale(1.05F)
-                }
-                DragEvent.ACTION_DRAG_EXITED -> {
-                    if (viewOver != event.localState) viewOver.scale(1.0F)
-                }
-                DragEvent.ACTION_DROP -> {
-                    if (viewOver != event.localState) {
-                        (event.localState as ViewGroup).removeView(dragDropView)
-                        (viewOver as ViewGroup).addView(dragDropView)
-                        viewOver.scale(1.0F)
-                        dragDropParentId = viewOver.id
-                    }
-                }
-                DragEvent.ACTION_DRAG_ENDED -> {
-                    if (viewOver == event.localState) {
-                        dragDropView.isVisible = true
-                        val oldParent = event.localState as ViewGroup
-                        oldParent.scale(1.0F)
-                    }
-                }
-            }
-            true
-        }
-        frameOne.setOnDragListener(listener)
-        frameTwo.setOnDragListener(listener)
-        frameThree.setOnDragListener(listener)
-    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        val parent = view?.findViewById<View>(R.id.view_drag_drop)?.parent as? View
-        outState.putInt(STATE_DRAG_DROP_PARENT, parent?.id ?: 0)
-    }
-
-    private fun View.scale(scale: Float) {
-        scaleX = scale
-        scaleY = scale
+        private fun updateTarget(ui: FragmentIntroBinding) {
+            val color = Color.argb(
+                ui.seekAlpha.progress,
+                ui.seekRed.progress,
+                ui.seekGreen.progress,
+                ui.seekBlue.progress
+            )
+            if (ui.colorSelect.checkedRadioButtonId == R.id.view_radio) {
+                ui.target.apply { background.setTint(color); tag = color }
+            } else if (Build.VERSION.SDK_INT >= 28) {
+                ui.target.outlineAmbientShadowColor = color
+                ui.target.outlineSpotShadowColor = color
+            }
+            ui.target.elevation = ui.seekElevation.progress.toFloat()
+        }
     }
 }
 
-private const val STATE_DRAG_DROP_PARENT = "drag_drop_parent"
+private fun View.startDragging(
+    shadowBuilder: View.DragShadowBuilder?,
+    myLocalState: Any?,
+) {
+    if (Build.VERSION.SDK_INT >= 24) {
+        startDragAndDrop(null, shadowBuilder, myLocalState, 0)
+    } else {
+        @Suppress("DEPRECATION")
+        startDrag(null, shadowBuilder, myLocalState, 0)
+    }
+}
+
+private class GrayShadow(private val target: View) :
+    View.DragShadowBuilder(target) {
+
+    val paint = Paint().apply { color = Color.LTGRAY }
+
+    val radius = target.resources.getDimension(R.dimen.target_corner_radius)
+
+    override fun onDrawShadow(canvas: Canvas) {
+        canvas.drawRoundRect(
+            0F,
+            0F,
+            target.width.toFloat(),
+            target.height.toFloat(),
+            radius,
+            radius,
+            paint
+        )
+    }
+}
+
+private class SimpleDragListener(private val target: View) :
+    View.OnDragListener {
+
+    override fun onDrag(viewOver: View, event: DragEvent): Boolean {
+        when (event.action) {
+            DragEvent.ACTION_DRAG_STARTED -> {
+                if (viewOver == event.localState) viewOver.scale(0.95F)
+            }
+
+            DragEvent.ACTION_DRAG_ENTERED -> {
+                if (viewOver != event.localState) viewOver.scale(1.05F)
+            }
+
+            DragEvent.ACTION_DRAG_EXITED -> {
+                if (viewOver != event.localState) viewOver.scale(1.0F)
+            }
+
+            DragEvent.ACTION_DROP -> {
+                if (viewOver != event.localState) {
+                    (event.localState as ViewGroup).removeView(target)
+                    (viewOver as ViewGroup).addView(target)
+                    viewOver.scale(1.0F)
+                }
+            }
+
+            DragEvent.ACTION_DRAG_ENDED -> {
+                if (viewOver == event.localState) {
+                    val oldParent = event.localState as ViewGroup
+                    oldParent.scale(1.0F)
+                }
+            }
+        }
+        return true
+    }
+}
+
+private fun View.scale(scale: Float) {
+    scaleX = scale; scaleY = scale
+}

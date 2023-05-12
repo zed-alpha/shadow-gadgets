@@ -13,6 +13,9 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
 
     buildTypes {
@@ -28,11 +31,28 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        viewBinding true
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.6"
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
 }
 
 dependencies {
-    implementation project(':library')
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation project(':view')
+    implementation project(':compose')
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.compose.foundation:foundation:1.4.3'
+    implementation 'androidx.compose.material:material:1.4.3'
+    implementation 'androidx.compose.runtime:runtime:1.4.3'
+    implementation 'androidx.compose.ui:ui:1.4.3'
 }

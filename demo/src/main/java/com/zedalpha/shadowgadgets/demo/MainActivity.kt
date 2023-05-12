@@ -2,95 +2,137 @@ package com.zedalpha.shadowgadgets.demo
 
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.Spinner
+import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import com.google.android.material.switchmaterial.SwitchMaterial
-import com.zedalpha.shadowgadgets.demo.topic.Topic
-import com.zedalpha.shadowgadgets.demo.topic.TopicFragment
-import com.zedalpha.shadowgadgets.demo.topic.Topics
-import com.zedalpha.shadowgadgets.demo.topic.setRootBackground
+import androidx.core.view.isInvisible
+import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.zedalpha.shadowgadgets.demo.databinding.ActivityMainBinding
+import com.zedalpha.shadowgadgets.demo.topic.Application
+import com.zedalpha.shadowgadgets.demo.topic.Behavior
+import com.zedalpha.shadowgadgets.demo.topic.Compose
+import com.zedalpha.shadowgadgets.demo.topic.Drawable
+import com.zedalpha.shadowgadgets.demo.topic.Intro
+import com.zedalpha.shadowgadgets.demo.topic.Irregular
+import com.zedalpha.shadowgadgets.demo.topic.Motion
 
 
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
-    private val switch by lazy { findViewById<SwitchMaterial>(R.id.switch_clip_shadows) }
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setRootBackground(SlantGridDrawable(0xFFEBEBEB.toInt(), 0xFFCECECE.toInt()))
+        val ui = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
-        val spinner = findViewById<Spinner>(R.id.spinner)
-        val adapter = ArrayAdapter(this, R.layout.spinner_item, Topics)
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
-        spinner.adapter = adapter
-        spinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    setDisplayedFragment(Topics[position])
-                }
+        ui.contentPager.apply {
+            adapter = ContentAdapter(this@MainActivity)
+            isUserInputEnabled = false
+        }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
+        ui.infoPager.apply {
+            adapter = InfoAdapter()
+            isUserInputEnabled = false
+        }
+
+        var current = 0
+        ui.title.setText(TopicList[0].title)
+
+        fun setTopic(index: Int) {
+            if (current == index) return
+            ui.infoPager.currentItem = index
+            ui.contentPager.currentItem = index
+            ui.title.apply {
+                setDirection(index > current)
+                setText(TopicList[index].title)
             }
-        spinner.post { spinner.dropDownWidth = spinner.width }
+            ui.backward.isInvisible = index == 0
+            ui.forward.isInvisible = index == TopicList.size - 1
+            current = index
+        }
 
-        switch.setOnCheckedChangeListener { _, isChecked ->
-            displayedFragment?.setTargetClippingEnabled(isChecked)
+        ui.backward.setOnClickListener {
+            if (current > 0) setTopic(current - 1)
+        }
+        ui.forward.setOnClickListener {
+            if (current < TopicList.size - 1) setTopic(current + 1)
+        }
+        ui.title.setOnClickListener { view ->
+            PopupMenu(this, view).apply {
+                TopicList.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
+                menu.getItem(current).isEnabled = false
+                setOnMenuItemClickListener { setTopic(it.itemId); true }
+            }.show()
         }
 
         if (savedInstanceState == null) {
-            if (!getPreferences(Context.MODE_PRIVATE).getBoolean(PREF_HIDE_WELCOME, false)) {
+            val hide = getPreferences(Context.MODE_PRIVATE)
+                .getBoolean(PREF_HIDE_WELCOME, false)
+            if (!hide) {
                 val dialog = AlertDialog.Builder(this)
                     .setView(R.layout.dialog_welcome)
                     .setPositiveButton("Close", null)
                     .show()
-                val check = dialog.findViewById<CheckBox>(R.id.check_hide_welcome)
+                val check =
+                    dialog.findViewById<CheckBox>(R.id.check_hide_welcome)
                 check?.setOnCheckedChangeListener { _, isChecked ->
                     getPreferences(Context.MODE_PRIVATE).edit()
                         .putBoolean(PREF_HIDE_WELCOME, isChecked)
                         .apply()
                 }
             }
-            setDisplayedFragment(Topics[0])
-        } else {
-            switch.isVisible = displayedFragment?.shouldShowToggle == true
         }
     }
+}
 
-    private fun setDisplayedFragment(topic: Topic) {
-        val manager = supportFragmentManager
-        val current = displayedFragment
-        if (current?.tag != topic.title) {
-            val transaction = manager.beginTransaction()
-            transaction.setCustomAnimations(R.anim.slide_in_bottom, R.anim.fade_out)
-            if (current != null) transaction.detach(current)
-            val next =
-                manager.findFragmentByTag(topic.title) as? TopicFragment ?: topic.createFragment()
-            if (next.isDetached) {
-                transaction.attach(next)
-            } else {
-                transaction.add(R.id.main_content, next, topic.title)
-            }
-            transaction.commit()
-            switch.isVisible = next.shouldShowToggle
+private val TopicList =
+    listOf(Intro, Motion, Behavior, Irregular, Application, Drawable, Compose)
+
+private class ContentAdapter(activity: FragmentActivity) :
+    FragmentStateAdapter(activity) {
+
+    override fun getItemCount() = TopicList.size
+
+    override fun createFragment(position: Int) =
+        TopicList[position].createContentFragment()
+}
+
+private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        InfoHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_description, parent, false)
+        )
+
+    override fun getItemCount() = TopicList.size
+
+    override fun onBindViewHolder(holder: InfoHolder, position: Int) {
+        holder.text.setText(TopicList[position].descriptionResId)
+    }
+}
+
+private class InfoHolder(view: View) : ViewHolder(view) {
+
+    val text: TextView = view.findViewById(R.id.text)
+
+    init {
+        text.setOnLongClickListener {
+            AlertDialog.Builder(text.context)
+                .setView(R.layout.dialog_description)
+                .setPositiveButton("Close", null)
+                .show()
+                .findViewById<TextView>(R.id.text)?.text = text.text
+            true
         }
     }
-
-    val isClippingEnabled: Boolean
-        get() = switch.isChecked
-
-    private val displayedFragment: TopicFragment?
-        get() = supportFragmentManager.findFragmentById(R.id.main_content) as? TopicFragment
 }
 
 private const val PREF_HIDE_WELCOME = "hide_welcome"

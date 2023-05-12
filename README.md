@@ -1,6 +1,6 @@
 # Shadow Gadgets
 
-A utility library for Android with various tools to help fix the elevation shadow artifacts visible on `View`s<sup>*</sup> with transparent or translucent backgrounds.
+A utility library for Android with various tools to help fix the elevation shadow artifacts visible on `View`s and `Composable`s with transparent or translucent backgrounds.
 
 <img src="images/examples_before.png" width="85%" />
 
@@ -10,14 +10,34 @@ These tools use the same classes and methods that the platform uses to render sh
 
 <img src="images/examples_after.png" width="85%" />
 
----
-
-<sup><sup>*</sup> Jetpack Compose suffers from the same issue, as it's ultimately using the same `RenderNode` APIs as the `View` framework. However, this library currently works only with `View`s. Independent solutions in Compose, and the arguable merits of including them in the library, are noted on [the home wiki page](https://github.com/zed-alpha/shadow-gadgets/wiki#jetpack-compose).</sup>
+This library originally offered tools only for `View`s, and since it requires considerably more work to achieve this effect in that framework, the majority of this README is geared toward that functionality. The Compose `Modifier` needs only a brief summary here at the stsrt.
 
 <br />
 
+## Basic usage with Compose
 
-## Basic usage
+<sup>[[Download](#download)]</sup>
+
+The `Modifier` extension function is called `clippedShadow()`, and it works similarly to the regular `shadow()` except that there is no content clip option (since that can be handled with `clip()`), and it does _not_ generate a new surface/graphics layer. It is purely decorative.
+
+```kotlin
+Box(
+    Modifier
+        .size(100.dp)
+        .clippedShadow(
+            elevation = 10.dp,
+            shape = RoundedCornerShape(10),
+            ambientColor = Color.Blue,
+            spotColor = Color.Blue
+        )
+)
+```
+
+Unlike the `View` solution, you will need to disable the `Composable`'s inherent shadow yourself, if it has one. `Box` doesn't, but ones like `Card` and `Button` do, so you'll need to pass zeroes for their `elevation`s. The demo app has a few examples on the Compose page with the necessary settings, a couple of which also show how to replace the shadows on existing `Composable`s that animate their elevations without having to rewrite them or fiddle with their internals.
+
+Since these shadows are drawn inline pretty much exactly like the regular ones, that should be about as complicated as the Compose version gets. It may take a few other adjustments to line things up correctly to begin with, but no more than it would for the regular `shadow()`, too.
+
+## Basic usage with Views
 
 <sup>[[Download](#download)] [[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Clipped_Shadows)]</sup>
 
@@ -31,7 +51,9 @@ That's it. Unless your setup requires that a _sibling_ `View` overlap a target o
 
 The `Boolean`-value `clipOutlineShadow` extension property is basically a switch to toggle the fix on `View`s individually, and it's designed to mimic an intrinsic property as much as possible. Though the shadow is actually being handled and drawn in the parent `ViewGroup`, the property can be set on the target `View` at any time, even while it's unattached, so there's no need to worry about timing. Additionally, the clipped shadow automatically animates and transforms along with its target, and it will handle moving itself to any new parents, should the target be moved.
 
-It is hoped that that simple usage should cover most cases, but for the situations mentioned above, the library offers a couple of configuration options as possible recourses. Those and a few other features and tools are discussed in the following:
+It is hoped that that simple usage should cover most cases, but for the situations mentioned above, the library offers a couple of configuration options as possible recourses. Those and a few other features and tools are discussed in the following content.
+
+<br />
 
 
 ## Sections
@@ -58,71 +80,88 @@ It is hoped that that simple usage should cover most cases, but for the situatio
 
 + [**API reference**](https://github.com/zed-alpha/shadow-gadgets/wiki#api-reference)
 
-    Complete listing of the public API.
+    Complete listing of the public API. (Currently out of date, but mostly correct.)
 
 <br />
 
 
 ## Limitations and recourses
 
-For context here, the library's overall technique is essentially disabling the target's built-in shadow, and drawing a clipped copy in its place.
-
-### Irregular Shapes on Android R+
-
-The first limitation comes on Android R and above, when creating the copy for `View`s with irregular shapes; i.e., `View`s that aren't rectangles, regular round rectangles, or circles. Reflection is required to get at the `Path` that describes those irregular shapes, and the increasing restrictions on non-SDK interfaces have finally made that field inaccessible. There is no direct workaround option for this yet – the next release will have something that works automatically with common Jetpack components – but you might be able to do something with `ShapeDrawable` in the meantime, if you really need it, though you will have to provide the `Path`.
-
 ### Overlapping Sibling Views
 
 <sup>[[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Clipped_Shadows#clippedShadowPlane)]</sup>
 
-The second and main limitation is inherent to the technique. The clipped shadow copies are drawn outside of the normal child draw routine of the parent `ViewGroup`, and by default are overlaid on top of its content. In many cases this is just fine, and is visually indistinguishable from the shadow being drawn normally. The issue comes when a target is overlapped by a sibling `View`, which can cause different kinds of unwanted artifacts.
+The main limitation is inherent to the technique used here, which was chosen because it allows the fix to be externally applied to any `View` without having to modify it or its existing setup. The method is basically to disable the target's built-in shadow and draw a clipped copy in the parent's overlay. In many cases this is just fine, and is visually indistinguishable from the shadow being drawn normally. The issue comes when a target is overlapped by a sibling `View`, which can cause a different kind of unwanted artifact.
 
-<img src="images/glitch_examples.png" />
+<img src="images/overlap_example.png" />
 
-<sup>_On the left, blue's shadow overlays its higher sibling. On the right, shadows are missing within their bounds._</sup>
+<sup>_The blue View's shadow overlays its red sibling which has a greater elevation._</sup>
 
-It is important to note that this is an issue only for _siblings_ of the target. `View`s in separate parent `ViewGroup`s have separate draws and won't interfere with each other. Indeed, in some cases the most straightforward solution is to simply wrap a target or sibling in another `ViewGroup`, like a plain old `FrameLayout`. There are certainly cases where siblings must overlap, however, hence the other two core properties and the corresponding enum classes: `ClippedShadowPlane` and `ShadowFallbackStrategy`.
-
-<br />
+It is important to note that this is an issue only for _siblings_ of the target. `View`s in separate parent `ViewGroup`s have separate draws and won't interfere with each other. Indeed, in some cases the most straightforward solution is to simply wrap a target or sibling in another `ViewGroup`, like a plain old `FrameLayout`. There are certainly cases where siblings must overlap, however, hence the other core property and its corresponding enum class:
 
 #### ClippedShadowPlane
 ```kotlin
 enum class ClippedShadowPlane { Foreground, Background }
 ```
 
-The `View.clippedShadowPlane` extension property sets the "plane" on which the clipped shadow will be drawn: the parent `ViewGroup`'s `Foreground` or `Background`.
+The `View.clippedShadowPlane` extension property sets the "plane" on which the clipped shadow will be drawn: the parent `ViewGroup`'s foreground or background.
 
-For example, in the left image above, directing the blue target's shadow to draw on the background plane – e.g., `blueView.clippedShadowPlane = Background` – fixes its clipped shadow which was being incorrectly drawn over the red sibling.
+For example, in the example pictured above, directing the blue target's shadow to draw on the background plane – e.g., `blueView.clippedShadowPlane = Background` – fixes its clipped shadow which was being incorrectly drawn over the red sibling.
 
-<img src="images/plane_fix.png" />
+<img src="images/plane_fix_example.png" />
 
-Just like `View.clipOutlineShadow`, and `View.shadowFallbackStrategy` below, this property can be set on the target `View` at any time.
+As with `clipOutlineShadow`, this property can be set on the target `View` at any time.
 
-<br />
+### Irregular Shapes on Android R+
 
-#### ShadowFallbackStrategy
+The other notable limitation comes on Android R and above, when creating the copy for `View`s with irregular shapes; i.e., `View`s that aren't rectangles, regular round rectangles, or circles. Reflection is required to get at the `Path` that describes those irregular shapes, and the increasing restrictions on non-SDK interfaces have finally made that field inaccessible. For these cases, the library has a `ViewPathProvider` interface that works very similarly to the framework's `ViewOutlineProvider` class, allowing the user to set the necesary `Path`. For example:
+
 ```kotlin
-enum class ShadowFallbackStrategy { None, ChangePlane, DisableShadow }
+@RequiresApi(30)  // Just to keep the example short
+class PuzzlePieceView constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : View(context, attrs) {
+
+    private val viewPath = Path()
+
+    init {
+        outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                val path = viewPath
+                val sideLength = minOf(view.width, view.height).toFloat()
+                path.setToPuzzlePiece(sideLength)
+                outline.setPath(path)
+            }
+        }
+        pathProvider = ViewPathProvider { _, path ->
+            path.set(viewPath)
+        }
+        clipOutlineShadow = true
+    }
+}
 ```
 
-The second property is a little more subtle. The library actually uses two different drawing methods to help ensure that it works on all relevant Android versions. The primary method is always preferred but may not be available on Android versions before Q (API level 29). The `View.shadowFallbackStrategy` extension property offers a way to set an action to take if the fallback method is in use, should that method end up having undesirable effects in a given setup.
+The `setToPuzzlePiece()` function is available in the demo module, if you'd like a full working example to play around with. Give it a non-zero width and height, and it'll produce something like:
 
-Because the fallback method clips and draws all of the shadows in a plane at once instead of individually, any clipped shadows within the bounds of overlapping targets get clipped out, too. That is, the shadows are missing underneath the targets.
+<img src="images/view_path_provider_example.png" />
 
-The first option, `ChangePlane`, can be used to direct one of the clipped shadows that would normally be drawn on the default `Foreground` plane to draw to the `Background` instead, bringing back the missing shadows, as shown in the first image.
+Do note that the `ViewPathProvider` is a fallback, not an override. It will only be checked if the library is unable to determine the `Path` on its own. If a non-empty `Path` cannot be resolved – with or without a `ViewPathProvider` set – then a shadow simply won't be drawn.
 
-<img src="images/fallback_strategies.png" />
+Also included in the library is the `MaterialComponentsViewPathProvider` object, a concrete implementation of this interface that will automatically handle figuring the `Path` on `View`s with a `MaterialShapeDrawable` background, which is how many modern library components get their overall shape and appearance.
 
-If the fallback is going to cause more problems than it fixes, the `DisableShadow` value will turn a target's shadow off and omit the fix altogether, as illustrated in the second image.
+```kotlin
+shapedButton.pathProvider = MaterialComponentsViewPathProvider
+```
 
-The app in the `demo` module has a couple of pages that demonstrate these properties' effects at runtime.
+This is a separate object that needs to be manually set so that `MaterialShapeDrawable` and related classes can be stripped at compile time, if they're not being used otherwise.
 
 <br />
 
 
 ## ViewGroups
 
-There are two general categories of `ViewGroup` subclasses: Recycling and Regular.
+There are two general categories of `ViewGroup`s: Recycling and Regular.
 
 ### Recycling ViewGroups
 
@@ -133,7 +172,7 @@ By default, the library's shadow objects clean up after themselves whenever the 
 The list of available Recycling `ViewGroup`s can be found on [their page in the API reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Recycling_ViewGroups). Each implements a common library interface but otherwise behaves exactly like its superclass, and is a drop-in replacement in both code and XML. For example:
 
 ```xml
-<com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRecyclerView
+<com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRecyclerView
     android:id="@+id/recycler_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -146,16 +185,15 @@ There is no special setup necessary, other than providing the `Adapter` that cre
 
 <sup>[[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Regular_ViewGroups)]</sup>
 
-The Regular ones are meant merely to aid in setting the library's clipped shadow properties on children from corresponding attributes in layout XML. To that end, they each recognize the following three attributes on child tags:
+The Regular ones are meant merely to aid in setting the library's clipped shadow properties on children from corresponding attributes in layout XML. To that end, they each recognize the following attributes on child tags:
 
 + `app:clipOutlineShadow`
 + `app:clippedShadowPlane`
-+ `app:shadowFallbackStrategy`
 
-The XML values for each correspond to the code values just as one would expect. For example:
+The XML values for each correspond to the code values as you would expect. For example:
 
 ```xml
-<com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout
+<com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -163,13 +201,12 @@ The XML values for each correspond to the code values just as one would expect. 
         android:id="@+id/translucent_button"
         …
         app:clipOutlineShadow="true"
-        app:clippedShadowPlane="background"
-        app:shadowFallbackStrategy="changePlane" />
+        app:clippedShadowPlane="background" />
 
-</com.zedalpha.shadowgadgets.viewgroup.ClippedShadowsRelativeLayout>
+</com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout>
 ```
 
-For the purposes of consistent behavior across all of the different `ViewGroup` types, these three attributes will work properly _only_ on `View`s with IDs that are unique within the `ViewGroup`. They are ignored on children that do not have an `android:id`.
+For the purposes of consistent behavior across all of the different `ViewGroup` types, these attributes will work properly _only_ on `View`s with IDs that are unique within the `ViewGroup`. They are ignored on children that do not have an `android:id`.
 
 Each `ViewGroup` also has a few properties from the common interface, `ClippedShadowsViewGroup`, most of them simply conveniences for setting shadow properties on all of their children. The details for those can be found on [the relevant reference pages on the wiki](https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups).
 
@@ -178,50 +215,46 @@ Each `ViewGroup` also has a few properties from the common interface, `ClippedSh
 
 ## Drawable
 
-<sup>[[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowDrawable)]</sup>
+The previous class – `ShadowDrawable` – has been removed, technically, but the replacement is mostly similar, as far as available properties. The main upshot to the new class is that it no longer depends on `RenderNode` access, so we can use it freely without having to check availability first. Like everything else here, though, it still requires a hardware aceelerated `Canvas` to work.
 
-The last rendering tool is `ShadowDrawable`, which allows us to create "disembodied" shadows as a further possible option for applying the fix in unforeseen cases, or ones where the other options are insufficient, for whatever reason. It also lets us draw the shadow effect of elevated `View`s without needing the actual `View`s, which likely has at least a couple of applications, I would think. Please note that, like normal `View` shadows, this only works with hardware-accelerated `Canvas`es.
+`ClippedShadowDrawable` is essentially a very thin wrapper around the core class used to draw these shadows in the other tools. It's provided mainly as a convenience for those who would like to be able to draw these manually without having to mess with the core module directly (which can get very confusing). However, there are several ways in which it does not act like a regular `Drawable`:
 
-Before creating any instances, you must first check that `ShadowDrawable.isAvailable` returns `true`. For the clipping technique to be applicable through the `Drawable` mechanism, it requires the primary shadow drawing method. If that is not available in the current environment, that property will return `false`, and any use of the factory methods will throw an `IllegalStateException`. However, every effort has been made to make this available on all relevant Android versions, including the use of methods that are too slow for the overlay and container approaches. Since any instances of this would necessarily be controlled directly, it does not have the `View`-tracking overhead of those approaches, so the slower methods are adequate here.
++ The most important caveat here is that you are responsible for keeping the clip updated anytime a relevant property in the drawable changes. That is, if you change its rotation, for example, you need to invalidate the current draw. If the drawable's callback is set appropriately - e.g., like it would be when acting as a `View`'s background – then you likely need only to call `invalidateSelf()` on it. Otherwise, you'll need to `invalidate()` the `View` you're drawing in, or perform the analogous action in whatever context you're in.
 
-The class offers two factory functions for instantiating `ShadowDrawable`s: `fromView(view: View)` and `fromPath(path: Path)`. For example:
+    The reason this happens is that one of the features of `RenderNode`s is their ability to be transformed and rearranged without necessarily having to redraw their content, so it's possible to modify properties on them without the draw around them changing. If that happens with our shadows, the clip area won't be udpated, and you could end up with possibly even worse artifacts than what we're trying to fix in the first place. The demo app has a Drawable page that demonstrates this pretty clearly.
 
-```kotlin
-val drawable = if (ShadowDrawable.isAvailable) {
-    ShadowDrawable.fromView(fab)
-} else {
-    ColorDrawable(Color.WHITE)
-}
-```
++ The bounds have no effect whatsoever on the final draw. Though they should still be set appropriately where needed to ensure that things like the invalidation mechanism still work correctly, they will not translate or stretch or clip or do anything else to the actual shadow, whose shape and initial position come solely from the `Outline` set. After that, transformations can be applied either through `Canvas` functions around the draw – e.g., `canvas.translate(dx, dy)` – or by setting the relevation properties on the drawable itself – e.g., `drawable.translationX = dy; drawable.translationY = dy`. The demo app has a simple subclass example that automatically centers the shadow within the bounds, to show how you could customize the class to your needs.
 
-`fromView()` will create a snapshot drawable from the `View`'s current state, including its elevation, shadow colors, etc. `fromPath()` will create an instance with bounds described by `path`, but it will _not_ have any other properties set. That means that its default z-offset will be zero, and it will cast no shadow until its `elevation` and/or its `translationZ` is set to a positive value.
++ It's rather important to `dispose()` of these drawables when appropriate – e.g., in a `Fragment`'s `onDestroyView()` – at least until your `minSdk` is 29, at which point you can use the constructor that doesn't require an owner `View` to hook into the hardware accelerated draw routine. Use after disposal is not an automatic `Exception`, but it's not advised, and there is no guaranteed behavior.
 
-Note that `fromView()` does no check as to the `View`'s current state; it doesn't even ensure that it's been laid out yet. It is very easy to end up with an empty or incorrect drawable from a `View`; e.g., by trying to create it in the `Activity`'s `onCreate()` method, or before the `View` has animated itself fully, etc.
-
-It's also important to note that this drawable's bounds describe its _inner_ border, not its outside edge. It works exactly like a shadow on a `View` with the given bounds, just without the `View` itself in the middle.
-
-After instantiation, you can modify the drawable using the `updateFromView(view: View)` and `updateFromPath(path: Path)` functions, and through several individual properties that correspond to those in the `View` class that normally affect and transform shadows; e.g, `elevation`, `rotationX`, `scaleY`, etc. Given that, the only thing for which this `Drawable` uses its bounds is the `left` and `top` positioning. Though it will automatically center the drawn shadow within its bounds, it will not shrink, or stretch, or any other operation that can be accomplished with those properties.
-
-Also offered is the `var fillPaint: Paint?` property, which provides a simple way to fill the interior after the shadow draw.
-
-`Drawable`'s required `setColorFilter()` override is currently a no-op here.
++ `Drawable`'s required `setColorFilter()` override is currently a no-op.
 
 <br />
 
 
 ## Notes
 
-+ If you only need this fix for a simple static setup or two – e.g., a basic `CardView` – you might prefer to put something together from the core techniques demonstrated in [this Stack Overflow answer](https://stackoverflow.com/a/70076301). The main benefits of this library are its additional features on top of those methods, like its automatic handling of target state and animations. If that core solution is sufficient, you probably don't want the overhead here.
++ The docs in the wiki are currently out of date, and this README isn't as detailed as it should be yet. They will be updated in the near future, hopefully.
 
-+ Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows to work _at all_ on Pie itself, with or without this library involved. The documentation indicates that they should work, and all of the relevant methods and attributes were introduced with that version, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app has a page for colors which would be a quick and easy test for that.
++ Aside from the relatively minor breaking changes (obselete classes and package reorganization), the primary concern with this new version is that there's currently a very slightly possible performance issue ("lag") for animated `Background` shadows on API levels 28 and below. There's no problem with the draw itself, so stationary ones are fine. The problem is with refreshing that plane fast enough to keep up with the `View`s moving in front of it.
 
-+ To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped in a custom implementation. This has the possibility of breaking something if some method or component is expecting the `View` to have one of the static platform implementations; i.e., `ViewOutlineProvider.BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`. This shouldn't cause a fatal error, or anything – it's no different than anything else that uses a custom `ViewOutlineProvider` – but you might need to rework some background drawables or the like.
+    The primary and preferred method uses `RenderNode`s to directly project to that back plane, so there's no lag. Unfortunately, `RenderNode`s aren't necessarily available to us on all supported versions, so a `View` implementation is the last resort, and since that's basically trying to manipulate a private `RenderNode` object with only public `View` methods that weren't meant for such things, it's not as tight as the previous implementation that had the shadow `View`s invalidating themselves and their parents automatically.
+
+    About three or four things have to fail before the `View` implementation is used, and no device or emulator that I've tested so far has had to use this last resort method, but it is definitely worth noting. I'm still working to improve it, but I can't guarantee anything yet.
+
++ `ShadowFallbackStrategy` and its corresponding extension property are gone. The `View` draw implementation now works just like the `RenderNode` one, thus obviating the need for that particular option.
+
++ If you only need this fix for `View`s in a simple static setup or two – e.g., a basic `CardView` – you might prefer to put something together from the core techniques demonstrated in [this Stack Overflow answer](https://stackoverflow.com/a/70076301). The main benefits of this library are its additional features on top of those methods, like its automatic handling of target state and animations. If that core solution is sufficient, you probably don't want the overhead here.
+
++ Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows to work _at all_ on Pie itself, with or without this library involved. All of the relevant methods and attributes were introduced with that version, and the documentation indicates that they should work like normal, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app's Intro page has a setup that lets you fiddle with the shadow color, so that could be used as a quick test.
+
++ To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped in a custom implementation. This has the possibility of breaking something if some function or component is expecting the `View` to have one of the static platform implementations; i.e., `ViewOutlineProvider.BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`. This shouldn't cause a fatal error, or anything – it's no different than anything else that uses a custom `ViewOutlineProvider` – but you might need to rework some background drawables or the like.
 
     This also means that if you are using a custom `ViewOutlineProvider` of your own on a target, it should be set _before_ enabling the clipped shadow (or at least before the target `View` attaches to its `Window`).
 
 + To be able to draw the clipped shadows in the `Background` plane, the parent `ViewGroup` itself must have a background set. If it does not have one set at the time that such a shadow is added, a special library `object` is set automatically. For efficiency, this is the only time it is checked, so you should _not_ set the parent's background to specifically `null` any time it has `Background` shadows active. Any other non-`null` value is perfectly fine, but otherwise, the clipped shadows in that plane may end up drawing on the wrong background.
 
-+ The layout inflation helpers' description and demonstration have been wholly removed to the wiki. They are a rather niche tool, unlikely of use to many others, and probably won't be updated any further.
++ The layout inflation helpers' description and demonstration have been wholly removed to the wiki. They are a rather niche tool, unlikely of much use to others, and probably won't be updated any further, apart from possible minor maintenance.
 
 + The demo app was designed and tested on 1080x1920 xxhdpi devices and not much else, so things might not look that great on other configurations. Just a heads up.
 
@@ -240,14 +273,17 @@ repositories {
 }
 ```
 
-then add a dependency for [the latest release](https://github.com/zed-alpha/shadow-gadgets/releases):
+then add a dependency for [the latest release](https://github.com/zed-alpha/shadow-gadgets/releases) of whichever module you need, `view` or `compose`:
 
 ```gradle
 dependencies {
     …
-    implementation 'com.github.zed-alpha.shadow-gadgets:library:[latest-release]'
+    implementation 'com.github.zed-alpha.shadow-gadgets:view:[latest-release]'
+    implementation 'com.github.zed-alpha.shadow-gadgets:compose:[latest-release]'
 }
 ```
+
+You can also get the `core` module directly, if you'd like, but I've not had time to put together any documentation or examples for it.
 
 <br />
 
@@ -256,7 +292,7 @@ dependencies {
 
 MIT License
 
-Copyright (c) 2022 ZedAlpha
+Copyright (c) 2023 ZedAlpha
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,

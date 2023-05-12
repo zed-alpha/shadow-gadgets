@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <attr name="infoTextViewStyle" format="reference" />
-
-    <declare-styleable name="ZedAlphaControl">
-        <attr name="zac_elevation" format="integer" />
-        <attr name="zac_color" format="color" />
-    </declare-styleable>
-</resources>

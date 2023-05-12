@@ -8,42 +8,19 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:theme="@style/Theme.ShadowGadgets.Demo"
         tools:ignore="DataExtractionRules">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.ShadowGadgets.Demo"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".topic.PlatformActivity"
-            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
-
-        <!-- Examples of meta-data elements to specify matchers XML. CompatActivity's helper is -->
-        <!-- currently getting it from the shadowTagMatchers attribute in Theme.Compat. If -->
-        <!-- that's not there, it'll look here, first in the activity and then the application. -->
-        <activity
-            android:name=".topic.CompatActivity"
-            android:theme="@style/Theme.Compat">
-            <!--<meta-data-->
-            <!--    android:name="com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"-->
-            <!--    android:resource="@xml/matchers" />-->
-        </activity>
-
-        <!--<meta-data-->
-        <!--    android:name="com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"-->
-        <!--    android:resource="@xml/matchers" />-->
-
-        <activity
-            android:name=".topic.MaterialComponentsActivity"
-            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
 
     </application>
 

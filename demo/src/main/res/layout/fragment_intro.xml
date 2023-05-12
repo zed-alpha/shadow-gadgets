@@ -1,87 +1,226 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:clipChildren="false"
+    tools:ignore="HardcodedText">
 
-    <com.zedalpha.shadowgadgets.demo.InfoTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="@string/intro_top" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/frame_one"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center_vertical">
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/background_drop_target"
+        app:layout_constraintBottom_toTopOf="@id/horizontal"
+        app:layout_constraintEnd_toStartOf="@id/frame_two"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <View
-            android:id="@+id/view_intro"
-            android:layout_width="84dp"
-            android:layout_height="84dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/target_background"
-            android:outlineProvider="background" />
+            android:id="@+id/target"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="30dp"
+            android:background="@drawable/background_target" />
 
-        <com.zedalpha.shadowgadgets.demo.ZedAlphaControl
-            android:id="@+id/zac_intro"
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/frame_two"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/background_drop_target"
+        app:layout_constraintBottom_toTopOf="@id/horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/frame_one"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/clip_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:background="@color/hazy_white"
+        android:text="Clip shadow"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintEnd_toStartOf="@id/vertical"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/horizontal" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="10dp"
+        android:background="@color/gray_plus"
+        app:layout_constraintBottom_toTopOf="@id/color_select"
+        app:layout_constraintEnd_toStartOf="@id/vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/clip_switch" />
+
+    <RadioGroup
+        android:id="@+id/color_select"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/hazy_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/vertical"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider">
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            app:zac_color="#7F557FAA"
-            app:zac_elevation="66" />
+            android:text="@string/color_which"
+            android:textAlignment="center" />
 
-    </LinearLayout>
+        <RadioButton
+            android:id="@+id/view_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="View" />
 
-    <com.zedalpha.shadowgadgets.demo.InfoTextView
-        android:layout_width="match_parent"
+        <RadioButton
+            android:id="@+id/shadow_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="@bool/isAtLeastPie"
+            android:text="Shadow" />
+
+    </RadioGroup>
+
+    <SeekBar
+        android:id="@+id/seek_elevation"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="@string/intro_bottom" />
+        android:background="@color/hazy_white"
+        android:progress="50"
+        android:progressTint="@color/lighter_gray"
+        android:thumbTint="@color/medium_light_gray"
+        app:layout_constraintBottom_toTopOf="@id/seek_alpha"
+        app:layout_constraintEnd_toStartOf="@id/label_elevation"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/vertical"
+        app:layout_constraintTop_toBottomOf="@+id/horizontal" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:baselineAligned="false">
+    <TextView
+        android:id="@+id/label_elevation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:background="@color/hazy_white"
+        android:text="z"
+        android:textAlignment="center"
+        android:textAppearance="?android:textAppearanceMedium"
+        app:layout_constraintBottom_toBottomOf="@id/seek_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/seek_elevation"
+        app:layout_constraintTop_toTopOf="@id/seek_elevation"
+        tools:ignore="HardcodedText" />
 
-        <FrameLayout
-            android:id="@+id/frame_drag_drop_one"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/drag_drop_background">
+    <SeekBar
+        android:id="@+id/seek_alpha"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/hazy_white"
+        android:max="255"
+        android:progress="127"
+        android:progressTint="@color/lighter_gray"
+        android:thumbTint="@color/medium_light_gray"
+        app:layout_constraintBottom_toTopOf="@+id/seek_red"
+        app:layout_constraintEnd_toStartOf="@id/label_alpha"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/vertical"
+        app:layout_constraintTop_toBottomOf="@+id/seek_elevation" />
 
-            <View
-                android:id="@+id/view_drag_drop"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_gravity="center"
-                android:background="@drawable/target_background"
-                android:outlineProvider="background" />
+    <TextView
+        android:id="@+id/label_alpha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:background="@color/hazy_white"
+        android:text="\u0251"
+        android:textAlignment="center"
+        android:textAppearance="?android:textAppearanceMedium"
+        app:layout_constraintBottom_toBottomOf="@id/seek_alpha"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/seek_alpha"
+        app:layout_constraintTop_toTopOf="@id/seek_alpha"
+        tools:ignore="HardcodedText" />
 
-        </FrameLayout>
+    <SeekBar
+        android:id="@+id/seek_red"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/hazy_white"
+        android:max="255"
+        android:progress="84"
+        android:progressTint="#FF8888"
+        android:thumbTint="#FF4444"
+        app:layout_constraintBottom_toTopOf="@+id/seek_green"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/vertical"
+        app:layout_constraintTop_toBottomOf="@+id/seek_alpha" />
 
-        <FrameLayout
-            android:id="@+id/frame_drag_drop_two"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/drag_drop_background" />
+    <SeekBar
+        android:id="@+id/seek_green"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/hazy_white"
+        android:max="255"
+        android:progress="127"
+        android:progressTint="#88FF88"
+        android:thumbTint="#44FF44"
+        app:layout_constraintBottom_toTopOf="@+id/seek_blue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/vertical"
+        app:layout_constraintTop_toBottomOf="@+id/seek_red" />
 
-        <FrameLayout
-            android:id="@+id/frame_drag_drop_three"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/drag_drop_background" />
+    <SeekBar
+        android:id="@+id/seek_blue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/hazy_white"
+        android:max="255"
+        android:progress="168"
+        android:progressTint="#8888FF"
+        android:thumbTint="#4444FF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/vertical"
+        app:layout_constraintTop_toBottomOf="@+id/seek_green" />
 
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -46,7 +46,9 @@ import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentComposeBinding
 
 
-internal object Compose : Topic {
+internal object ComposeTopic : Topic {
+
+    override val title = "Compose"
 
     override val descriptionResId = R.string.description_compose
 
@@ -141,17 +143,17 @@ private fun ClippedShadowFloatingActionButton(
     FloatingActionButton(
         onClick = onClick,
         modifier = modifier.clippedShadow(
-            elevation.elevation(interactionSource).value,
-            shape,
-            shadowAmbientColor,
-            shadowSpotColor,
+            elevation = elevation.elevation(interactionSource).value,
+            shape = shape,
+            ambientColor = shadowAmbientColor,
+            spotColor = shadowSpotColor,
         ),
         interactionSource = interactionSource,
         shape = shape,
         backgroundColor = backgroundColor,
         contentColor = contentColor,
-        elevation =
-        FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
+        elevation = FloatingActionButtonDefaults
+            .elevation(0.dp, 0.dp, 0.dp, 0.dp),
         content = content
     )
 }
@@ -176,10 +178,13 @@ private fun ClippedShadowButton(
         Button(
             onClick = onClick,
             modifier = modifier.clippedShadow(
-                elevation?.elevation(enabled, interactionSource)?.value ?: 0.dp,
-                shape,
-                shadowAmbientColor,
-                shadowSpotColor
+                elevation = elevation?.elevation(
+                    enabled,
+                    interactionSource
+                )?.value ?: 0.dp,
+                shape = shape,
+                ambientColor = shadowAmbientColor,
+                spotColor = shadowSpotColor
             ),
             enabled = enabled,
             interactionSource = interactionSource,

@@ -7,39 +7,99 @@ import android.graphics.RenderNode
 import androidx.annotation.RequiresApi
 
 @RequiresApi(29)
-internal class RenderNodeApi29 : RenderNodeWrapper {
+internal class RenderNodeApi29(name: String?) : RenderNodeWrapper {
 
-    private val renderNode = RenderNode(RenderNodeName)
+    private val renderNode = RenderNode(name)
 
-    override var alpha: Float by renderNode::alpha
+    override var alpha: Float
+        get() = renderNode.alpha
+        set(value) {
+            renderNode.alpha = value
+        }
 
-    override var cameraDistance: Float by renderNode::cameraDistance
+    override var cameraDistance: Float
+        get() = renderNode.cameraDistance
+        set(value) {
+            renderNode.cameraDistance = value
+        }
 
-    override var elevation: Float by renderNode::elevation
+    override var elevation: Float
+        get() = renderNode.elevation
+        set(value) {
+            renderNode.elevation = value
+        }
 
-    override var pivotX: Float by renderNode::pivotX
+    override var pivotX: Float
+        get() = renderNode.pivotX
+        set(value) {
+            renderNode.pivotX = value
+        }
 
-    override var pivotY: Float by renderNode::pivotY
+    override var pivotY: Float
+        get() = renderNode.pivotY
+        set(value) {
+            renderNode.pivotY = value
+        }
 
-    override var rotationX: Float by renderNode::rotationX
+    override var rotationX: Float
+        get() = renderNode.rotationX
+        set(value) {
+            renderNode.rotationX = value
+        }
 
-    override var rotationY: Float by renderNode::rotationY
+    override var rotationY: Float
+        get() = renderNode.rotationY
+        set(value) {
+            renderNode.rotationY = value
+        }
 
-    override var rotationZ: Float by renderNode::rotationZ
+    override var rotationZ: Float
+        get() = renderNode.rotationZ
+        set(value) {
+            renderNode.rotationZ = value
+        }
 
-    override var scaleX: Float by renderNode::scaleX
+    override var scaleX: Float
+        get() = renderNode.scaleX
+        set(value) {
+            renderNode.scaleX = value
+        }
 
-    override var scaleY: Float by renderNode::scaleY
+    override var scaleY: Float
+        get() = renderNode.scaleY
+        set(value) {
+            renderNode.scaleY = value
+        }
 
-    override var translationX: Float by renderNode::translationX
+    override var translationX: Float
+        get() = renderNode.translationX
+        set(value) {
+            renderNode.translationX = value
+        }
 
-    override var translationY: Float by renderNode::translationY
+    override var translationY: Float
+        get() = renderNode.translationY
+        set(value) {
+            renderNode.translationY = value
+        }
 
-    override var translationZ: Float by renderNode::translationZ
+    override var translationZ: Float
+        get() = renderNode.translationZ
+        set(value) {
+            renderNode.translationZ = value
+        }
 
-    override var ambientColor: Int by renderNode::ambientShadowColor
+    override var ambientColor: Int
+        get() = renderNode.ambientShadowColor
+        set(value) {
+            renderNode.ambientShadowColor = value
+        }
 
-    override var spotColor: Int by renderNode::spotShadowColor
+    override var spotColor: Int
+        get() = renderNode.spotShadowColor
+        set(value) {
+            renderNode.spotShadowColor = value
+        }
 
     override fun hasIdentityMatrix(): Boolean =
         renderNode.hasIdentityMatrix()
@@ -56,36 +116,28 @@ internal class RenderNodeApi29 : RenderNodeWrapper {
         canvas.drawRenderNode(renderNode)
     }
 
-    override fun setClipToBounds(clipToBounds: Boolean): Boolean {
-        return renderNode.setClipToBounds(clipToBounds)
-    }
+    override fun setClipToBounds(clipToBounds: Boolean): Boolean =
+        renderNode.setClipToBounds(clipToBounds)
 
-    override fun setProjectBackwards(shouldProject: Boolean): Boolean {
-        return renderNode.setProjectBackwards(shouldProject)
-    }
+    override fun setProjectBackwards(shouldProject: Boolean): Boolean =
+        renderNode.setProjectBackwards(shouldProject)
 
-    override fun setProjectionReceiver(shouldReceive: Boolean): Boolean {
-        return renderNode.setProjectionReceiver(shouldReceive)
-    }
+    override fun setProjectionReceiver(shouldReceive: Boolean): Boolean =
+        renderNode.setProjectionReceiver(shouldReceive)
 
     override fun setPosition(
         left: Int,
         top: Int,
         right: Int,
         bottom: Int
-    ): Boolean {
-        return renderNode.setPosition(left, top, right, bottom)
-    }
+    ): Boolean = renderNode.setPosition(left, top, right, bottom)
 
-    override fun beginRecording(width: Int, height: Int): Canvas {
-        return renderNode.beginRecording(width, height)
-    }
+    override fun beginRecording(width: Int, height: Int): Canvas =
+        renderNode.beginRecording(width, height)
 
     override fun endRecording(canvas: Canvas) {
         renderNode.endRecording()
     }
 
-    override fun hasDisplayList(): Boolean {
-        return renderNode.hasDisplayList()
-    }
+    override fun hasDisplayList(): Boolean = renderNode.hasDisplayList()
 }

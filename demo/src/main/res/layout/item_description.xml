@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dusty_white"
     android:padding="8dp"
-    android:scrollbars="vertical">
+    android:scrollbars="vertical"
+    tools:ignore="Overdraw">
 
     <TextView
         android:id="@+id/text"

@@ -11,18 +11,16 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.PathProvider
-import com.zedalpha.shadowgadgets.core.ShadowForge
 import kotlin.math.roundToInt
 
 open class ClippedShadowDrawable private constructor(
     private val clippedShadow: ClippedShadow
 ) : Drawable() {
 
-    constructor(ownerView: View) :
-            this(ShadowForge.createClippedShadow(ownerView))
+    constructor(ownerView: View) : this(ClippedShadow.newInstance(ownerView))
 
     @RequiresApi(29)
-    constructor() : this(ShadowForge.createClippedShadow())
+    constructor() : this(ClippedShadow.newInstance())
 
     fun setPathProvider(provider: ((Path) -> Unit)?) {
         clippedShadow.pathProvider =
@@ -37,37 +35,89 @@ open class ClippedShadowDrawable private constructor(
         return (255 * clippedShadow.alpha).roundToInt()
     }
 
-    // We should be able to do most of this by interface delegation, but Kotlin
-    // complains that we can't access Shadow without a dependency on core when
-    // we try to subclass this later. I'm not sure that that's a valid error.
+    var cameraDistance: Float
+        get() = clippedShadow.cameraDistance
+        set(value) {
+            clippedShadow.cameraDistance = value
+        }
 
-    var cameraDistance: Float by clippedShadow::cameraDistance
+    var elevation: Float
+        get() = clippedShadow.elevation
+        set(value) {
+            clippedShadow.elevation = value
+        }
 
-    var elevation: Float by clippedShadow::elevation
+    var pivotX: Float
+        get() = clippedShadow.pivotX
+        set(value) {
+            clippedShadow.pivotX = value
+        }
 
-    var pivotX: Float by clippedShadow::pivotX
+    var pivotY: Float
+        get() = clippedShadow.pivotY
+        set(value) {
+            clippedShadow.pivotY = value
+        }
 
-    var pivotY: Float by clippedShadow::pivotY
+    var rotationX: Float
+        get() = clippedShadow.rotationX
+        set(value) {
+            clippedShadow.rotationX = value
+        }
 
-    var rotationX: Float by clippedShadow::rotationX
+    var rotationY: Float
+        get() = clippedShadow.rotationY
+        set(value) {
+            clippedShadow.rotationY = value
+        }
 
-    var rotationY: Float by clippedShadow::rotationY
+    var rotationZ: Float
+        get() = clippedShadow.rotationZ
+        set(value) {
+            clippedShadow.rotationZ = value
+        }
 
-    var rotationZ: Float by clippedShadow::rotationZ
+    var scaleX: Float
+        get() = clippedShadow.scaleX
+        set(value) {
+            clippedShadow.scaleX = value
+        }
 
-    var scaleX: Float by clippedShadow::scaleX
+    var scaleY: Float
+        get() = clippedShadow.scaleY
+        set(value) {
+            clippedShadow.scaleY = value
+        }
 
-    var scaleY: Float by clippedShadow::scaleY
+    var translationX: Float
+        get() = clippedShadow.translationX
+        set(value) {
+            clippedShadow.translationX = value
+        }
 
-    var translationX: Float by clippedShadow::translationX
+    var translationY: Float
+        get() = clippedShadow.translationY
+        set(value) {
+            clippedShadow.translationY = value
+        }
 
-    var translationY: Float by clippedShadow::translationY
+    var translationZ: Float
+        get() = clippedShadow.translationZ
+        set(value) {
+            clippedShadow.translationZ = value
+        }
 
-    var translationZ: Float by clippedShadow::translationZ
+    var ambientColor: Int
+        get() = clippedShadow.ambientColor
+        set(value) {
+            clippedShadow.ambientColor = value
+        }
 
-    var ambientColor: Int by clippedShadow::ambientColor
-
-    var spotColor: Int by clippedShadow::spotColor
+    var spotColor: Int
+        get() = clippedShadow.spotColor
+        set(value) {
+            clippedShadow.spotColor = value
+        }
 
     fun hasIdentityMatrix(): Boolean =
         clippedShadow.hasIdentityMatrix()

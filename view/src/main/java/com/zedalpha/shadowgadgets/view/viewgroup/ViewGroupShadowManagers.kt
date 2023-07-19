@@ -3,20 +3,14 @@ package com.zedalpha.shadowgadgets.view.viewgroup
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import com.zedalpha.shadowgadgets.view.ClippedShadowAttributes
 import com.zedalpha.shadowgadgets.view.ClippedShadowPlane
 import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.clippedShadowPlane
-import com.zedalpha.shadowgadgets.view.extractShadowAttributes
+import com.zedalpha.shadowgadgets.view.internal.ClippedShadowAttributes
+import com.zedalpha.shadowgadgets.view.internal.extractShadowAttributes
 import com.zedalpha.shadowgadgets.view.shadow.overlayController
 import kotlin.properties.Delegates
-
-
-sealed interface ClippedShadowsViewGroup {
-    var clipAllChildShadows: Boolean?
-    var childClippedShadowsPlane: ClippedShadowPlane?
-}
 
 
 internal class RegularShadowManager(
@@ -57,7 +51,6 @@ internal class RegularShadowManager(
     }
 }
 
-
 internal class RecyclingShadowManager(
     parentView: ViewGroup,
     attributeSet: AttributeSet?
@@ -68,26 +61,26 @@ internal class RecyclingShadowManager(
         parentView.addOnAttachStateChangeListener(this)
     }
 
-    override fun onViewDetachedFromWindow(v: View) {
-        parentView.overlayController?.notifyRecyclerDetach()
+    override fun onViewDetachedFromWindow(view: View) {
+        parentView.overlayController?.notifyRecyclerDetached()
     }
 
     override fun onViewAdded(child: View) {
         if (!child.isRecyclingViewGroupChild) {
+            child.clipOutlineShadow = true
             child.isRecyclingViewGroupChild = true
             childClippedShadowsPlane?.let { child.clippedShadowPlane = it }
-            child.clipOutlineShadow = true
         }
     }
 
-    override fun onViewAttachedToWindow(v: View) {}
+    override fun onViewAttachedToWindow(view: View) {}
 }
 
 internal var View.isRecyclingViewGroupChild: Boolean
     get() = getTag(R.id.recycling_view_group_child) == true
     private set(value) = setTag(R.id.recycling_view_group_child, value)
 
-internal sealed class ViewGroupShadowManager(
+internal abstract class ViewGroupShadowManager(
     protected val parentView: ViewGroup,
     attributeSet: AttributeSet?
 ) {

@@ -10,7 +10,7 @@ These tools use the same classes and methods that the platform uses to render sh
 
 <img src="images/examples_after.png" width="85%" />
 
-This library originally offered tools only for `View`s, and since it requires considerably more work to achieve this effect in that framework, the majority of this README is geared toward that functionality. The Compose `Modifier` needs only a brief summary here at the stsrt.
+This library originally offered tools only for `View`s, and since it requires considerably more work to achieve this effect in that framework, the majority of this README is geared toward that functionality. The Compose `Modifier` needs only a brief summary here at the start.
 
 <br />
 
@@ -114,7 +114,7 @@ As with `clipOutlineShadow`, this property can be set on the target `View` at an
 
 ### Irregular Shapes on Android R+
 
-The other notable limitation comes on Android R and above, when creating the copy for `View`s with irregular shapes; i.e., `View`s that aren't rectangles, regular round rectangles, or circles. Reflection is required to get at the `Path` that describes those irregular shapes, and the increasing restrictions on non-SDK interfaces have finally made that field inaccessible. For these cases, the library has a `ViewPathProvider` interface that works very similarly to the framework's `ViewOutlineProvider` class, allowing the user to set the necesary `Path`. For example:
+The other notable limitation comes on Android R and above, when creating the copy for `View`s with irregular shapes; i.e., `View`s that aren't rectangles, regular round rectangles, or circles. Reflection is required to get at the `Path` that describes those irregular shapes, and the increasing restrictions on non-SDK interfaces have finally made that field inaccessible. For these cases, the library has a `ViewPathProvider` interface that works very similarly to the framework's `ViewOutlineProvider` class, allowing the user to set the necessary `Path`. For example:
 
 ```kotlin
 @RequiresApi(30)  // Just to keep the example short
@@ -215,17 +215,17 @@ Each `ViewGroup` also has a few properties from the common interface, `ClippedSh
 
 ## Drawable
 
-The previous class – `ShadowDrawable` – has been removed, technically, but the replacement is mostly similar, as far as available properties. The main upshot to the new class is that it no longer depends on `RenderNode` access, so we can use it freely without having to check availability first. Like everything else here, though, it still requires a hardware aceelerated `Canvas` to work.
+The previous class – `ShadowDrawable` – has been removed, technically, but the replacement is mostly similar, as far as available properties. The main upshot to the new class is that it no longer depends on `RenderNode` access, so we can use it freely without having to check availability first. Like everything else here, though, it still requires a hardware-accelerated `Canvas` to work.
 
 `ClippedShadowDrawable` is essentially a very thin wrapper around the core class used to draw these shadows in the other tools. It's provided mainly as a convenience for those who would like to be able to draw these manually without having to mess with the core module directly (which can get very confusing). However, there are several ways in which it does not act like a regular `Drawable`:
 
 + The most important caveat here is that you are responsible for keeping the clip updated anytime a relevant property in the drawable changes. That is, if you change its rotation, for example, you need to invalidate the current draw. If the drawable's callback is set appropriately - e.g., like it would be when acting as a `View`'s background – then you likely need only to call `invalidateSelf()` on it. Otherwise, you'll need to `invalidate()` the `View` you're drawing in, or perform the analogous action in whatever context you're in.
 
-    The reason this happens is that one of the features of `RenderNode`s is their ability to be transformed and rearranged without necessarily having to redraw their content, so it's possible to modify properties on them without the draw around them changing. If that happens with our shadows, the clip area won't be udpated, and you could end up with possibly even worse artifacts than what we're trying to fix in the first place. The demo app has a Drawable page that demonstrates this pretty clearly.
+    The reason this happens is that one of the features of `RenderNode`s is their ability to be transformed and rearranged without necessarily having to redraw their content, so it's possible to modify properties on them without the draw around them changing. If that happens with our shadows, the clip area won't be updated, and you could end up with possibly even worse artifacts than what we're trying to fix in the first place. The demo app has a Drawable page that demonstrates this pretty clearly.
 
-+ The bounds have no effect whatsoever on the final draw. Though they should still be set appropriately where needed to ensure that things like the invalidation mechanism still work correctly, they will not translate or stretch or clip or do anything else to the actual shadow, whose shape and initial position come solely from the `Outline` set. After that, transformations can be applied either through `Canvas` functions around the draw – e.g., `canvas.translate(dx, dy)` – or by setting the relevation properties on the drawable itself – e.g., `drawable.translationX = dy; drawable.translationY = dy`. The demo app has a simple subclass example that automatically centers the shadow within the bounds, to show how you could customize the class to your needs.
++ The bounds have no effect whatsoever on the final draw. Though they should still be set appropriately where needed to ensure that things like the invalidation mechanism still work correctly, they will not translate or stretch or clip or do anything else to the actual shadow, whose shape and initial position come solely from the `Outline` set. After that, transformations can be applied either through `Canvas` functions before the draw – e.g., `canvas.translate(dx, dy)` – or by setting the relevant properties on the drawable itself – e.g., `drawable.translationX = dy; drawable.translationY = dy`. The demo app has a simple subclass example that automatically centers the shadow within the bounds, to show how you could customize the class to your needs.
 
-+ It's rather important to `dispose()` of these drawables when appropriate – e.g., in a `Fragment`'s `onDestroyView()` – at least until your `minSdk` is 29, at which point you can use the constructor that doesn't require an owner `View` to hook into the hardware accelerated draw routine. Use after disposal is not an automatic `Exception`, but it's not advised, and there is no guaranteed behavior.
++ It's rather important to `dispose()` of these drawables when appropriate – e.g., in a `Fragment`'s `onDestroyView()` – at least until your `minSdk` is 29, at which point you can use the constructor that doesn't require an owner `View` to hook into the hardware-accelerated draw routine. Use after disposal is not an automatic `Exception`, but it's not advised, and there is no guaranteed behavior.
 
 + `Drawable`'s required `setColorFilter()` override is currently a no-op.
 
@@ -236,15 +236,9 @@ The previous class – `ShadowDrawable` – has been removed, technically, but t
 
 + The docs in the wiki are currently out of date, and this README isn't as detailed as it should be yet. They will be updated in the near future, hopefully.
 
-+ Aside from the relatively minor breaking changes (obselete classes and package reorganization), the primary concern with this new version is that there's currently a very slightly possible performance issue ("lag") for animated `Background` shadows on API levels 28 and below. There's no problem with the draw itself, so stationary ones are fine. The problem is with refreshing that plane fast enough to keep up with the `View`s moving in front of it.
-
-    The primary and preferred method uses `RenderNode`s to directly project to that back plane, so there's no lag. Unfortunately, `RenderNode`s aren't necessarily available to us on all supported versions, so a `View` implementation is the last resort, and since that's basically trying to manipulate a private `RenderNode` object with only public `View` methods that weren't meant for such things, it's not as tight as the previous implementation that had the shadow `View`s invalidating themselves and their parents automatically.
-
-    About three or four things have to fail before the `View` implementation is used, and no device or emulator that I've tested so far has had to use this last resort method, but it is definitely worth noting. I'm still working to improve it, but I can't guarantee anything yet.
-
-+ `ShadowFallbackStrategy` and its corresponding extension property are gone. The `View` draw implementation now works just like the `RenderNode` one, thus obviating the need for that particular option.
-
 + If you only need this fix for `View`s in a simple static setup or two – e.g., a basic `CardView` – you might prefer to put something together from the core techniques demonstrated in [this Stack Overflow answer](https://stackoverflow.com/a/70076301). The main benefits of this library are its additional features on top of those methods, like its automatic handling of target state and animations. If that core solution is sufficient, you probably don't want the overhead here.
+
++ Starting with 2.0.0, `ShadowFallbackStrategy` and its corresponding extension property are removed as obsolete. The fallback draw implementation now works just like the primary one, thus obviating the need for that particular option.
 
 + Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows to work _at all_ on Pie itself, with or without this library involved. All of the relevant methods and attributes were introduced with that version, and the documentation indicates that they should work like normal, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app's Intro page has a setup that lets you fiddle with the shadow color, so that could be used as a quick test.
 

@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class RenderNode {
+
     private RenderNode(String name, View owningView) {}
 
     @NonNull
@@ -21,6 +22,7 @@ public class RenderNode {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void end(@NonNull DisplayListCanvas canvas) {}
 
     public boolean isValid() {
@@ -159,6 +161,7 @@ public class RenderNode {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void getMatrix(@NonNull Matrix outMatrix) {}
 
     public boolean setProjectBackwards(boolean shouldProject) {

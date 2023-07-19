@@ -1,64 +1,44 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
 import android.graphics.Canvas
-import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroupOverlay
 import androidx.annotation.CallSuper
 
 
-internal open class DrawPlane(
-    protected val parentView: ViewGroup
-) : View.OnLayoutChangeListener {
+internal open class DrawPlane(protected val parentView: ViewGroup) {
 
-    protected val shadows = mutableListOf<OverlayShadow>()
-
-    fun isEmpty() = shadows.isEmpty()
-
-    fun addShadow(shadow: OverlayShadow) {
-        if (shadows.isEmpty()) attachToParent()
-        shadows += shadow
-    }
-
-    fun removeShadow(shadow: OverlayShadow) {
-        shadows -= shadow
-        if (shadows.isEmpty()) detachFromParent()
-    }
-
-    fun ensureCleared() {
-        shadows.forEach { it.detachFromTarget() }
-        shadows.clear()
-    }
+    protected val planeShadows = mutableListOf<OverlayShadow>()
 
     protected val planeDrawable = object : BaseDrawable() {
         override fun draw(canvas: Canvas) {
-            shadows.forEach { it.draw(canvas) }
+            planeShadows.forEach { it.draw(canvas) }
         }
     }
 
-    private fun attachToParent() {
-        val parent = parentView
-        if (parent.isLaidOut) setSize(parent.width, parent.height)
-        parent.addOnLayoutChangeListener(this)
-        addToOverlay(parent.overlay)
+    fun addShadow(shadow: OverlayShadow) {
+        if (planeShadows.isEmpty()) attachToOverlay(parentView.overlay)
+        planeShadows += shadow
     }
 
-    private fun detachFromParent() {
-        val parent = parentView
-        parent.removeOnLayoutChangeListener(this)
-        removeFromOverlay(parent.overlay)
+    fun removeShadow(shadow: OverlayShadow) {
+        planeShadows -= shadow
+        if (planeShadows.isEmpty()) detachFromOverlay(parentView.overlay)
     }
 
-    protected open fun addToOverlay(overlay: ViewGroupOverlay) {
+    protected open fun attachToOverlay(overlay: ViewGroupOverlay) {
         overlay.add(planeDrawable)
     }
 
-    protected open fun removeFromOverlay(overlay: ViewGroupOverlay) {
+    protected open fun detachFromOverlay(overlay: ViewGroupOverlay) {
         overlay.remove(planeDrawable)
     }
 
-    fun checkInvalidate() {
-        shadows.forEach { shadow ->
+    open fun setSize(width: Int, height: Int) {}
+
+    @CallSuper
+    open fun checkInvalidate() {
+        planeShadows.forEach { shadow ->
             if (shadow.checkInvalidate()) {
                 invalidatePlane()
                 return
@@ -70,42 +50,35 @@ internal open class DrawPlane(
     protected open fun invalidatePlane() {
         parentView.invalidate()
     }
-
-    override fun onLayoutChange(
-        v: View?,
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int,
-        oldLeft: Int,
-        oldTop: Int,
-        oldRight: Int,
-        oldBottom: Int
-    ) {
-        setSize(right - left, bottom - top)
-    }
-
-    protected open fun setSize(width: Int, height: Int) {}
 }
 
 internal class BackgroundDrawPlane(
     parentView: ViewGroup
 ) : DrawPlane(parentView) {
 
-    private val projector = createProjector(parentView.context, planeDrawable)
+    private val projector = Projector(parentView.context, planeDrawable)
 
-    override fun addToOverlay(overlay: ViewGroupOverlay) {
+    override fun attachToOverlay(overlay: ViewGroupOverlay) {
         projector.addToOverlay(overlay)
-        if (parentView.background == null) parentView.background = EmptyDrawable
+        if (parentView.background == null) {
+            parentView.background = EmptyDrawable
+        }
     }
 
-    override fun removeFromOverlay(overlay: ViewGroupOverlay) {
+    override fun detachFromOverlay(overlay: ViewGroupOverlay) {
         projector.removeFromOverlay(overlay)
-        if (parentView.background == EmptyDrawable) parentView.background = null
+        if (parentView.background == EmptyDrawable) {
+            parentView.background = null
+        }
     }
 
     override fun setSize(width: Int, height: Int) {
         projector.setSize(width, height)
+    }
+
+    override fun checkInvalidate() {
+        super.checkInvalidate()
+        if (planeShadows.isNotEmpty()) projector.refresh()
     }
 
     override fun invalidatePlane() {

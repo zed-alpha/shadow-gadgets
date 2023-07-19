@@ -19,15 +19,16 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.PathProvider
-import com.zedalpha.shadowgadgets.core.ShadowForge
 import kotlin.math.roundToInt
 import android.graphics.Outline as AndroidOutline
 import android.graphics.Path as AndroidPath
 
+
 internal class ComposeClippedShadow(view: View) {
 
-    private val clippedShadow = ShadowForge.createClippedShadow(view)
+    private val clippedShadow = ClippedShadow.newInstance(view)
 
     private val androidOutline = AndroidOutline().apply { alpha = 1.0F }
 

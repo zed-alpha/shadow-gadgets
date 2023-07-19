@@ -10,7 +10,9 @@ import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentMotionBinding
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 
-internal object Motion : Topic {
+internal object MotionTopic : Topic {
+
+    override val title = "Motion"
 
     override val descriptionResId = R.string.description_motion
 

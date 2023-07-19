@@ -13,26 +13,6 @@ import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
-
-object ShadowForge {
-
-    fun createClippedShadow(
-        ownerView: View,
-        forceViewType: Boolean = false
-    ) = if (RenderNodeFactory.isOpenForBusiness && !forceViewType) {
-        RenderNodeClippedShadow()
-    } else {
-        ViewClippedShadow(ownerView)
-    }
-
-    @RequiresApi(29)
-    fun createClippedShadow(): ClippedShadow = RenderNodeClippedShadow()
-}
-
-fun interface PathProvider {
-    fun getPath(path: Path)
-}
-
 sealed class ClippedShadow : Shadow {
 
     protected val outline = Outline()
@@ -126,14 +106,12 @@ sealed class ClippedShadow : Shadow {
     }
 
     private fun clip(canvas: Canvas, matrix: Matrix?) {
-        val path = clipPath
-        if (matrix != null) path.transform(matrix)
-
+        if (matrix != null) clipPath.transform(matrix)
         if (Build.VERSION.SDK_INT >= 26) {
-            CanvasClip26.clipOutPath(canvas, path)
+            CanvasClip26.clipOutPath(canvas, clipPath)
         } else {
             @Suppress("DEPRECATION")
-            canvas.clipPath(path, Region.Op.DIFFERENCE)
+            canvas.clipPath(clipPath, Region.Op.DIFFERENCE)
         }
     }
 
@@ -143,5 +121,20 @@ sealed class ClippedShadow : Shadow {
         } else {
             CanvasZReflector.disableZ(canvas)
         }
+    }
+
+    companion object {
+
+        fun newInstance(
+            ownerView: View,
+            forceViewType: Boolean = false
+        ) = if (RenderNodeFactory.isOpenForBusiness && !forceViewType) {
+            RenderNodeClippedShadow()
+        } else {
+            ViewClippedShadow(ownerView)
+        }
+
+        @RequiresApi(29)
+        fun newInstance(): ClippedShadow = RenderNodeClippedShadow()
     }
 }

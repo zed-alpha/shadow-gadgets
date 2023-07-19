@@ -1,12 +1,13 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
 import android.graphics.Canvas
+import android.graphics.Outline
 import android.os.Build
 import android.view.View
 import android.view.ViewOutlineProvider
 import androidx.core.view.isVisible
+import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.PathProvider
-import com.zedalpha.shadowgadgets.core.ShadowForge
 import com.zedalpha.shadowgadgets.core.ViewShadowColors28
 import com.zedalpha.shadowgadgets.view.pathProvider
 
@@ -16,27 +17,32 @@ internal class OverlayShadow(
     private val controller: OverlayController
 ) : ViewShadow {
 
-    private val clippedShadow = ShadowForge.createClippedShadow(targetView)
+    private val clippedShadow = ClippedShadow.newInstance(targetView)
 
     private val provider: ViewOutlineProvider = targetView.outlineProvider
 
-    private val willDraw get() = targetView.isVisible
+    private val willDraw: Boolean get() = targetView.isVisible
 
-    fun attachToTarget() {
+    init {
         val target = targetView
         clippedShadow.pathProvider = PathProvider { path ->
             target.pathProvider?.getPath(target, path)
         }
-        target.outlineProvider = OutlineProviderWrapper(provider, clippedShadow)
+        target.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                provider.getOutline(view, outline)
+                clippedShadow.setOutline(outline)
+                outline.alpha = 0.0F
+            }
+        }
         target.shadow = this
         show()
     }
 
-    fun detachFromTarget() {
-        val target = targetView
+    private fun detachFromTarget() {
         clippedShadow.dispose()
-        target.outlineProvider = provider
-        target.shadow = null
+        targetView.outlineProvider = provider
+        targetView.shadow = null
         hide()
     }
 
@@ -49,7 +55,8 @@ internal class OverlayShadow(
     }
 
     override fun notifyDetach() {
-        controller.removeShadow(this)
+        detachFromTarget()
+        controller.removeOverlayShadow(this)
     }
 
     private var left = 0

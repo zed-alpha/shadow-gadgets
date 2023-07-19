@@ -10,12 +10,12 @@ import com.zedalpha.shadowgadgets.demo.view.ContentCardView
 
 
 internal interface Topic {
-    val title: String get() = javaClass.simpleName
+    val title: String
     val descriptionResId: Int
     fun createContentFragment(): ContentFragment
 }
 
-internal sealed class ContentFragment(
+internal abstract class ContentFragment(
     private val contentLayout: Int
 ) : Fragment() {
 

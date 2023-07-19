@@ -12,7 +12,9 @@ import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentApplicationBinding
 
 
-internal object Application : Topic {
+internal object ApplicationTopic : Topic {
+
+    override val title = "Application"
 
     override val descriptionResId = R.string.description_application
 

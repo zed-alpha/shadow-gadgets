@@ -8,10 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.*
-import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.clippedShadowPlane
-import com.zedalpha.shadowgadgets.view.extractShadowAttributes
+import com.zedalpha.shadowgadgets.view.internal.extractShadowAttributes
 import java.lang.reflect.Array
 
 
@@ -63,6 +62,7 @@ internal class ShadowHelper(
 @SuppressLint("SoonBlockedPrivateApi")
 private class OldViewInflater(context: Context) : ViewInflater(context) {
 
+    @SuppressLint("PrivateApi")
     private val mConstructorArgs = try {
         LayoutInflater::class.java.getDeclaredField("mConstructorArgs")
             .apply { isAccessible = true }.get(this)
@@ -125,7 +125,7 @@ private sealed class ViewInflater(context: Context) : LayoutInflater(context) {
             try {
                 createView(name, prefix, attrs)?.let { return it }
             } catch (e: Exception) {
-                /* ignore */
+                // ignore
             }
         }
         return super.onCreateView(name, attrs)
@@ -140,12 +140,3 @@ private val IgnoredTags =
 
 private val ClassPrefixes =
     arrayOf("android.widget.", "android.webkit.", "android.app.")
-
-private val ClipOutlineShadowAttribute = intArrayOf(R.attr.clipOutlineShadow)
-
-private fun AttributeSet?.getClipOutlineShadow(context: Context): Boolean {
-    val array = context.obtainStyledAttributes(this, ClipOutlineShadowAttribute)
-    val value = array.getBoolean(0, false)
-    array.recycle()
-    return value
-}

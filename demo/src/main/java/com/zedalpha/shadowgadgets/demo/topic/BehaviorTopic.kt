@@ -7,7 +7,9 @@ import com.zedalpha.shadowgadgets.view.ClippedShadowPlane
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.clippedShadowPlane
 
-internal object Behavior : Topic {
+internal object BehaviorTopic : Topic {
+
+    override val title = "Behavior"
 
     override val descriptionResId = R.string.description_behavior
 

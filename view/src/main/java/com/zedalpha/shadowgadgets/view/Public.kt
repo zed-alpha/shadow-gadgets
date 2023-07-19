@@ -3,6 +3,10 @@ package com.zedalpha.shadowgadgets.view
 import android.graphics.Path
 import android.view.View
 import com.zedalpha.shadowgadgets.view.ClippedShadowPlane.Foreground
+import com.zedalpha.shadowgadgets.view.internal.MaterialShapeDrawableReflector
+import com.zedalpha.shadowgadgets.view.internal.findMaterialShapeDrawable
+import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
+import com.zedalpha.shadowgadgets.view.shadow.recreateShadow
 
 
 var View.clipOutlineShadow: Boolean

@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
     repositories {
         google()
@@ -13,8 +15,8 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Shadow Gadgets"
-include ':demo'
-include ':core'
-include ':stubs'
-include ':view'
-include ':compose'
+include(":stubs")
+include(":core")
+include(":view")
+include(":compose")
+include(":demo")

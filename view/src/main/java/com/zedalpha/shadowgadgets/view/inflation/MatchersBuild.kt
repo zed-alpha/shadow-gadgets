@@ -34,7 +34,7 @@ internal fun buildMatchersFromXml(
             event = parser.next()
         }
     } catch (e: Exception) {
-        /* ignore */
+        // ignore
     } finally {
         parser.close()
     }

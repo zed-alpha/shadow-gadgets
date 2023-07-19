@@ -12,7 +12,9 @@ import com.zedalpha.shadowgadgets.demo.databinding.FragmentIntroBinding
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 
 
-internal object Intro : Topic {
+internal object IntroTopic : Topic {
+
+    override val title = "Intro"
 
     override val descriptionResId = R.string.description_intro
 

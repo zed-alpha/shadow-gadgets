@@ -7,13 +7,20 @@ import android.os.Build
 import com.zedalpha.shadowgadgets.core.Shadow
 
 
-interface RenderNodeWrapper : Shadow {
+sealed interface RenderNodeWrapper : Shadow {
+
     fun setClipToBounds(clipToBounds: Boolean): Boolean
+
     fun setProjectBackwards(shouldProject: Boolean): Boolean
+
     fun setProjectionReceiver(shouldReceive: Boolean): Boolean
+
     fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Boolean
+
     fun beginRecording(width: Int, height: Int): Canvas
+
     fun endRecording(canvas: Canvas)
+
     fun hasDisplayList(): Boolean
 }
 
@@ -22,20 +29,21 @@ object RenderNodeFactory {
     val isOpenForBusiness = Build.VERSION.SDK_INT >= 29 ||
             (Build.VERSION.SDK_INT != 28 && testRenderNode())
 
-    fun newInstance(): RenderNodeWrapper {
+    fun newInstance(name: String? = null): RenderNodeWrapper {
         if (!isOpenForBusiness) throw IllegalStateException("Unavailable")
-        return innerNewInstance()
+        return innerNewInstance(name)
     }
 
-    private fun innerNewInstance() = when (Build.VERSION.SDK_INT) {
-        21, 22 -> RenderNodeApi21()
-        in 23..27 -> RenderNodeApi23()
-        28 -> throw IllegalStateException("That's unpossible!")
-        else -> RenderNodeApi29()
-    }
+    private fun innerNewInstance(name: String?): RenderNodeWrapper =
+        when (Build.VERSION.SDK_INT) {
+            21, 22 -> RenderNodeApi21(name)
+            in 23..27 -> RenderNodeApi23(name)
+            28 -> throw IllegalStateException("That's unpossible!")
+            else -> RenderNodeApi29(name)
+        }
 
     private fun testRenderNode() = try {
-        with(innerNewInstance()) {
+        with(innerNewInstance("TestInstance")) {
             alpha = alpha
             cameraDistance = cameraDistance
             elevation = elevation
@@ -65,5 +73,3 @@ object RenderNodeFactory {
         false
     }
 }
-
-internal const val RenderNodeName = "ShadowGadgets"

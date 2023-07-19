@@ -7,39 +7,100 @@ import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
 class RenderNodeClippedShadow : ClippedShadow() {
 
-    private val shadowNode = RenderNodeFactory.newInstance()
+    private val shadowNode = RenderNodeFactory.newInstance("ClippedShadow")
 
-    override var alpha: Float by shadowNode::alpha
+    override var alpha: Float
+        get() = shadowNode.alpha
+        set(value) {
+            shadowNode.alpha = value
+        }
 
-    override var cameraDistance: Float by shadowNode::cameraDistance
+    override var cameraDistance: Float
+        get() = shadowNode.cameraDistance
+        set(value) {
+            shadowNode.cameraDistance = value
+        }
 
-    override var elevation: Float by shadowNode::elevation
+    override var elevation: Float
+        get() = shadowNode.elevation
+        set(value) {
+            shadowNode.elevation = value
+        }
 
-    override var pivotX: Float by shadowNode::pivotX
+    override var pivotX: Float
+        get() = shadowNode.pivotX
+        set(value) {
+            shadowNode.pivotX = value
+        }
 
-    override var pivotY: Float by shadowNode::pivotY
+    override var pivotY: Float
+        get() = shadowNode.pivotY
+        set(value) {
+            shadowNode.pivotY = value
+        }
 
-    override var rotationX: Float by shadowNode::rotationX
+    override var rotationX: Float
+        get() = shadowNode.rotationX
+        set(value) {
+            shadowNode.rotationX = value
+        }
 
-    override var rotationY: Float by shadowNode::rotationY
+    override var rotationY: Float
+        get() = shadowNode.rotationY
+        set(value) {
+            shadowNode.rotationY = value
+        }
 
-    override var rotationZ: Float by shadowNode::rotationZ
+    override var rotationZ: Float
+        get() = shadowNode.rotationZ
+        set(value) {
+            shadowNode.rotationZ = value
+        }
 
-    override var scaleX: Float by shadowNode::scaleX
+    override var scaleX: Float
+        get() = shadowNode.scaleX
+        set(value) {
+            shadowNode.scaleX = value
+        }
 
-    override var scaleY: Float by shadowNode::scaleY
+    override var scaleY: Float
+        get() = shadowNode.scaleY
+        set(value) {
+            shadowNode.scaleY = value
+        }
 
-    override var translationX: Float by shadowNode::translationX
+    override var translationX: Float
+        get() = shadowNode.translationX
+        set(value) {
+            shadowNode.translationX = value
+        }
 
-    override var translationY: Float by shadowNode::translationY
+    override var translationY: Float
+        get() = shadowNode.translationY
+        set(value) {
+            shadowNode.translationY = value
+        }
 
-    override var translationZ: Float by shadowNode::translationZ
+    override var translationZ: Float
+        get() = shadowNode.translationZ
+        set(value) {
+            shadowNode.translationZ = value
+        }
 
-    override var ambientColor: Int by shadowNode::ambientColor
+    override var ambientColor: Int
+        get() = shadowNode.ambientColor
+        set(value) {
+            shadowNode.ambientColor = value
+        }
 
-    override var spotColor: Int by shadowNode::spotColor
+    override var spotColor: Int
+        get() = shadowNode.spotColor
+        set(value) {
+            shadowNode.spotColor = value
+        }
 
-    override fun hasIdentityMatrix() = shadowNode.hasIdentityMatrix()
+    override fun hasIdentityMatrix(): Boolean =
+        shadowNode.hasIdentityMatrix()
 
     override fun getMatrix(outMatrix: Matrix) {
         shadowNode.getMatrix(outMatrix)

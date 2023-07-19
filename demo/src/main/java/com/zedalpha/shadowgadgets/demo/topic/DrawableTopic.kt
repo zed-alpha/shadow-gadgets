@@ -11,7 +11,9 @@ import com.zedalpha.shadowgadgets.demo.databinding.FragmentDrawableBinding
 import com.zedalpha.shadowgadgets.view.ClippedShadowDrawable
 
 
-internal object Drawable : Topic {
+internal object DrawableTopic : Topic {
+
+    override val title = "Drawable"
 
     override val descriptionResId = R.string.description_drawable
 

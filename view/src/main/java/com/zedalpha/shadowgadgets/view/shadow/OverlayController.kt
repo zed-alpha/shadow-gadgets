@@ -9,30 +9,40 @@ import com.zedalpha.shadowgadgets.view.clippedShadowPlane
 
 
 internal class OverlayController(private val parentView: ViewGroup) :
-    View.OnAttachStateChangeListener, ViewTreeObserver.OnPreDrawListener {
+    ViewTreeObserver.OnPreDrawListener,
+    View.OnAttachStateChangeListener,
+    View.OnLayoutChangeListener {
+
+    private val controllerShadows = mutableListOf<OverlayShadow>()
 
     private val backgroundPlane = BackgroundDrawPlane(parentView)
 
     private val foregroundPlane = DrawPlane(parentView)
 
-    fun attachToParent() {
+    init {
         val parent = parentView
         parent.overlayController = this
+
         parent.addOnAttachStateChangeListener(this)
         if (parent.isAttachedToWindow) addDrawListener()
+
+        parent.addOnLayoutChangeListener(this)
+        if (parent.isLaidOut) setSize(parent.width, parent.height)
     }
 
     private fun detachFromParent() {
         val parent = parentView
         parent.overlayController = null
+
         parent.removeOnAttachStateChangeListener(this)
         if (parent.isAttachedToWindow) removeDrawListener()
+
+        parent.removeOnLayoutChangeListener(this)
     }
 
-    fun notifyRecyclerDetach() {
-        backgroundPlane.ensureCleared()
-        foregroundPlane.ensureCleared()
-        detachFromParent()
+    fun notifyRecyclerDetached() {
+        // Must copy the list because notifyDetach() modifies it
+        controllerShadows.toList().forEach { it.notifyDetach() }
     }
 
     fun addOverlayShadow(target: View) {
@@ -40,28 +50,39 @@ internal class OverlayController(private val parentView: ViewGroup) :
             ClippedShadowPlane.Foreground -> foregroundPlane
             else -> backgroundPlane
         }
-        OverlayShadow(target, plane, this).attachToTarget()
+        controllerShadows += OverlayShadow(target, plane, this)
     }
 
-    fun removeShadow(shadow: OverlayShadow) {
-        shadow.detachFromTarget()
-        if (backgroundPlane.isEmpty() && foregroundPlane.isEmpty()) {
-            detachFromParent()
-        }
+    fun removeOverlayShadow(shadow: OverlayShadow) {
+        controllerShadows -= shadow
+        if (controllerShadows.isEmpty()) detachFromParent()
     }
 
-    override fun onPreDraw(): Boolean {
-        backgroundPlane.checkInvalidate()
-        foregroundPlane.checkInvalidate()
-        return true
-    }
-
-    override fun onViewAttachedToWindow(v: View) {
+    override fun onViewAttachedToWindow(view: View) {
         addDrawListener()
     }
 
-    override fun onViewDetachedFromWindow(v: View) {
+    override fun onViewDetachedFromWindow(view: View) {
         removeDrawListener()
+    }
+
+    override fun onLayoutChange(
+        v: View?,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int,
+        oldLeft: Int,
+        oldTop: Int,
+        oldRight: Int,
+        oldBottom: Int
+    ) {
+        setSize(right - left, bottom - top)
+    }
+
+    private fun setSize(width: Int, height: Int) {
+        backgroundPlane.setSize(width, height)
+        foregroundPlane.setSize(width, height)
     }
 
     private fun addDrawListener() {
@@ -71,12 +92,14 @@ internal class OverlayController(private val parentView: ViewGroup) :
     private fun removeDrawListener() {
         parentView.viewTreeObserver.removeOnPreDrawListener(this)
     }
-}
 
-internal fun getOrCreateController(parentView: ViewGroup) =
-    parentView.overlayController
-        ?: OverlayController(parentView).apply { attachToParent() }
+    override fun onPreDraw(): Boolean {
+        backgroundPlane.checkInvalidate()
+        foregroundPlane.checkInvalidate()
+        return true
+    }
+}
 
 internal var ViewGroup.overlayController: OverlayController?
     get() = getTag(R.id.overlay_controller) as? OverlayController
-    set(value) = setTag(R.id.overlay_controller, value)
+    private set(value) = setTag(R.id.overlay_controller, value)

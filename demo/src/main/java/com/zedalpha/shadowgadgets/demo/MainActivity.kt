@@ -1,28 +1,30 @@
 package com.zedalpha.shadowgadgets.demo
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isInvisible
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.zedalpha.shadowgadgets.demo.databinding.ActivityMainBinding
-import com.zedalpha.shadowgadgets.demo.topic.Application
-import com.zedalpha.shadowgadgets.demo.topic.Behavior
-import com.zedalpha.shadowgadgets.demo.topic.Compose
-import com.zedalpha.shadowgadgets.demo.topic.Drawable
-import com.zedalpha.shadowgadgets.demo.topic.Intro
-import com.zedalpha.shadowgadgets.demo.topic.Irregular
-import com.zedalpha.shadowgadgets.demo.topic.Motion
+import com.zedalpha.shadowgadgets.demo.topic.ApplicationTopic
+import com.zedalpha.shadowgadgets.demo.topic.BehaviorTopic
+import com.zedalpha.shadowgadgets.demo.topic.ComposeTopic
+import com.zedalpha.shadowgadgets.demo.topic.DrawableTopic
+import com.zedalpha.shadowgadgets.demo.topic.IntroTopic
+import com.zedalpha.shadowgadgets.demo.topic.IrregularTopic
+import com.zedalpha.shadowgadgets.demo.topic.MotionTopic
+import com.zedalpha.shadowgadgets.demo.topic.Topic
 
 
 class MainActivity : AppCompatActivity() {
@@ -93,8 +95,15 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private val TopicList =
-    listOf(Intro, Motion, Behavior, Irregular, Application, Drawable, Compose)
+private val TopicList: List<Topic> = buildList {
+    add(IntroTopic)
+    add(MotionTopic)
+    add(BehaviorTopic)
+    if (Build.VERSION.SDK_INT >= 30) add(IrregularTopic)
+    add(ApplicationTopic)
+    add(DrawableTopic)
+    add(ComposeTopic)
+}
 
 private class ContentAdapter(activity: FragmentActivity) :
     FragmentStateAdapter(activity) {

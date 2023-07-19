@@ -1,22 +1,35 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
 import android.graphics.ColorFilter
-import android.graphics.Outline
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.view.View
-import android.view.ViewOutlineProvider
-import com.zedalpha.shadowgadgets.core.Shadow
+import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.view.R
 
 
-internal sealed interface ViewShadow {
+internal interface ViewShadow {
     fun notifyDetach()
 }
 
 internal var View.shadow: ViewShadow?
     get() = getTag(R.id.shadow) as? ViewShadow
     set(value) = setTag(R.id.shadow, value)
+
+internal fun View.recreateShadow() {
+    val oldShadow = shadow ?: return
+    oldShadow.notifyDetach()
+    createShadowForView(this)
+    invalidate()
+}
+
+internal fun createShadowForView(view: View) {
+    val parent = view.parent as? ViewGroup ?: return
+    getOrCreateController(parent).addOverlayShadow(view)
+}
+
+private fun getOrCreateController(parentView: ViewGroup) =
+    parentView.overlayController ?: OverlayController(parentView)
 
 internal abstract class BaseDrawable : Drawable() {
 
@@ -26,16 +39,4 @@ internal abstract class BaseDrawable : Drawable() {
     override fun setAlpha(alpha: Int) {}
 
     override fun setColorFilter(filter: ColorFilter?) {}
-}
-
-internal class OutlineProviderWrapper(
-    private val wrapped: ViewOutlineProvider,
-    private val shadow: Shadow
-) : ViewOutlineProvider() {
-
-    override fun getOutline(view: View, outline: Outline) {
-        wrapped.getOutline(view, outline)
-        shadow.setOutline(outline)
-        outline.alpha = 0.0F
-    }
 }

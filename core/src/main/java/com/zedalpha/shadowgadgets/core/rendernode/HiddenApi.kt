@@ -10,45 +10,97 @@ import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 
 
-internal open class RenderNodeApi21 : RenderNodeWrapper {
+internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
 
-    protected val renderNode = RenderNode.create(RenderNodeName, null)
+    protected val renderNode = RenderNode.create(name, null)
 
-    override var alpha: Float by renderNode::alpha
+    override var alpha: Float
+        get() = renderNode.alpha
+        set(value) {
+            renderNode.alpha = value
+        }
 
-    override var cameraDistance: Float by renderNode::cameraDistance
+    override var cameraDistance: Float
+        get() = renderNode.cameraDistance
+        set(value) {
+            renderNode.cameraDistance = value
+        }
 
-    override var elevation: Float by renderNode::elevation
+    override var elevation: Float
+        get() = renderNode.elevation
+        set(value) {
+            renderNode.elevation = value
+        }
 
-    override var pivotX: Float by renderNode::pivotX
+    override var pivotX: Float
+        get() = renderNode.pivotX
+        set(value) {
+            renderNode.pivotX = value
+        }
 
-    override var pivotY: Float by renderNode::pivotY
+    override var pivotY: Float
+        get() = renderNode.pivotY
+        set(value) {
+            renderNode.pivotY = value
+        }
 
-    override var rotationX: Float by renderNode::rotationX
+    override var rotationX: Float
+        get() = renderNode.rotationX
+        set(value) {
+            renderNode.rotationX = value
+        }
 
-    override var rotationY: Float by renderNode::rotationY
+    override var rotationY: Float
+        get() = renderNode.rotationY
+        set(value) {
+            renderNode.rotationY = value
+        }
 
-    override var rotationZ: Float by renderNode::rotation
+    override var rotationZ: Float
+        get() = renderNode.rotation
+        set(value) {
+            renderNode.rotation = value
+        }
 
-    override var scaleX: Float by renderNode::scaleX
+    override var scaleX: Float
+        get() = renderNode.scaleX
+        set(value) {
+            renderNode.scaleX = value
+        }
 
-    override var scaleY: Float by renderNode::scaleY
+    override var scaleY: Float
+        get() = renderNode.scaleY
+        set(value) {
+            renderNode.scaleY = value
+        }
 
-    override var translationX: Float by renderNode::translationX
+    override var translationX: Float
+        get() = renderNode.translationX
+        set(value) {
+            renderNode.translationX = value
+        }
 
-    override var translationY: Float by renderNode::translationY
+    override var translationY: Float
+        get() = renderNode.translationY
+        set(value) {
+            renderNode.translationY = value
+        }
 
-    override var translationZ: Float by renderNode::translationZ
+    override var translationZ: Float
+        get() = renderNode.translationZ
+        set(value) {
+            renderNode.translationZ = value
+        }
 
     override var ambientColor: Int
         get() = DefaultShadowColorInt
-        set(@Suppress("UNUSED_PARAMETER") value) {}
+        set(_) {}
 
     override var spotColor: Int
         get() = DefaultShadowColorInt
-        set(@Suppress("UNUSED_PARAMETER") value) {}
+        set(_) {}
 
-    override fun hasIdentityMatrix() =
+    override fun hasIdentityMatrix(): Boolean =
         renderNode.hasIdentityMatrix()
 
     override fun getMatrix(outMatrix: Matrix) {
@@ -64,26 +116,21 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
         (canvas as HardwareCanvas).drawRenderNode(renderNode)
     }
 
-    override fun setClipToBounds(clipToBounds: Boolean): Boolean {
-        return renderNode.setClipToBounds(clipToBounds)
-    }
+    override fun setClipToBounds(clipToBounds: Boolean): Boolean =
+        renderNode.setClipToBounds(clipToBounds)
 
-    override fun setProjectBackwards(shouldProject: Boolean): Boolean {
-        return renderNode.setProjectBackwards(shouldProject)
-    }
+    override fun setProjectBackwards(shouldProject: Boolean): Boolean =
+        renderNode.setProjectBackwards(shouldProject)
 
-    override fun setProjectionReceiver(shouldReceive: Boolean): Boolean {
-        return renderNode.setProjectionReceiver(shouldReceive)
-    }
+    override fun setProjectionReceiver(shouldReceive: Boolean): Boolean =
+        renderNode.setProjectionReceiver(shouldReceive)
 
     override fun setPosition(
         left: Int,
         top: Int,
         right: Int,
         bottom: Int
-    ): Boolean {
-        return renderNode.setLeftTopRightBottom(left, top, right, bottom)
-    }
+    ): Boolean = renderNode.setLeftTopRightBottom(left, top, right, bottom)
 
     override fun beginRecording(width: Int, height: Int): Canvas =
         RenderNodeReflector.start(renderNode, width, height)
@@ -92,9 +139,7 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
         RenderNodeReflector.end(renderNode, canvas as HardwareCanvas)
     }
 
-    override fun hasDisplayList(): Boolean {
-        return renderNode.isValid
-    }
+    override fun hasDisplayList(): Boolean = renderNode.isValid
 
     private fun recordEmptyDisplayList() {
         val canvas = RenderNodeReflector.start(renderNode, 0, 0)
@@ -103,7 +148,7 @@ internal open class RenderNodeApi21 : RenderNodeWrapper {
 }
 
 @RequiresApi(23)
-internal class RenderNodeApi23 : RenderNodeApi21() {
+internal class RenderNodeApi23(name: String?) : RenderNodeApi21(name) {
 
     override fun draw(canvas: Canvas) {
         if (!renderNode.isValid) recordEmptyDisplayList()
@@ -136,9 +181,8 @@ private object RenderNodeReflector {
         HardwareCanvas::class.java
     )
 
-    fun start(renderNode: RenderNode, width: Int, height: Int): HardwareCanvas {
-        return startMethod.invoke(renderNode, width, height) as HardwareCanvas
-    }
+    fun start(renderNode: RenderNode, width: Int, height: Int): HardwareCanvas =
+        startMethod.invoke(renderNode, width, height) as HardwareCanvas
 
     fun end(renderNode: RenderNode, canvas: HardwareCanvas) {
         endMethod.invoke(renderNode, canvas)

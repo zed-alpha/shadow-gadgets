@@ -21,7 +21,7 @@ internal object ProjectorReflector {
 
     private var drawRenderNode: Method? = null
 
-    val isProjectorReflectoring = try {
+    val isAvailable = try {
         val renderNodeClass = Class.forName("android.view.RenderNode")
         val canvasClass = when (Build.VERSION.SDK_INT) {
             in 21..22 -> Class.forName("android.view.HardwareCanvas")

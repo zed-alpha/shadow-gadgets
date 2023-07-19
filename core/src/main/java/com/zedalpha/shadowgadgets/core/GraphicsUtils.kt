@@ -18,7 +18,7 @@ internal object OutlinePathReflector {
 
     private var mPathInitialized = false
 
-    @SuppressLint("SoonBlockedPrivateApi")
+    @SuppressLint("PrivateApi", "SoonBlockedPrivateApi")
     private fun getPathField() = when {
         mPathInitialized -> mPath
         else -> {
@@ -65,7 +65,7 @@ internal object OutlineRectReflector {
 
     private var mRectInitialized = false
 
-    @SuppressLint("DiscouragedPrivateApi")
+    @SuppressLint("DiscouragedPrivateApi", "PrivateApi")
     private fun getRectField() = when {
         mRectInitialized -> mRect
         else -> {
@@ -94,7 +94,7 @@ internal object OutlineRectReflector {
 
     private var mRadiusInitialized = false
 
-    @SuppressLint("SoonBlockedPrivateApi")
+    @SuppressLint("PrivateApi", "SoonBlockedPrivateApi")
     private fun getRadiusField() = when {
         mRadiusInitialized -> mRadius
         else -> {
@@ -163,6 +163,7 @@ internal object CanvasZReflector {
         }
     }
 
+    @SuppressLint("PrivateApi")
     private val reorderBarrierMethod = when (Build.VERSION.SDK_INT) {
         28 -> try {
             getDeclaredMethod()?.invoke(
@@ -181,6 +182,7 @@ internal object CanvasZReflector {
         }
     }?.apply { isAccessible = true }
 
+    @SuppressLint("PrivateApi")
     private val inorderBarrierMethod = when (Build.VERSION.SDK_INT) {
         28 -> try {
             getDeclaredMethod()?.invoke(

@@ -1,4 +1,4 @@
-package com.zedalpha.shadowgadgets.view
+package com.zedalpha.shadowgadgets.view.internal
 
 import android.graphics.Path
 import android.graphics.RectF

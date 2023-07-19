@@ -7,22 +7,29 @@ import android.graphics.RenderNode
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroupOverlay
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
 
 internal interface Projector {
+
     fun addToOverlay(overlay: ViewGroupOverlay)
+
     fun removeFromOverlay(overlay: ViewGroupOverlay)
+
     fun setSize(width: Int, height: Int)
+
+    fun refresh() {}
+
     fun invalidateProjection() {}
 }
 
-internal fun createProjector(context: Context, drawable: Drawable) = when {
+internal fun Projector(context: Context, drawable: Drawable) = when {
     Build.VERSION.SDK_INT >= 29 -> ProjectorDrawable(drawable)  // Extra safety
     RenderNodeFactory.isOpenForBusiness -> WrapperProjectorDrawable(drawable)
-    ProjectorReflector.isProjectorReflectoring -> ReflectorProjectorDrawable(drawable)
+    ProjectorReflector.isAvailable -> ReflectorProjectorDrawable(drawable)
     else -> ProjectorView(context, drawable)
 }
 
@@ -31,11 +38,11 @@ private class ProjectorDrawable(
     private val projectedDrawable: Drawable
 ) : BaseDrawable(), Projector {
 
-    private val baseNode = RenderNode("Projector").apply {
+    private val baseNode = RenderNode("ProjectorBase").apply {
         clipToBounds = false
     }
 
-    private val projectedNode = RenderNode("Projector").apply {
+    private val projectedNode = RenderNode("Projected").apply {
         clipToBounds = false
         setProjectBackwards(true)
     }
@@ -78,14 +85,16 @@ private class WrapperProjectorDrawable(
     private val projectedDrawable: Drawable
 ) : BaseDrawable(), Projector {
 
-    private val baseNode = RenderNodeFactory.newInstance().apply {
-        setClipToBounds(false)
-    }
+    private val baseNode =
+        RenderNodeFactory.newInstance("ProjectorBase").apply {
+            setClipToBounds(false)
+        }
 
-    private val projectedNode = RenderNodeFactory.newInstance().apply {
-        setClipToBounds(false)
-        setProjectBackwards(true)
-    }
+    private val projectedNode =
+        RenderNodeFactory.newInstance("Projected").apply {
+            setClipToBounds(false)
+            setProjectBackwards(true)
+        }
 
     override fun addToOverlay(overlay: ViewGroupOverlay) {
         overlay.add(this)
@@ -172,23 +181,28 @@ private class ReflectorProjectorDrawable(
 @SuppressLint("ViewConstructor")
 private class ProjectorView(
     context: Context,
-    private val projectedDrawable: Drawable
-) : View(context), Projector {
+    projectedDrawable: Drawable
+) : ViewGroup(context), Projector {
+
+    private val projectedChild = View(context).apply {
+        background = projectedDrawable
+        visibility = View.GONE
+    }
 
     init {
-        background = object : BaseDrawable() {
-            override fun draw(canvas: Canvas) {
-                projectedDrawable.draw(canvas)
-            }
+        addView(projectedChild, EmptyLayoutParams)
+        background = ChildProjectorDrawable()
+    }
 
-            override fun isProjected() = true
+    inner class ChildProjectorDrawable : BaseDrawable() {
+        override fun draw(canvas: Canvas) {
+            drawChild(canvas, projectedChild, 0L)
         }
+
+        override fun isProjected(): Boolean = true
     }
 
-    override fun setSize(width: Int, height: Int) {
-        right = width
-        bottom = height
-    }
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 
     override fun addToOverlay(overlay: ViewGroupOverlay) {
         overlay.add(this)
@@ -198,7 +212,19 @@ private class ProjectorView(
         overlay.remove(this)
     }
 
+    override fun setSize(width: Int, height: Int) {
+        right = width; bottom = height
+        projectedChild.apply { right = width; bottom = height }
+    }
+
+    override fun refresh() {
+        detachViewFromParent(projectedChild)
+        attachViewToParent(projectedChild, 0, EmptyLayoutParams)
+    }
+
     override fun invalidateProjection() {
         invalidate()
     }
 }
+
+private val EmptyLayoutParams = ViewGroup.LayoutParams(0, 0)

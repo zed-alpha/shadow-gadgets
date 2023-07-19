@@ -9,7 +9,9 @@ import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.pathProvider
 
 
-internal object Irregular : Topic {
+internal object IrregularTopic : Topic {
+
+    override val title = "Irregular"
 
     override val descriptionResId = R.string.description_irregular
 

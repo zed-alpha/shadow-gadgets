@@ -8,13 +8,14 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import java.util.WeakHashMap
 
 
-class ViewClippedShadow(private val ownerView: View) : ClippedShadow() {
+class ViewClippedShadow(ownerView: View) : ClippedShadow() {
 
     private val shadowView = View(ownerView.context).apply {
-        right = 1
-        bottom = 1
+        // Ensures draw when target is partially/fully out of bounds
+        right = Int.MAX_VALUE; bottom = Int.MAX_VALUE
         outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
                 outline.set(this@ViewClippedShadow.outline)
@@ -24,68 +25,98 @@ class ViewClippedShadow(private val ownerView: View) : ClippedShadow() {
 
     private var viewPainter: ViewPainter? = null
 
-    private val attachListener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View) {
-            attachToPainter()
-        }
-
-        override fun onViewDetachedFromWindow(v: View) {
-            detachFromPainter()
-        }
-    }
-
     init {
-        ownerView.apply {
-            addOnAttachStateChangeListener(attachListener)
-            if (isAttachedToWindow) attachToPainter()
+        val rootView = ownerView.rootView as? ViewGroup
+        if (rootView != null) {
+            val painter = ViewPainter.forView(rootView)
+            painter.registerView(shadowView)
+            viewPainter = painter
         }
     }
 
     override fun dispose() {
         super.dispose()
-        ownerView.apply {
-            removeOnAttachStateChangeListener(attachListener)
-            if (isAttachedToWindow) detachFromPainter()
-        }
-    }
-
-    private fun attachToPainter() {
-        val viewGroup = ownerView.rootView as? ViewGroup ?: return
-        val painter = ViewPainter.forView(viewGroup)
-        painter.registerView(shadowView)
-        viewPainter = painter
-    }
-
-    private fun detachFromPainter() {
         viewPainter?.unregisterView(shadowView)
         viewPainter = null
     }
 
-    override var alpha: Float by shadowView::alpha
+    override var alpha: Float
+        get() = shadowView.alpha
+        set(value) {
+            shadowView.alpha = value
+        }
 
-    override var cameraDistance: Float by shadowView::cameraDistance
+    override var cameraDistance: Float
+        get() = shadowView.cameraDistance
+        set(value) {
+            shadowView.cameraDistance = value
+        }
 
-    override var elevation: Float by shadowView::elevation
+    override var elevation: Float
+        get() = shadowView.elevation
+        set(value) {
+            shadowView.elevation = value
+        }
 
-    override var pivotX: Float by shadowView::pivotX
+    override var pivotX: Float
+        get() = shadowView.pivotX
+        set(value) {
+            shadowView.pivotX = value
+        }
 
-    override var pivotY: Float by shadowView::pivotY
+    override var pivotY: Float
+        get() = shadowView.pivotY
+        set(value) {
+            shadowView.pivotY = value
+        }
 
-    override var rotationX: Float by shadowView::rotationX
+    override var rotationX: Float
+        get() = shadowView.rotationX
+        set(value) {
+            shadowView.rotationX = value
+        }
 
-    override var rotationY: Float by shadowView::rotationY
+    override var rotationY: Float
+        get() = shadowView.rotationY
+        set(value) {
+            shadowView.rotationY = value
+        }
 
-    override var rotationZ: Float by shadowView::rotation
+    override var rotationZ: Float
+        get() = shadowView.rotation
+        set(value) {
+            shadowView.rotation = value
+        }
 
-    override var scaleX: Float by shadowView::scaleX
+    override var scaleX: Float
+        get() = shadowView.scaleX
+        set(value) {
+            shadowView.scaleX = value
+        }
 
-    override var scaleY: Float by shadowView::scaleY
+    override var scaleY: Float
+        get() = shadowView.scaleY
+        set(value) {
+            shadowView.scaleY = value
+        }
 
-    override var translationX: Float by shadowView::translationX
+    override var translationX: Float
+        get() = shadowView.translationX
+        set(value) {
+            shadowView.translationX = value
+        }
 
-    override var translationY: Float by shadowView::translationY
+    override var translationY: Float
+        get() = shadowView.translationY
+        set(value) {
+            shadowView.translationY = value
+        }
 
-    override var translationZ: Float by shadowView::translationZ
+    override var translationZ: Float
+        get() = shadowView.translationZ
+        set(value) {
+            shadowView.translationZ = value
+        }
 
     override var ambientColor: Int
         get() = when {
@@ -109,7 +140,8 @@ class ViewClippedShadow(private val ownerView: View) : ClippedShadow() {
             }
         }
 
-    override fun hasIdentityMatrix() = shadowView.matrix.isIdentity
+    override fun hasIdentityMatrix(): Boolean =
+        shadowView.matrix.isIdentity
 
     override fun getMatrix(outMatrix: Matrix) {
         outMatrix.set(shadowView.matrix)
@@ -149,20 +181,20 @@ private class ViewPainter private constructor(
         runOnUiThread { ownerView.overlay.add(this) }
     }
 
-    private fun detach() {
-        val owner = ownerView
-        owner.viewPainter = null
-        runOnUiThread { owner.overlay.remove(this) }
+    private fun detachFromOwner() {
+        ownerView.viewPainter = null
+        runOnUiThread { ownerView.overlay.remove(this) }
     }
 
-    private val activeViews = mutableSetOf<View>()
+    private val activeViews = WeakHashMap<View, Unit>()
 
     fun registerView(view: View) {
-        activeViews += view
+        activeViews += view to Unit
     }
 
     fun unregisterView(view: View) {
-        activeViews.apply { remove(view); if (isEmpty()) detach() }
+        activeViews -= view
+        if (activeViews.isEmpty()) detachFromOwner()
     }
 
     fun drawView(view: View, canvas: Canvas) {

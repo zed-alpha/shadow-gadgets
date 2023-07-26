@@ -22,16 +22,17 @@ internal object BehaviorTopic : Topic {
 
             ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
                 ui.motionView.clipOutlineShadow = isChecked
-                ui.blueView.clipOutlineShadow = isChecked
+                ui.centerView.clipOutlineShadow = isChecked
             }
 
             ui.planeSelect.setOnCheckedChangeListener { _, checkedId ->
                 val plane = when (checkedId) {
-                    R.id.foreground_radio -> ClippedShadowPlane.Foreground
-                    else -> ClippedShadowPlane.Background
+                    R.id.background_radio -> ClippedShadowPlane.Background
+                    R.id.inline_radio -> ClippedShadowPlane.Inline
+                    else -> ClippedShadowPlane.Foreground
                 }
                 ui.motionView.clippedShadowPlane = plane
-                ui.blueView.clippedShadowPlane = plane
+                ui.centerView.clippedShadowPlane = plane
             }
         }
     }

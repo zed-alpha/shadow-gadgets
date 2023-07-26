@@ -1,4 +1,4 @@
-package com.zedalpha.shadowgadgets.view.shadow
+package com.zedalpha.shadowgadgets.view.internal
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -27,14 +27,14 @@ internal interface Projector {
 }
 
 internal fun Projector(context: Context, drawable: Drawable) = when {
-    Build.VERSION.SDK_INT >= 29 -> ProjectorDrawable(drawable)  // Extra safety
-    RenderNodeFactory.isOpenForBusiness -> WrapperProjectorDrawable(drawable)
-    ProjectorReflector.isAvailable -> ReflectorProjectorDrawable(drawable)
-    else -> ProjectorView(context, drawable)
+    Build.VERSION.SDK_INT >= 29 -> DrawableProjector(drawable)  // Extra safety
+    RenderNodeFactory.isOpenForBusiness -> WrapperDrawableProjector(drawable)
+    ProjectorReflector.isAvailable -> ReflectorDrawableProjector(drawable)
+    else -> ViewProjector(context, drawable)
 }
 
 @RequiresApi(29)
-private class ProjectorDrawable(
+private class DrawableProjector(
     private val projectedDrawable: Drawable
 ) : BaseDrawable(), Projector {
 
@@ -81,7 +81,7 @@ private class ProjectorDrawable(
     }
 }
 
-private class WrapperProjectorDrawable(
+private class WrapperDrawableProjector(
     private val projectedDrawable: Drawable
 ) : BaseDrawable(), Projector {
 
@@ -130,7 +130,7 @@ private class WrapperProjectorDrawable(
     }
 }
 
-private class ReflectorProjectorDrawable(
+private class ReflectorDrawableProjector(
     private val projectedDrawable: Drawable
 ) : BaseDrawable(), Projector {
 
@@ -179,7 +179,7 @@ private class ReflectorProjectorDrawable(
 }
 
 @SuppressLint("ViewConstructor")
-private class ProjectorView(
+private class ViewProjector(
     context: Context,
     projectedDrawable: Drawable
 ) : ViewGroup(context), Projector {
@@ -191,18 +191,15 @@ private class ProjectorView(
 
     init {
         addView(projectedChild, EmptyLayoutParams)
-        background = ChildProjectorDrawable()
-    }
+        background = object : BaseDrawable() {
 
-    inner class ChildProjectorDrawable : BaseDrawable() {
-        override fun draw(canvas: Canvas) {
-            drawChild(canvas, projectedChild, 0L)
+            override fun draw(canvas: Canvas) {
+                drawChild(canvas, projectedChild, 0L)
+            }
+
+            override fun isProjected(): Boolean = true
         }
-
-        override fun isProjected(): Boolean = true
     }
-
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 
     override fun addToOverlay(overlay: ViewGroupOverlay) {
         overlay.add(this)
@@ -225,6 +222,8 @@ private class ProjectorView(
     override fun invalidateProjection() {
         invalidate()
     }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 }
 
 private val EmptyLayoutParams = ViewGroup.LayoutParams(0, 0)

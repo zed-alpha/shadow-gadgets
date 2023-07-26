@@ -1,62 +1,33 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
 import android.graphics.Canvas
-import android.graphics.Outline
 import android.os.Build
 import android.view.View
-import android.view.ViewOutlineProvider
 import androidx.core.view.isVisible
-import com.zedalpha.shadowgadgets.core.ClippedShadow
-import com.zedalpha.shadowgadgets.core.PathProvider
-import com.zedalpha.shadowgadgets.core.ViewShadowColors28
-import com.zedalpha.shadowgadgets.view.pathProvider
+import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
 
-internal class OverlayShadow(
-    private val targetView: View,
-    private val drawPlane: DrawPlane,
-    private val controller: OverlayController
-) : ViewShadow {
-
-    private val clippedShadow = ClippedShadow.newInstance(targetView)
-
-    private val provider: ViewOutlineProvider = targetView.outlineProvider
-
-    private val willDraw: Boolean get() = targetView.isVisible
+internal class GroupShadow(
+    targetView: View,
+    private val controller: ShadowController,
+    private val plane: OverlayPlane?
+) : ClippedViewShadow(targetView) {
 
     init {
-        val target = targetView
-        clippedShadow.pathProvider = PathProvider { path ->
-            target.pathProvider?.getPath(target, path)
-        }
-        target.outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                provider.getOutline(view, outline)
-                clippedShadow.setOutline(outline)
-                outline.alpha = 0.0F
-            }
-        }
-        target.shadow = this
         show()
     }
 
-    private fun detachFromTarget() {
-        clippedShadow.dispose()
-        targetView.outlineProvider = provider
-        targetView.shadow = null
+    override fun detachFromTarget() {
+        super.detachFromTarget()
+        controller.removeShadow(this)
         hide()
     }
 
-    fun show() {
-        drawPlane.addShadow(this)
+    override fun show() {
+        plane?.showShadow(this)
     }
 
-    fun hide() {
-        drawPlane.removeShadow(this)
-    }
-
-    override fun notifyDetach() {
-        detachFromTarget()
-        controller.removeOverlayShadow(this)
+    override fun hide() {
+        plane?.hideShadow(this)
     }
 
     private var left = 0
@@ -86,18 +57,18 @@ internal class OverlayShadow(
         if (shadow.translationY != target.translationY) return true
         if (shadow.translationZ != target.translationZ) return true
         if (Build.VERSION.SDK_INT >= 28) {
-            if (shadow.ambientColor != ViewShadowColors28.getAmbientColor(target)) {
-                return true
-            }
-            if (shadow.spotColor != ViewShadowColors28.getSpotColor(target)) {
-                return true
-            }
+            if (shadow.ambientColor !=
+                ViewShadowColorsHelper.getAmbientColor(target)
+            ) return true
+            if (shadow.spotColor !=
+                ViewShadowColorsHelper.getSpotColor(target)
+            ) return true
         }
         return false
     }
 
     fun draw(canvas: Canvas) {
-        if (willDraw) {
+        if (targetView.isVisible) {
             update()
             val left = left.toFloat()
             val top = top.toFloat()
@@ -129,8 +100,10 @@ internal class OverlayShadow(
         shadow.translationY = target.translationY
         shadow.translationZ = target.translationZ
         if (Build.VERSION.SDK_INT >= 28) {
-            shadow.ambientColor = ViewShadowColors28.getAmbientColor(target)
-            shadow.spotColor = ViewShadowColors28.getSpotColor(target)
+            shadow.ambientColor =
+                ViewShadowColorsHelper.getAmbientColor(target)
+            shadow.spotColor =
+                ViewShadowColorsHelper.getSpotColor(target)
         }
     }
 }

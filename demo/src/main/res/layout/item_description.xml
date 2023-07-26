@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dusty_white"
+    android:fadeScrollbars="false"
     android:padding="8dp"
     android:scrollbars="vertical"
     tools:ignore="Overdraw">
@@ -13,6 +14,8 @@
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        android:paddingEnd="10dp"
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry" />
 
 </ScrollView>

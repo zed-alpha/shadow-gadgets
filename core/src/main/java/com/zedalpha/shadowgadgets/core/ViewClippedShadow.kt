@@ -18,7 +18,7 @@ class ViewClippedShadow(ownerView: View) : ClippedShadow() {
         right = Int.MAX_VALUE; bottom = Int.MAX_VALUE
         outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
-                outline.set(this@ViewClippedShadow.outline)
+                outline.set(this@ViewClippedShadow.shadowOutline)
             }
         }
     }
@@ -28,7 +28,7 @@ class ViewClippedShadow(ownerView: View) : ClippedShadow() {
     init {
         val rootView = ownerView.rootView as? ViewGroup
         if (rootView != null) {
-            val painter = ViewPainter.forView(rootView)
+            val painter = ViewPainter.forOwner(rootView)
             painter.registerView(shadowView)
             viewPainter = painter
         }
@@ -121,22 +121,22 @@ class ViewClippedShadow(ownerView: View) : ClippedShadow() {
     override var ambientColor: Int
         get() = when {
             Build.VERSION.SDK_INT < 28 -> DefaultShadowColorInt
-            else -> ViewShadowColors28.getAmbientColor(shadowView)
+            else -> ViewShadowColorsHelper.getAmbientColor(shadowView)
         }
         set(value) {
             if (Build.VERSION.SDK_INT >= 28) {
-                ViewShadowColors28.setAmbientColor(shadowView, value)
+                ViewShadowColorsHelper.setAmbientColor(shadowView, value)
             }
         }
 
     override var spotColor: Int
         get() = when {
             Build.VERSION.SDK_INT < 28 -> DefaultShadowColorInt
-            else -> ViewShadowColors28.getSpotColor(shadowView)
+            else -> ViewShadowColorsHelper.getSpotColor(shadowView)
         }
         set(value) {
             if (Build.VERSION.SDK_INT >= 28) {
-                ViewShadowColors28.setSpotColor(shadowView, value)
+                ViewShadowColorsHelper.setSpotColor(shadowView, value)
             }
         }
 
@@ -158,8 +158,8 @@ private class ViewPainter private constructor(
 ) : ViewGroup(ownerView.context) {
 
     companion object {
-        fun forView(viewGroup: ViewGroup) = viewGroup.viewPainter
-            ?: ViewPainter(viewGroup).also { viewGroup.viewPainter = it }
+        fun forOwner(ownerView: ViewGroup) = ownerView.viewPainter
+            ?: ViewPainter(ownerView).also { ownerView.viewPainter = it }
 
         private var ViewGroup.viewPainter: ViewPainter?
             get() = getTag(R.id.view_painter) as? ViewPainter
@@ -189,7 +189,7 @@ private class ViewPainter private constructor(
     private val activeViews = WeakHashMap<View, Unit>()
 
     fun registerView(view: View) {
-        activeViews += view to Unit
+        activeViews[view] = Unit
     }
 
     fun unregisterView(view: View) {

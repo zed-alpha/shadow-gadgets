@@ -10,15 +10,13 @@ These tools use the same classes and methods that the platform uses to render sh
 
 <img src="images/examples_after.png" width="85%" />
 
-This library originally offered tools only for `View`s, and since it requires considerably more work to achieve this effect in that framework, the majority of this README is geared toward that functionality. The Compose `Modifier` needs only a brief summary here at the start.
-
 <br />
 
 ## Basic usage with Compose
 
 <sup>[[Download](#download)]</sup>
 
-The `Modifier` extension function is called `clippedShadow()`, and it works similarly to the regular `shadow()` except that there is no content clip option (since that can be handled with `clip()`), and it does _not_ generate a new surface/graphics layer. It is purely decorative.
+The `Modifier` extension function is called `clippedShadow()`. It works similarly to the regular `shadow()` except that there is no content clip parameter – since that can be handled with a separate `clip()` – and it does _not_ generate a new surface/graphics layer. It is purely decorative.
 
 ```kotlin
 Box(
@@ -36,6 +34,10 @@ Box(
 Unlike the `View` solution, you will need to disable the `Composable`'s inherent shadow yourself, if it has one. `Box` doesn't, but ones like `Card` and `Button` do, so you'll need to pass zeroes for their `elevation`s. The demo app has a few examples on the Compose page with the necessary settings, a couple of which also show how to replace the shadows on existing `Composable`s that animate their elevations without having to rewrite them or fiddle with their internals.
 
 Since these shadows are drawn inline pretty much exactly like the regular ones, that should be about as complicated as the Compose version gets. It may take a few other adjustments to line things up correctly to begin with, but no more than it would for the regular `shadow()`, too.
+
+Consequently, most of the rest of this document is geared toward the `View` version, though there might occasionally be some items relevant to the `compose` package in [the Notes](#notes) near the end.
+
+<br />
 
 ## Basic usage with Views
 
@@ -87,32 +89,56 @@ It is hoped that that simple usage should cover most cases, but for the situatio
 
 ## Limitations and recourses
 
-### Overlapping Sibling Views
+### Overlapping sibling Views
 
 <sup>[[Reference](https://github.com/zed-alpha/shadow-gadgets/wiki/Clipped_Shadows#clippedShadowPlane)]</sup>
 
-The main limitation is inherent to the technique used here, which was chosen because it allows the fix to be externally applied to any `View` without having to modify it or its existing setup. The method is basically to disable the target's built-in shadow and draw a clipped copy in the parent's overlay. In many cases this is just fine, and is visually indistinguishable from the shadow being drawn normally. The issue comes when a target is overlapped by a sibling `View`, which can cause a different kind of unwanted artifact.
+The main limitation is inherent to the technique used here, which was chosen because it allows the fix to be externally applied to any `View` without having to modify it or its existing setup. That method is basically to disable the target's built-in shadow and draw a clipped copy either in front of or behind it. Since the shadow is essentially pulled out of the normal draw routine, it's possible to end up with different kinds of artifacts than those which we're trying to fix.
 
-<img src="images/overlap_example.png" />
+<img src="images/overlap_examples.png" />
 
-<sup>_The blue View's shadow overlays its red sibling which has a greater elevation._</sup>
+On the left, the red target has a lower elevation than its plain, gray sibling, but the default `Foreground` plane draws in front of everything. On the right, the red target is higher than the gray sibling, but its `Background` shadow draws behind all of the child `View`s.
 
-It is important to note that this is an issue only for _siblings_ of the target. `View`s in separate parent `ViewGroup`s have separate draws and won't interfere with each other. Indeed, in some cases the most straightforward solution is to simply wrap a target or sibling in another `ViewGroup`, like a plain old `FrameLayout`. There are certainly cases where siblings must overlap, however, hence the other core property and its corresponding enum class:
+It is important to note that this is an issue only for _siblings_ of the target. `View`s in separate parent `ViewGroup`s have separate draws and won't interfere with each other. Indeed, in some cases the most straightforward solution is to simply wrap a target or sibling in another `ViewGroup`, like a plain old `FrameLayout`. There are certainly cases where siblings must overlap, however, hence the next core property and its corresponding enum class:
 
 #### ClippedShadowPlane
 ```kotlin
-enum class ClippedShadowPlane { Foreground, Background }
+enum class ClippedShadowPlane { Foreground, Background, Inline }
 ```
 
-The `View.clippedShadowPlane` extension property sets the "plane" on which the clipped shadow will be drawn: the parent `ViewGroup`'s foreground or background.
+The `View.clippedShadowPlane` extension property sets the "plane" on which the clipped shadow will be drawn:
 
-For example, in the example pictured above, directing the blue target's shadow to draw on the background plane – e.g., `blueView.clippedShadowPlane = Background` – fixes its clipped shadow which was being incorrectly drawn over the red sibling.
++ `Foreground` draws in the overlay of the target's parent `ViewGroup`, after all of the children. It is the default.
 
-<img src="images/plane_fix_example.png" />
++ The `Background` plane draws behind the parent's content, immediately after its background drawable.
 
-As with `clipOutlineShadow`, this property can be set on the target `View` at any time.
++ The new `Inline` type is drawn right along with the target itself, and is most similar in behavior and appearance to the regular shadows, but it has some additional requirements and caveats, which is why it's not the default option.
 
-### Irregular Shapes on Android R+
+For example, the setups from the images above fixed:
+
+<img src="images/overlap_examples_fixed.png" />
+
+On the left, we've set `redView.clippedShadowPlane = Background`, moving the shadow draw to the back. The setup on the right was fixed by letting it draw to the `Foreground` plane, which is the default. The new `Inline` plane would fix both situations:
+
+<img src="images/inline_example.png" />
+
+Though `Inline` shadows seem to be the most appropriate solution, they behave a bit differently than the others, and have additional external requirements in order to function correctly.
+
++ **Non-library parents:** Since it's drawn along with the target `View` itself, an `Inline` shadow will work inside non-library parent `ViewGroup`s _only_ if the target `View` is not being otherwise clipped by anything else. Specifically:
+
+    + The parent `ViewGroup` must have `clipChildren` set to `false`. The default value is `true`, so this has to be set manually in pretty much any `ViewGroup`.
+
+    + The target `View` itself must have `clipToOutline` set to `false`, which is the default value for the `View` class, but certain subclasses enable it internally; e.g., `CardView` and its variants.
+
+    If either of those is `true`, the shadow will be mostly or completely invisible, which is one of the main reasons that `Inline` is not the default. There is a rather explicit warning log, though, if one of these shadows is used in such a setup.
+
++ **Library parents:** If an `Inline` shadow is on a target that is a child of one of the library's `ClippedShadowsViewGroup`s, the `clipChildren` and `clipToOutline` settings are not necessary, as the draw is handed off to the parent where it's inserted before those child clip operations happen.
+
+    However, to be able to insert these draws between children, `ClippedShadowsViewGroup`s have to manually reorder the child draws, which adds a tiny bit of overhead and prevents some of the low-level optimizations that hardware-acceleration brought in the first place.
+
+If you're able to specify the above-mentioned clip settings, `Inline` shadows in non-library parents actually have the least overhead of any type. The special behavior in library parents simply offers another possible fix option for particular setups and requirements.
+
+### Irregular shapes on Android R+
 
 The other notable limitation comes on Android R and above, when creating the copy for `View`s with irregular shapes; i.e., `View`s that aren't rectangles, regular round rectangles, or circles. Reflection is required to get at the `Path` that describes those irregular shapes, and the increasing restrictions on non-SDK interfaces have finally made that field inaccessible. For these cases, the library has a `ViewPathProvider` interface that works very similarly to the framework's `ViewOutlineProvider` class, allowing the user to set the necessary `Path`. For example:
 
@@ -125,24 +151,34 @@ class PuzzlePieceView constructor(
 
     private val viewPath = Path()
 
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
     init {
         outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
-                val path = viewPath
                 val sideLength = minOf(view.width, view.height).toFloat()
-                path.setToPuzzlePiece(sideLength)
-                outline.setPath(path)
+                viewPath.setToPuzzlePiece(sideLength)
+                outline.setPath(viewPath)
             }
         }
         pathProvider = ViewPathProvider { _, path ->
             path.set(viewPath)
         }
         clipOutlineShadow = true
+
+        paint.color = Color.argb(64, 0, 0, 255)
+        outlineAmbientShadowColor = Color.BLUE
+        outlineSpotShadowColor = Color.BLUE
+        elevation = 15F
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        canvas.drawPath(viewPath, paint)
     }
 }
 ```
 
-The `setToPuzzlePiece()` function is available in the demo module, if you'd like a full working example to play around with. Give it a non-zero width and height, and it'll produce something like:
+The `setToPuzzlePiece()` function is available in the `demo` module, if you'd like a full working example to play around with ([link](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/DrawableTopic.kt#L93)). Give it a non-zero width and height, and it'll produce something like:
 
 <img src="images/view_path_provider_example.png" />
 
@@ -217,7 +253,7 @@ Each `ViewGroup` also has a few properties from the common interface, `ClippedSh
 
 The previous class – `ShadowDrawable` – has been removed, technically, but the replacement is mostly similar, as far as available properties. The main upshot to the new class is that it no longer depends on `RenderNode` access, so we can use it freely without having to check availability first. Like everything else here, though, it still requires a hardware-accelerated `Canvas` to work.
 
-`ClippedShadowDrawable` is essentially a very thin wrapper around the core class used to draw these shadows in the other tools. It's provided mainly as a convenience for those who would like to be able to draw these manually without having to mess with the core module directly (which can get very confusing). However, there are several ways in which it does not act like a regular `Drawable`:
+`ClippedShadowDrawable` is essentially a very thin wrapper around the core class used to draw these shadows in the other tools. It's provided mainly as a convenience for those who would like to be able to draw these manually without having to mess with the `core` module directly (which can get very confusing). However, there are several ways in which it does not act like a regular `Drawable`:
 
 + The most important caveat here is that you are responsible for keeping the clip updated anytime a relevant property in the drawable changes. That is, if you change its rotation, for example, you need to invalidate the current draw. If the drawable's callback is set appropriately - e.g., like it would be when acting as a `View`'s background – then you likely need only to call `invalidateSelf()` on it. Otherwise, you'll need to `invalidate()` the `View` you're drawing in, or perform the analogous action in whatever context you're in.
 
@@ -225,7 +261,7 @@ The previous class – `ShadowDrawable` – has been removed, technically, but t
 
 + The bounds have no effect whatsoever on the final draw. Though they should still be set appropriately where needed to ensure that things like the invalidation mechanism still work correctly, they will not translate or stretch or clip or do anything else to the actual shadow, whose shape and initial position come solely from the `Outline` set. After that, transformations can be applied either through `Canvas` functions before the draw – e.g., `canvas.translate(dx, dy)` – or by setting the relevant properties on the drawable itself – e.g., `drawable.translationX = dy; drawable.translationY = dy`. The demo app has a simple subclass example that automatically centers the shadow within the bounds, to show how you could customize the class to your needs.
 
-+ It's rather important to `dispose()` of these drawables when appropriate – e.g., in a `Fragment`'s `onDestroyView()` – at least until your `minSdk` is 29, at which point you can use the constructor that doesn't require an owner `View` to hook into the hardware-accelerated draw routine. Use after disposal is not an automatic `Exception`, but it's not advised, and there is no guaranteed behavior.
++ It is rather important to `dispose()` of these drawables when appropriate – e.g., in a `Fragment`'s `onDestroyView()` – at least until your `minSdk` is 29, at which point you can use the constructor that doesn't require an owner `View` to hook into the hardware-accelerated draw routine. Use after disposal is not an automatic `Exception`, but it's not advised, and there is no guaranteed behavior.
 
 + `Drawable`'s required `setColorFilter()` override is currently a no-op.
 
@@ -236,17 +272,17 @@ The previous class – `ShadowDrawable` – has been removed, technically, but t
 
 + The docs in the wiki are currently out of date, and this README isn't as detailed as it should be yet. They will be updated in the near future, hopefully.
 
-+ If you only need this fix for `View`s in a simple static setup or two – e.g., a basic `CardView` – you might prefer to put something together from the core techniques demonstrated in [this Stack Overflow answer](https://stackoverflow.com/a/70076301). The main benefits of this library are its additional features on top of those methods, like its automatic handling of target state and animations. If that core solution is sufficient, you probably don't want the overhead here.
++ If you only need the fix for `View`s in a simple static setup or two – e.g., a basic `CardView` – you might prefer to put something together from the core techniques demonstrated in [this Stack Overflow answer](https://stackoverflow.com/a/70076301). The main benefits of this library are its additional features on top of those methods, like its automatic handling of target state and animations. If that core solution is sufficient, you probably don't want the overhead here.
 
-+ Starting with 2.0.0, `ShadowFallbackStrategy` and its corresponding extension property are removed as obsolete. The fallback draw implementation now works just like the primary one, thus obviating the need for that particular option.
++ Starting with 2.0.0, `ShadowFallbackStrategy` and its corresponding extension property are removed as obsolete. The fallback draw implementation now works just like the primary one, obviating the need for that particular option.
 
-+ Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows to work _at all_ on Pie itself, with or without this library involved. All of the relevant methods and attributes were introduced with that version, and the documentation indicates that they should work like normal, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app's Intro page has a setup that lets you fiddle with the shadow color, so that could be used as a quick test.
++ Colored shadows are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get colored shadows to work _at all_ on Pie itself, with or without this library involved. All of the relevant methods and attributes were introduced with that version, and the documentation indicates that they should work like normal, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app's Intro page has a setup that lets you fiddle with the shadow color, so that could be used as a quick test, if you're curious.
 
 + To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped in a custom implementation. This has the possibility of breaking something if some function or component is expecting the `View` to have one of the static platform implementations; i.e., `ViewOutlineProvider.BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`. This shouldn't cause a fatal error, or anything – it's no different than anything else that uses a custom `ViewOutlineProvider` – but you might need to rework some background drawables or the like.
 
-    This also means that if you are using a custom `ViewOutlineProvider` of your own on a target, it should be set _before_ enabling the clipped shadow (or at least before the target `View` attaches to its `Window`).
+    This also means that if you are using a custom `ViewOutlineProvider` of your own on a target, it should be set _before_ enabling the clipped shadow, or at least before the target `View` attaches to its `Window`.
 
-+ To be able to draw the clipped shadows in the `Background` plane, the parent `ViewGroup` itself must have a background set. If it does not have one set at the time that such a shadow is added, a special library `object` is set automatically. For efficiency, this is the only time it is checked, so you should _not_ set the parent's background to specifically `null` any time it has `Background` shadows active. Any other non-`null` value is perfectly fine, but otherwise, the clipped shadows in that plane may end up drawing on the wrong background.
++ To be able to draw the clipped shadows in the `Background` plane, the parent `ViewGroup` itself must have a non-null background. If it does not have one at the time that such a shadow is added, a special library `object` is set automatically. For efficiency, this is the only time it is checked, so you should _not_ set the parent's background to specifically `null` any time it has `Background` shadows active. Any other non-null value is perfectly fine, but otherwise, the clipped shadows in that plane may end up drawing on the wrong background, possibly disappearing completely.
 
 + The layout inflation helpers' description and demonstration have been wholly removed to the wiki. They are a rather niche tool, unlikely of much use to others, and probably won't be updated any further, apart from possible minor maintenance.
 

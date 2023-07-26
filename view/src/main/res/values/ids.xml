@@ -4,8 +4,9 @@
     <item name="shadow_plane" type="id" />
     <item name="path_provider" type="id" />
 
-    <item name="shadow" type="id" />
+    <item name="clipped_shadow" type="id" />
     <item name="overlay_controller" type="id" />
+    <item name="inline_controller" type="id" />
     <item name="recycling_view_group_child" type="id" />
 
     <item name="tag_matchers" type="id" />

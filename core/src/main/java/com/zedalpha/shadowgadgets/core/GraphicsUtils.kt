@@ -5,12 +5,52 @@ import android.graphics.Canvas
 import android.graphics.Outline
 import android.graphics.Path
 import android.graphics.Rect
+import android.graphics.Region
 import android.os.Build
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
+
+fun getOutlineRect(outline: Outline, outRect: Rect) =
+    if (Build.VERSION.SDK_INT >= 24) {
+        OutlineRectHelper.getRect(outline, outRect)
+    } else {
+        OutlineRectReflector.getRect(outline, outRect)
+    }
+
+fun getOutlineRadius(outline: Outline): Float =
+    if (Build.VERSION.SDK_INT >= 24) {
+        OutlineRectHelper.getRadius(outline)
+    } else {
+        OutlineRectReflector.getRadius(outline)
+    }
+
+fun clipOutPath(canvas: Canvas, path: Path) {
+    if (Build.VERSION.SDK_INT >= 26) {
+        CanvasClipHelper.clipOutPath(canvas, path)
+    } else {
+        @Suppress("DEPRECATION")
+        canvas.clipPath(path, Region.Op.DIFFERENCE)
+    }
+}
+
+fun enableZ(canvas: Canvas) {
+    if (Build.VERSION.SDK_INT >= 29) {
+        CanvasZHelper.enableZ(canvas)
+    } else {
+        CanvasZReflector.enableZ(canvas)
+    }
+}
+
+fun disableZ(canvas: Canvas) {
+    if (Build.VERSION.SDK_INT >= 29) {
+        CanvasZHelper.disableZ(canvas)
+    } else {
+        CanvasZReflector.disableZ(canvas)
+    }
+}
 
 internal object OutlinePathReflector {
 
@@ -50,7 +90,7 @@ internal object OutlinePathReflector {
 }
 
 @RequiresApi(24)
-internal object OutlineRect24 {
+internal object OutlineRectHelper {
 
     @DoNotInline
     fun getRect(outline: Outline, rect: Rect) = outline.getRect(rect)
@@ -119,7 +159,7 @@ internal object OutlineRectReflector {
 }
 
 @RequiresApi(26)
-internal object CanvasClip26 {
+internal object CanvasClipHelper {
 
     @DoNotInline
     fun clipOutPath(canvas: Canvas, path: Path) {
@@ -128,7 +168,7 @@ internal object CanvasClip26 {
 }
 
 @RequiresApi(29)
-internal object CanvasZ29 {
+internal object CanvasZHelper {
 
     @DoNotInline
     fun enableZ(canvas: Canvas) {

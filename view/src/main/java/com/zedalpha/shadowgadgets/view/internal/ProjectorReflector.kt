@@ -1,4 +1,4 @@
-package com.zedalpha.shadowgadgets.view.shadow
+package com.zedalpha.shadowgadgets.view.internal
 
 import android.graphics.Canvas
 import android.os.Build
@@ -7,19 +7,19 @@ import java.lang.reflect.Method
 
 internal object ProjectorReflector {
 
-    private var create: Method? = null
+    private lateinit var create: Method
 
-    private var setClipToBounds: Method? = null
+    private lateinit var setClipToBounds: Method
 
-    private var setProjectBackwards: Method? = null
+    private lateinit var setProjectBackwards: Method
 
-    private var setPosition: Method? = null
+    private lateinit var setPosition: Method
 
-    private var start: Method? = null
+    private lateinit var start: Method
 
-    private var end: Method? = null
+    private lateinit var end: Method
 
-    private var drawRenderNode: Method? = null
+    private lateinit var drawRenderNode: Method
 
     val isAvailable = try {
         val renderNodeClass = Class.forName("android.view.RenderNode")
@@ -110,25 +110,25 @@ internal object ProjectorReflector {
             )
         }
 
-        val renderNode = create!!.invoke(null, "Projector", null)
-        setClipToBounds!!.invoke(renderNode, false)
-        setProjectBackwards!!.invoke(renderNode, true)
-        setPosition!!.invoke(renderNode, 0, 0, 0, 0)
-        val canvas = start!!.invoke(renderNode, 0, 0)
-        end!!.invoke(renderNode, canvas)
+        val renderNode = create.invoke(null, "Projector", null)
+        setClipToBounds.invoke(renderNode, false)
+        setProjectBackwards.invoke(renderNode, true)
+        setPosition.invoke(renderNode, 0, 0, 0, 0)
+        val canvas = start.invoke(renderNode, 0, 0)
+        end.invoke(renderNode, canvas)
         true
     } catch (e: Throwable) {
         false
     }
 
-    fun createRenderNode(): Any = create!!.invoke(null, "Projector", null)!!
+    fun createRenderNode(): Any = create.invoke(null, "Projector", null)!!
 
     fun setClipToBounds(renderNode: Any, clipToBounds: Boolean) {
-        setClipToBounds!!.invoke(renderNode, clipToBounds)
+        setClipToBounds.invoke(renderNode, clipToBounds)
     }
 
     fun setProjectBackwards(renderNode: Any, shouldProject: Boolean) {
-        setProjectBackwards!!.invoke(renderNode, shouldProject)
+        setProjectBackwards.invoke(renderNode, shouldProject)
     }
 
     fun setPosition(
@@ -138,18 +138,18 @@ internal object ProjectorReflector {
         right: Int,
         bottom: Int
     ) {
-        setPosition!!.invoke(renderNode, left, top, right, bottom)
+        setPosition.invoke(renderNode, left, top, right, bottom)
     }
 
     fun start(renderNode: Any, width: Int, height: Int): Canvas {
-        return start!!.invoke(renderNode, width, height) as Canvas
+        return start.invoke(renderNode, width, height) as Canvas
     }
 
     fun end(renderNode: Any, canvas: Canvas) {
-        end!!.invoke(renderNode, canvas)
+        end.invoke(renderNode, canvas)
     }
 
     fun drawRenderNode(canvas: Canvas, renderNode: Any) {
-        drawRenderNode!!.invoke(canvas, renderNode)
+        drawRenderNode.invoke(canvas, renderNode)
     }
 }

@@ -1,6 +1,7 @@
 package com.zedalpha.shadowgadgets.view.viewgroup
 
 import android.content.Context
+import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ExpandableListView
@@ -15,7 +16,12 @@ class ClippedShadowsRecyclerView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : RecyclerView(context, attrs), ClippedShadowsViewGroup {
 
-    private val manager = RecyclingShadowManager(this, attrs)
+    private val manager = RecyclingViewGroupManager(
+        this,
+        attrs,
+        this::detachAllViewsFromParent,
+        this::attachViewToParent
+    )
 
     override var clipAllChildShadows by manager::clipAllChildShadows
 
@@ -24,6 +30,19 @@ class ClippedShadowsRecyclerView @JvmOverloads constructor(
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.dispatchDraw { super.dispatchDraw(canvas) }
+    }
+
+    override fun drawChild(
+        canvas: Canvas,
+        child: View,
+        drawingTime: Long
+    ): Boolean {
+        manager.drawChild(canvas, child)
+        return super.drawChild(canvas, child, drawingTime)
     }
 }
 
@@ -35,7 +54,12 @@ class ClippedShadowsExpandableListView @JvmOverloads constructor(
 ) : ExpandableListView(context, attrs, defStyleAttr, defStyleRes),
     ClippedShadowsViewGroup {
 
-    private val manager = RecyclingShadowManager(this, attrs)
+    private val manager = RecyclingViewGroupManager(
+        this,
+        attrs,
+        this::detachAllViewsFromParent,
+        this::attachViewToParent
+    )
 
     override var clipAllChildShadows by manager::clipAllChildShadows
 
@@ -44,6 +68,19 @@ class ClippedShadowsExpandableListView @JvmOverloads constructor(
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.dispatchDraw { super.dispatchDraw(canvas) }
+    }
+
+    override fun drawChild(
+        canvas: Canvas,
+        child: View,
+        drawingTime: Long
+    ): Boolean {
+        manager.drawChild(canvas, child)
+        return super.drawChild(canvas, child, drawingTime)
     }
 }
 
@@ -55,7 +92,12 @@ class ClippedShadowsGridView @JvmOverloads constructor(
 ) : GridView(context, attrs, defStyleAttr, defStyleRes),
     ClippedShadowsViewGroup {
 
-    private val manager = RecyclingShadowManager(this, attrs)
+    private val manager = RecyclingViewGroupManager(
+        this,
+        attrs,
+        this::detachAllViewsFromParent,
+        this::attachViewToParent
+    )
 
     override var clipAllChildShadows by manager::clipAllChildShadows
 
@@ -64,6 +106,19 @@ class ClippedShadowsGridView @JvmOverloads constructor(
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.dispatchDraw { super.dispatchDraw(canvas) }
+    }
+
+    override fun drawChild(
+        canvas: Canvas,
+        child: View,
+        drawingTime: Long
+    ): Boolean {
+        manager.drawChild(canvas, child)
+        return super.drawChild(canvas, child, drawingTime)
     }
 }
 
@@ -75,7 +130,12 @@ class ClippedShadowsListView @JvmOverloads constructor(
 ) : ListView(context, attrs, defStyleAttr, defStyleRes),
     ClippedShadowsViewGroup {
 
-    private val manager = RecyclingShadowManager(this, attrs)
+    private val manager = RecyclingViewGroupManager(
+        this,
+        attrs,
+        this::detachAllViewsFromParent,
+        this::attachViewToParent
+    )
 
     override var clipAllChildShadows by manager::clipAllChildShadows
 
@@ -84,6 +144,19 @@ class ClippedShadowsListView @JvmOverloads constructor(
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.dispatchDraw { super.dispatchDraw(canvas) }
+    }
+
+    override fun drawChild(
+        canvas: Canvas,
+        child: View,
+        drawingTime: Long
+    ): Boolean {
+        manager.drawChild(canvas, child)
+        return super.drawChild(canvas, child, drawingTime)
     }
 }
 
@@ -95,7 +168,12 @@ class ClippedShadowStackView @JvmOverloads constructor(
 ) : StackView(context, attrs, defStyleAttr, defStyleRes),
     ClippedShadowsViewGroup {
 
-    private val manager = RecyclingShadowManager(this, attrs)
+    private val manager = RecyclingViewGroupManager(
+        this,
+        attrs,
+        this::detachAllViewsFromParent,
+        this::attachViewToParent
+    )
 
     override var clipAllChildShadows by manager::clipAllChildShadows
 
@@ -104,5 +182,18 @@ class ClippedShadowStackView @JvmOverloads constructor(
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.dispatchDraw { super.dispatchDraw(canvas) }
+    }
+
+    override fun drawChild(
+        canvas: Canvas,
+        child: View,
+        drawingTime: Long
+    ): Boolean {
+        manager.drawChild(canvas, child)
+        return super.drawChild(canvas, child, drawingTime)
     }
 }

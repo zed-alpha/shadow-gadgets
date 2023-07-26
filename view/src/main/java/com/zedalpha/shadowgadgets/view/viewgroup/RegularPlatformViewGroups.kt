@@ -1,6 +1,7 @@
 package com.zedalpha.shadowgadgets.view.viewgroup
 
 import android.content.Context
+import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -17,7 +18,12 @@ class ClippedShadowsFrameLayout @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes),
     ClippedShadowsViewGroup {
 
-    private val manager = RegularShadowManager(this, attrs)
+    private val manager = RegularViewGroupManager(
+        this,
+        attrs,
+        this::detachAllViewsFromParent,
+        this::attachViewToParent
+    )
 
     override var clipAllChildShadows by manager::clipAllChildShadows
 
@@ -28,14 +34,22 @@ class ClippedShadowsFrameLayout @JvmOverloads constructor(
         return super.generateLayoutParams(attrs)
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        manager.onAttachedToWindow()
-    }
-
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.dispatchDraw { super.dispatchDraw(canvas) }
+    }
+
+    override fun drawChild(
+        canvas: Canvas,
+        child: View,
+        drawingTime: Long
+    ): Boolean {
+        manager.drawChild(canvas, child)
+        return super.drawChild(canvas, child, drawingTime)
     }
 }
 
@@ -47,7 +61,12 @@ class ClippedShadowsLinearLayout @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr, defStyleRes),
     ClippedShadowsViewGroup {
 
-    private val manager = RegularShadowManager(this, attrs)
+    private val manager = RegularViewGroupManager(
+        this,
+        attrs,
+        this::detachAllViewsFromParent,
+        this::attachViewToParent
+    )
 
     override var clipAllChildShadows by manager::clipAllChildShadows
 
@@ -58,14 +77,22 @@ class ClippedShadowsLinearLayout @JvmOverloads constructor(
         return super.generateLayoutParams(attrs)
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        manager.onAttachedToWindow()
-    }
-
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.dispatchDraw { super.dispatchDraw(canvas) }
+    }
+
+    override fun drawChild(
+        canvas: Canvas,
+        child: View,
+        drawingTime: Long
+    ): Boolean {
+        manager.drawChild(canvas, child)
+        return super.drawChild(canvas, child, drawingTime)
     }
 }
 
@@ -74,7 +101,12 @@ class ClippedShadowRadioGroup @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : RadioGroup(context, attrs), ClippedShadowsViewGroup {
 
-    private val manager = RegularShadowManager(this, attrs)
+    private val manager = RegularViewGroupManager(
+        this,
+        attrs,
+        this::detachAllViewsFromParent,
+        this::attachViewToParent
+    )
 
     override var clipAllChildShadows by manager::clipAllChildShadows
 
@@ -85,14 +117,22 @@ class ClippedShadowRadioGroup @JvmOverloads constructor(
         return super.generateLayoutParams(attrs)
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        manager.onAttachedToWindow()
-    }
-
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.dispatchDraw { super.dispatchDraw(canvas) }
+    }
+
+    override fun drawChild(
+        canvas: Canvas,
+        child: View,
+        drawingTime: Long
+    ): Boolean {
+        manager.drawChild(canvas, child)
+        return super.drawChild(canvas, child, drawingTime)
     }
 }
 
@@ -104,7 +144,12 @@ class ClippedShadowsRelativeLayout @JvmOverloads constructor(
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes),
     ClippedShadowsViewGroup {
 
-    private val manager = RegularShadowManager(this, attrs)
+    private val manager = RegularViewGroupManager(
+        this,
+        attrs,
+        this::detachAllViewsFromParent,
+        this::attachViewToParent
+    )
 
     override var clipAllChildShadows by manager::clipAllChildShadows
 
@@ -115,13 +160,21 @@ class ClippedShadowsRelativeLayout @JvmOverloads constructor(
         return super.generateLayoutParams(attrs)
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        manager.onAttachedToWindow()
-    }
-
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        manager.dispatchDraw { super.dispatchDraw(canvas) }
+    }
+
+    override fun drawChild(
+        canvas: Canvas,
+        child: View,
+        drawingTime: Long
+    ): Boolean {
+        manager.drawChild(canvas, child)
+        return super.drawChild(canvas, child, drawingTime)
     }
 }

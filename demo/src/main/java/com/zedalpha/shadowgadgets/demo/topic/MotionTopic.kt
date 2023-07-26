@@ -23,27 +23,25 @@ internal object MotionTopic : Topic {
         override fun loadUi(view: View) {
             val ui = FragmentMotionBinding.bind(view)
 
-            ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
-                ui.motionView.clipOutlineShadow = isChecked
-                ui.fabStart.clipOutlineShadow = isChecked
-                ui.fabCenter.clipOutlineShadow = isChecked
-                ui.fabEnd.clipOutlineShadow = isChecked
-            }
-
-            // CoordinatorLayout dance
             val snackbar = Snackbar.make(
                 ui.fabStart,
                 "I'm translucent!",
                 Snackbar.LENGTH_SHORT
             )
-            snackbar.view.apply {
-                clipOutlineShadow = true
-                backgroundTintList =
-                    ContextCompat.getColorStateList(
-                        requireContext(),
-                        R.color.see_through_deep_blue
-                    )
+            snackbar.view.backgroundTintList =
+                ContextCompat.getColorStateList(
+                    requireContext(),
+                    R.color.see_through_deep_blue
+                )
+
+            ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
+                ui.motionView.clipOutlineShadow = isChecked
+                ui.fabStart.clipOutlineShadow = isChecked
+                ui.fabCenter.clipOutlineShadow = isChecked
+                ui.fabEnd.clipOutlineShadow = isChecked
+                snackbar.view.clipOutlineShadow = isChecked
             }
+
             fun setShown(shown: Boolean) {
                 if (shown) {
                     ui.fabStart.show(); ui.fabCenter.show(); ui.fabEnd.show()
@@ -66,6 +64,7 @@ internal object MotionTopic : Topic {
                     }
                 }
             }
+
             ui.fabStart.setOnClickListener {
                 snackbar.duration = Snackbar.LENGTH_SHORT
                 snackbar.removeCallback(callback)

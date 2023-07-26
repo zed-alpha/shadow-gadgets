@@ -4,11 +4,13 @@ import android.graphics.Canvas
 import android.view.ViewGroup
 import android.view.ViewGroupOverlay
 import androidx.annotation.CallSuper
+import com.zedalpha.shadowgadgets.view.internal.BaseDrawable
+import com.zedalpha.shadowgadgets.view.internal.Projector
 
 
-internal open class DrawPlane(protected val parentView: ViewGroup) {
+internal open class OverlayPlane(protected val parentView: ViewGroup) {
 
-    protected val planeShadows = mutableListOf<OverlayShadow>()
+    protected val planeShadows = mutableListOf<GroupShadow>()
 
     protected val planeDrawable = object : BaseDrawable() {
         override fun draw(canvas: Canvas) {
@@ -16,12 +18,12 @@ internal open class DrawPlane(protected val parentView: ViewGroup) {
         }
     }
 
-    fun addShadow(shadow: OverlayShadow) {
+    fun showShadow(shadow: GroupShadow) {
         if (planeShadows.isEmpty()) attachToOverlay(parentView.overlay)
         planeShadows += shadow
     }
 
-    fun removeShadow(shadow: OverlayShadow) {
+    fun hideShadow(shadow: GroupShadow) {
         planeShadows -= shadow
         if (planeShadows.isEmpty()) detachFromOverlay(parentView.overlay)
     }
@@ -52,22 +54,23 @@ internal open class DrawPlane(protected val parentView: ViewGroup) {
     }
 }
 
-internal class BackgroundDrawPlane(
+internal class BackgroundOverlayPlane(
     parentView: ViewGroup
-) : DrawPlane(parentView) {
+) : OverlayPlane(parentView) {
 
     private val projector = Projector(parentView.context, planeDrawable)
 
     override fun attachToOverlay(overlay: ViewGroupOverlay) {
         projector.addToOverlay(overlay)
-        if (parentView.background == null) {
+        if (parentView.background === null) {
             parentView.background = EmptyDrawable
         }
+        parentView.postInvalidate()
     }
 
     override fun detachFromOverlay(overlay: ViewGroupOverlay) {
         projector.removeFromOverlay(overlay)
-        if (parentView.background == EmptyDrawable) {
+        if (parentView.background === EmptyDrawable) {
             parentView.background = null
         }
     }

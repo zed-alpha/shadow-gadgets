@@ -11,8 +11,7 @@ internal class SlantGridDrawable(
     private val columns: Int = 19
 ) : Drawable() {
 
-    private val paint =
-        Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     override fun onBoundsChange(bounds: Rect) {
         paint.shader = LinearGradient(

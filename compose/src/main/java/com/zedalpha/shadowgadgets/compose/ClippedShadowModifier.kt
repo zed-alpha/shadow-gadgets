@@ -21,7 +21,7 @@ fun Modifier.clippedShadow(
 ) = if (elevation.value <= 0F) this else composed(
     factory = {
         val localView = LocalView.current
-        val shadow = remember { ComposeClippedShadow(localView) }
+        val shadow = remember(localView) { ComposeClippedShadow(localView) }
         DisposableEffect(localView) { onDispose { shadow.dispose() } }
         drawBehind {
             with(shadow) { draw(elevation, shape, ambientColor, spotColor) }

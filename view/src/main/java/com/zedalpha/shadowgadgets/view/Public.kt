@@ -6,7 +6,7 @@ import com.zedalpha.shadowgadgets.view.ClippedShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.view.internal.MaterialShapeDrawableReflector
 import com.zedalpha.shadowgadgets.view.internal.findMaterialShapeDrawable
 import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
-import com.zedalpha.shadowgadgets.view.shadow.recreateShadow
+import com.zedalpha.shadowgadgets.view.shadow.recreateClippedShadow
 
 
 var View.clipOutlineShadow: Boolean
@@ -23,19 +23,19 @@ var View.clippedShadowPlane: ClippedShadowPlane
     set(value) {
         if (value == clippedShadowPlane) return
         setTag(R.id.shadow_plane, value)
-        recreateShadow()
+        recreateClippedShadow()
     }
 
 enum class ClippedShadowPlane {
 
-    Foreground, Background;
-
-    val otherPlane: ClippedShadowPlane
-        get() = if (this == Foreground) Background else Foreground
+    Foreground, Background, Inline;
 
     internal companion object {
-        fun forValue(value: Int) =
-            if (value == 1) Background else Foreground
+        fun forValue(value: Int) = when (value) {
+            1 -> Background
+            2 -> Inline
+            else -> Foreground
+        }
     }
 }
 
@@ -45,7 +45,7 @@ var View.pathProvider: ViewPathProvider?
     set(value) {
         if (value == pathProvider) return
         setTag(R.id.path_provider, value)
-        recreateShadow()
+        recreateClippedShadow()
     }
 
 fun interface ViewPathProvider {

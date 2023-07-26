@@ -12,11 +12,10 @@
         android:id="@+id/clip_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="4dp"
         android:background="@color/hazy_white"
-        android:text="Clip shadows"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="Clip shadows" />
 
     <androidx.constraintlayout.motion.widget.MotionLayout
         android:layout_width="match_parent"
@@ -25,22 +24,48 @@
         android:clipChildren="false"
         app:layoutDescription="@xml/motions">
 
+        <View
+            android:id="@+id/left_view_top"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/light_light_gray"
+            app:layout_constraintBottom_toTopOf="@id/horizontal"
+            app:layout_constraintEnd_toStartOf="@id/vertical_left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical"
+            android:id="@+id/vertical_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.33" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.5" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.67" />
+
         <View
-            android:id="@+id/dummy"
+            android:id="@+id/right_view_top"
             android:layout_width="0dp"
-            android:layout_height="80dp"
+            android:layout_height="0dp"
             android:background="@color/light_light_gray"
+            android:elevation="40dp"
+            android:outlineProvider="none"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/vertical"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/vertical_right"
+            app:layout_constraintTop_toBottomOf="@id/horizontal" />
 
         <View
             android:id="@+id/motion_view"
@@ -48,8 +73,8 @@
             android:layout_height="56dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:backgroundTint="@color/whisper_gray"
-            android:backgroundTintMode="multiply"
+            android:backgroundTint="@color/see_through_blue"
+            android:backgroundTintMode="src_in"
             android:elevation="30dp" />
 
     </androidx.constraintlayout.motion.widget.MotionLayout>
@@ -70,6 +95,7 @@
             android:id="@+id/foreground_radio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:checked="true"
             android:text="Foreground" />
 
@@ -78,42 +104,66 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:layout_weight="1"
             android:text="Background" />
+
+        <RadioButton
+            android:id="@+id/inline_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
+            android:text="Inline" />
 
     </RadioGroup>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:clipChildren="false">
 
         <View
-            android:id="@+id/blue_view"
-            android:layout_width="200dp"
-            android:layout_height="60dp"
+            android:id="@+id/left_view_bottom"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/background_target"
+            android:backgroundTint="@color/light_light_gray"
+            android:elevation="10dp"
+            app:layout_constraintBottom_toTopOf="@id/right_view_bottom"
+            app:layout_constraintEnd_toStartOf="@id/right_view_bottom"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/center_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="60dp"
+            android:layout_marginVertical="30dp"
             android:background="@drawable/background_target"
             android:backgroundTint="@color/see_through_blue"
+            android:elevation="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/right_view_bottom"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/background_target"
+            android:backgroundTint="@color/light_light_gray"
             android:elevation="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.3"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5" />
-
-        <View
-            android:id="@+id/red_view"
-            android:layout_width="200dp"
-            android:layout_height="60dp"
-            android:background="@drawable/background_target"
-            android:backgroundTint="@color/red"
-            android:elevation="25dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.7"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.7" />
+            app:layout_constraintStart_toEndOf="@id/left_view_bottom"
+            app:layout_constraintTop_toBottomOf="@id/left_view_bottom" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

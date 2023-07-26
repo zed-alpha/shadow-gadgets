@@ -61,8 +61,6 @@ internal object DrawableTopic : Topic {
 private class DemoClippedShadowDrawable(view: View) :
     ClippedShadowDrawable(view) {
 
-    private val outline = Outline().apply { alpha = 1.0F }
-
     private val path = Path()
 
     init {
@@ -77,7 +75,8 @@ private class DemoClippedShadowDrawable(view: View) :
         translationX = (bounds.width() - sideLength) / 2F
         translationY = (bounds.height() - sideLength) / 2F
 
-        if (Build.VERSION.SDK_INT >= 30) {  // Not risking/handling a crash on Q
+        val outline = Outline()
+        if (Build.VERSION.SDK_INT >= 30) {
             path.setToPuzzlePiece(sideLength)
             outline.setPath(path)
         } else {
@@ -85,6 +84,7 @@ private class DemoClippedShadowDrawable(view: View) :
             @Suppress("DEPRECATION")
             outline.setConvexPath(path)
         }
+        outline.alpha = 1.0F
         setOutline(outline)
     }
 }

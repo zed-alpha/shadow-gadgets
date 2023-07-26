@@ -6,6 +6,7 @@
         <attr name="clippedShadowPlane" format="enum">
             <enum name="foreground" value="0" />
             <enum name="background" value="1" />
+            <enum name="inline" value="2" />
         </attr>
     </declare-styleable>
 
@@ -14,6 +15,7 @@
         <attr name="childClippedShadowsPlane" format="enum">
             <enum name="foreground" value="0" />
             <enum name="background" value="1" />
+            <enum name="inline" value="2" />
         </attr>
     </declare-styleable>
 

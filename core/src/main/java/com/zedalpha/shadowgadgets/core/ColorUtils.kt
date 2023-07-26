@@ -10,7 +10,7 @@ import androidx.annotation.RequiresApi
 const val DefaultShadowColorInt = Color.BLACK
 
 @RequiresApi(28)
-object ViewShadowColors28 {
+object ViewShadowColorsHelper {
 
     @DoNotInline
     fun getAmbientColor(view: View) = view.outlineAmbientShadowColor

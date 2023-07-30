@@ -1,5 +1,6 @@
 package com.zedalpha.shadowgadgets.core
 
+import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Outline
@@ -7,28 +8,21 @@ import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.view.View
-import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
-import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
-sealed class ClippedShadow : Shadow {
+class ClippedShadow private constructor(
+    private val shadow: Shadow,
+    private val pathProvider: PathProvider?
+) : Shadow by shadow {
 
-    companion object {
+    constructor(
+        ownerView: View,
+        pathProvider: PathProvider?,
+        forceViewType: Boolean = false
+    ) : this(Shadow(ownerView, forceViewType), pathProvider)
 
-        fun newInstance(
-            ownerView: View,
-            forceViewType: Boolean = false
-        ) = if (RenderNodeFactory.isOpenForBusiness && !forceViewType) {
-            RenderNodeClippedShadow()
-        } else {
-            ViewClippedShadow(ownerView)
-        }
-
-        @RequiresApi(29)
-        fun newInstance(): ClippedShadow = RenderNodeClippedShadow()
-    }
-
-    protected val shadowOutline = Outline()
+    @RequiresApi(29)
+    constructor(pathProvider: PathProvider?) : this(Shadow(), pathProvider)
 
     private val clipPath = Path()
 
@@ -40,34 +34,31 @@ sealed class ClippedShadow : Shadow {
 
     private val tmpMatrix = Matrix()
 
-    var pathProvider: PathProvider? = null
-
-    @CallSuper
     override fun setOutline(outline: Outline?) {
-        val clipPath = clipPath
-        val shadowOutline = shadowOutline
+        shadow.setOutline(outline)
+        calculateClipPath(clipPath, shadow.outline)
+    }
 
-        clipPath.reset()
-        if (outline != null) {
-            shadowOutline.set(outline)
+    private fun calculateClipPath(path: Path, outline: Outline) {
+        path.reset()
+        if (!outline.isEmpty) {
             val bounds = tmpRect
-            if (getOutlineRect(shadowOutline, bounds) && !bounds.isEmpty) {
+            if (getOutlineRect(outline, bounds) && !bounds.isEmpty) {
                 val boundsF = tmpRectF; boundsF.set(bounds)
-                val outlineRadius = getOutlineRadius(shadowOutline)
-                clipPath.addRoundRect(
+                val outlineRadius = getOutlineRadius(outline)
+                path.addRoundRect(
                     boundsF,
                     outlineRadius,
                     outlineRadius,
                     Path.Direction.CW
                 )
-            } else if (!OutlinePathReflector.getPath(clipPath, shadowOutline)) {
-                pathProvider?.getPath(clipPath)
+            } else if (!OutlinePathReflector.getPath(path, outline)) {
+                pathProvider?.getPath(path)
             }
-        } else {
-            shadowOutline.setEmpty()
         }
     }
 
+    @SuppressLint("WrongConstant")
     override fun draw(canvas: Canvas) {
         if (!canvas.isHardwareAccelerated || clipPath.isEmpty) return
 
@@ -80,16 +71,7 @@ sealed class ClippedShadow : Shadow {
 
         canvas.save()
         clipOutPath(canvas, tmpPath)
-        enableZ(canvas)
-        onDraw(canvas)
-        disableZ(canvas)
+        shadow.draw(canvas)
         canvas.restore()
-    }
-
-    protected abstract fun onDraw(canvas: Canvas)
-
-    @CallSuper
-    open fun dispose() {
-        pathProvider = null
     }
 }

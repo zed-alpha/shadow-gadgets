@@ -1,6 +1,5 @@
 package com.zedalpha.shadowgadgets.compose
 
-import android.os.Build
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -14,35 +13,23 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Dp
 
-fun Modifier.clippedShadow(
+fun Modifier.colorShadow(
     elevation: Dp,
     shape: Shape = RectangleShape,
-    ambientColor: Color = DefaultShadowColor,
-    spotColor: Color = DefaultShadowColor,
-    compatColor: Color = DefaultShadowColor,
-    forceCompatColor: Boolean = false
+    color: Color = DefaultShadowColor
 ) = if (elevation.value <= 0F) this else composed(
     factory = {
         val localView = LocalView.current
-        val shadow = remember(localView) { ComposeShadow(localView, true) }
+        val shadow = remember(localView) { ComposeShadow(localView, false) }
         DisposableEffect(localView) { onDispose { shadow.dispose() } }
-
-        val useCompat = Build.VERSION.SDK_INT < 28 || forceCompatColor
-        val ambient = if (useCompat) DefaultShadowColor else ambientColor
-        val spot = if (useCompat) DefaultShadowColor else spotColor
-        val filter = if (useCompat) compatColor else DefaultShadowColor
-
         drawBehind {
-            with(shadow) { draw(elevation, shape, ambient, spot, filter) }
+            with(shadow) { draw(elevation, shape, filterColor = color) }
         }
     },
     inspectorInfo = debugInspectorInfo {
-        name = "clippedShadow"
+        name = "colorShadow"
         properties["elevation"] = elevation
         properties["shape"] = shape
-        properties["ambientColor"] = ambientColor
-        properties["spotColor"] = spotColor
-        properties["compatColor"] = compatColor
-        properties["forceCompatColor"] = forceCompatColor
+        properties["color"] = color
     }
 )

@@ -27,6 +27,8 @@ class ClippedShadowsRecyclerView @JvmOverloads constructor(
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
 
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
@@ -64,6 +66,8 @@ class ClippedShadowsExpandableListView @JvmOverloads constructor(
     override var clipAllChildShadows by manager::clipAllChildShadows
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
+
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
 
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
@@ -103,6 +107,8 @@ class ClippedShadowsGridView @JvmOverloads constructor(
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
 
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
@@ -141,6 +147,8 @@ class ClippedShadowsListView @JvmOverloads constructor(
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
 
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)
         manager.onViewAdded(child)
@@ -178,6 +186,8 @@ class ClippedShadowStackView @JvmOverloads constructor(
     override var clipAllChildShadows by manager::clipAllChildShadows
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
+
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
 
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)

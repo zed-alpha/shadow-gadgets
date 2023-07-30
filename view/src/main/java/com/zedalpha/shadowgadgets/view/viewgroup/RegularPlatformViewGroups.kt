@@ -29,6 +29,8 @@ class ClippedShadowsFrameLayout @JvmOverloads constructor(
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
 
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         manager.generateLayoutParams(attrs)
         return super.generateLayoutParams(attrs)
@@ -72,6 +74,8 @@ class ClippedShadowsLinearLayout @JvmOverloads constructor(
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
 
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         manager.generateLayoutParams(attrs)
         return super.generateLayoutParams(attrs)
@@ -111,6 +115,8 @@ class ClippedShadowRadioGroup @JvmOverloads constructor(
     override var clipAllChildShadows by manager::clipAllChildShadows
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
+
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
 
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         manager.generateLayoutParams(attrs)
@@ -154,6 +160,8 @@ class ClippedShadowsRelativeLayout @JvmOverloads constructor(
     override var clipAllChildShadows by manager::clipAllChildShadows
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
+
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
 
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         manager.generateLayoutParams(attrs)

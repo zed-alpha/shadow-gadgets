@@ -29,6 +29,8 @@ class ClippedShadowsChipGroup @JvmOverloads constructor(
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
 
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+
     override fun generateLayoutParams(attrs: AttributeSet?): ViewGroup.LayoutParams {
         manager.generateLayoutParams(attrs)
         return super.generateLayoutParams(attrs)
@@ -72,6 +74,8 @@ class ClippedShadowsConstraintLayout @JvmOverloads constructor(
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
 
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         manager.generateLayoutParams(attrs)
         return super.generateLayoutParams(attrs)
@@ -112,6 +116,8 @@ class ClippedShadowsCoordinatorLayout @JvmOverloads constructor(
     override var clipAllChildShadows by manager::clipAllChildShadows
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
+
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
 
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         manager.generateLayoutParams(attrs)
@@ -155,6 +161,8 @@ class ClippedShadowsMaterialButtonToggleGroup @JvmOverloads constructor(
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
 
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         manager.generateLayoutParams(attrs)
         return super.generateLayoutParams(attrs)
@@ -195,6 +203,8 @@ class ClippedShadowsMotionLayout @JvmOverloads constructor(
     override var clipAllChildShadows by manager::clipAllChildShadows
 
     override var childClippedShadowsPlane by manager::childClippedShadowsPlane
+
+    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
 
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         manager.generateLayoutParams(attrs)

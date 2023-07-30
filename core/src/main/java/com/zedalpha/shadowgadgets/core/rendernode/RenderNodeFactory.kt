@@ -1,28 +1,8 @@
 package com.zedalpha.shadowgadgets.core.rendernode
 
-import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Outline
 import android.os.Build
-import com.zedalpha.shadowgadgets.core.Shadow
-
-
-sealed interface RenderNodeWrapper : Shadow {
-
-    fun setClipToBounds(clipToBounds: Boolean): Boolean
-
-    fun setProjectBackwards(shouldProject: Boolean): Boolean
-
-    fun setProjectionReceiver(shouldReceive: Boolean): Boolean
-
-    fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Boolean
-
-    fun beginRecording(width: Int, height: Int): Canvas
-
-    fun endRecording(canvas: Canvas)
-
-    fun hasDisplayList(): Boolean
-}
 
 object RenderNodeFactory {
 

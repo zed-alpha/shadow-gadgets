@@ -8,6 +8,8 @@
             <enum name="background" value="1" />
             <enum name="inline" value="2" />
         </attr>
+        <attr name="outlineShadowColorCompat" format="color" />
+        <attr name="forceShadowColorCompat" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ClippedShadowsViewGroup">
@@ -17,6 +19,7 @@
             <enum name="background" value="1" />
             <enum name="inline" value="2" />
         </attr>
+        <attr name="ignoreInlineChildShadows" format="boolean" />
     </declare-styleable>
 
     <attr name="shadowTagMatchers" format="reference" />

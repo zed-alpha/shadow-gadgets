@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.appcompat.graphics.drawable.DrawableWrapperCompat
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentDrawableBinding
 import com.zedalpha.shadowgadgets.view.ClippedShadowDrawable
@@ -59,33 +60,46 @@ internal object DrawableTopic : Topic {
 }
 
 private class DemoClippedShadowDrawable(view: View) :
-    ClippedShadowDrawable(view) {
+    DrawableWrapperCompat(null) {
 
     private val path = Path()
 
+    @Suppress("MoveLambdaOutsideParentheses")
+    private val shadowDrawable = ClippedShadowDrawable(view, { it.set(path) })
+
     init {
-        elevation = 40F
-        setPathProvider { it.set(path) }
+        drawable = shadowDrawable
+        shadowDrawable.elevation = 40F
     }
+
+    var rotationZ by shadowDrawable::rotationZ
 
     override fun onBoundsChange(bounds: Rect) {
         val sideLength = 0.5F * minOf(bounds.width(), bounds.height())
-        pivotX = sideLength / 2F
-        pivotY = sideLength / 2F
-        translationX = (bounds.width() - sideLength) / 2F
-        translationY = (bounds.height() - sideLength) / 2F
+        shadowDrawable.apply {
+            pivotX = sideLength / 2F
+            shadowDrawable.apply {
+                pivotY = sideLength / 2F
+                translationX = (bounds.width() - sideLength) / 2F
+                translationY = (bounds.height() - sideLength) / 2F
+            }
 
-        val outline = Outline()
-        if (Build.VERSION.SDK_INT >= 30) {
-            path.setToPuzzlePiece(sideLength)
-            outline.setPath(path)
-        } else {
-            path.setToCompassPointer(sideLength)
-            @Suppress("DEPRECATION")
-            outline.setConvexPath(path)
+            val outline = Outline()
+            if (Build.VERSION.SDK_INT >= 30) {
+                path.setToPuzzlePiece(sideLength)
+                outline.setPath(path)
+            } else {
+                path.setToCompassPointer(sideLength)
+                @Suppress("DEPRECATION")
+                outline.setConvexPath(path)
+            }
+            outline.alpha = 1.0F
+            setOutline(outline)
         }
-        outline.alpha = 1.0F
-        setOutline(outline)
+    }
+
+    fun dispose() {
+        shadowDrawable.dispose()
     }
 }
 

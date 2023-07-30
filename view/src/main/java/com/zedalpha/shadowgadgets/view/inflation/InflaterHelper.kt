@@ -10,7 +10,9 @@ import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.*
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.clippedShadowPlane
+import com.zedalpha.shadowgadgets.view.forceShadowColorCompat
 import com.zedalpha.shadowgadgets.view.internal.extractShadowAttributes
+import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import java.lang.reflect.Array
 
 
@@ -34,14 +36,14 @@ internal class ShadowHelper(
         }
         if (view != null) {
             val attributes = attrs.extractShadowAttributes(context)
-            if (
-                attributes.clipOutlineShadow == true ||
+            if (attributes.clipOutlineShadow ||
                 checkMatchers(view, name, attrs)
             ) {
+                view.outlineShadowColorCompat =
+                    attributes.outlineShadowColorCompat
+                view.forceShadowColorCompat = attributes.forceShadowColorCompat
+                view.clippedShadowPlane = attributes.clippedShadowPlane
                 view.clipOutlineShadow = true
-                attributes.clippedShadowPlane?.let {
-                    view.clippedShadowPlane = it
-                }
             }
         }
         return view

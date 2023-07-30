@@ -5,8 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.clippedShadowPlane
+import com.zedalpha.shadowgadgets.view.forceShadowColorCompat
 import com.zedalpha.shadowgadgets.view.internal.ClippedShadowAttributes
 import com.zedalpha.shadowgadgets.view.internal.extractShadowAttributes
+import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 
 internal class RegularViewGroupManager(
     parentView: ViewGroup,
@@ -39,13 +41,21 @@ internal class RegularViewGroupManager(
     override fun onViewAdded(child: View) {
         if (unattached) {
             val attributes = xmlAttributes?.remove(child.id)
-
-            val plane =
-                attributes?.clippedShadowPlane ?: childClippedShadowsPlane
-            plane?.let { child.clippedShadowPlane = it }
-
-            val clip = attributes?.clipOutlineShadow ?: clipAllChildShadows
-            clip?.let { child.clipOutlineShadow = it }
+            if (attributes != null) {
+                child.outlineShadowColorCompat =
+                    attributes.outlineShadowColorCompat
+                child.forceShadowColorCompat =
+                    attributes.forceShadowColorCompat
+                child.clippedShadowPlane =
+                    attributes.clippedShadowPlane
+                child.clipOutlineShadow =
+                    attributes.clipOutlineShadow
+            } else {
+                if (planeSet) child.clippedShadowPlane =
+                    childClippedShadowsPlane
+                if (clipSet) child.clipOutlineShadow =
+                    clipAllChildShadows
+            }
         }
     }
 }

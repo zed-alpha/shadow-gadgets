@@ -2,8 +2,9 @@ package com.zedalpha.shadowgadgets.view.shadow
 
 import android.view.View
 import android.view.ViewGroup
-import com.zedalpha.shadowgadgets.view.ClippedShadowPlane
+import com.zedalpha.shadowgadgets.view.ClippedShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.view.R
+import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.clippedShadowPlane
 
 
@@ -31,13 +32,15 @@ internal class OverlayController(parentView: ViewGroup) :
         parentView.removeOnLayoutChangeListener(layoutListener)
     }
 
-    override fun createShadow(target: View): GroupShadow {
-        val plane = when (target.clippedShadowPlane) {
-            ClippedShadowPlane.Foreground -> foregroundPlane
-            else -> backgroundPlane
+    override fun createShadow(target: View) = GroupShadow(
+        target,
+        this,
+        if (target.run { clipOutlineShadow && clippedShadowPlane == Foreground }) {
+            foregroundPlane
+        } else {
+            backgroundPlane
         }
-        return GroupShadow(target, this, plane)
-    }
+    )
 
     override fun onPreDraw() {
         backgroundPlane.checkInvalidate()

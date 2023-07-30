@@ -11,15 +11,16 @@ import com.zedalpha.shadowgadgets.view.BuildConfig
 import com.zedalpha.shadowgadgets.view.internal.BaseDrawable
 
 
-internal class IndependentShadow(targetView: View) :
-    ClippedViewShadow(targetView) {
+internal class IndependentShadow(
+    targetView: View
+) : ViewShadow(targetView) {
 
     private val isShown = canDrawAround(targetView)
 
     private val shadowDrawable = object : BaseDrawable() {
         override fun draw(canvas: Canvas) {
             update()
-            clippedShadow.draw(canvas)
+            shadow.draw(canvas)
         }
     }
 
@@ -47,7 +48,7 @@ internal class IndependentShadow(targetView: View) :
 
     private fun checkInvalidate(): Boolean {
         val target = targetView
-        val shadow = clippedShadow
+        val shadow = shadow
 
         if (shadow.alpha != target.alpha) return true
         if (shadow.cameraDistance != target.cameraDistance) return true
@@ -66,7 +67,7 @@ internal class IndependentShadow(targetView: View) :
 
     private fun update() {
         val target = targetView
-        val shadow = clippedShadow
+        val shadow = shadow
 
         shadow.alpha = target.alpha
         shadow.cameraDistance = target.cameraDistance
@@ -82,12 +83,14 @@ internal class IndependentShadow(targetView: View) :
 }
 
 private fun canDrawAround(targetView: View): Boolean {
+    val badVersion = Build.VERSION.SDK_INT in 24..28
     val clipChildren = (targetView.parent as? ViewGroup)?.clipChildren == true
     val clipToOutline = targetView.clipToOutline
-    return if (clipToOutline || clipChildren) {
+    return if (badVersion || clipChildren || clipToOutline) {
         if (BuildConfig.DEBUG) {
             val message = buildString {
                 append("Inline shadow on ${targetView.debugName}: Added ")
+                if (badVersion) append("in non-library or ignoreInlineChildShadows parent, API 24..28")
                 if (clipChildren) append("in parent with clipChildren=true")
                 if (clipChildren && clipToOutline) append(", and ")
                 if (clipToOutline) append("on target with clipToOutline=true")

@@ -4,37 +4,24 @@ import android.graphics.Canvas
 import android.graphics.ColorFilter
 import android.graphics.Matrix
 import android.graphics.Outline
-import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
-import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
+import com.zedalpha.shadowgadgets.core.Shadow
 import com.zedalpha.shadowgadgets.core.ShadowColorFilter
 import kotlin.math.roundToInt
-import com.zedalpha.shadowgadgets.core.PathProvider as CorePathProvider
 
-open class ClippedShadowDrawable private constructor(
-    private val clippedShadow: ClippedShadow
+class ShadowDrawable private constructor(
+    private val shadow: Shadow
 ) : Drawable() {
 
-    fun interface PathProvider {
-        fun getPath(path: Path)
-    }
-
-    companion object {
-        internal fun PathProvider.toCoreProvider() =
-            CorePathProvider { getPath(it) }
-    }
-
-    constructor(ownerView: View, provider: PathProvider? = null) :
-            this(ClippedShadow(ownerView, provider?.toCoreProvider()))
+    constructor(ownerView: View) : this(Shadow(ownerView))
 
     @RequiresApi(29)
-    constructor(provider: PathProvider? = null) :
-            this(ClippedShadow(provider?.toCoreProvider()))
+    constructor() : this(Shadow())
 
     private var colorFilter: ShadowColorFilter? = null
 
@@ -54,121 +41,121 @@ open class ClippedShadowDrawable private constructor(
         }
 
     override fun setAlpha(alpha: Int) {
-        clippedShadow.alpha = alpha / 255F
+        shadow.alpha = alpha / 255F
     }
 
     override fun getAlpha(): Int {
-        return (255 * clippedShadow.alpha).roundToInt()
+        return (255 * shadow.alpha).roundToInt()
     }
 
     var cameraDistance: Float
-        get() = clippedShadow.cameraDistance
+        get() = shadow.cameraDistance
         set(value) {
-            clippedShadow.cameraDistance = value
+            shadow.cameraDistance = value
         }
 
     var elevation: Float
-        get() = clippedShadow.elevation
+        get() = shadow.elevation
         set(value) {
-            clippedShadow.elevation = value
+            shadow.elevation = value
         }
 
     var pivotX: Float
-        get() = clippedShadow.pivotX
+        get() = shadow.pivotX
         set(value) {
-            clippedShadow.pivotX = value
+            shadow.pivotX = value
         }
 
     var pivotY: Float
-        get() = clippedShadow.pivotY
+        get() = shadow.pivotY
         set(value) {
-            clippedShadow.pivotY = value
+            shadow.pivotY = value
         }
 
     var rotationX: Float
-        get() = clippedShadow.rotationX
+        get() = shadow.rotationX
         set(value) {
-            clippedShadow.rotationX = value
+            shadow.rotationX = value
         }
 
     var rotationY: Float
-        get() = clippedShadow.rotationY
+        get() = shadow.rotationY
         set(value) {
-            clippedShadow.rotationY = value
+            shadow.rotationY = value
         }
 
     var rotationZ: Float
-        get() = clippedShadow.rotationZ
+        get() = shadow.rotationZ
         set(value) {
-            clippedShadow.rotationZ = value
+            shadow.rotationZ = value
         }
 
     var scaleX: Float
-        get() = clippedShadow.scaleX
+        get() = shadow.scaleX
         set(value) {
-            clippedShadow.scaleX = value
+            shadow.scaleX = value
         }
 
     var scaleY: Float
-        get() = clippedShadow.scaleY
+        get() = shadow.scaleY
         set(value) {
-            clippedShadow.scaleY = value
+            shadow.scaleY = value
         }
 
     var translationX: Float
-        get() = clippedShadow.translationX
+        get() = shadow.translationX
         set(value) {
-            clippedShadow.translationX = value
+            shadow.translationX = value
         }
 
     var translationY: Float
-        get() = clippedShadow.translationY
+        get() = shadow.translationY
         set(value) {
-            clippedShadow.translationY = value
+            shadow.translationY = value
         }
 
     var translationZ: Float
-        get() = clippedShadow.translationZ
+        get() = shadow.translationZ
         set(value) {
-            clippedShadow.translationZ = value
+            shadow.translationZ = value
         }
 
     @get:ColorInt
     @setparam:ColorInt
     var ambientColor: Int
-        get() = clippedShadow.ambientColor
+        get() = shadow.ambientColor
         set(value) {
-            clippedShadow.ambientColor = value
+            shadow.ambientColor = value
         }
 
     @get:ColorInt
     @setparam:ColorInt
     var spotColor: Int
-        get() = clippedShadow.spotColor
+        get() = shadow.spotColor
         set(value) {
-            clippedShadow.spotColor = value
+            shadow.spotColor = value
         }
 
     fun hasIdentityMatrix(): Boolean =
-        clippedShadow.hasIdentityMatrix()
+        shadow.hasIdentityMatrix()
 
     fun getMatrix(outMatrix: Matrix) {
-        clippedShadow.getMatrix(outMatrix)
+        shadow.getMatrix(outMatrix)
     }
 
     fun setOutline(outline: Outline?) {
-        clippedShadow.setOutline(outline)
+        shadow.setOutline(outline)
     }
 
     override fun draw(canvas: Canvas) {
         when (val filter = colorFilter) {
-            null -> clippedShadow.draw(canvas)
-            else -> filter.draw(canvas, clippedShadow)
+            null -> shadow.draw(canvas)
+            else -> filter.draw(canvas, shadow)
         }
     }
 
     fun dispose() {
-        clippedShadow.dispose()
+        shadow.dispose()
     }
 
     @Suppress("OVERRIDE_DEPRECATION")

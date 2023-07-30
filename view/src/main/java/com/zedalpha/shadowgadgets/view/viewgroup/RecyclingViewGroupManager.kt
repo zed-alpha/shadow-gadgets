@@ -28,12 +28,12 @@ internal class RecyclingViewGroupManager(
     override fun onViewAdded(child: View) {
         if (!child.isRecyclingViewGroupChild) {
             child.isRecyclingViewGroupChild = true
-            childClippedShadowsPlane?.let { child.clippedShadowPlane = it }
+            if (planeSet) child.clippedShadowPlane = childClippedShadowsPlane
             child.clipOutlineShadow = true
         }
     }
 }
 
 internal var View.isRecyclingViewGroupChild: Boolean
-    get() = getTag(R.id.recycling_view_group_child) == true
-    private set(value) = setTag(R.id.recycling_view_group_child, value)
+    get() = getTag(R.id.is_recycling_view_group_child) == true
+    private set(value) = setTag(R.id.is_recycling_view_group_child, value)

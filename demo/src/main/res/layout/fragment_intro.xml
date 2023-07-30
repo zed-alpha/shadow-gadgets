@@ -113,7 +113,6 @@
             android:id="@+id/shadow_radio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:enabled="@bool/isAtLeastPie"
             android:text="Shadow" />
 
     </RadioGroup>

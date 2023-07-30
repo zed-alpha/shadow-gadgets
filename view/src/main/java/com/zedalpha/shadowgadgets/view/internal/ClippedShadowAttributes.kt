@@ -3,14 +3,18 @@ package com.zedalpha.shadowgadgets.view.internal
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import androidx.annotation.ColorInt
+import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.view.ClippedShadowPlane
 import com.zedalpha.shadowgadgets.view.R
 
 
 internal data class ClippedShadowAttributes(
     val id: Int,
-    val clipOutlineShadow: Boolean? = null,
-    val clippedShadowPlane: ClippedShadowPlane? = null
+    val clipOutlineShadow: Boolean,
+    val clippedShadowPlane: ClippedShadowPlane,
+    @ColorInt val outlineShadowColorCompat: Int,
+    val forceShadowColorCompat: Boolean
 )
 
 internal fun AttributeSet?.extractShadowAttributes(
@@ -25,19 +29,23 @@ internal fun AttributeSet?.extractShadowAttributes(
             R.styleable.ClippedShadowAttributes_android_id,
             View.NO_ID
         ),
-        if (array.hasValue(R.styleable.ClippedShadowAttributes_clipOutlineShadow)) {
-            array.getBoolean(
-                R.styleable.ClippedShadowAttributes_clipOutlineShadow,
-                false
+        array.getBoolean(
+            R.styleable.ClippedShadowAttributes_clipOutlineShadow,
+            false
+        ),
+        ClippedShadowPlane.forValue(
+            array.getInt(
+                R.styleable.ClippedShadowAttributes_clippedShadowPlane,
+                ClippedShadowPlane.Foreground.ordinal
             )
-        } else null,
-        if (array.hasValue(R.styleable.ClippedShadowAttributes_clippedShadowPlane)) {
-            ClippedShadowPlane.forValue(
-                array.getInt(
-                    R.styleable.ClippedShadowAttributes_clippedShadowPlane,
-                    0
-                )
-            )
-        } else null
+        ),
+        array.getColor(
+            R.styleable.ClippedShadowAttributes_outlineShadowColorCompat,
+            DefaultShadowColorInt
+        ),
+        array.getBoolean(
+            R.styleable.ClippedShadowAttributes_forceShadowColorCompat,
+            false
+        )
     ).also { array.recycle() }
 }

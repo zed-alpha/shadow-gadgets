@@ -9,9 +9,11 @@ import androidx.annotation.CallSuper
 import com.zedalpha.shadowgadgets.core.disableZ
 import com.zedalpha.shadowgadgets.core.enableZ
 import com.zedalpha.shadowgadgets.view.ClippedShadowPlane
+import com.zedalpha.shadowgadgets.view.ClippedShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.shadow.GroupShadow
 import com.zedalpha.shadowgadgets.view.shadow.ShadowController
+import com.zedalpha.shadowgadgets.view.shadow.ShadowPlane
 import kotlin.properties.Delegates
 
 
@@ -20,11 +22,17 @@ internal abstract class ClippedShadowsViewGroupManager(
     attributeSet: AttributeSet?,
     private val detachAllViewsFromParent: () -> Unit,
     private val attachViewToParent: (View, Int, LayoutParams) -> Unit
-) : ShadowController(parentView) {
+) : ShadowController(parentView), ShadowPlane {
 
-    var clipAllChildShadows: Boolean? by verifyUnattached()
+    protected var clipSet = false
+    var clipAllChildShadows: Boolean by initOnly(false) { clipSet = true }
 
-    var childClippedShadowsPlane: ClippedShadowPlane? by verifyUnattached()
+    protected var planeSet = false
+    var childClippedShadowsPlane: ClippedShadowPlane by initOnly(Foreground) {
+        planeSet = true
+    }
+
+    var ignoreInlineChildShadows: Boolean by initOnly(false) {}
 
     protected var unattached = true
 
@@ -37,11 +45,10 @@ internal abstract class ClippedShadowsViewGroupManager(
             R.styleable.ClippedShadowsViewGroup
         )
         if (array.hasValue(R.styleable.ClippedShadowsViewGroup_clipAllChildShadows)) {
-            clipAllChildShadows =
-                array.getBoolean(
-                    R.styleable.ClippedShadowsViewGroup_clipAllChildShadows,
-                    false
-                )
+            clipAllChildShadows = array.getBoolean(
+                R.styleable.ClippedShadowsViewGroup_clipAllChildShadows,
+                false
+            )
         }
         if (array.hasValue(R.styleable.ClippedShadowsViewGroup_childClippedShadowsPlane)) {
             childClippedShadowsPlane = ClippedShadowPlane.forValue(
@@ -49,6 +56,12 @@ internal abstract class ClippedShadowsViewGroupManager(
                     R.styleable.ClippedShadowsViewGroup_childClippedShadowsPlane,
                     0
                 )
+            )
+        }
+        if (array.hasValue(R.styleable.ClippedShadowsViewGroup_ignoreInlineChildShadows)) {
+            ignoreInlineChildShadows = array.getBoolean(
+                R.styleable.ClippedShadowsViewGroup_ignoreInlineChildShadows,
+                false
             )
         }
         array.recycle()
@@ -59,12 +72,18 @@ internal abstract class ClippedShadowsViewGroupManager(
         unattached = false
     }
 
-    private fun <T> verifyUnattached() =
-        Delegates.vetoable(null as T?) { _, _, _ -> unattached }
+    private fun <T> initOnly(initial: T, onSet: () -> Unit) =
+        Delegates.vetoable(initial) { _, _, _ ->
+            unattached.also { if (it) onSet() }
+        }
 
     abstract fun onViewAdded(child: View)
 
-    override fun createShadow(target: View) = GroupShadow(target, this, null)
+    override fun createShadow(target: View) = GroupShadow(target, this, this)
+
+    override fun invalidatePlane() {
+        parentView.invalidate()
+    }
 
     override fun onPreDraw() {
         shadows.values.forEach { shadow ->

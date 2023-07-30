@@ -9,6 +9,7 @@ import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isSimple
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
@@ -20,49 +21,58 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.zedalpha.shadowgadgets.core.ClippedShadow
-import com.zedalpha.shadowgadgets.core.PathProvider
+import com.zedalpha.shadowgadgets.core.Shadow
+import com.zedalpha.shadowgadgets.core.ShadowColorFilter
 import kotlin.math.roundToInt
 import android.graphics.Outline as AndroidOutline
 import android.graphics.Path as AndroidPath
 
 
-internal class ComposeClippedShadow(view: View) {
-
-    private val clippedShadow = ClippedShadow.newInstance(view)
-
-    private val androidOutline = AndroidOutline().apply { alpha = 1.0F }
+internal class ComposeShadow(
+    localView: View,
+    clipOutlineShadow: Boolean
+) {
+    private val tmpComposePath = Path()
 
     private val androidPath = AndroidPath()
 
-    private val tmpComposePath = Path()
+    private val androidOutline = AndroidOutline().apply { alpha = 1.0F }
 
-    init {
-        clippedShadow.pathProvider = PathProvider { path ->
-            path.set(androidPath)
-        }
+    private val shadow = if (clipOutlineShadow) {
+        ClippedShadow(localView, { it.set(androidPath) })
+    } else {
+        Shadow(localView)
     }
+
+    private val filter by lazy { ShadowColorFilter() }
 
     fun DrawScope.draw(
         elevation: Dp,
         shape: Shape,
-        ambientColor: Color,
-        spotColor: Color
+        ambientColor: Color = DefaultShadowColor,
+        spotColor: Color = DefaultShadowColor,
+        filterColor: Color = DefaultShadowColor
     ) {
         val androidCanvas = drawContext.canvas.nativeCanvas
         if (!androidCanvas.isHardwareAccelerated) return
 
         setShape(shape, size, layoutDirection, this)
-        with(clippedShadow) {
+        with(shadow) {
             setOutline(androidOutline)
             this.elevation = elevation.toPx()
             this.ambientColor = ambientColor.toArgb()
             this.spotColor = spotColor.toArgb()
-            draw(androidCanvas)
+            if (filterColor == DefaultShadowColor) {
+                draw(androidCanvas)
+            } else {
+                filter.color = filterColor.toArgb()
+                filter.draw(androidCanvas, this)
+            }
         }
     }
 
     fun dispose() {
-        clippedShadow.dispose()
+        shadow.dispose()
     }
 
     private fun setShape(

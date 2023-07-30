@@ -17,11 +17,10 @@
         android:background="@color/hazy_white"
         android:text="Clip shadows" />
 
-    <androidx.constraintlayout.motion.widget.MotionLayout
+    <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsMotionLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:clipChildren="false"
         app:layoutDescription="@xml/motions">
 
         <View
@@ -77,7 +76,7 @@
             android:backgroundTintMode="src_in"
             android:elevation="30dp" />
 
-    </androidx.constraintlayout.motion.widget.MotionLayout>
+    </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsMotionLayout>
 
     <RadioGroup
         android:id="@+id/plane_select"
@@ -117,11 +116,10 @@
 
     </RadioGroup>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipChildren="false">
+        android:layout_weight="1">
 
         <View
             android:id="@+id/left_view_bottom"
@@ -165,6 +163,6 @@
             app:layout_constraintStart_toEndOf="@id/left_view_bottom"
             app:layout_constraintTop_toBottomOf="@id/left_view_bottom" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsConstraintLayout>
 
 </LinearLayout>

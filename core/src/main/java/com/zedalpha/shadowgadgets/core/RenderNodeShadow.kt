@@ -5,9 +5,9 @@ import android.graphics.Matrix
 import android.graphics.Outline
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
-class RenderNodeClippedShadow : ClippedShadow() {
+internal class RenderNodeShadow : CoreShadow() {
 
-    private val shadowNode = RenderNodeFactory.newInstance("ClippedShadow")
+    private val shadowNode = RenderNodeFactory.newInstance("CoreShadow")
 
     override var alpha: Float
         get() = shadowNode.alpha
@@ -114,4 +114,6 @@ class RenderNodeClippedShadow : ClippedShadow() {
     override fun onDraw(canvas: Canvas) {
         shadowNode.draw(canvas)
     }
+
+    override fun dispose() {}
 }

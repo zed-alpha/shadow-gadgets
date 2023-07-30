@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentIntroBinding
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
+import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 
 
 internal object IntroTopic : Topic {
@@ -53,14 +54,13 @@ internal object IntroTopic : Topic {
                 } else if (Build.VERSION.SDK_INT >= 28) {
                     ui.target.outlineAmbientShadowColor
                 } else {
-                    return@setOnCheckedChangeListener
+                    ui.target.outlineShadowColorCompat
                 }
                 ui.seekAlpha.progress = Color.alpha(color)
                 ui.seekRed.progress = Color.red(color)
                 ui.seekGreen.progress = Color.green(color)
                 ui.seekBlue.progress = Color.blue(color)
             }
-
             updateTarget(ui)
         }
 
@@ -76,6 +76,8 @@ internal object IntroTopic : Topic {
             } else if (Build.VERSION.SDK_INT >= 28) {
                 ui.target.outlineAmbientShadowColor = color
                 ui.target.outlineSpotShadowColor = color
+            } else {
+                ui.target.outlineShadowColorCompat = color
             }
             ui.target.elevation = ui.seekElevation.progress.toFloat()
         }

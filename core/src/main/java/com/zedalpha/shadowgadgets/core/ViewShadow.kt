@@ -11,14 +11,14 @@ import android.view.ViewOutlineProvider
 import java.util.WeakHashMap
 
 
-class ViewClippedShadow(ownerView: View) : ClippedShadow() {
+internal class ViewShadow(ownerView: View) : CoreShadow() {
 
     private val shadowView = View(ownerView.context).apply {
         // Ensures draw when target is partially/fully out of bounds
         right = Int.MAX_VALUE; bottom = Int.MAX_VALUE
         outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
-                outline.set(this@ViewClippedShadow.shadowOutline)
+                outline.set(this@ViewShadow.outline)
             }
         }
     }
@@ -35,7 +35,6 @@ class ViewClippedShadow(ownerView: View) : ClippedShadow() {
     }
 
     override fun dispose() {
-        super.dispose()
         viewPainter?.unregisterView(shadowView)
         viewPainter = null
     }

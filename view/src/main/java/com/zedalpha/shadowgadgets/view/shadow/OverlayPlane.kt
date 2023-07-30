@@ -4,28 +4,63 @@ import android.graphics.Canvas
 import android.view.ViewGroup
 import android.view.ViewGroupOverlay
 import androidx.annotation.CallSuper
+import com.zedalpha.shadowgadgets.core.ShadowColorFilter
 import com.zedalpha.shadowgadgets.view.internal.BaseDrawable
 import com.zedalpha.shadowgadgets.view.internal.Projector
 
 
-internal open class OverlayPlane(protected val parentView: ViewGroup) {
+internal open class OverlayPlane(
+    protected val parentView: ViewGroup
+) : ShadowPlane {
 
     protected val planeShadows = mutableListOf<GroupShadow>()
 
     protected val planeDrawable = object : BaseDrawable() {
         override fun draw(canvas: Canvas) {
-            planeShadows.forEach { it.draw(canvas) }
+            if (planeShadows.none { it.requiresColor }) {
+                planeShadows.forEach { it.draw(canvas) }
+                return
+            }
+
+            val colorShadows = mutableListOf<GroupShadow>()
+            planeShadows.forEach {
+                if (it.requiresColor) {
+                    colorShadows += it
+                } else {
+                    it.draw(canvas)
+                }
+            }
+            colorShadows.sortBy { it.filterColor }
+            var currentColor = 0
+            var currentFilter: ShadowColorFilter? = null
+            colorShadows.forEach { shadow ->
+                if (currentColor != shadow.filterColor) {
+                    currentColor = shadow.filterColor
+                    currentFilter?.restore(canvas)
+                    currentFilter = shadow.colorFilter
+                    currentFilter?.saveLayer(canvas)
+                }
+                shadow.draw(canvas)
+            }
+            currentFilter?.restore(canvas)
         }
     }
 
-    fun showShadow(shadow: GroupShadow) {
+    override val delegatesFiltering: Boolean = false
+
+    override fun showShadow(shadow: GroupShadow) {
         if (planeShadows.isEmpty()) attachToOverlay(parentView.overlay)
         planeShadows += shadow
     }
 
-    fun hideShadow(shadow: GroupShadow) {
+    override fun hideShadow(shadow: GroupShadow) {
         planeShadows -= shadow
         if (planeShadows.isEmpty()) detachFromOverlay(parentView.overlay)
+    }
+
+    @CallSuper
+    override fun invalidatePlane() {
+        parentView.invalidate()
     }
 
     protected open fun attachToOverlay(overlay: ViewGroupOverlay) {
@@ -46,11 +81,6 @@ internal open class OverlayPlane(protected val parentView: ViewGroup) {
                 return
             }
         }
-    }
-
-    @CallSuper
-    protected open fun invalidatePlane() {
-        parentView.invalidate()
     }
 }
 

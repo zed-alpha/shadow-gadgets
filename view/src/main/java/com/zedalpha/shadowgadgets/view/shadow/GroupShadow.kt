@@ -5,12 +5,13 @@ import android.os.Build
 import android.view.View
 import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
+import com.zedalpha.shadowgadgets.view.requiresColor
 
 internal class GroupShadow(
     targetView: View,
     private val controller: ShadowController,
-    private val plane: OverlayPlane?
-) : ClippedViewShadow(targetView) {
+    private val plane: ShadowPlane
+) : ViewShadow(targetView) {
 
     init {
         show()
@@ -23,11 +24,35 @@ internal class GroupShadow(
     }
 
     override fun show() {
-        plane?.showShadow(this)
+        plane.showShadow(this)
     }
 
     override fun hide() {
-        plane?.hideShadow(this)
+        plane.hideShadow(this)
+    }
+
+    override fun updateFilter(color: Int) {
+        colorFilter.color = color
+        invalidate()
+    }
+
+    override fun invalidate() {
+        plane.invalidatePlane()
+    }
+
+    fun draw(canvas: Canvas) {
+        if (targetView.isVisible) {
+            update()
+            val left = left.toFloat()
+            val top = top.toFloat()
+            canvas.translate(left, top)
+            if (targetView.requiresColor && plane.delegatesFiltering) {
+                colorFilter.draw(canvas, shadow)
+            } else {
+                shadow.draw(canvas)
+            }
+            canvas.translate(-left, -top)
+        }
     }
 
     private var left = 0
@@ -37,7 +62,7 @@ internal class GroupShadow(
 
     fun checkInvalidate(): Boolean {
         val target = targetView
-        val shadow = clippedShadow
+        val shadow = shadow
 
         if (left != target.left) return true
         if (top != target.top) return true
@@ -67,20 +92,9 @@ internal class GroupShadow(
         return false
     }
 
-    fun draw(canvas: Canvas) {
-        if (targetView.isVisible) {
-            update()
-            val left = left.toFloat()
-            val top = top.toFloat()
-            canvas.translate(left, top)
-            clippedShadow.draw(canvas)
-            canvas.translate(-left, -top)
-        }
-    }
-
     private fun update() {
         val target = targetView
-        val shadow = clippedShadow
+        val shadow = shadow
 
         left = target.left
         top = target.top

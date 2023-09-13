@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <item name="shadow_plane" type="id" />
+
     <item name="clip_outline_shadow" type="id" />
-    <item name="clipped_shadow_plane" type="id" />
     <item name="path_provider" type="id" />
+    <item name="force_shadow_layer" type="id" />
 
     <item name="outline_shadow_color_compat" type="id" />
-    <item name="force_shadow_color_compat" type="id" />
-    <item name="requires_color" type="id" />
+    <item name="force_outline_shadow_color_compat" type="id" />
+    <item name="color_outline_shadow" type="id" />
 
-    <item name="is_watched" type="id" />
     <item name="shadow" type="id" />
+    <item name="is_watched" type="id" />
     <item name="overlay_controller" type="id" />
     <item name="inline_controller" type="id" />
-    <item name="is_recycling_view_group_child" type="id" />
+
+    <item name="recycling_manager" type="id" />
+    <item name="is_initialized" type="id" />
 
     <item name="tag_matchers" type="id" />
+
 </resources>

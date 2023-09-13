@@ -64,7 +64,6 @@ private fun getThemeAttributeValue(context: Context): Int? {
 private fun getActivityMetaDataValue(context: Context): Int? {
     val activity = unwrapActivity(context)
     return if (activity != null) {
-        @Suppress("DEPRECATION")  // Querying our own package
         activity.packageManager.getActivityInfo(
             activity.componentName,
             PackageManager.GET_META_DATA
@@ -75,7 +74,6 @@ private fun getActivityMetaDataValue(context: Context): Int? {
 }
 
 private fun getApplicationMetaDataValue(context: Context): Int? {
-    @Suppress("DEPRECATION")  // Querying our own package
     return context.packageManager.getApplicationInfo(
         context.packageName,
         PackageManager.GET_META_DATA

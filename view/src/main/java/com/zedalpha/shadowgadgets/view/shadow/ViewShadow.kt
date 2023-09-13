@@ -1,70 +1,55 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
-import android.graphics.Outline
+import android.os.Build
 import android.view.View
-import android.view.ViewOutlineProvider
-import androidx.annotation.CallSuper
-import com.zedalpha.shadowgadgets.core.ClippedShadow
+import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.core.Shadow
-import com.zedalpha.shadowgadgets.core.ShadowColorFilter
+import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
 import com.zedalpha.shadowgadgets.view.R
-import com.zedalpha.shadowgadgets.view.clipOutlineShadow
-import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
-import com.zedalpha.shadowgadgets.view.pathProvider
-import com.zedalpha.shadowgadgets.view.requiresColor
 
 
-internal abstract class ViewShadow(protected val targetView: View) {
+internal interface ViewShadow {
 
-    protected val shadow = targetView.run {
-        if (clipOutlineShadow) {
-            ClippedShadow(this, { pathProvider?.getPath(this, it) })
-        } else {
-            Shadow(this)
-        }
-    }
+    var isShown: Boolean
 
-    val colorFilter = ShadowColorFilter().apply {
-        color = targetView.outlineShadowColorCompat
-    }
+    fun detachFromTarget()
 
-    val requiresColor get() = targetView.requiresColor
+    fun checkRecreate(): Boolean
 
-    val filterColor get() = colorFilter.color
+    fun updateColorCompat(color: Int)
 
-    private val provider: ViewOutlineProvider = targetView.outlineProvider
-
-    init {
-        @Suppress("LeakingThis")
-        targetView.shadow = this
-        targetView.outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                provider.getOutline(view, outline)
-                shadow.setOutline(outline)
-                outline.alpha = 0.0F
-            }
-        }
-    }
-
-    @CallSuper
-    open fun detachFromTarget() {
-        targetView.shadow = null
-        targetView.outlineProvider = provider
-        shadow.dispose()
-    }
-
-    fun checkRecreate(): Boolean =
-        targetView.clipOutlineShadow != shadow is ClippedShadow
-
-    open fun show() {}
-
-    open fun hide() {}
-
-    open fun updateFilter(color: Int) {}
-
-    open fun invalidate() {}
+    fun invalidate()
 }
 
 internal var View.shadow: ViewShadow?
     get() = getTag(R.id.shadow) as? ViewShadow
-    private set(value) = setTag(R.id.shadow, value)
+    set(value) = setTag(R.id.shadow, value)
+
+internal fun View.checkDrawAndUpdate(shadow: Shadow): Boolean {
+    if (!(isVisible && elevation > 0F)) return false
+
+    shadow.setPosition(
+        left,
+        top,
+        right,
+        bottom
+    )
+    shadow.alpha = alpha
+    shadow.cameraDistance = cameraDistance
+    shadow.elevation = elevation
+    shadow.pivotX = pivotX
+    shadow.pivotY = pivotY
+    shadow.rotationX = rotationX
+    shadow.rotationY = rotationY
+    shadow.rotationZ = rotation
+    shadow.scaleX = scaleX
+    shadow.scaleY = scaleY
+    shadow.translationX = translationX
+    shadow.translationY = translationY
+    shadow.translationZ = translationZ
+    if (Build.VERSION.SDK_INT >= 28) {
+        shadow.ambientColor = ViewShadowColorsHelper.getAmbientColor(this)
+        shadow.spotColor = ViewShadowColorsHelper.getSpotColor(this)
+    }
+    return true
+}

@@ -3,6 +3,7 @@ package com.zedalpha.shadowgadgets.core.rendernode
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Outline
+import android.graphics.Paint
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 
@@ -44,11 +45,23 @@ sealed interface RenderNodeWrapper {
     @setparam:ColorInt
     var spotColor: Int
 
+    val left: Int
+
+    val top: Int
+
+    val right: Int
+
+    val bottom: Int
+
+    fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Boolean
+
+    fun setOutline(outline: Outline?)
+
     fun hasIdentityMatrix(): Boolean
 
     fun getMatrix(outMatrix: Matrix)
 
-    fun setOutline(outline: Outline?)
+    fun draw(canvas: Canvas)
 
     fun setClipToBounds(clipToBounds: Boolean): Boolean
 
@@ -56,13 +69,13 @@ sealed interface RenderNodeWrapper {
 
     fun setProjectionReceiver(shouldReceive: Boolean): Boolean
 
-    fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Boolean
-
     fun beginRecording(width: Int, height: Int): Canvas
 
     fun endRecording(canvas: Canvas)
 
     fun hasDisplayList(): Boolean
 
-    fun draw(canvas: Canvas)
+    fun discardDisplayList()
+
+    fun setUseCompositingLayer(forceToLayer: Boolean, paint: Paint?): Boolean
 }

@@ -1,26 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="ClippedShadowAttributes">
+
+    <declare-styleable name="ShadowAttributes">
         <attr name="android:id" />
+        <attr name="shadowPlane" format="enum">
+            <enum name="foreground" value="0" />
+            <enum name="background" value="1" />
+            <enum name="inline" value="2" />
+        </attr>
         <attr name="clipOutlineShadow" format="boolean" />
+        <attr name="outlineShadowColorCompat" format="color" />
+        <attr name="forceOutlineShadowColorCompat" format="boolean" />
+
+        <!-- @deprecated --> <!-- The tools ignore these; they're just FYI. -->
         <attr name="clippedShadowPlane" format="enum">
             <enum name="foreground" value="0" />
             <enum name="background" value="1" />
             <enum name="inline" value="2" />
         </attr>
-        <attr name="outlineShadowColorCompat" format="color" />
-        <attr name="forceShadowColorCompat" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="ClippedShadowsViewGroup">
+    <declare-styleable name="ShadowsViewGroup">
+        <attr name="childShadowsPlane" format="enum">
+            <enum name="foreground" value="0" />
+            <enum name="background" value="1" />
+            <enum name="inline" value="2" />
+        </attr>
         <attr name="clipAllChildShadows" format="boolean" />
+        <attr name="childOutlineShadowsColorCompat" format="color" />
+        <attr name="forceChildOutlineShadowsColorCompat" format="boolean" />
+        <attr name="ignoreInlineChildShadows" format="boolean" />
+
+        <!-- @deprecated -->
         <attr name="childClippedShadowsPlane" format="enum">
             <enum name="foreground" value="0" />
             <enum name="background" value="1" />
             <enum name="inline" value="2" />
         </attr>
-        <attr name="ignoreInlineChildShadows" format="boolean" />
     </declare-styleable>
+
+
+    <!-- Tag Matchers -->
 
     <attr name="shadowTagMatchers" format="reference" />
 
@@ -41,4 +61,5 @@
         <attr name="android:name" />
         <attr name="matchRule" />
     </declare-styleable>
+
 </resources>

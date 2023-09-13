@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.GenericShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
@@ -25,6 +29,7 @@ import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.FloatingActionButtonElevation
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,9 +43,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentComposeBinding
@@ -58,7 +67,6 @@ internal object ComposeTopic : Topic {
 
         override fun loadUi(view: View) {
             val ui = FragmentComposeBinding.bind(view)
-
             ui.composeView.apply {
                 setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
                 setContent { ComposeContent() }
@@ -69,14 +77,29 @@ internal object ComposeTopic : Topic {
 
 @Composable
 private fun ComposeContent() {
-    Column(
+    Row(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+        ColorfulLazyColumn(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(0.6F)
+                .padding(start = 20.dp, end = 10.dp)
+        ) { elevation, shape, _ ->
+            clippedShadow(
+                elevation = elevation,
+                shape = shape
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(0.4F),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             ClippedShadowFloatingActionButton(
                 onClick = {},
@@ -104,25 +127,64 @@ private fun ComposeContent() {
                 shadowAmbientColor = Color(0xff448866),
                 shadowSpotColor = Color(0xff448866)
             ) {}
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            val cardShape = GenericShape(CardShapeBuilder)
+
             Card(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clippedShadow(
-                        elevation = 10.dp,
-                        shape = cardShape,
-                        ambientColor = Color(0xff007fff),
-                        spotColor = Color(0xff007fff)
-                    ),
-                shape = cardShape,
                 backgroundColor = Color(0x22007fff),
                 elevation = 0.dp,
+                shape = GenericShape(CardShapeBuilder),
+                modifier = Modifier
+                    .padding(
+                        start = if (Build.VERSION.SDK_INT < 30) 0.dp else 8.dp
+                    )
+                    .size(80.dp)
+                    .clippedShadow(
+                        elevation = 10.dp,
+                        shape = GenericShape(CardShapeBuilder),
+                        ambientColor = Color(0xff007fff),
+                        spotColor = Color(0xff007fff)
+                    )
             ) {}
+        }
+    }
+}
+
+@Composable
+internal fun ColorfulLazyColumn(
+    modifier: Modifier,
+    shadowModifier: Modifier.(elevation: Dp, Shape, Color) -> Modifier
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        modifier = modifier
+    ) {
+        items(count = COUNT) { position ->
+            val color = lerp(
+                if (position < HALF_COUNT) itemRed else itemGreen,
+                if (position < HALF_COUNT) itemGreen else itemBlue,
+                (position % HALF_COUNT).toFloat() / HALF_COUNT
+            )
+            Card(
+                backgroundColor = color,
+                elevation = 0.dp,
+                shape = RoundedCornerShape(6.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .run {
+                        shadowModifier(
+                            10.dp,
+                            RoundedCornerShape(6.dp),
+                            color
+                        )
+                    }
+            ) {
+                Text(
+                    text = "Item $position",
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily.SansSerif,
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
         }
     }
 }
@@ -198,7 +260,11 @@ private fun ClippedShadowButton(
     }
 }
 
-private val PuzzlePieceBuilder: Path.(Size, LayoutDirection) -> Unit =
+internal val itemRed = Color(ITEM_RED)
+internal val itemGreen = Color(ITEM_GREEN)
+internal val itemBlue = Color(ITEM_BLUE)
+
+private val puzzlePieceBuilder: Path.(Size, LayoutDirection) -> Unit =
     { size, _ ->
         val side = minOf(size.width, size.height)
         translate(Offset((size.width - side) / 2, (size.height - side) / 2))
@@ -232,7 +298,7 @@ private val PuzzlePieceBuilder: Path.(Size, LayoutDirection) -> Unit =
         close()
     }
 
-private val CompassPointerBuilder: Path.(Size, LayoutDirection) -> Unit =
+private val compassPointerBuilder: Path.(Size, LayoutDirection) -> Unit =
     { size, _ ->
         val side = minOf(size.width, size.height)
         translate(Offset((size.width - side) / 2, (size.height - side) / 2))
@@ -251,9 +317,9 @@ private val CompassPointerBuilder: Path.(Size, LayoutDirection) -> Unit =
         )
     }
 
-private val CardShapeBuilder =
+internal val CardShapeBuilder =
     if (Build.VERSION.SDK_INT >= 30) {
-        PuzzlePieceBuilder
+        puzzlePieceBuilder
     } else {
-        CompassPointerBuilder
+        compassPointerBuilder
     }

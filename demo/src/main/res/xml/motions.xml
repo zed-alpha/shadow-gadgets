@@ -24,7 +24,7 @@
                 app:motionTarget="@id/motion_view">
                 <CustomAttribute
                     app:attributeName="BackgroundColor"
-                    app:customColorValue="@color/green" />
+                    app:customColorValue="#FF00FF00" />
             </KeyAttribute>
 
             <KeyPosition
@@ -57,7 +57,7 @@
             app:layout_constraintTop_toTopOf="parent">
             <CustomAttribute
                 app:attributeName="BackgroundColor"
-                app:customColorValue="@color/red" />
+                app:customColorValue="#FFFF0000" />
         </Constraint>
     </ConstraintSet>
 
@@ -73,7 +73,7 @@
             app:layout_constraintTop_toTopOf="parent">
             <CustomAttribute
                 app:attributeName="BackgroundColor"
-                app:customColorValue="@color/blue" />
+                app:customColorValue="#FF0000FF" />
         </Constraint>
     </ConstraintSet>
 </MotionScene>

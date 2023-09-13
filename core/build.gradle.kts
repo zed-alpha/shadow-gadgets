@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.zedalpha.shadowgadgets.core"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 21
@@ -41,5 +41,5 @@ afterEvaluate {
 
 dependencies {
     compileOnly(project(":stubs"))
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
 }

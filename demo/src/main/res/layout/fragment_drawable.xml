@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@color/hazy_white"
+        android:background="@color/off_white"
         android:padding="4dp"
         android:text="Use at your own risk!"
         android:textAppearance="?android:textAppearanceMedium"
@@ -25,39 +25,51 @@
         android:id="@+id/synced_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/synced_seek"
+        app:layout_constraintBottom_toTopOf="@+id/seek_synced"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toStartOf="@id/vertical"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/caveat" />
 
     <SeekBar
-        android:id="@+id/synced_seek"
+        android:id="@+id/seek_synced"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:background="@color/hazy_white"
+        android:layout_marginStart="10dp"
+        android:background="@color/off_white"
         android:max="360"
         app:layout_constraintBottom_toTopOf="@+id/synced_label"
-        app:layout_constraintEnd_toStartOf="@id/vertical"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toStartOf="@id/label_rotation_synced"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/synced_view" />
+
+    <TextView
+        android:id="@+id/label_rotation_synced"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/off_white"
+        android:layout_marginEnd="20dp"
+        android:text="θ"
+        android:textAlignment="center"
+        android:textAppearance="?android:textAppearanceMedium"
+        app:layout_constraintBottom_toBottomOf="@id/seek_synced"
+        app:layout_constraintEnd_toStartOf="@id/vertical"
+        app:layout_constraintStart_toEndOf="@id/seek_synced"
+        app:layout_constraintTop_toTopOf="@id/seek_synced"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/synced_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/hazy_white"
+        android:background="@color/off_white"
         android:padding="4dp"
         android:text="Synced"
         android:textAppearance="?android:textAppearanceMedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/vertical"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/synced_seek" />
+        app:layout_constraintTop_toBottomOf="@+id/seek_synced" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/vertical"
@@ -70,38 +82,50 @@
         android:id="@+id/unsynced_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/unsynced_seek"
+        app:layout_constraintBottom_toTopOf="@+id/seek_unsynced"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/vertical"
         app:layout_constraintTop_toBottomOf="@id/caveat" />
 
     <SeekBar
-        android:id="@+id/unsynced_seek"
+        android:id="@+id/seek_unsynced"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:background="@color/hazy_white"
+        android:layout_marginStart="10dp"
+        android:background="@color/off_white"
         android:max="360"
         app:layout_constraintBottom_toTopOf="@+id/unsynced_label"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toStartOf="@id/label_rotation_unsynced"
         app:layout_constraintStart_toEndOf="@id/vertical"
         app:layout_constraintTop_toBottomOf="@+id/unsynced_view" />
+
+    <TextView
+        android:id="@+id/label_rotation_unsynced"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:background="@color/off_white"
+        android:text="θ"
+        android:textAlignment="center"
+        android:textAppearance="?android:textAppearanceMedium"
+        app:layout_constraintBottom_toBottomOf="@id/seek_unsynced"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/seek_unsynced"
+        app:layout_constraintTop_toTopOf="@id/seek_unsynced"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/unsynced_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/hazy_white"
+        android:background="@color/off_white"
         android:padding="4dp"
         android:text="Unsynced"
         android:textAppearance="?android:textAppearanceMedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/vertical"
-        app:layout_constraintTop_toBottomOf="@+id/unsynced_seek" />
+        app:layout_constraintTop_toBottomOf="@+id/seek_unsynced" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

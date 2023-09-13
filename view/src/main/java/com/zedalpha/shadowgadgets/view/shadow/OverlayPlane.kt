@@ -4,95 +4,103 @@ import android.graphics.Canvas
 import android.view.ViewGroup
 import android.view.ViewGroupOverlay
 import androidx.annotation.CallSuper
-import com.zedalpha.shadowgadgets.core.ShadowColorFilter
 import com.zedalpha.shadowgadgets.view.internal.BaseDrawable
 import com.zedalpha.shadowgadgets.view.internal.Projector
 
 
 internal open class OverlayPlane(
-    protected val parentView: ViewGroup
-) : ShadowPlane {
+    protected val parentView: ViewGroup,
+    private val controller: OverlayController,
+) : DrawPlane {
 
-    protected val planeShadows = mutableListOf<GroupShadow>()
+    private val layers = OverlayLayerSet(parentView)
 
-    protected val planeDrawable = object : BaseDrawable() {
+    protected val shadows = mutableListOf<GroupShadow>()
+
+    protected val drawable = object : BaseDrawable() {
         override fun draw(canvas: Canvas) {
-            if (planeShadows.none { it.requiresColor }) {
-                planeShadows.forEach { it.draw(canvas) }
-                return
-            }
-
-            val colorShadows = mutableListOf<GroupShadow>()
-            planeShadows.forEach {
-                if (it.requiresColor) {
-                    colorShadows += it
-                } else {
-                    it.draw(canvas)
-                }
-            }
-            colorShadows.sortBy { it.filterColor }
-            var currentColor = 0
-            var currentFilter: ShadowColorFilter? = null
-            colorShadows.forEach { shadow ->
-                if (currentColor != shadow.filterColor) {
-                    currentColor = shadow.filterColor
-                    currentFilter?.restore(canvas)
-                    currentFilter = shadow.colorFilter
-                    currentFilter?.saveLayer(canvas)
-                }
-                shadow.draw(canvas)
-            }
-            currentFilter?.restore(canvas)
+            layers.draw(canvas)
         }
     }
 
-    override val delegatesFiltering: Boolean = false
+    fun requiresTracking() = layers.requiresTracking()
 
-    override fun showShadow(shadow: GroupShadow) {
-        if (planeShadows.isEmpty()) attachToOverlay(parentView.overlay)
-        planeShadows += shadow
+    fun attach() {
+        attachToOverlay(parentView.overlay)
     }
 
-    override fun hideShadow(shadow: GroupShadow) {
-        planeShadows -= shadow
-        if (planeShadows.isEmpty()) detachFromOverlay(parentView.overlay)
+    final override fun addShadow(shadow: GroupShadow, color: Int) {
+        shadows.add(shadow)
+        layers.addShadow(shadow, color)
     }
 
-    @CallSuper
-    override fun invalidatePlane() {
-        parentView.invalidate()
+    final override fun removeShadow(shadow: GroupShadow) {
+        shadows.remove(shadow)
+        layers.removeShadow(shadow)
+        controller.disposeShadow(shadow)
+        if (shadows.isEmpty()) {
+            detachFromOverlay(parentView.overlay)
+            controller.disposePlane(this)
+            dispose()
+        }
+    }
+
+    final override fun updateColor(shadow: GroupShadow, color: Int) {
+        layers.updateColor(shadow, color)
     }
 
     protected open fun attachToOverlay(overlay: ViewGroupOverlay) {
-        overlay.add(planeDrawable)
+        overlay.add(drawable)
     }
 
     protected open fun detachFromOverlay(overlay: ViewGroupOverlay) {
-        overlay.remove(planeDrawable)
+        overlay.remove(drawable)
     }
 
-    open fun setSize(width: Int, height: Int) {}
+    @CallSuper
+    open fun setSize(width: Int, height: Int) {
+        drawable.setBounds(0, 0, width, height)
+        layers.setSize(width, height)
+    }
 
     @CallSuper
     open fun checkInvalidate() {
-        planeShadows.forEach { shadow ->
+        shadows.forEach { shadow ->
             if (shadow.checkInvalidate()) {
                 invalidatePlane()
                 return
             }
         }
+        layers.refresh()
+    }
+
+    @CallSuper
+    override fun invalidatePlane() {
+        parentView.invalidate()
+        layers.invalidate()
+    }
+
+    fun recreateLayers() {
+        layers.recreate()
+        drawable.invalidateSelf()
+    }
+
+    @CallSuper
+    override fun dispose() {
+        layers.dispose()
     }
 }
 
 internal class BackgroundOverlayPlane(
-    parentView: ViewGroup
-) : OverlayPlane(parentView) {
+    parentView: ViewGroup,
+    controller: OverlayController
+) : OverlayPlane(parentView, controller) {
 
-    private val projector = Projector(parentView.context, planeDrawable)
+    private val projector = Projector(parentView.context, drawable)
 
     override fun attachToOverlay(overlay: ViewGroupOverlay) {
         projector.addToOverlay(overlay)
-        if (parentView.background === null) {
+        if (parentView.background == null) {
             parentView.background = EmptyDrawable
         }
         parentView.postInvalidate()
@@ -100,23 +108,29 @@ internal class BackgroundOverlayPlane(
 
     override fun detachFromOverlay(overlay: ViewGroupOverlay) {
         projector.removeFromOverlay(overlay)
-        if (parentView.background === EmptyDrawable) {
+        if (parentView.background == EmptyDrawable) {
             parentView.background = null
         }
     }
 
     override fun setSize(width: Int, height: Int) {
+        super.setSize(width, height)
         projector.setSize(width, height)
     }
 
     override fun checkInvalidate() {
         super.checkInvalidate()
-        if (planeShadows.isNotEmpty()) projector.refresh()
+        if (shadows.isNotEmpty()) projector.refresh()
     }
 
     override fun invalidatePlane() {
         super.invalidatePlane()
         projector.invalidateProjection()
+    }
+
+    override fun dispose() {
+        super.dispose()
+        projector.dispose()
     }
 }
 

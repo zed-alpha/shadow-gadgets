@@ -11,66 +11,63 @@
         android:id="@+id/content_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintBottom_toTopOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.7" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_weight="0.7" />
 
     <ImageButton
         android:id="@+id/backward"
         style="?toolbarNavigationButtonStyle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="10dp"
         android:src="@drawable/ic_arrow_back"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/title"
+        app:layout_constraintBottom_toTopOf="@id/info_pager"
         app:layout_constraintEnd_toStartOf="@+id/title"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/title" />
+        app:layout_constraintTop_toBottomOf="@id/content_pager" />
 
     <com.zedalpha.shadowgadgets.demo.view.TitleSwitcher
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_margin="6dp"
         android:layout_weight="1"
-        android:background="@color/dusty_white"
-        app:layout_constraintBottom_toBottomOf="@id/horizontal"
+        android:background="@color/off_white"
+        app:layout_constraintBottom_toTopOf="@id/info_pager"
         app:layout_constraintEnd_toStartOf="@+id/forward"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/backward"
-        app:layout_constraintTop_toTopOf="@id/horizontal" />
+        app:layout_constraintTop_toBottomOf="@id/content_pager" />
 
     <ImageButton
         android:id="@+id/forward"
         style="?toolbarNavigationButtonStyle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginEnd="10dp"
         android:src="@drawable/ic_arrow_forward"
-        app:layout_constraintBottom_toBottomOf="@id/title"
+        app:layout_constraintBottom_toTopOf="@id/info_pager"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/title"
-        app:layout_constraintTop_toTopOf="@id/title" />
+        app:layout_constraintTop_toBottomOf="@id/content_pager" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/info_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintVertical_weight="0.3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

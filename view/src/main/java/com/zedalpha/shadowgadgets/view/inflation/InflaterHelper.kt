@@ -9,10 +9,10 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.*
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
-import com.zedalpha.shadowgadgets.view.clippedShadowPlane
-import com.zedalpha.shadowgadgets.view.forceShadowColorCompat
+import com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.internal.extractShadowAttributes
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
+import com.zedalpha.shadowgadgets.view.shadowPlane
 import java.lang.reflect.Array
 
 
@@ -29,21 +29,27 @@ internal class ShadowHelper(
     }
 
     fun processTag(name: String, context: Context, attrs: AttributeSet): View? {
-        val view = if (name !in IgnoredTags) {
+        val view = if (name !in ignoredTags) {
             inflater.tryCreate(name, context, attrs)
         } else {
             null
         }
         if (view != null) {
-            val attributes = attrs.extractShadowAttributes(context)
-            if (attributes.clipOutlineShadow ||
-                checkMatchers(view, name, attrs)
-            ) {
-                view.outlineShadowColorCompat =
-                    attributes.outlineShadowColorCompat
-                view.forceShadowColorCompat = attributes.forceShadowColorCompat
-                view.clippedShadowPlane = attributes.clippedShadowPlane
-                view.clipOutlineShadow = true
+            if (checkMatchers(view, name, attrs)) {
+                with(attrs.extractShadowAttributes(context)) {
+                    shadowPlane?.let { plane ->
+                        view.shadowPlane = plane
+                    }
+                    clipOutlineShadow?.let { clip ->
+                        view.clipOutlineShadow = clip
+                    }
+                    outlineShadowColorCompat?.let { color ->
+                        view.outlineShadowColorCompat = color
+                    }
+                    forceOutlineShadowColorCompat?.let { force ->
+                        view.forceOutlineShadowColorCompat = force
+                    }
+                }
             }
         }
         return view
@@ -114,7 +120,8 @@ private class NewViewInflater(context: Context) : ViewInflater(context) {
     }
 }
 
-private sealed class ViewInflater(context: Context) : LayoutInflater(context) {
+private abstract class ViewInflater(context: Context) :
+    LayoutInflater(context) {
 
     abstract fun tryCreate(
         name: String,
@@ -123,7 +130,7 @@ private sealed class ViewInflater(context: Context) : LayoutInflater(context) {
     ): View?
 
     final override fun onCreateView(name: String, attrs: AttributeSet): View {
-        for (prefix in ClassPrefixes) {
+        for (prefix in classPrefixes) {
             try {
                 createView(name, prefix, attrs)?.let { return it }
             } catch (e: Exception) {
@@ -137,8 +144,8 @@ private sealed class ViewInflater(context: Context) : LayoutInflater(context) {
         throw UnsupportedOperationException()
 }
 
-private val IgnoredTags =
+private val ignoredTags =
     arrayOf("include", "merge", "requestFocus", "tag", "fragment", "blink")
 
-private val ClassPrefixes =
+private val classPrefixes =
     arrayOf("android.widget.", "android.webkit.", "android.app.")

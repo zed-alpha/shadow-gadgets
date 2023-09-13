@@ -3,6 +3,7 @@ package com.zedalpha.shadowgadgets.core.rendernode
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Outline
+import android.graphics.Paint
 import android.graphics.RenderNode
 import androidx.annotation.RequiresApi
 
@@ -101,15 +102,30 @@ internal class RenderNodeApi29(name: String?) : RenderNodeWrapper {
             renderNode.spotShadowColor = value
         }
 
+    override val left: Int get() = renderNode.left
+
+    override val top: Int get() = renderNode.top
+
+    override val right: Int get() = renderNode.right
+
+    override val bottom: Int get() = renderNode.bottom
+
+    override fun setPosition(
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int
+    ): Boolean = renderNode.setPosition(left, top, right, bottom)
+
+    override fun setOutline(outline: Outline?) {
+        renderNode.setOutline(outline)
+    }
+
     override fun hasIdentityMatrix(): Boolean =
         renderNode.hasIdentityMatrix()
 
     override fun getMatrix(outMatrix: Matrix) {
         renderNode.getMatrix(outMatrix)
-    }
-
-    override fun setOutline(outline: Outline?) {
-        renderNode.setOutline(outline)
     }
 
     override fun draw(canvas: Canvas) {
@@ -125,13 +141,6 @@ internal class RenderNodeApi29(name: String?) : RenderNodeWrapper {
     override fun setProjectionReceiver(shouldReceive: Boolean): Boolean =
         renderNode.setProjectionReceiver(shouldReceive)
 
-    override fun setPosition(
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int
-    ): Boolean = renderNode.setPosition(left, top, right, bottom)
-
     override fun beginRecording(width: Int, height: Int): Canvas =
         renderNode.beginRecording(width, height)
 
@@ -140,4 +149,13 @@ internal class RenderNodeApi29(name: String?) : RenderNodeWrapper {
     }
 
     override fun hasDisplayList(): Boolean = renderNode.hasDisplayList()
+
+    override fun discardDisplayList() {
+        renderNode.discardDisplayList()
+    }
+
+    override fun setUseCompositingLayer(
+        forceToLayer: Boolean,
+        paint: Paint?
+    ): Boolean = renderNode.setUseCompositingLayer(forceToLayer, paint)
 }

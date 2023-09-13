@@ -1,6 +1,5 @@
 package com.zedalpha.shadowgadgets.core
 
-import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Outline
@@ -10,19 +9,18 @@ import android.graphics.RectF
 import android.view.View
 import androidx.annotation.RequiresApi
 
+
 class ClippedShadow private constructor(
-    private val shadow: Shadow,
-    private val pathProvider: PathProvider?
+    private val shadow: Shadow
 ) : Shadow by shadow {
 
     constructor(
         ownerView: View,
-        pathProvider: PathProvider?,
         forceViewType: Boolean = false
-    ) : this(Shadow(ownerView, forceViewType), pathProvider)
+    ) : this(Shadow(ownerView, forceViewType))
 
     @RequiresApi(29)
-    constructor(pathProvider: PathProvider?) : this(Shadow(), pathProvider)
+    constructor() : this(Shadow())
 
     private val clipPath = Path()
 
@@ -30,24 +28,25 @@ class ClippedShadow private constructor(
 
     private val tmpRectF = RectF()
 
-    private val tmpPath = Path()
-
     private val tmpMatrix = Matrix()
 
-    override fun setOutline(outline: Outline?) {
+    private val tmpPath = Path()
+
+    override fun setOutline(outline: Outline) {
         shadow.setOutline(outline)
         calculateClipPath(clipPath, shadow.outline)
     }
+
+    var pathProvider: PathProvider? = null
 
     private fun calculateClipPath(path: Path, outline: Outline) {
         path.reset()
         if (!outline.isEmpty) {
             val bounds = tmpRect
             if (getOutlineRect(outline, bounds) && !bounds.isEmpty) {
-                val boundsF = tmpRectF; boundsF.set(bounds)
                 val outlineRadius = getOutlineRadius(outline)
                 path.addRoundRect(
-                    boundsF,
+                    tmpRectF.apply { set(bounds); inset(0.5F, 0.5F) },
                     outlineRadius,
                     outlineRadius,
                     Path.Direction.CW
@@ -58,20 +57,24 @@ class ClippedShadow private constructor(
         }
     }
 
-    @SuppressLint("WrongConstant")
     override fun draw(canvas: Canvas) {
         if (!canvas.isHardwareAccelerated || clipPath.isEmpty) return
 
         if (hasIdentityMatrix()) {
-            tmpPath.set(clipPath)
+            tmpMatrix.reset()
         } else {
             getMatrix(tmpMatrix)
-            clipPath.transform(tmpMatrix, tmpPath)
         }
+        tmpMatrix.postTranslate(shadow.left.toFloat(), shadow.top.toFloat())
+        clipPath.transform(tmpMatrix, tmpPath)
 
         canvas.save()
         clipOutPath(canvas, tmpPath)
         shadow.draw(canvas)
         canvas.restore()
     }
+}
+
+fun interface PathProvider {
+    fun getPath(path: Path)
 }

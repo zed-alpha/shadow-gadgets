@@ -35,11 +35,10 @@ internal abstract class ContentFragment(
         loadUi((view as ViewGroup).getChildAt(0))
     }
 
-    // Ignoring config changes
     abstract fun loadUi(view: View)
 }
 
-internal interface SeekChangeListener : SeekBar.OnSeekBarChangeListener {
+internal fun interface SeekChangeListener : SeekBar.OnSeekBarChangeListener {
 
     fun onChange(progress: Int)
 
@@ -54,3 +53,5 @@ internal interface SeekChangeListener : SeekBar.OnSeekBarChangeListener {
     override fun onStartTrackingTouch(seekBar: SeekBar?) {}
     override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 }
+
+const val DefaultTargetColor = 0x7F547FA8

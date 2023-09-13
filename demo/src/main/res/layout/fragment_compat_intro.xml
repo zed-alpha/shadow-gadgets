@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    tools:ignore="HardcodedText">
+
+    <TextView
+        android:id="@+id/label_normal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/off_white"
+        android:paddingHorizontal="4dp"
+        android:text="Normal"
+        app:layout_constraintEnd_toStartOf="@id/label_compat"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/label_compat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/off_white"
+        android:paddingHorizontal="4dp"
+        android:text="Compat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/label_normal"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ViewSwitcher
+        android:id="@+id/frame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipChildren="false"
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out"
+        app:layout_constraintBottom_toTopOf="@id/horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.42" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/backgrounds_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/off_white"
+        android:checked="true"
+        android:paddingHorizontal="4dp"
+        android:text="Backgrounds"
+        app:layout_constraintBottom_toTopOf="@id/color_select"
+        app:layout_constraintEnd_toStartOf="@id/vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/horizontal" />
+
+    <RadioGroup
+        android:id="@+id/color_select"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="2dp"
+        android:background="@color/off_white"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintEnd_toStartOf="@id/vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/backgrounds_switch">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/color_which"
+            android:textAlignment="center" />
+
+        <RadioButton
+            android:id="@+id/ambient_selection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:paddingEnd="15dp"
+            android:text="Ambient"
+            tools:ignore="RtlSymmetry" />
+
+        <RadioButton
+            android:id="@+id/spot_selection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="15dp"
+            android:text="Spot"
+            tools:ignore="RtlSymmetry" />
+
+    </RadioGroup>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <com.zedalpha.shadowgadgets.demo.view.ControlView
+        android:id="@+id/controls"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/vertical"
+        app:layout_constraintTop_toBottomOf="@+id/horizontal" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:layout_marginHorizontal="20dp"
+        android:background="@color/control_gray"
+        app:layout_constraintBottom_toTopOf="@id/framework_select"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <RadioGroup
+        android:id="@+id/framework_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/off_white"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Framework:"
+            android:textStyle="bold" />
+
+        <RadioButton
+            android:id="@+id/view_selection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:checked="true"
+            android:text="View" />
+
+        <RadioButton
+            android:id="@+id/compose_selection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="Compose" />
+
+    </RadioGroup>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.zedalpha.shadowgadgets.stubs"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 21
@@ -12,5 +12,5 @@ android {
 }
 
 dependencies {
-    api("androidx.annotation:annotation:1.6.0")
+    api("androidx.annotation:annotation:1.7.0")
 }

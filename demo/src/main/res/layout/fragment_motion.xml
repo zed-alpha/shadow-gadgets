@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:ignore="ContentDescription,HardcodedText">
 
-    <androidx.constraintlayout.motion.widget.MotionLayout
+    <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -24,14 +24,15 @@
             android:backgroundTintMode="multiply"
             android:elevation="30dp" />
 
-    </androidx.constraintlayout.motion.widget.MotionLayout>
+    </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/clip_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:background="@color/hazy_white"
+        android:background="@color/off_white"
+        android:paddingHorizontal="4dp"
         android:text="Clip shadows" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

@@ -4,12 +4,14 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Build
+import android.os.Bundle
 import android.view.DragEvent
 import android.view.View
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentIntroBinding
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
+import com.zedalpha.shadowgadgets.view.forceShadowLayer
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 
 
@@ -23,8 +25,31 @@ internal object IntroTopic : Topic {
 
     class Content : ContentFragment(R.layout.fragment_intro) {
 
+        private lateinit var ui: FragmentIntroBinding
+
+        private var viewColor: Int = DefaultTargetColor
+            set(color) {
+                field = color
+                ui.target.background.setTint(color)
+            }
+
+        private var shadowColor: Int = Color.BLACK
+            set(color) {
+                field = color
+                if (Build.VERSION.SDK_INT >= 28) {
+                    ui.target.outlineAmbientShadowColor = color
+                    ui.target.outlineSpotShadowColor = color
+                } else {
+                    ui.target.outlineShadowColorCompat = color
+                }
+            }
+
         override fun loadUi(view: View) {
-            val ui = FragmentIntroBinding.bind(view)
+            ui = FragmentIntroBinding.bind(view)
+
+            if (Build.VERSION.SDK_INT in 24..28) {
+                ui.target.forceShadowLayer = true
+            }
 
             ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
                 ui.target.clipOutlineShadow = isChecked
@@ -40,46 +65,46 @@ internal object IntroTopic : Topic {
             }
 
             // Color and elevation
-            val seekListener = object : SeekChangeListener {
-                override fun onChange(progress: Int) = updateTarget(ui)
-            }
-            ui.seekAlpha.setOnSeekBarChangeListener(seekListener)
-            ui.seekRed.setOnSeekBarChangeListener(seekListener)
-            ui.seekGreen.setOnSeekBarChangeListener(seekListener)
-            ui.seekBlue.setOnSeekBarChangeListener(seekListener)
-            ui.seekElevation.setOnSeekBarChangeListener(seekListener)
             ui.colorSelect.setOnCheckedChangeListener { _, checkedId ->
-                val color = if (checkedId == R.id.view_radio) {
-                    ui.target.tag as? Int ?: Color.TRANSPARENT
-                } else if (Build.VERSION.SDK_INT >= 28) {
-                    ui.target.outlineAmbientShadowColor
-                } else {
-                    ui.target.outlineShadowColorCompat
+                ui.controls.color = when (checkedId) {
+                    R.id.view_selection -> viewColor
+                    else -> shadowColor
                 }
-                ui.seekAlpha.progress = Color.alpha(color)
-                ui.seekRed.progress = Color.red(color)
-                ui.seekGreen.progress = Color.green(color)
-                ui.seekBlue.progress = Color.blue(color)
             }
-            updateTarget(ui)
+            ui.controls.apply {
+                onColorChanged { color ->
+                    if (ui.colorSelect.checkedRadioButtonId == R.id.view_selection) {
+                        viewColor = color
+                    } else {
+                        shadowColor = color
+                    }
+                }
+                onElevationChanged { elevation ->
+                    ui.target.elevation = elevation.toFloat()
+                }
+                color = viewColor
+                elevation = 50
+            }
         }
 
-        private fun updateTarget(ui: FragmentIntroBinding) {
-            val color = Color.argb(
-                ui.seekAlpha.progress,
-                ui.seekRed.progress,
-                ui.seekGreen.progress,
-                ui.seekBlue.progress
-            )
-            if (ui.colorSelect.checkedRadioButtonId == R.id.view_radio) {
-                ui.target.apply { background.setTint(color); tag = color }
-            } else if (Build.VERSION.SDK_INT >= 28) {
-                ui.target.outlineAmbientShadowColor = color
-                ui.target.outlineSpotShadowColor = color
-            } else {
-                ui.target.outlineShadowColorCompat = color
+        override fun onSaveInstanceState(outState: Bundle) {
+            super.onSaveInstanceState(outState)
+            outState.putBoolean("reparent", ui.target.parent == ui.frameTwo)
+            outState.putInt("view_color", viewColor)
+            outState.putInt("shadow_color", shadowColor)
+        }
+
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
+            if (savedInstanceState?.getBoolean("reparent") == true) {
+                ui.frameOne.removeView(ui.target)
+                ui.frameTwo.addView(ui.target)
             }
-            ui.target.elevation = ui.seekElevation.progress.toFloat()
+            viewColor = savedInstanceState?.getInt("view_color") ?: viewColor
+            savedInstanceState?.getInt("shadow_color")?.let { color ->
+                shadowColor = color
+            }
+            ui.controls.syncElevation()
         }
     }
 }

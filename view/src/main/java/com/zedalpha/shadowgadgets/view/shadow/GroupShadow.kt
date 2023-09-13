@@ -1,38 +1,89 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
 import android.graphics.Canvas
+import android.graphics.Outline
 import android.os.Build
 import android.view.View
-import androidx.core.view.isVisible
+import android.view.ViewOutlineProvider
+import com.zedalpha.shadowgadgets.core.ClippedShadow
+import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
+import com.zedalpha.shadowgadgets.core.PathProvider
+import com.zedalpha.shadowgadgets.core.Shadow
 import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
-import com.zedalpha.shadowgadgets.view.requiresColor
+import com.zedalpha.shadowgadgets.core.layer.LayerDraw
+import com.zedalpha.shadowgadgets.view.clipOutlineShadow
+import com.zedalpha.shadowgadgets.view.colorOutlineShadow
+import com.zedalpha.shadowgadgets.view.forceShadowLayer
+import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
+import com.zedalpha.shadowgadgets.view.pathProvider
 
 internal class GroupShadow(
-    targetView: View,
-    private val controller: ShadowController,
-    private val plane: ShadowPlane
-) : ViewShadow(targetView) {
+    private val targetView: View,
+    private val plane: DrawPlane
+) : ViewShadow, LayerDraw {
+
+    private val coreShadow = targetView.let { target ->
+        if (target.clipOutlineShadow) {
+            ClippedShadow(target).also { shadow ->
+                shadow.pathProvider = PathProvider { path ->
+                    target.pathProvider?.getPath(target, path)
+                }
+            }
+        } else {
+            Shadow(target)
+        }
+    }
+
+    private val provider: ViewOutlineProvider = targetView.outlineProvider
+
+    val forceLayer = targetView.forceShadowLayer
 
     init {
-        show()
+        val target = targetView
+        target.shadow = this
+        target.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                provider.getOutline(view, outline)
+                coreShadow.setOutline(outline)
+                outline.alpha = 0.0F
+            }
+        }
+        plane.addShadow(
+            this,
+            if (target.colorOutlineShadow) {
+                target.outlineShadowColorCompat
+            } else {
+                DefaultShadowColorInt
+            }
+        )
     }
 
     override fun detachFromTarget() {
-        super.detachFromTarget()
-        controller.removeShadow(this)
-        hide()
+        targetView.shadow = null
+        targetView.outlineProvider = provider
+        plane.removeShadow(this)
+        coreShadow.dispose()
     }
 
-    override fun show() {
-        plane.showShadow(this)
-    }
+    val isClipped = coreShadow is ClippedShadow
 
-    override fun hide() {
-        plane.hideShadow(this)
-    }
+    override fun checkRecreate() = targetView.clipOutlineShadow != isClipped
 
-    override fun updateFilter(color: Int) {
-        colorFilter.color = color
+    override fun updateColorCompat(color: Int) {
+        if (Build.VERSION.SDK_INT >= 28 &&
+            targetView.colorOutlineShadow &&
+            color != DefaultShadowColorInt
+        ) {
+            ViewShadowColorsHelper.setAmbientColor(
+                targetView,
+                DefaultShadowColorInt
+            )
+            ViewShadowColorsHelper.setSpotColor(
+                targetView,
+                DefaultShadowColorInt
+            )
+        }
+        plane.updateColor(this, color)
         invalidate()
     }
 
@@ -40,34 +91,21 @@ internal class GroupShadow(
         plane.invalidatePlane()
     }
 
-    fun draw(canvas: Canvas) {
-        if (targetView.isVisible) {
-            update()
-            val left = left.toFloat()
-            val top = top.toFloat()
-            canvas.translate(left, top)
-            if (targetView.requiresColor && plane.delegatesFiltering) {
-                colorFilter.draw(canvas, shadow)
-            } else {
-                shadow.draw(canvas)
-            }
-            canvas.translate(-left, -top)
-        }
+    override var isShown = true
+
+    override fun draw(canvas: Canvas) {
+        if (!(isShown && targetView.checkDrawAndUpdate(coreShadow))) return
+        coreShadow.draw(canvas)
     }
 
-    private var left = 0
-    private var top = 0
-    private var right = 0
-    private var bottom = 0
-
     fun checkInvalidate(): Boolean {
+        val shadow = coreShadow
         val target = targetView
-        val shadow = shadow
 
-        if (left != target.left) return true
-        if (top != target.top) return true
-        if (right != target.right) return true
-        if (bottom != target.bottom) return true
+        if (shadow.left != target.left) return true
+        if (shadow.top != target.top) return true
+        if (shadow.right != target.right) return true
+        if (shadow.bottom != target.bottom) return true
         if (shadow.alpha != target.alpha) return true
         if (shadow.cameraDistance != target.cameraDistance) return true
         if (shadow.elevation != target.elevation) return true
@@ -90,34 +128,5 @@ internal class GroupShadow(
             ) return true
         }
         return false
-    }
-
-    private fun update() {
-        val target = targetView
-        val shadow = shadow
-
-        left = target.left
-        top = target.top
-        right = target.right
-        bottom = target.bottom
-        shadow.alpha = target.alpha
-        shadow.cameraDistance = target.cameraDistance
-        shadow.elevation = target.elevation
-        shadow.pivotX = target.pivotX
-        shadow.pivotY = target.pivotY
-        shadow.rotationX = target.rotationX
-        shadow.rotationY = target.rotationY
-        shadow.rotationZ = target.rotation
-        shadow.scaleX = target.scaleX
-        shadow.scaleY = target.scaleY
-        shadow.translationX = target.translationX
-        shadow.translationY = target.translationY
-        shadow.translationZ = target.translationZ
-        if (Build.VERSION.SDK_INT >= 28) {
-            shadow.ambientColor =
-                ViewShadowColorsHelper.getAmbientColor(target)
-            shadow.spotColor =
-                ViewShadowColorsHelper.getSpotColor(target)
-        }
     }
 }

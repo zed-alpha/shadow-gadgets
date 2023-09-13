@@ -5,75 +5,120 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".MainActivity"
     tools:ignore="HardcodedText">
+
+    <TextView
+        android:id="@+id/caveat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/label_broken"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/label_broken" />
+
+    <View
+        android:id="@+id/view_broken"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/background_roundish_square"
+        android:backgroundTint="@color/see_through_blue"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@id/label_broken"
+        app:layout_constraintEnd_toStartOf="@id/view_fixed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/label_broken"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/hazy_white"
+        android:layout_marginEnd="20dp"
+        android:background="@color/off_white"
         android:padding="4dp"
         android:text="Broken"
         android:textAlignment="center"
         android:textAppearance="?android:textAppearanceMedium"
-        app:layout_constraintBottom_toTopOf="@id/broken"
-        app:layout_constraintEnd_toStartOf="@id/vertical"
+        app:layout_constraintBottom_toTopOf="@id/button_broken"
+        app:layout_constraintEnd_toStartOf="@id/label_fixed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_broken" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_broken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="40dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_fixed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/label_broken" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="2dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/control_gray"
+        app:layout_constraintBottom_toTopOf="@id/clip_switch"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
-        android:id="@+id/broken"
+        android:id="@+id/view_fixed"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginStart="10dp"
         android:background="@drawable/background_roundish_square"
-        android:backgroundTint="@color/see_through_deep_blue"
-        android:elevation="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/label_broken" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+        android:backgroundTint="@color/see_through_blue"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@id/label_fixed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/view_broken"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/label_fixed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/hazy_white"
+        android:layout_marginStart="20dp"
+        android:background="@color/off_white"
         android:padding="4dp"
         android:text="Fixed"
         android:textAlignment="center"
         android:textAppearance="?android:textAppearanceMedium"
-        app:layout_constraintBottom_toTopOf="@id/fixed"
+        app:layout_constraintBottom_toTopOf="@id/button_fixed"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/vertical"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@id/label_broken"
+        app:layout_constraintTop_toBottomOf="@id/view_fixed" />
 
-    <View
-        android:id="@+id/fixed"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_fixed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:layout_marginBottom="40dp"
-        android:background="@drawable/background_roundish_square"
-        android:backgroundTint="@color/see_through_deep_blue"
-        android:elevation="20dp"
+        android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/vertical"
+        app:layout_constraintStart_toEndOf="@id/button_broken"
         app:layout_constraintTop_toBottomOf="@id/label_fixed" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/clip_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:background="@color/hazy_white"
+        android:background="@color/off_white"
+        android:paddingHorizontal="4dp"
         android:text="Clip shadows"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

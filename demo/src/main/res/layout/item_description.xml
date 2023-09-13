@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dusty_white"
+    android:background="@color/off_white"
     android:fadeScrollbars="false"
     android:padding="8dp"
     android:scrollbars="vertical"
-    tools:ignore="Overdraw">
+    tools:ignore="Overdraw"
+    tools:viewBindingIgnore="true">
 
     <TextView
         android:id="@+id/text"

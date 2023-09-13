@@ -2,6 +2,7 @@ package android.view;
 
 import android.graphics.Matrix;
 import android.graphics.Outline;
+import android.graphics.Paint;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
@@ -28,6 +29,14 @@ public class RenderNode {
     public boolean isValid() {
         throw new UnsupportedOperationException();
     }
+
+    // API levels 21..23
+    @SuppressWarnings("EmptyMethod")
+    public void destroyDisplayListData() {}
+
+    // API levels 24+
+    @SuppressWarnings("EmptyMethod")
+    public void discardDisplayList() {}
 
     public float getAlpha() {
         throw new UnsupportedOperationException();
@@ -173,6 +182,14 @@ public class RenderNode {
     }
 
     public boolean setClipToBounds(boolean clipToBounds) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean setLayerType(int layerType) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean setLayerPaint(Paint paint) {
         throw new UnsupportedOperationException();
     }
 }

@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="see_through_red">#44FF3333</color>
     <color name="see_through_green">#4433FF33</color>
     <color name="see_through_blue">#443333FF</color>
-    <color name="see_through_deep_blue">#99446688</color>
-
-    <color name="red">#FFFF3333</color>
-    <color name="green">#FF33FF33</color>
-    <color name="blue">#FF3333FF</color>
 
     <color name="white">#FFFFFFFF</color>
-    <color name="hazy_white">#CCFFFFFF</color>
-    <color name="dusty_white">#FFFDFDFD</color>
-    <color name="bluish_white">#FFE6EBF3</color>
-    <color name="light_light_gray">#FFDFDFDF</color>
-    <color name="lighter_gray">#FFDDDDDD</color>
-    <color name="medium_light_gray">#FFBBBBBB</color>
-    <color name="gray_plus">#FF999999</color>
+    <color name="off_white">#FFFAFAFA</color>
+    <color name="control_gray">#FFDFDFDF</color>
     <color name="whisper_gray">#227F7F7F</color>
+    <color name="light_gray">#FFE2E2E2</color>
+
 </resources>

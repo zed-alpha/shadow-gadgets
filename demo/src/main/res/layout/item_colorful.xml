@@ -6,9 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    app:cardElevation="10dp"
     app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="6dp">
+    app:cardCornerRadius="6dp"
+    app:cardElevation="10dp"
+    tools:viewBindingIgnore="true">
 
     <TextView
         android:id="@+id/text"

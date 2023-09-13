@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.zedalpha.shadowgadgets.view"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 21
@@ -41,7 +41,7 @@ afterEvaluate {
 
 dependencies {
     implementation(project(":core"))
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
 }

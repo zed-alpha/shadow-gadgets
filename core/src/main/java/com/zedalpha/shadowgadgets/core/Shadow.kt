@@ -4,17 +4,18 @@ import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Outline
 import android.view.View
-import androidx.annotation.CallSuper
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
+import com.zedalpha.shadowgadgets.core.shadow.RenderNodeShadow
+import com.zedalpha.shadowgadgets.core.shadow.ViewShadow
 
 
 fun Shadow(
     ownerView: View,
     forceViewType: Boolean = false
-): Shadow = if (RenderNodeFactory.isOpenForBusiness && !forceViewType) {
+): Shadow = if (RenderNodeFactory.isOpen && !forceViewType) {
     RenderNodeShadow()
 } else {
     ViewShadow(ownerView)
@@ -22,30 +23,6 @@ fun Shadow(
 
 @RequiresApi(29)
 fun Shadow(): Shadow = RenderNodeShadow()
-
-internal sealed class CoreShadow : Shadow {
-
-    override val outline = Outline()
-
-    @CallSuper
-    override fun setOutline(outline: Outline?) {
-        if (outline == null) {
-            this.outline.setEmpty()
-        } else {
-            this.outline.set(outline)
-        }
-    }
-
-    override fun draw(canvas: Canvas) {
-        if (canvas.isHardwareAccelerated) {
-            enableZ(canvas)
-            onDraw(canvas)
-            disableZ(canvas)
-        }
-    }
-
-    protected abstract fun onDraw(canvas: Canvas)
-}
 
 interface Shadow {
 
@@ -85,9 +62,19 @@ interface Shadow {
     @setparam:ColorInt
     var spotColor: Int
 
+    val left: Int
+
+    val top: Int
+
+    val right: Int
+
+    val bottom: Int
+
+    fun setPosition(left: Int, top: Int, right: Int, bottom: Int)
+
     val outline: Outline
 
-    fun setOutline(outline: Outline?)
+    fun setOutline(outline: Outline)
 
     fun hasIdentityMatrix(): Boolean
 

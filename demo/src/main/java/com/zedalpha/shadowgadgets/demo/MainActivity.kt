@@ -1,7 +1,6 @@
 package com.zedalpha.shadowgadgets.demo
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,14 +16,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.zedalpha.shadowgadgets.demo.databinding.ActivityMainBinding
-import com.zedalpha.shadowgadgets.demo.topic.ApplicationTopic
-import com.zedalpha.shadowgadgets.demo.topic.BehaviorTopic
+import com.zedalpha.shadowgadgets.demo.topic.ApplyTopic
 import com.zedalpha.shadowgadgets.demo.topic.ComposeTopic
 import com.zedalpha.shadowgadgets.demo.topic.DrawableTopic
 import com.zedalpha.shadowgadgets.demo.topic.IntroTopic
 import com.zedalpha.shadowgadgets.demo.topic.IrregularTopic
 import com.zedalpha.shadowgadgets.demo.topic.MotionTopic
-import com.zedalpha.shadowgadgets.demo.topic.Topic
+import com.zedalpha.shadowgadgets.demo.topic.PlaneTopic
+import com.zedalpha.shadowgadgets.demo.topic.compat.CompatDrawableTopic
+import com.zedalpha.shadowgadgets.demo.topic.compat.CompatIntroTopic
+import com.zedalpha.shadowgadgets.demo.topic.compat.CompatStressTestTopic
 
 
 class MainActivity : AppCompatActivity() {
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         var current = 0
-        ui.title.setText(TopicList[0].title)
+        ui.title.setText(topicList[0].title)
 
         fun setTopic(index: Int) {
             if (current == index) return
@@ -54,10 +55,10 @@ class MainActivity : AppCompatActivity() {
             ui.contentPager.currentItem = index
             ui.title.apply {
                 setDirection(index > current)
-                setText(TopicList[index].title)
+                setText(topicList[index].title)
             }
             ui.backward.isInvisible = index == 0
-            ui.forward.isInvisible = index == TopicList.size - 1
+            ui.forward.isInvisible = index == topicList.size - 1
             current = index
         }
 
@@ -65,11 +66,11 @@ class MainActivity : AppCompatActivity() {
             if (current > 0) setTopic(current - 1)
         }
         ui.forward.setOnClickListener {
-            if (current < TopicList.size - 1) setTopic(current + 1)
+            if (current < topicList.size - 1) setTopic(current + 1)
         }
         ui.title.setOnClickListener { view ->
             PopupMenu(this, view).apply {
-                TopicList.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
+                topicList.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
                 menu.getItem(current).isEnabled = false
                 setOnMenuItemClickListener { setTopic(it.itemId); true }
             }.show()
@@ -95,23 +96,26 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private val TopicList: List<Topic> = buildList {
+private val topicList = buildList {
     add(IntroTopic)
     add(MotionTopic)
-    add(BehaviorTopic)
-    if (Build.VERSION.SDK_INT >= 30) add(IrregularTopic)
-    add(ApplicationTopic)
+    add(PlaneTopic)
+    add(ApplyTopic)
+    add(IrregularTopic)
     add(DrawableTopic)
     add(ComposeTopic)
+    add(CompatIntroTopic)
+    add(CompatDrawableTopic)
+    add(CompatStressTestTopic)
 }
 
 private class ContentAdapter(activity: FragmentActivity) :
     FragmentStateAdapter(activity) {
 
-    override fun getItemCount() = TopicList.size
+    override fun getItemCount() = topicList.size
 
     override fun createFragment(position: Int) =
-        TopicList[position].createContentFragment()
+        topicList[position].createContentFragment()
 }
 
 private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
@@ -121,10 +125,10 @@ private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
                 .inflate(R.layout.item_description, parent, false)
         )
 
-    override fun getItemCount() = TopicList.size
+    override fun getItemCount() = topicList.size
 
     override fun onBindViewHolder(holder: InfoHolder, position: Int) {
-        holder.text.setText(TopicList[position].descriptionResId)
+        holder.text.setText(topicList[position].descriptionResId)
     }
 }
 

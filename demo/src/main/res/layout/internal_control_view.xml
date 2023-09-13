@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <SeekBar
+        android:id="@+id/seek_elevation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/off_white"
+        android:progressTint="@color/control_gray"
+        android:thumbTint="#FFBBBBBB"
+        app:layout_constraintBottom_toTopOf="@id/seek_alpha"
+        app:layout_constraintEnd_toStartOf="@id/label_elevation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/label_elevation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:background="@color/off_white"
+        android:text="z"
+        android:textAlignment="center"
+        android:textAppearance="?android:textAppearanceMedium"
+        app:layout_constraintBottom_toBottomOf="@id/seek_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/seek_elevation"
+        app:layout_constraintTop_toTopOf="@id/seek_elevation"
+        tools:ignore="HardcodedText" />
+
+    <SeekBar
+        android:id="@+id/seek_alpha"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/off_white"
+        android:max="255"
+        android:progressTint="@color/control_gray"
+        android:thumbTint="#FFBBBBBB"
+        app:layout_constraintBottom_toTopOf="@+id/seek_red"
+        app:layout_constraintEnd_toStartOf="@id/label_alpha"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seek_elevation" />
+
+    <TextView
+        android:id="@+id/label_alpha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:background="@color/off_white"
+        android:text="ɑ"
+        android:textAlignment="center"
+        android:textAppearance="?android:textAppearanceMedium"
+        app:layout_constraintBottom_toBottomOf="@id/seek_alpha"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/seek_alpha"
+        app:layout_constraintTop_toTopOf="@id/seek_alpha"
+        tools:ignore="HardcodedText" />
+
+    <SeekBar
+        android:id="@+id/seek_red"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/off_white"
+        android:max="255"
+        android:progressTint="#FF8888"
+        android:thumbTint="#FF4444"
+        app:layout_constraintBottom_toTopOf="@+id/seek_green"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seek_alpha" />
+
+    <SeekBar
+        android:id="@+id/seek_green"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/off_white"
+        android:max="255"
+        android:progressTint="#88FF88"
+        android:thumbTint="#44FF44"
+        app:layout_constraintBottom_toTopOf="@+id/seek_blue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seek_red" />
+
+    <SeekBar
+        android:id="@+id/seek_blue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/off_white"
+        android:max="255"
+        android:progressTint="#8888FF"
+        android:thumbTint="#4444FF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seek_green" />
+
+</merge>

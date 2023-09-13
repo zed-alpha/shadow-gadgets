@@ -21,7 +21,10 @@ internal object ProjectorReflector {
 
     private lateinit var drawRenderNode: Method
 
-    val isAvailable = try {
+    // We can live without this one, though it'd be weird to fail only here.
+    private var discardDisplayList: Method? = null
+
+    val isValid = try {
         val renderNodeClass = Class.forName("android.view.RenderNode")
         val canvasClass = when (Build.VERSION.SDK_INT) {
             in 21..22 -> Class.forName("android.view.HardwareCanvas")
@@ -74,6 +77,11 @@ internal object ProjectorReflector {
                 "drawRenderNode",
                 arrayOf(renderNodeClass)
             ) as Method
+            discardDisplayList = getDeclared.invoke(
+                renderNodeClass,
+                "discardDisplayList",
+                emptyArray<Class<*>>()
+            ) as Method
         } else {
             create = renderNodeClass.getDeclaredMethod(
                 "create",
@@ -108,6 +116,13 @@ internal object ProjectorReflector {
                 "drawRenderNode",
                 renderNodeClass
             )
+            discardDisplayList = renderNodeClass.getDeclaredMethod(
+                if (Build.VERSION.SDK_INT in 21..23) {
+                    "destroyDisplayListData"
+                } else {
+                    "discardDisplayList"
+                }
+            )
         }
 
         val renderNode = create.invoke(null, "Projector", null)
@@ -116,6 +131,11 @@ internal object ProjectorReflector {
         setPosition.invoke(renderNode, 0, 0, 0, 0)
         val canvas = start.invoke(renderNode, 0, 0)
         end.invoke(renderNode, canvas)
+        try {
+            discardDisplayList?.invoke(renderNode)
+        } catch (e: Throwable) {
+            discardDisplayList = null
+        }
         true
     } catch (e: Throwable) {
         false
@@ -151,5 +171,9 @@ internal object ProjectorReflector {
 
     fun drawRenderNode(canvas: Canvas, renderNode: Any) {
         drawRenderNode.invoke(canvas, renderNode)
+    }
+
+    fun discardDisplayList(renderNode: Any) {
+        discardDisplayList?.invoke(renderNode)
     }
 }

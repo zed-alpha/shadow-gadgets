@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -8,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.zedalpha.shadowgadgets.compose"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 21
@@ -27,7 +25,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.8"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     publishing {
         singleVariant("release")
@@ -49,6 +47,6 @@ afterEvaluate {
 
 dependencies {
     implementation(project(":core"))
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.compose.ui:ui:1.4.3")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.compose.ui:ui:1.5.1")
 }

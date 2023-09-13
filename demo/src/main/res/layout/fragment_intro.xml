@@ -63,38 +63,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:background="@color/hazy_white"
+        android:background="@color/off_white"
+        android:paddingHorizontal="4dp"
         android:text="Clip shadow"
-        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintBottom_toTopOf="@+id/color_select"
         app:layout_constraintEnd_toStartOf="@id/vertical"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/horizontal" />
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="10dp"
-        android:background="@color/gray_plus"
-        app:layout_constraintBottom_toTopOf="@id/color_select"
-        app:layout_constraintEnd_toStartOf="@id/vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/clip_switch" />
 
     <RadioGroup
         android:id="@+id/color_select"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/hazy_white"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="10dp"
+        android:background="@color/off_white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/vertical"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider">
+        app:layout_constraintTop_toBottomOf="@+id/clip_switch">
 
         <TextView
             android:layout_width="match_parent"
@@ -103,122 +91,27 @@
             android:textAlignment="center" />
 
         <RadioButton
-            android:id="@+id/view_radio"
+            android:id="@+id/view_selection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="View" />
 
         <RadioButton
-            android:id="@+id/shadow_radio"
+            android:id="@+id/shadow_selection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Shadow" />
 
     </RadioGroup>
 
-    <SeekBar
-        android:id="@+id/seek_elevation"
+    <com.zedalpha.shadowgadgets.demo.view.ControlView
+        android:id="@+id/controls"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/hazy_white"
-        android:progress="50"
-        android:progressTint="@color/lighter_gray"
-        android:thumbTint="@color/medium_light_gray"
-        app:layout_constraintBottom_toTopOf="@id/seek_alpha"
-        app:layout_constraintEnd_toStartOf="@id/label_elevation"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/vertical"
-        app:layout_constraintTop_toBottomOf="@+id/horizontal" />
-
-    <TextView
-        android:id="@+id/label_elevation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:background="@color/hazy_white"
-        android:text="z"
-        android:textAlignment="center"
-        android:textAppearance="?android:textAppearanceMedium"
-        app:layout_constraintBottom_toBottomOf="@id/seek_elevation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/seek_elevation"
-        app:layout_constraintTop_toTopOf="@id/seek_elevation"
-        tools:ignore="HardcodedText" />
-
-    <SeekBar
-        android:id="@+id/seek_alpha"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/hazy_white"
-        android:max="255"
-        android:progress="127"
-        android:progressTint="@color/lighter_gray"
-        android:thumbTint="@color/medium_light_gray"
-        app:layout_constraintBottom_toTopOf="@+id/seek_red"
-        app:layout_constraintEnd_toStartOf="@id/label_alpha"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/vertical"
-        app:layout_constraintTop_toBottomOf="@+id/seek_elevation" />
-
-    <TextView
-        android:id="@+id/label_alpha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:background="@color/hazy_white"
-        android:text="\u0251"
-        android:textAlignment="center"
-        android:textAppearance="?android:textAppearanceMedium"
-        app:layout_constraintBottom_toBottomOf="@id/seek_alpha"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/seek_alpha"
-        app:layout_constraintTop_toTopOf="@id/seek_alpha"
-        tools:ignore="HardcodedText" />
-
-    <SeekBar
-        android:id="@+id/seek_red"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/hazy_white"
-        android:max="255"
-        android:progress="84"
-        android:progressTint="#FF8888"
-        android:thumbTint="#FF4444"
-        app:layout_constraintBottom_toTopOf="@+id/seek_green"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/vertical"
-        app:layout_constraintTop_toBottomOf="@+id/seek_alpha" />
-
-    <SeekBar
-        android:id="@+id/seek_green"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/hazy_white"
-        android:max="255"
-        android:progress="127"
-        android:progressTint="#88FF88"
-        android:thumbTint="#44FF44"
-        app:layout_constraintBottom_toTopOf="@+id/seek_blue"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/vertical"
-        app:layout_constraintTop_toBottomOf="@+id/seek_red" />
-
-    <SeekBar
-        android:id="@+id/seek_blue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/hazy_white"
-        android:max="255"
-        android:progress="168"
-        android:progressTint="#8888FF"
-        android:thumbTint="#4444FF"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/vertical"
-        app:layout_constraintTop_toBottomOf="@+id/seek_green" />
+        app:layout_constraintTop_toBottomOf="@+id/horizontal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

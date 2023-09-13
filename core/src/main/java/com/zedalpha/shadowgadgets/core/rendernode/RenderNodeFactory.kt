@@ -6,11 +6,11 @@ import android.os.Build
 
 object RenderNodeFactory {
 
-    val isOpenForBusiness = Build.VERSION.SDK_INT >= 29 ||
+    val isOpen = Build.VERSION.SDK_INT >= 29 ||
             (Build.VERSION.SDK_INT != 28 && testRenderNode())
 
     fun newInstance(name: String? = null): RenderNodeWrapper {
-        if (!isOpenForBusiness) throw IllegalStateException("Unavailable")
+        if (!isOpen) throw IllegalStateException("Unavailable")
         return innerNewInstance(name)
     }
 
@@ -47,6 +47,8 @@ object RenderNodeFactory {
             setProjectionReceiver(true)
             endRecording(beginRecording(0, 0))
             hasDisplayList()
+            discardDisplayList()
+            setUseCompositingLayer(false, null)
         }
         true
     } catch (e: Throwable) {

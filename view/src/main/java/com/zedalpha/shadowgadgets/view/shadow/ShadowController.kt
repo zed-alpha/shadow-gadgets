@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.annotation.CallSuper
+import com.zedalpha.shadowgadgets.core.layer.LocationTracker
 
 internal abstract class ShadowController(protected val parentView: ViewGroup) {
 
@@ -26,10 +27,25 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
 
     protected open fun onParentViewDetached() {}
 
+    private val tracker = LocationTracker(parentView)
+
     private val preDrawListener =
         ViewTreeObserver.OnPreDrawListener { onPreDraw(); true }
 
-    protected abstract fun onPreDraw()
+    private fun onPreDraw() {
+        if (requiresTracking() && tracker.checkLocationChanged()) {
+            onLocationChanged()
+            parentView.invalidate()
+        } else {
+            checkInvalidate()
+        }
+    }
+
+    protected abstract fun requiresTracking(): Boolean
+
+    protected abstract fun onLocationChanged()
+
+    protected abstract fun checkInvalidate()
 
     init {
         parentView.addOnAttachStateChangeListener(attachListener)
@@ -39,26 +55,32 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
     @CallSuper
     protected open fun detachFromParent() {
         parentView.removeOnAttachStateChangeListener(attachListener)
-        if (parentView.isAttachedToWindow) removePreDrawListener()
+        removePreDrawListener()
     }
 
+    private var viewTreeObserver: ViewTreeObserver? = null
+
     private fun addPreDrawListener() {
-        parentView.viewTreeObserver.addOnPreDrawListener(preDrawListener)
+        viewTreeObserver = parentView.viewTreeObserver.also { observer ->
+            observer.addOnPreDrawListener(preDrawListener)
+        }
+        tracker.initialize()
     }
 
     private fun removePreDrawListener() {
-        parentView.viewTreeObserver.removeOnPreDrawListener(preDrawListener)
+        val observer = viewTreeObserver ?: return
+        if (observer.isAlive) observer.removeOnPreDrawListener(preDrawListener)
+        viewTreeObserver = null
     }
 
-    fun createGroupShadow(target: View) {
-        shadows[target] = createShadow(target)
+    fun createShadowForView(target: View) {
+        shadows[target] = GroupShadow(target, providePlane(target))
     }
 
-    protected abstract fun createShadow(target: View): GroupShadow
+    protected abstract fun providePlane(target: View): DrawPlane
 
-    fun removeShadow(shadow: GroupShadow) {
-        shadows.values -= shadow
-        if (shadows.isEmpty()) onEmpty()
+    fun disposeShadow(shadow: GroupShadow) {
+        if (shadows.values.remove(shadow) && shadows.isEmpty()) onEmpty()
     }
 
     protected open fun onEmpty() {}

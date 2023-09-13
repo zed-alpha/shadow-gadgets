@@ -1,48 +1,81 @@
 package com.zedalpha.shadowgadgets.compose
 
 import android.os.Build
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.platform.inspectable
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.zedalpha.shadowgadgets.compose.internal.baseShadow
+import com.zedalpha.shadowgadgets.compose.internal.blend
 
+
+@OptIn(ExperimentalColorCompat::class)
+@Stable
 fun Modifier.clippedShadow(
     elevation: Dp,
     shape: Shape = RectangleShape,
+    clip: Boolean = elevation > 0.dp,
+    ambientColor: Color = DefaultShadowColor,
+    spotColor: Color = DefaultShadowColor
+) = clippedShadow(
+    elevation = elevation,
+    shape = shape,
+    clip = clip,
+    ambientColor = ambientColor,
+    spotColor = spotColor,
+    colorCompat = DefaultShadowColor,
+    forceColorCompat = false
+)
+
+@ExperimentalColorCompat
+@Stable
+fun Modifier.clippedShadow(
+    elevation: Dp,
+    shape: Shape = RectangleShape,
+    clip: Boolean = elevation > 0.dp,
     ambientColor: Color = DefaultShadowColor,
     spotColor: Color = DefaultShadowColor,
-    compatColor: Color = DefaultShadowColor,
-    forceCompatColor: Boolean = false
-) = if (elevation.value <= 0F) this else composed(
-    factory = {
-        val localView = LocalView.current
-        val shadow = remember(localView) { ComposeShadow(localView, true) }
-        DisposableEffect(localView) { onDispose { shadow.dispose() } }
-
-        val useCompat = Build.VERSION.SDK_INT < 28 || forceCompatColor
-        val ambient = if (useCompat) DefaultShadowColor else ambientColor
-        val spot = if (useCompat) DefaultShadowColor else spotColor
-        val filter = if (useCompat) compatColor else DefaultShadowColor
-
-        drawBehind {
-            with(shadow) { draw(elevation, shape, ambient, spot, filter) }
+    colorCompat: Color? = DefaultShadowColor,
+    forceColorCompat: Boolean = false
+) = if (elevation > 0.dp || clip) {
+    inspectable(
+        inspectorInfo = debugInspectorInfo {
+            name = "clippedShadow"
+            properties["elevation"] = elevation
+            properties["shape"] = shape
+            properties["clip"] = clip
+            properties["ambientColor"] = ambientColor
+            properties["spotColor"] = spotColor
+            properties["colorCompat"] = colorCompat
+            properties["forceColorCompat"] = forceColorCompat
         }
-    },
-    inspectorInfo = debugInspectorInfo {
-        name = "clippedShadow"
-        properties["elevation"] = elevation
-        properties["shape"] = shape
-        properties["ambientColor"] = ambientColor
-        properties["spotColor"] = spotColor
-        properties["compatColor"] = compatColor
-        properties["forceCompatColor"] = forceCompatColor
+    ) {
+        composed {
+            val compat = when {
+                Build.VERSION.SDK_INT < 28 || forceColorCompat -> {
+                    colorCompat ?: blend(ambientColor, spotColor)
+                }
+
+                else -> DefaultShadowColor
+            }
+            baseShadow(
+                clipped = true,
+                elevation = elevation,
+                shape = shape,
+                clip = clip,
+                ambientColor = ambientColor,
+                spotColor = spotColor,
+                colorCompat = compat
+            )
+        }
     }
-)
+} else {
+    this
+}

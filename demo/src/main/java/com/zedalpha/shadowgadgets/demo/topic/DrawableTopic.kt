@@ -4,12 +4,12 @@ import android.graphics.Outline
 import android.graphics.Path
 import android.graphics.Rect
 import android.os.Build
+import android.os.Bundle
 import android.view.View
 import androidx.annotation.RequiresApi
-import androidx.appcompat.graphics.drawable.DrawableWrapperCompat
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentDrawableBinding
-import com.zedalpha.shadowgadgets.view.ClippedShadowDrawable
+import com.zedalpha.shadowgadgets.view.drawable.ShadowDrawable
 
 
 internal object DrawableTopic : Topic {
@@ -22,33 +22,37 @@ internal object DrawableTopic : Topic {
 
     class Content : ContentFragment(R.layout.fragment_drawable) {
 
+        private lateinit var ui: FragmentDrawableBinding
+
         private lateinit var syncedDrawable: DemoClippedShadowDrawable
         private lateinit var unsyncedDrawable: DemoClippedShadowDrawable
 
         override fun loadUi(view: View) {
-            val ui = FragmentDrawableBinding.bind(view)
+            ui = FragmentDrawableBinding.bind(view)
 
             syncedDrawable = DemoClippedShadowDrawable(ui.syncedView)
             ui.syncedView.background = syncedDrawable
-            ui.syncedSeek.setOnSeekBarChangeListener(
-                object : SeekChangeListener {
-                    override fun onChange(progress: Int) {
-                        syncedDrawable.rotationZ = progress.toFloat()
-                        syncedDrawable.invalidateSelf()
-                    }
+            ui.seekSynced.setOnSeekBarChangeListener(
+                SeekChangeListener { progress ->
+                    syncedDrawable.rotationZ = progress.toFloat()
+                    syncedDrawable.invalidateSelf()
                 }
             )
 
             unsyncedDrawable = DemoClippedShadowDrawable(ui.unsyncedView)
             ui.unsyncedView.background = unsyncedDrawable
-            ui.unsyncedSeek.setOnSeekBarChangeListener(
-                object : SeekChangeListener {
-                    override fun onChange(progress: Int) {
-                        unsyncedDrawable.rotationZ = progress.toFloat()
-                        // No call to invalidateSelf()
-                    }
+            ui.seekUnsynced.setOnSeekBarChangeListener(
+                SeekChangeListener { progress ->
+                    unsyncedDrawable.rotationZ = progress.toFloat()
+                    // No call to invalidateSelf()
                 }
             )
+        }
+
+        override fun onViewStateRestored(savedInstanceState: Bundle?) {
+            super.onViewStateRestored(savedInstanceState)
+            syncedDrawable.rotationZ = ui.seekSynced.progress.toFloat()
+            unsyncedDrawable.rotationZ = ui.seekUnsynced.progress.toFloat()
         }
 
         override fun onDestroyView() {
@@ -59,52 +63,42 @@ internal object DrawableTopic : Topic {
     }
 }
 
-private class DemoClippedShadowDrawable(view: View) :
-    DrawableWrapperCompat(null) {
+private class DemoClippedShadowDrawable(
+    view: View
+) : ShadowDrawable(view, true) {
 
     private val path = Path()
 
-    @Suppress("MoveLambdaOutsideParentheses")
-    private val shadowDrawable = ClippedShadowDrawable(view, { it.set(path) })
-
     init {
-        drawable = shadowDrawable
-        shadowDrawable.elevation = 40F
+        elevation = 40F
+        setClipPathProvider { it.set(path) }
     }
-
-    var rotationZ by shadowDrawable::rotationZ
 
     override fun onBoundsChange(bounds: Rect) {
+        super.onBoundsChange(bounds)
+
         val sideLength = 0.5F * minOf(bounds.width(), bounds.height())
-        shadowDrawable.apply {
-            pivotX = sideLength / 2F
-            shadowDrawable.apply {
-                pivotY = sideLength / 2F
-                translationX = (bounds.width() - sideLength) / 2F
-                translationY = (bounds.height() - sideLength) / 2F
-            }
+        pivotX = sideLength / 2F
+        pivotY = sideLength / 2F
+        translationX = (bounds.width() - sideLength) / 2F
+        translationY = (bounds.height() - sideLength) / 2F
 
-            val outline = Outline()
-            if (Build.VERSION.SDK_INT >= 30) {
-                path.setToPuzzlePiece(sideLength)
-                outline.setPath(path)
-            } else {
-                path.setToCompassPointer(sideLength)
-                @Suppress("DEPRECATION")
-                outline.setConvexPath(path)
-            }
-            outline.alpha = 1.0F
-            setOutline(outline)
+        val outline = Outline()
+        if (Build.VERSION.SDK_INT >= 30) {
+            path.setToPuzzlePiece(sideLength)
+            outline.setPath(path)
+        } else {
+            path.setToCompassPointer(sideLength)
+            @Suppress("DEPRECATION")
+            outline.setConvexPath(path)
         }
-    }
-
-    fun dispose() {
-        shadowDrawable.dispose()
+        outline.alpha = 1.0F
+        setOutline(outline)
     }
 }
 
 @RequiresApi(29)
-private fun Path.setToPuzzlePiece(sideLength: Float) {
+internal fun Path.setToPuzzlePiece(sideLength: Float) {
     val q = sideLength / 4
 
     // top
@@ -136,7 +130,7 @@ private fun Path.setToPuzzlePiece(sideLength: Float) {
     close()
 }
 
-private fun Path.setToCompassPointer(sideLength: Float) {
+internal fun Path.setToCompassPointer(sideLength: Float) {
     val h = sideLength / 2
 
     reset()

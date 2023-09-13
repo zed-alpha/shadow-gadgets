@@ -3,6 +3,8 @@ package com.zedalpha.shadowgadgets.core.rendernode
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Outline
+import android.graphics.Paint
+import android.graphics.Rect
 import android.view.HardwareCanvas
 import android.view.RenderNode
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
@@ -18,10 +20,11 @@ internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
             renderNode.alpha = value
         }
 
+    // Negated on older versions.
     override var cameraDistance: Float
-        get() = renderNode.cameraDistance
+        get() = -renderNode.cameraDistance
         set(value) {
-            renderNode.cameraDistance = value
+            renderNode.cameraDistance = -value
         }
 
     override var elevation: Float
@@ -98,6 +101,30 @@ internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
         get() = DefaultShadowColorInt
         set(_) {}
 
+    private val position = Rect()
+
+    override val left: Int get() = position.left
+
+    override val top: Int get() = position.top
+
+    override val right: Int get() = position.right
+
+    override val bottom: Int get() = position.bottom
+
+    override fun setPosition(
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int
+    ): Boolean {
+        position.set(left, top, right, bottom)
+        return renderNode.setLeftTopRightBottom(left, top, right, bottom)
+    }
+
+    override fun setOutline(outline: Outline?) {
+        renderNode.setOutline(outline)
+    }
+
     override fun hasIdentityMatrix(): Boolean =
         renderNode.hasIdentityMatrix()
 
@@ -105,13 +132,14 @@ internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
         renderNode.getMatrix(outMatrix)
     }
 
-    override fun setOutline(outline: Outline?) {
-        renderNode.setOutline(outline)
-    }
-
     override fun draw(canvas: Canvas) {
         if (!renderNode.isValid) recordEmptyDisplayList()
         (canvas as HardwareCanvas).drawRenderNode(renderNode)
+    }
+
+    private fun recordEmptyDisplayList() {
+        val canvas = RenderNodeReflector.start(renderNode, 0, 0)
+        RenderNodeReflector.end(renderNode, canvas)
     }
 
     override fun setClipToBounds(clipToBounds: Boolean): Boolean =
@@ -123,13 +151,6 @@ internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
     override fun setProjectionReceiver(shouldReceive: Boolean): Boolean =
         renderNode.setProjectionReceiver(shouldReceive)
 
-    override fun setPosition(
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int
-    ): Boolean = renderNode.setLeftTopRightBottom(left, top, right, bottom)
-
     override fun beginRecording(width: Int, height: Int): Canvas =
         RenderNodeReflector.start(renderNode, width, height)
 
@@ -139,10 +160,15 @@ internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
 
     override fun hasDisplayList(): Boolean = renderNode.isValid
 
-    private fun recordEmptyDisplayList() {
-        val canvas = RenderNodeReflector.start(renderNode, 0, 0)
-        RenderNodeReflector.end(renderNode, canvas)
+    override fun discardDisplayList() {
+        renderNode.destroyDisplayListData()
     }
+
+    override fun setUseCompositingLayer(
+        forceToLayer: Boolean,
+        paint: Paint?
+    ): Boolean = renderNode.setLayerType(if (forceToLayer) 2 else 0) or
+            renderNode.setLayerPaint(paint)
 }
 
 private object RenderNodeReflector {

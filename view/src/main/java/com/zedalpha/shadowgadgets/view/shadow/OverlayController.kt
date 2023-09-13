@@ -2,49 +2,80 @@ package com.zedalpha.shadowgadgets.view.shadow
 
 import android.view.View
 import android.view.ViewGroup
-import com.zedalpha.shadowgadgets.view.ClippedShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.view.R
+import com.zedalpha.shadowgadgets.view.ShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
-import com.zedalpha.shadowgadgets.view.clippedShadowPlane
+import com.zedalpha.shadowgadgets.view.shadowPlane
 
 
 internal class OverlayController(parentView: ViewGroup) :
     ShadowController(parentView) {
 
-    private val backgroundPlane = BackgroundOverlayPlane(parentView)
+    private var foregroundPlane: OverlayPlane? = null
 
-    private val foregroundPlane = OverlayPlane(parentView)
+    private var backgroundPlane: BackgroundOverlayPlane? = null
 
     private val layoutListener =
-        View.OnLayoutChangeListener { _, left, top, right, bottom, _, _, _, _ ->
-            setSize(right - left, bottom - top)
+        View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
+            setSize(r - l, b - t)
         }
 
     init {
         parentView.overlayController = this
         parentView.addOnLayoutChangeListener(layoutListener)
-        if (parentView.isLaidOut) setSize(parentView.width, parentView.height)
+        parentView.run { if (width > 0 && height > 0) setSize(width, height) }
     }
 
     override fun detachFromParent() {
         super.detachFromParent()
         parentView.overlayController = null
         parentView.removeOnLayoutChangeListener(layoutListener)
+        foregroundPlane?.dispose()
+        backgroundPlane?.dispose()
     }
 
-    override fun createShadow(target: View) = GroupShadow(
-        target,
-        this,
-        if (target.run { clipOutlineShadow && clippedShadowPlane == Foreground }) {
-            foregroundPlane
+    override fun providePlane(target: View) = target.run {
+        if (clipOutlineShadow && shadowPlane == Foreground) {
+            getOrCreateForegroundPlane()
         } else {
-            backgroundPlane
+            getOrCreateBackgroundPlane()
         }
-    )
+    }
 
-    override fun onPreDraw() {
-        backgroundPlane.checkInvalidate()
-        foregroundPlane.checkInvalidate()
+    private fun getOrCreateForegroundPlane() =
+        foregroundPlane ?: OverlayPlane(parentView, this).apply {
+            setSize(parentView.width, parentView.height)
+            attach()
+            foregroundPlane = this
+        }
+
+    private fun getOrCreateBackgroundPlane() =
+        backgroundPlane ?: BackgroundOverlayPlane(parentView, this).apply {
+            setSize(parentView.width, parentView.height)
+            attach()
+            backgroundPlane = this
+        }
+
+    fun disposePlane(plane: OverlayPlane) {
+        if (plane == foregroundPlane) {
+            foregroundPlane = null
+        } else {
+            backgroundPlane = null
+        }
+    }
+
+    override fun requiresTracking(): Boolean =
+        foregroundPlane?.requiresTracking() == true ||
+                backgroundPlane?.requiresTracking() == true
+
+    override fun onLocationChanged() {
+        foregroundPlane?.recreateLayers()
+        backgroundPlane?.recreateLayers()
+    }
+
+    override fun checkInvalidate() {
+        foregroundPlane?.checkInvalidate()
+        backgroundPlane?.checkInvalidate()
     }
 
     override fun onEmpty() {
@@ -52,8 +83,8 @@ internal class OverlayController(parentView: ViewGroup) :
     }
 
     private fun setSize(width: Int, height: Int) {
-        backgroundPlane.setSize(width, height)
-        foregroundPlane.setSize(width, height)
+        foregroundPlane?.setSize(width, height)
+        backgroundPlane?.setSize(width, height)
     }
 }
 

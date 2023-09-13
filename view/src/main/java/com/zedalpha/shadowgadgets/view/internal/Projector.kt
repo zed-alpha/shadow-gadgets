@@ -21,15 +21,17 @@ internal interface Projector {
 
     fun setSize(width: Int, height: Int)
 
+    fun invalidateProjection() {}
+
     fun refresh() {}
 
-    fun invalidateProjection() {}
+    fun dispose() {}
 }
 
 internal fun Projector(context: Context, drawable: Drawable) = when {
     Build.VERSION.SDK_INT >= 29 -> DrawableProjector(drawable)  // Extra safety
-    RenderNodeFactory.isOpenForBusiness -> WrapperDrawableProjector(drawable)
-    ProjectorReflector.isAvailable -> ReflectorDrawableProjector(drawable)
+    RenderNodeFactory.isOpen -> WrapperDrawableProjector(drawable)
+    ProjectorReflector.isValid -> ReflectorDrawableProjector(drawable)
     else -> ViewProjector(context, drawable)
 }
 
@@ -38,7 +40,7 @@ private class DrawableProjector(
     private val projectedDrawable: Drawable
 ) : BaseDrawable(), Projector {
 
-    private val baseNode = RenderNode("ProjectorBase").apply {
+    private val baseNode = RenderNode("Projector").apply {
         clipToBounds = false
     }
 
@@ -79,6 +81,11 @@ private class DrawableProjector(
         }
         canvas.drawRenderNode(baseNode)
     }
+
+    override fun dispose() {
+        baseNode.discardDisplayList()
+        projectedNode.discardDisplayList()
+    }
 }
 
 private class WrapperDrawableProjector(
@@ -86,7 +93,7 @@ private class WrapperDrawableProjector(
 ) : BaseDrawable(), Projector {
 
     private val baseNode =
-        RenderNodeFactory.newInstance("ProjectorBase").apply {
+        RenderNodeFactory.newInstance("Projector").apply {
             setClipToBounds(false)
         }
 
@@ -127,6 +134,11 @@ private class WrapperDrawableProjector(
             baseNode.endRecording(baseCanvas)
         }
         baseNode.draw(canvas)
+    }
+
+    override fun dispose() {
+        baseNode.discardDisplayList()
+        projectedNode.discardDisplayList()
     }
 }
 
@@ -176,6 +188,11 @@ private class ReflectorDrawableProjector(
         }
         ProjectorReflector.drawRenderNode(canvas, baseNode)
     }
+
+    override fun dispose() {
+        ProjectorReflector.discardDisplayList(baseNode)
+        ProjectorReflector.discardDisplayList(projectedNode)
+    }
 }
 
 @SuppressLint("ViewConstructor")
@@ -190,7 +207,7 @@ private class ViewProjector(
     }
 
     init {
-        addView(projectedChild, EmptyLayoutParams)
+        addView(projectedChild, emptyLayoutParams)
         background = object : BaseDrawable() {
 
             override fun draw(canvas: Canvas) {
@@ -210,20 +227,20 @@ private class ViewProjector(
     }
 
     override fun setSize(width: Int, height: Int) {
-        right = width; bottom = height
-        projectedChild.apply { right = width; bottom = height }
-    }
-
-    override fun refresh() {
-        detachViewFromParent(projectedChild)
-        attachViewToParent(projectedChild, 0, EmptyLayoutParams)
+        layout(0, 0, width, height)
+        projectedChild.layout(0, 0, width, height)
     }
 
     override fun invalidateProjection() {
         invalidate()
     }
 
+    override fun refresh() {
+        detachViewFromParent(projectedChild)
+        attachViewToParent(projectedChild, 0, emptyLayoutParams)
+    }
+
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 }
 
-private val EmptyLayoutParams = ViewGroup.LayoutParams(0, 0)
+private val emptyLayoutParams = ViewGroup.LayoutParams(0, 0)

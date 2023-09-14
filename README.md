@@ -10,14 +10,14 @@ These tools use the same classes and methods that the platform uses to render sh
 
 <img src="images/examples_after.png" width="50%" alt="The above examples with the fix applied to each." />
 
-This latest release also introduces a new compat functionality that can add color to shadows on API levels before 28, when shadow colors were first added to the SDK.
+The latest (pre-)release also introduces a new compat functionality that can add color to shadows on API levels before 28, when shadow colors were first added to the SDK.
 
 <br />
 
 
 ## **Contents**
 
-### [Views](#view-framework)
+### Views
 
 + [**Basic usage**](#basic-usage)
 
@@ -39,7 +39,11 @@ This latest release also introduces a new compat functionality that can add colo
 
     A relatively simple `Drawable` class is provided to create independent shadows. This may be useful as another fix option, or even as a design element on its own.
 
-### [Compose](#compose-framework)
+### Compose
+
++ [**Experimental**](#experimental)
+
+    The new color compat options require opt-in.
 
 + [**Modifier.clippedShadow()**](#modifierclippedshadow)
 
@@ -49,7 +53,7 @@ This latest release also introduces a new compat functionality that can add colo
 
     This provides the lower-overhead option for color compat on Compose, for those setups where the shadows don't need to be clipped.
 
-### [General](#general-info)
+### General
 
 + [**Notes**](#notes)
 
@@ -62,7 +66,7 @@ This latest release also introduces a new compat functionality that can add colo
 <br />
 
 
-## **View framework**
+## **Views**
 
 ## Basic usage
 
@@ -76,7 +80,7 @@ That's it. Unless your setup requires that a _sibling_ `View` overlap a target o
 
 The `Boolean`-value `clipOutlineShadow` extension property is basically a switch to toggle the fix on `View`s individually, and it's designed to mimic an intrinsic property as much as possible. Though the shadow is actually being handled and drawn in the parent `ViewGroup`, the property can be set on the target `View` at any time, even while it's unattached, so there's no need to worry about timing. Additionally, the clipped shadow automatically animates and transforms along with its target, and it will handle moving itself to any new parents, should the target be moved.
 
-It is hoped that that simple usage should cover most cases, but for the situations mentioned above, the library offers a couple of configuration properties as possible recourses.
+It is hoped that that simple usage should cover most cases, but for the situations mentioned above, the library offers a few configuration properties as possible recourses.
 
 <br />
 
@@ -414,7 +418,9 @@ The [second color compat page](/demo/src/main/java/com/zedalpha/shadowgadgets/de
 <br />
 
 
-## **Compose framework**
+## **Compose**
+
+## Experimental
 
 Color compat in Compose currently requires `@OptIn`, as it still needs some improvements and fine-tuning. Additionally, color compat here is currently accomplished similarly to how `Inline` shadows are handled for Views, meaning the same internal requirements and overhead apply to this. Please refer to [the Performance and overhead section](#performance-and-overhead) for Views.
 
@@ -495,9 +501,11 @@ The [first color compat page](/demo/src/main/java/com/zedalpha/shadowgadgets/dem
 <br />
 
 
-## **General info**
+## **General**
 
 ## Notes
+
++ [2.2.0-beta](https://github.com/zed-alpha/shadow-gadgets/releases/tag/2.2.0-beta) has been marked as a pre-release, so it doesn't show in the sidebar, apparently, even though it's listed at the top of [the Releases page](https://github.com/zed-alpha/shadow-gadgets/releases).
 
 + The actual documentation in the wiki is extremely out of date, and has been mostly unlinked from here until I can update it for the current API. Until then, this too-long README and the examples in the demo module will have to serve as ad hoc docs.
 

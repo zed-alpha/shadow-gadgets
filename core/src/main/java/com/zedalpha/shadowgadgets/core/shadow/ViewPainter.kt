@@ -8,8 +8,10 @@ import com.zedalpha.shadowgadgets.core.R
 import java.util.WeakHashMap
 
 
-internal class ViewPainterProxy(private val ownerView: View) {
-
+internal class ViewPainterProxy(
+    private val ownerView: View,
+    private var initialLayerView: View? = null
+) {
     private var viewPainter: ViewPainter? = null
 
     private val attachListener = object : View.OnAttachStateChangeListener {
@@ -30,6 +32,10 @@ internal class ViewPainterProxy(private val ownerView: View) {
         val painter = root.viewPainter ?: ViewPainter(root)
         painter.registerProxy(this)
         viewPainter = painter
+        initialLayerView?.let { layerView ->
+            painter.addLayerView(layerView)
+            initialLayerView = null
+        }
     }
 
     fun dispose() {
@@ -38,15 +44,33 @@ internal class ViewPainterProxy(private val ownerView: View) {
         viewPainter = null
     }
 
-    fun drawView(canvas: Canvas, view: View) {
-        viewPainter?.drawView(canvas, view)
+    fun drawShadowView(canvas: Canvas, shadowView: View) {
+        viewPainter?.drawShadowView(canvas, shadowView)
+    }
+
+    fun drawLayerView(canvas: Canvas, layerView: View) {
+        viewPainter?.drawLayerView(canvas, layerView)
+    }
+
+    fun replaceLayerView(layerView: View, newLayerView: View) {
+        viewPainter?.apply {
+            removeLayerView(layerView)
+            addLayerView(newLayerView)
+        }
+    }
+
+    fun invalidateLayerView(layerView: View) {
+        viewPainter?.invalidateLayerView(layerView)
+    }
+
+    fun refreshLayerView(layerView: View) {
+        viewPainter?.refreshLayerView(layerView)
     }
 }
 
 @SuppressLint("ViewConstructor")
-private class ViewPainter(
-    private val ownerView: ViewGroup
-) : ViewGroup(ownerView.context) {
+internal class ViewPainter(private val ownerView: ViewGroup) :
+    ViewGroup(ownerView.context) {
 
     private val uiThread = ownerView.context.mainLooper.thread
 
@@ -80,16 +104,40 @@ private class ViewPainter(
         if (activeProxies.isEmpty()) detachFromOwner()
     }
 
-    fun drawView(canvas: Canvas, view: View) {
+    fun drawShadowView(canvas: Canvas, view: View) {
         addViewInLayout(view, 0, emptyLayoutParams, true)
         draw(canvas)
         removeViewInLayout(view)
     }
 
-    override fun onLayout(c: Boolean, l: Int, t: Int, r: Int, b: Int) {}
+    fun addLayerView(layerView: View) {
+        addView(layerView, emptyLayoutParams)
+    }
+
+    fun removeLayerView(layerView: View) {
+        removeView(layerView)
+    }
+
+    fun drawLayerView(canvas: Canvas, layerView: View) {
+        if (indexOfChild(layerView) < 0) return
+        drawChild(canvas, layerView, 0L)
+    }
+
+    fun refreshLayerView(layerView: View) {
+        if (indexOfChild(layerView) < 0) return
+        detachViewFromParent(layerView)
+        attachViewToParent(layerView, 0, emptyLayoutParams)
+    }
+
+    fun invalidateLayerView(layerView: View) {
+        layerView.invalidate()
+        invalidate()
+    }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 }
 
-private var ViewGroup.viewPainter: ViewPainter?
+internal var ViewGroup.viewPainter: ViewPainter?
     get() = getTag(R.id.view_painter) as? ViewPainter
     set(value) = setTag(R.id.view_painter, value)
 

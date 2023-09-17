@@ -21,8 +21,7 @@ internal abstract class ShadowsViewGroupManager(
     parentView: ViewGroup,
     attributeSet: AttributeSet?,
     private val detachAllViewsFromParent: () -> Unit,
-    private val attachViewToParent: (View, Int, LayoutParams) -> Unit,
-    isRecyclingGroup: Boolean
+    private val attachViewToParent: (View, Int, LayoutParams) -> Unit
 ) : ShadowController(parentView), DrawPlane {
 
     protected var groupPlaneSet = false

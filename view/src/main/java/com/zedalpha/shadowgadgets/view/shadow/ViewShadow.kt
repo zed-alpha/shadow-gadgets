@@ -25,9 +25,7 @@ internal var View.shadow: ViewShadow?
     get() = getTag(R.id.shadow) as? ViewShadow
     set(value) = setTag(R.id.shadow, value)
 
-internal fun View.checkDrawAndUpdate(shadow: Shadow): Boolean {
-    if (!(isVisible && elevation > 0F)) return false
-
+internal fun View.updateAndCheckDraw(shadow: Shadow): Boolean {
     shadow.setPosition(
         left,
         top,
@@ -51,5 +49,5 @@ internal fun View.checkDrawAndUpdate(shadow: Shadow): Boolean {
         shadow.ambientColor = ViewShadowColorsHelper.getAmbientColor(this)
         shadow.spotColor = ViewShadowColorsHelper.getSpotColor(this)
     }
-    return true
+    return isVisible && elevation > 0F
 }

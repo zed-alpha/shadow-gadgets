@@ -7,9 +7,7 @@ import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
-import com.zedalpha.shadowgadgets.view.shadow.overlayController
 import com.zedalpha.shadowgadgets.view.shadowPlane
-
 
 internal class RecyclingManager(
     parentView: ViewGroup,
@@ -20,15 +18,8 @@ internal class RecyclingManager(
     parentView,
     attributeSet,
     detachAllViewsFromParent,
-    attachViewToParent,
-    true
+    attachViewToParent
 ) {
-    override fun onParentViewDetached() {
-        super.onParentViewAttached()
-        parentView.overlayController?.detachAllShadows()
-        detachAllShadows()
-    }
-
     override fun onViewAdded(child: View) {
         if (child.isInitialized) return
 

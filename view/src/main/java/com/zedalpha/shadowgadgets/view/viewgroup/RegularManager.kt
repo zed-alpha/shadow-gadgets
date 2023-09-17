@@ -19,8 +19,7 @@ internal class RegularManager(
     parentView,
     attributeSet,
     detachAllViewsFromParent,
-    attachViewToParent,
-    false
+    attachViewToParent
 ) {
     private var xmlAttributes: MutableMap<Int, ShadowAttributes>? =
         mutableMapOf()

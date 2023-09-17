@@ -16,7 +16,8 @@
     <item name="overlay_controller" type="id" />
     <item name="inline_controller" type="id" />
 
-    <item name="recycling_manager" type="id" />
+    <item name="last_parent_id" type="id" />
+    <item name="is_recycling_view_group_child" type="id" />
     <item name="is_initialized" type="id" />
 
     <item name="tag_matchers" type="id" />

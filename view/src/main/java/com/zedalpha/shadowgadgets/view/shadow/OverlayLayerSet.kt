@@ -30,7 +30,9 @@ internal class OverlayLayerSet(private val ownerView: ViewGroup) {
             if (layer.isEmpty()) {
                 activeLayers.remove(layer.color)
                 layer
-            } else null
+            } else {
+                null
+            }
         }
         val needsLayer = color != DefaultShadowColorInt || shadow.forceLayer
         drawLayers[shadow] = if (needsLayer) {

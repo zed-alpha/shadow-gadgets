@@ -29,39 +29,54 @@ The latest (pre-)release also introduces a new compat functionality that can add
 
 + [**Color compat**](#color-compat)
 
-    This new feature brings an option to add color to shadows on older API levels. This can be used independently of the clip setting, and will provide a slightly more performant implementation if no clipping is needed.
+  This new feature brings an option to add color to shadows on older API levels.
+  This can be used independently of the clip setting, and will provide a
+  slightly more performant implementation if no clipping is needed.
 
 + [**ViewGroups**](#viewgroups)
 
-    The library offers a few customized Recycling `ViewGroup`s that are optimized for handling these shadows on all of their children, and several Regular ones that are mainly meant to allow the shadow properties to be set on their children from corresponding attributes in layout XML.
+  The library offers a few customized Recycling `ViewGroup`s that are optimized
+  for handling these shadows on all of their children, and several Regular ones
+  that are mainly meant to allow the shadow properties to be set on their
+  children from corresponding attributes in layout XML.
 
 + [**Drawable**](#drawable)
 
-    A relatively simple `Drawable` class is provided to create independent shadows. This may be useful as another fix option, or even as a design element on its own.
+  A relatively simple `Drawable` class is provided to create independent
+  shadows. This may be useful as another fix option, or even as a design element
+  on its own.
+
++ [**Notes for Views**](#notes-for-views)
+
+  General items specific to the `view` package.
 
 ### Compose
 
-+ [**Experimental**](#experimental)
-
-    The new color compat options require opt-in.
-
 + [**Modifier.clippedShadow()**](#modifierclippedshadow)
 
-    The Compose version of this fix is singular and straightforward, since shadows can already be handled as separate and directly manipulable components in this framework. An overload has been added for this function to accommodate the new color compat options.
+  The Compose version of this fix is singular and straightforward, since shadows
+  can already be handled as separate and directly manipulable components in this
+  framework. An overload has been added for this function to accommodate the new
+  color compat options.
 
 + [**Modifier.shadowCompat()**](#modifiershadowcompat)
 
-    This provides the lower-overhead option for color compat on Compose, for those setups where the shadows don't need to be clipped.
+  This provides the lower-overhead option for color compat on Compose, for those
+  setups where the shadows don't need to be clipped.
+
++ [**Notes for Compose**](#notes-for-compose)
+
+  Things specific to `compose`.
 
 ### General
 
-+ [**Notes**](#notes)
++ [**Project notes**](#project-notes)
 
-    General notes, caveats, etc.
+  Important caveats, details, release notes, etc.
 
 + [**Download**](#download)
 
-    Available through JitPack.
+  Available through JitPack.
 
 <br />
 
@@ -78,77 +93,197 @@ view.clipOutlineShadow = true
 
 That's it. Unless your setup requires that a _sibling_ `View` overlap a target of the fix, or it involves a target with an irregular shape on Android R and above, that's possibly all you need.
 
-The `Boolean`-value `clipOutlineShadow` extension property is basically a switch to toggle the fix on `View`s individually, and it's designed to mimic an intrinsic property as much as possible. Though the shadow is actually being handled and drawn in the parent `ViewGroup`, the property can be set on the target `View` at any time, even while it's unattached, so there's no need to worry about timing. Additionally, the clipped shadow automatically animates and transforms along with its target, and it will handle moving itself to any new parents, should the target be moved.
+The `Boolean`-value `clipOutlineShadow` extension property is basically a switch
+to toggle the fix on `View`s individually, and it's designed to mimic an
+intrinsic property as much as possible. Though the shadow is actually being
+handled and drawn in the parent `ViewGroup`, the property can be set on the
+target `View` at any time, even while it's unattached, so there's no need to
+worry about timing. Additionally, the clipped shadow automatically animates and
+transforms along with its target, and it will handle moving itself to any new
+parents, should the target be moved.
 
-It is hoped that that simple usage should cover most cases, but for the situations mentioned above, the library offers a few configuration properties as possible recourses.
+It is hoped that that simple usage should cover most cases, but for the
+situations mentioned above, the library offers a few configuration properties as
+possible recourses.
 
 <br />
 
-
 ## Limitations and recourses
+
++ [Overlapping sibling Views](#overlapping-sibling-views)
++ [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
++ [Parent matrix on Android N-P](#parent-matrix-on-android-n-p)
+
+---
 
 ### Overlapping sibling Views
 
-The main limitation is inherent to the technique used, which was chosen because it allows the fix to be externally applied to any `View` without having to modify it or its existing setup. That method is basically to disable the target's built-in shadow and draw a clipped copy either in front of or behind it. Since the shadow is essentially pulled out of the normal draw routine, it's possible to end up with different kinds of artifacts than those which we're trying to fix.
+The main limitation is inherent to the technique used, which was chosen because
+it allows the fix to be externally applied to any `View` without having to
+modify it or its existing setup. That method is basically to disable the
+target's built-in shadow and draw a clipped copy either in front of or behind
+it. Since the shadow is essentially pulled out of the normal draw routine, it's
+possible to end up with different kinds of artifacts than those which we're
+trying to fix.
 
 <img src="images/overlap_examples.png" width="50%" alt="Plain gray and translucent red siblings demonstrate the possible defects." />
 
-On the left, the red target has a lower elevation than its plain, gray sibling, but the default `Foreground` plane draws in front of everything. On the right, the red target is higher than the gray sibling, but its `Background` shadow draws behind all of the child `View`s.
+On the left, the red target has a lower elevation than its plain, gray sibling,
+but the default `Foreground` plane draws in front of everything. On the right,
+the red target is higher than the gray sibling, but its `Background` shadow
+draws behind all of the child `View`s.
 
-It is important to note that this is an issue only for _siblings_ of the target. `View`s in separate parent `ViewGroup`s have separate draws and won't interfere with each other. Indeed, in some cases the most straightforward solution is to simply wrap a target or sibling in another `ViewGroup`, like a plain old `FrameLayout`. There are certainly cases where siblings must overlap, however, hence the next core property and its corresponding enum class.
+It is important to note that this is an issue only for _siblings_ of the
+target. `View`s in separate parent `ViewGroup`s have separate draws and won't
+interfere with each other. Indeed, in some cases the most straightforward
+solution is to simply wrap a target or sibling in another `ViewGroup`, like a
+plain old `FrameLayout`. There are certainly cases where siblings must overlap,
+however, hence the next core property and its corresponding enum class.
 
 #### ShadowPlane
+
 ```kotlin
 enum class ShadowPlane { Foreground, Background, Inline }
 ```
 
-_NB: This enum was originally named `ClippedShadowPlane`, and the extension property `View.clippedShadowPlane`. Both are now deprecated and replaced in order to convey the fact that this feature works with the new color compat properties, with or without the clip active. `ClippedShadowPlane` is currently a `typealias` for `ShadowPlane`, and the property currently delegates to `View.shadowPlane`, but both will eventually be removed from the library altogether._
+_NB: This enum was originally named `ClippedShadowPlane`, and the extension
+property `View.clippedShadowPlane`. Both are now deprecated and replaced in
+order to convey the fact that this feature works with the new color compat
+properties, with or without the clip active. `ClippedShadowPlane` is currently
+a `typealias` for `ShadowPlane`, and the property currently delegates
+to `View.shadowPlane`, but both will eventually be removed from the library
+altogether._
 
 ```kotlin
 var View.shadowPlane: ShadowPlane
 ```
 
-The `ShadowPlane` determines where exactly the shadow draw is inserted into the hierarchy's routine:
+The `ShadowPlane` determines where exactly the shadow draw is inserted into the
+hierarchy's routine, and each has option has its pros and cons.
 
-+ `Foreground` draws in the overlay of the target's parent `ViewGroup`, after all of the children. It is the default.
+##### **Foreground plane**
 
-+ The `Background` plane draws behind the parent's content, immediately after its background drawable. All shadows in this plane are always clipped to their parents' bounds.
+`Foreground` draws in the overlay of the target's parent `ViewGroup`, after all
+of its children. It is the default, partly because it was the original solution,
+but mainly because it's straightforward to understand and employ, and it has the
+fewest restrictions to use out of the box.
 
-+ The new `Inline` type is drawn right along with the target itself, and is most similar in behavior and appearance to the regular shadows, but it has some additional requirements and caveats, which is why it's not the default option.
+Aside from the library's main clip function, shadows in this plane will be
+clipped by the hierarchy's overall draw routine in the same way that its
+target `View` is clipped. That is, if the target is clipped to its parent's
+bounds because the parent's parent (the grandparent) has `clipChildren` set
+to `true`, then the shadow will be clipped there as well. If the grandparent has
+that set to `false`, the shadow will show out of bounds along with the target.
+In other words, it looks normal.
 
-For example, the setups from the images above fixed:
+##### **Background plane**
+
+The `Background` plane draws behind the parent's content, immediately after its
+background drawable. All shadows in this plane are always clipped to their
+parents' bounds – even if the target itself is not – because they are "
+projected" onto the parent's background region, right before its child draw
+routine. In other words, a target that sticks out beyond its parent's bounds
+will be missing its shadow in the out-of-bounds region.
+
+To be able to draw these shadows here, the parent `ViewGroup` itself must have a
+non-null background. If it does not have one at the time that such a shadow is
+added, a special library `object` is set automatically. For efficiency, this is
+the only time it is checked, so you should not set the parent's background to
+specifically `null` any time it has `Background` shadows active. Any other
+non-null value is perfectly fine, but otherwise, the clipped shadows in this
+plane may end up drawing on the wrong background, possibly disappearing
+completely.
+
+Those two are considered the main options because they don't require modifying
+the target or its existing setup. They should cover most cases, I would think;
+for example, the setups from above fixed:
 
 <img src="images/overlap_examples_fixed.png" width="50%" alt="The gray and red siblings showing correct shadows." />
 
-On the left, we've set `redView.shadowPlane = Background`, moving the shadow draw to the back. The setup on the right was fixed by letting it draw to the `Foreground` plane, which is the default.
+On the left, we've set `redView.shadowPlane = Background`, moving the shadow
+draw to the back. The setup on the right was fixed by letting it draw to
+the `Foreground` plane, which is the default.
 
-The new `Inline` plane would fix both situations:
+##### **Inline plane**
+
+The last and newest type, `Inline`, is drawn right along with the target itself.
+It is most similar in behavior and appearance to the regular shadows, but it has
+some additional requirements and caveats, which is why it's not the default
+option. It would fix both situations pictured above simultaneously, however:
 
 <img src="images/inline_example.png" width="25%" alt="A target with an Inline shadow drawing correctly between both of its siblings." />
 
-Though `Inline` shadows seem to be the most appropriate overall solution, they behave a bit differently than the others, and have additional external requirements in order to function correctly.
+Though `Inline` shadows seem to be the most appropriate overall solution, they
+behave a bit differently than the others, and have additional external
+requirements in order to function correctly. If they're in a regular `ViewGroup`
+parent, then the parent and target both require certain clip settings. If you're
+unable to ensure those settings, then a custom library `ViewGroup` would be
+required in order for shadows to function in this plane.
 
-+ **Non-library parents:** Since it's drawn along with the target `View` itself, an `Inline` shadow will work inside non-library parent `ViewGroup`s _only_ if the target `View` is not being clipped by anything else. Specifically:
+##### Non-library parents
 
-    + The parent `ViewGroup` must have `clipChildren` set to `false`. The default value is `true`, so this has to be set manually in pretty much any `ViewGroup`.
+Since it's drawn along with the target `View` itself, an `Inline` shadow will
+work inside non-library parent `ViewGroup`s _only_ if the target `View` is not
+being clipped by anything else. Specifically:
 
-    + The target `View` itself must have `clipToOutline` set to `false`, which is the default value for the `View` class, but certain subclasses enable it internally; e.g., `CardView` and its variants.
++ The parent `ViewGroup` must have `clipChildren` set to `false`. The default
+  value is `true`, so this has to be set manually in pretty much
+  any `ViewGroup`.
 
-    If either of those is `true` when the shadow is created, its draw is disabled since it would be mostly or completely invisible, which is one of the main reasons that `Inline` is not the default. There is a rather explicit warning log, though, if one of these shadows is used in such a setup.
++ The target `View` itself must have `clipToOutline` set to `false`, which is
+  the default value for the `View` class, but certain subclasses enable it
+  internally; e.g., `CardView` and its variants.
 
-    Due to variations in the underlying graphics stuff between Android versions, `Inline` shadows in non-library parents on API levels 24 through 28 (Nougat, Oreo, and Pie) are always clipped to the parent's bounds. This is because even plain black shadows on those versions require a compositing layer in order to properly draw here. The ramifications of this are covered in the [Performance and overhead](#performance-and-overhead) section for color compat.
+If either of those is `true` when the shadow is created, its draw is disabled
+since it would be mostly or completely invisible, which is one of the main
+reasons that `Inline` is not the default. There is a rather explicit warning
+log, though, if one of these shadows is used in such a setup.
 
-+ **Library parents:** If an `Inline` shadow is on a target that is a child of one of the library's `ShadowsViewGroup`s (and, for now, the `ClippedShadowsViewGroup`s), the `clipChildren` and `clipToOutline` settings are not necessary, as the draw can be handed off to the parent where it's inserted before those child clip operations happen.
+Due to variations in the underlying graphics stuff between Android
+versions, `Inline` shadows in non-library parents on API levels 24 through 28 (
+Nougat, Oreo, and Pie) are always clipped to the parent's bounds. This is
+because even plain black shadows on those versions require a compositing layer
+in order to properly draw here. The ramifications of this are covered in
+the [Performance and overhead](#performance-and-overhead) section for color
+compat.
 
-    However, to be able to insert these draws between children, `ShadowsViewGroup`s have to manually reorder the child draws, which adds a tiny bit of overhead and prevents some of the low-level optimizations that hardware-acceleration brought in the first place. This special behavior simply offers another possible fix option for particular setups and requirements.
+##### Library parents
 
-    By default, the Regular `ShadowsViewGroup`s will automatically take over any child `Inline` shadow draw; the Recycling groups do not. The `ignoreInlineChildShadows` property and corresponding XML attribute are available to change those defaults, but only before the group first attaches to the hierarchy, as explained in the ViewGroups [Behavior](#behavior) section. If a `ShadowsViewGroup` has `ignoreInlineChildShadows` set to `true`, it acts like a non-library parent and requires the `clipChildren` and `clipToOutline` settings mentioned.
+If an `Inline` shadow is on a target that is a child of one of the
+library's `ShadowsViewGroup`s (and, for now, the `ClippedShadowsViewGroup`s),
+the `clipChildren` and `clipToOutline` settings are not necessary, as the draw
+can be handed off to the parent where it's inserted before those child clip
+operations happen.
 
-The demo app has [a page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/PlaneTopic.kt) that shows all three planes in use in both an interactive and a static setup.
+However, to be able to insert these draws between children, `ShadowsViewGroup`s
+have to manually reorder the child draws, which adds a tiny bit of overhead and
+prevents some of the low-level optimizations that hardware-acceleration brought
+in the first place. This special behavior simply offers another possible fix
+option for particular setups and requirements.
+
+By default, the Regular `ShadowsViewGroup`s will automatically take over any
+child `Inline` shadow draw; the Recycling groups do not.
+The `ignoreInlineChildShadows` property and corresponding XML attribute are
+available to change those defaults, but only before the group first attaches to
+the hierarchy, as explained in the ViewGroups [Behavior](#behavior) section. If
+a `ShadowsViewGroup` has `ignoreInlineChildShadows` set to `true`, it acts like
+a non-library parent and requires the `clipChildren` and `clipToOutline`
+settings mentioned.
+
+The demo app
+has [a page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/PlaneTopic.kt)
+that shows all three planes in use in both an interactive and a static setup.
 
 ### Irregular shapes on Android R+
 
-The other notable limitation comes on Android R and above, when calculating the clip `Path` for `View`s with irregular shapes; i.e., `View`s that aren't rectangles, regular round rectangles, or circles. Reflection is required to get at the `Path` that describes those irregular shapes, and the increasing restrictions on non-SDK interfaces have finally made that field inaccessible. For these cases, the library has a `ViewPathProvider` interface that works very similarly to the framework's `ViewOutlineProvider` class, allowing the user to set the necessary `Path`. For example:
+The other notable limitation comes on Android R and above, when calculating the
+clip `Path` for `View`s with irregular shapes; i.e., `View`s that aren't
+rectangles, regular round rectangles, or circles. Reflection is required to get
+at the `Path` that describes those irregular shapes, and the increasing
+restrictions on non-SDK interfaces have finally made that field inaccessible.
+For these cases, the library has a `ViewPathProvider` interface that works very
+similarly to the framework's `ViewOutlineProvider` class, allowing the user to
+set the necessary `Path`. For example:
 
 ```kotlin
 @RequiresApi(30)
@@ -202,9 +337,16 @@ This is a separate object that needs to be set manually so that `MaterialShapeDr
 
 The demo app's [Irregular page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/IrregularTopic.kt) has a demonstration of its use, as well as a more straightforward example of using `ViewPathProvider`.
 
-### Parent matrix
+### Parent matrix on Android N-P
 
-For some reason, there are minor differences with some of the lower-level graphics stuff only on API levels 24 through 28 (Nougat, Oreo, and Pie). In certain situations, if a target's parent has a transformation applied to it, the target's shadow's clip area could go out of sync. That is, if the parent (or any ancestor, actually) is being scaled for an animation, say, the target, as its child, is scaled too, and sometimes the clip region won't line up anymore:
+For some reason, there are minor differences with some of the lower-level
+graphics stuff only on API levels 24 through 28 (Nougat, Oreo, and Pie). In
+certain situations, if a target's parent has a transformation applied to it, the
+target's shadow's clip area could go out of sync. That is, if the parent is
+being scaled for an animation, say, the target, as its child, is scaled too, and
+sometimes the clip region won't line up anymore. This goes for transformations
+applied to any other ancestor of the target, as well – e.g., the parent's
+parent – since those would affect the parent's matrix.
 
 <img src="images/parent_matrix_defect.png" width="25%" alt="A target in a parent that's been scaled down, but the clipped area remains its original size." />
 
@@ -216,16 +358,34 @@ One way to mitigate it is to force the shadow draw to go through a layer, almost
 var View.forceShadowLayer: Boolean
 ```
 
-Note that this is a passive flag. That is, changing its value while a shadow is active will _not_ trigger an update to that shadow instance. This value should be set at the very start. For example, I've amended the [Intro page setup](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/IntroTopic.kt#L50) to enable that flag for those problematic versions.
+Note that this is a passive flag. That is, changing its value while a shadow is
+active will _not_ trigger an update to that shadow instance. This value should
+be set at the very start. For example, I've amended
+the [Intro page setup](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/IntroTopic.kt#L50)
+to enable that flag for those problematic versions.
 
-Since I'm uncertain of the root cause, I can't point out any specifics to avoid or ensure; all I can suggest is to test thoroughly if you want to try to use clipped shadows inside animated parents on those versions.
+Since I'm uncertain of the root cause, I can't point out any specifics to avoid
+or ensure; all I can suggest is to test thoroughly if you want to try to use
+clipped shadows inside animated parents on those versions.
 
 <br />
 
-
 ## Color compat
 
-The library now offers a mechanism by which to add color to shadows on older versions, as the native colors – `outlineAmbientShadowColor` and `outlineSpotShadowColor` – were not added to the SDK until Pie (API level 28). The new `View.outlineShadowColorCompat` extension property can be used to set a color with which to tint shadows on versions before Pie, and its companion property `View.forceOutlineShadowColorCompat` is available to force this method to be used on newer versions as well, for the purposes of consistency, comparison, testing, etc.
++ [Blending colors](#blending-colors)
++ [Independent use](#independent-use)
++ [Performance and overhead](#performance-and-overhead)
+
+---
+
+The library now offers a mechanism by which to add color to shadows on older
+versions, as the native colors – `outlineAmbientShadowColor`
+and `outlineSpotShadowColor` – were not added to the SDK until Pie (API level
+28). The new `View.outlineShadowColorCompat` extension property can be used to
+set a color with which to tint shadows on versions before Pie, and its companion
+property `View.forceOutlineShadowColorCompat` is available to force this method
+to be used on newer versions as well, for the purposes of consistency,
+comparison, testing, etc.
 
 ```kotlin
 @get:ColorInt
@@ -235,17 +395,34 @@ var View.outlineShadowColorCompat: Int
 var View.forceOutlineShadowColorCompat: Boolean
 ```
 
-Color compat shadows are always clipped to their parents' bounds, since they require a sized compositing layer.
+Color compat shadows are always clipped to their parents' bounds, since they
+require a sized compositing layer.
 
-If `forceOutlineShadowColorCompat` is set to `true` on a `View`, you should not modify its `outlineAmbientShadowColor` and `outlineSpotShadowColor` values afterward. For the tint to apply correctly, the native shadow needs to be pure black.
+If `forceOutlineShadowColorCompat` is set to `true` on a `View`, you should not
+modify its `outlineAmbientShadowColor` and `outlineSpotShadowColor` values
+afterward. For the tint to apply correctly, the native shadow needs to be pure
+black.
 
-At the SDK level, it's only possible to tint the composited ambient and spot shadows as a whole rather than individually, hence the single color to replace the two native ones in later versions. As a convenience, the library includes a helper class that can be used to blend the ambient and spot colors for later versions into a single color for our compat functionality. Do note that this is completely optional; you can use whatever valid color you like with `outlineShadowColorCompat`.
+### Blending colors
+
+At the SDK level, it's only possible to tint the composited ambient and spot
+shadows as a whole rather than individually, hence the single color to replace
+the two native ones in later versions. As a convenience, the library includes a
+helper class that can be used to blend the ambient and spot colors for later
+versions into a single color for our compat functionality. Do note that this is
+completely optional; you can use whatever valid color you like
+with `outlineShadowColorCompat`.
 
 ```kotlin
 class ShadowColorsBlender(context: Context)
 ```
 
-This helper class uses the `Context`'s theme alphas for ambient and spot shadows to proportionally blend those colors into a single value to be used with `outlineShadowColorCompat`. The `Context` passed must have the relevant theme for the current `Window`, but that's only a concern if you've changed `android:ambientShadowAlpha` or `android:spotShadowAlpha` for a given `Activity` or `Dialog`.
+This helper class uses the `Context`'s theme alphas for ambient and spot shadows
+to proportionally blend those colors into a single value to be used
+with `outlineShadowColorCompat`. The `Context` passed must have the relevant
+theme for the current `Window`, but that's only a concern if you've
+changed `android:ambientShadowAlpha` or `android:spotShadowAlpha` for a
+given `Activity` or `Dialog`.
 
 The class has just two functions:
 
@@ -255,7 +432,11 @@ The class has just two functions:
 
 + `fun onConfigurationChanged()` – To be called from the corresponding method in your UI component; i.e., the `Activity`, `Fragment`, etc. This is only necessary if you've set different alpha values for different themes.
 
-The demo app has three new pages at the end for the color compat functionality, [the first](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/ViewIntroPanel.kt) of which has a setup showing a `View`'s native shadow with adjustable ambient and spot colors, compared to one that's tinted with a blend of the two as its color compat.
+The demo app has three new pages at the end for the color compat functionality,
+the first of which
+has [a setup](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/ViewIntroPanel.kt)
+showing a `View`'s native shadow with adjustable ambient and spot colors,
+compared to one that's tinted with a blend of the two as its color compat.
 
 ### Independent use
 
@@ -265,28 +446,67 @@ Also, to clarify, `ViewPathProvider` is only relevant to the `clipOutlineShadow`
 
 ### Performance and overhead
 
-It should be noted that any kind of alpha compositing is always more expensive than a straight draw, and the mechanism used here is no different. Though the core clip functionality involves replacing an intrinsic property with additional external objects, a plain clipped shadow brings no more overhead than adding, say, one more regular `CardView` to your layout. Tinting these shadows, however, requires additional compositing layers, and therefore approximately doubles the cost for a single color compat shadow.
+It should be noted that any kind of alpha compositing is always more expensive
+than a straight draw, and the mechanism used here is no different. A plain
+clipped shadow brings no more overhead than adding, say, one more
+regular `CardView` to your layout. Tinting these shadows, however, requires
+additional compositing layers, and therefore approximately doubles the cost for
+a single color compat shadow.
 
-In an effort to bring that down somewhat, color layers are consolidated and shared where possible; namely, in the `Foreground` and `Background` planes. In each of those planes, the shadows are drawn together all at once, rather than interleaved between siblings, as with the `Inline` type. This allows the shadows in one of those planes to be sorted and grouped in such a way that all those tinted with the same color are drawn in single layer. This isn't possible with `Inline` ones, due to how the underlying native state behaves, so each and every inlined color compat shadow requires its own separate layer.
+In an effort to bring that down somewhat, color layers are consolidated and
+shared where possible; namely, in the `Foreground` and `Background` planes. In
+each of those planes, the shadows are drawn together all at once, rather than
+interleaved between siblings, as with the `Inline` type. This allows the shadows
+in one of those planes to be sorted and grouped in such a way that all those
+tinted with the same color are drawn in single layer. This isn't possible
+with `Inline` ones, due to how the underlying native state behaves, so each and
+every inlined color compat shadow requires its own separate layer.
 
-Admittedly, this feature was developed mainly just to see if it could be done, but the `View` version turned out seemingly as solid as the core clip routine, so I think it's not unreasonable to offer it here and let the user decide if the overhead is acceptable for their setup. Great pains were taken to ensure that this optional feature does not interfere with or degrade the core fix in any way, and there should be no discernible decline in the behavior or performance of the plain clipped shadows.
+Admittedly, this feature was developed mainly just to see if it could be done,
+but the `View` version turned out seemingly as solid as the core clip routine,
+so I think it's not unreasonable to offer it here and let the user decide if the
+overhead is acceptable for their setup. Great pains were taken to ensure that
+this optional feature does not interfere with or degrade the core fix in any
+way, and there should be no discernible decline in the behavior or performance
+of the plain clipped shadows.
 
-The [last page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/CompatStressTestTopic.kt) in the demo app is a "stress test" for color compat that has a couple of setups that are, I would imagine, about as "worst-case" as it should get in your average app. The various relevant tools in Developer options – e.g., [Profile GPU/HWUI rendering](https://developer.android.com/topic/performance/rendering/inspect-gpu-rendering#enable_rendering_profiler) – can give you an idea of how much more expensive color compat shadows are compared to ones that are only clipped.
+The [last page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/CompatStressTestTopic.kt)
+in the demo app is a "stress test" for color compat that has a couple of setups
+that are, I would imagine, about as "worst-case" as it should get in your
+average app. The various relevant tools in Developer options –
+e.g., [Profile GPU/HWUI rendering](https://developer.android.com/topic/performance/rendering/inspect-gpu-rendering#enable_rendering_profiler) –
+can give you an idea of how much more expensive color compat shadows are
+compared to ones that are only clipped.
 
 <br />
 
-
 ## ViewGroups
 
-There are two general categories of `ViewGroup`s: Recycling and Regular. Their primary function is to act as helpers that can automatically set shadow properties on their children from attributes in layout XML. They can also be created programmatically, but the automatic setting behavior only works during initialization, as explained below in [Behavior](#behavior).
++ [Behavior](#behavior)
++ [Recycling ViewGroups](#recycling-viewgroups)
++ [Regular ViewGroups](#regular-viewgroups)
 
-The Recycling groups also implement special behavior to maintain their children's shadows across the repeated detach/reattach cycles that happen while scrolling, preventing the shadows from constantly disposing of themselves only to be immediately recreated. Additionally, with the introduction of the `Inline` plane, all of the groups are able to take over their child shadows' draws, allowing them to be inlined without the clip setting restrictions that exist for non-library parents.
+---
+
+There are two general categories of `ViewGroup`s: Recycling and Regular. Their
+primary function is to act as helpers that can automatically set shadow
+properties on their children from attributes in layout XML. They can also be
+created programmatically, but the automatic setting behavior only works during
+initialization, as explained below in [Behavior](#behavior).
+
+The Recycling groups also implement special behavior to maintain their
+children's shadows across the repeated detach/reattach cycles that happen while
+scrolling, preventing the shadows from constantly disposing of themselves only
+to be immediately recreated. Additionally, with the introduction of the `Inline`
+plane, all of the groups are able to take over their child shadows' draws,
+allowing them to be inlined without the clip setting restrictions that exist for
+non-library parents.
 
 The current groups all implement the `ShadowsViewGroup` interface:
 
 ```kotlin
 sealed interface ShadowsViewGroup {
-    var clipAllChildShadows: Boolean
+  var clipAllChildShadows: Boolean
     var childShadowsPlane: ShadowPlane
     var childOutlineShadowsColorCompat: Int
     var forceChildOutlineShadowsColorCompat: Boolean
@@ -294,13 +514,28 @@ sealed interface ShadowsViewGroup {
 }
 ```
 
-Each property has a corresponding XML attribute with the exact same name, and takes the values that you would expect. The first four are conveniences for setting a single value on all of the group's children. The last one is a flag to disable the group's takeover of `Inline` shadow draws, as it causes the native child draw routine to be altered a bit, and is best avoided in certain situations.
+Each property has a corresponding XML attribute with the exact same name and
+possible values. The first four are conveniences for setting a single value on
+all of the group's children. The last one is a flag to disable the group's
+takeover of `Inline` shadow draws, as it causes the native child draw routine to
+be altered a bit, and is best avoided in certain situations.
 
-`ShadowsViewGroup` is a replacement for the previous `ClippedShadowsViewGroup`, which is now deprecated. In order to deprecate all of the old groups without breaking things, `ShadowsViewGroup` currently extends `ClippedShadowsViewGroup`, and all of the concrete implementations are likewise arranged; e.g., `ShadowsFrameLayout` extends `ClippedShadowsFrameLayout`.
+`ShadowsViewGroup` is a replacement for the previous `ClippedShadowsViewGroup`,
+which is now deprecated. In order to deprecate all of the old groups without
+breaking things, `ShadowsViewGroup` currently extends `ClippedShadowsViewGroup`,
+and all of the concrete implementations are likewise arranged;
+e.g., `ShadowsFrameLayout` extends `ClippedShadowsFrameLayout`.
 
-The library currently includes the deprecated predecessors for all of Recycling and Regular groups mentioned in the following sections. They all have the same names as the newer ones simply prepended with `Clipped`; e.g., `ClippedShadowsRecyclerView`. They all behave exactly the same as the previous ones, but the old `Clipped` versions lack the color compat properties, and they will eventually be removed from the library altogether.
+The library currently includes the deprecated predecessors for all of Recycling
+and Regular groups mentioned in the following sections. They all have the same
+names as the newer ones simply prepended with `Clipped`;
+e.g., `ClippedShadowsRecyclerView`. They all behave exactly the same as the
+previous ones, but the old `Clipped` versions lack the color compat properties,
+and they will eventually be removed from the library altogether.
 
-The demo app's [Application page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/ApplicationTopic.kt) has an example of both Recycling and Regular groups.
+The demo
+app's [Apply page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/ApplyTopic.kt)
+has an example of both Recycling and Regular groups.
 
 
 ### Behavior
@@ -378,22 +613,49 @@ The following comprise the full list of Regular `ShadowsViewGroup`s:
 + `ShadowsRadioGroup`
 + `ShadowsRelativeLayout`
 
-As with the Recycling groups, they all implement `ShadowsViewGroup` and are located in `com.zedalpha.shadowgadgets.view.viewgroup`. Each is a drop-in replacement for the base `ViewGroup` in both code and XML.
+As with the Recycling groups, they all implement `ShadowsViewGroup` and are
+located in `com.zedalpha.shadowgadgets.view.viewgroup`. Each is a drop-in
+replacement for the base `ViewGroup` in both code and XML.
 
 <br />
 
-
 ## Drawable
 
-As with the other `Clipped` components, `ClippedShadowDrawable` is now deprecated, replaced with `ShadowDrawable` located in the `drawable` subpackage. Like the other tools, the drawable has been updated and renamed to support color compat, which is realized here with a simple `var colorCompat: Int` property. Its default value is black – specifically, `#FF000000` – and if you set any other value, the color compat mechanism takes over to tint the shadow manually, ignoring the `ambientColor` and `spotColor` values.
++ [Invalidation](#invalidation)
++ [Bounds](#bounds)
++ [Disposal](#disposal)
 
-The drawable now includes a constructor parameter to choose between clipped or unclipped versions, for the same reason that an unclipped `View` option is offered: to skip the potentially expensive clip operation if you're going to draw over that area anyway.
+---
 
-`ShadowDrawable` is essentially a very thin wrapper around the core classes used to draw these shadows in the other tools. It's provided mainly as a convenience for those who would like to be able to draw these manually without having to mess with the `core` module directly. It requires a hardware-accelerated `Canvas` to work, as do all of the tools, and there are a few ways in which it does not act like a regular `Drawable`.
+As with the other `Clipped` components, `ClippedShadowDrawable` is now
+deprecated, replaced with `ShadowDrawable` located in the `drawable` subpackage.
+Like the other tools, the drawable has been updated and renamed to support color
+compat, which is realized here with a simple `var colorCompat: Int` property.
+Its default value is black – specifically, `#FF000000` – and if you set any
+other value, the color compat mechanism takes over to tint the shadow manually,
+ignoring the `ambientColor` and `spotColor` values.
+
+The drawable now includes a constructor parameter to choose between clipped or
+unclipped versions, for the same reason that an unclipped `View` option is
+offered: to skip the potentially expensive clip operation if you're going to
+draw over that area anyway.
+
+`ShadowDrawable` is essentially a very thin wrapper around the core classes used
+to draw these shadows in the other tools. It's provided mainly as a convenience
+for those who would like to be able to draw these manually without having to
+mess with the `core` module directly. It requires a
+hardware-accelerated `Canvas` to work, as do all of the tools, and there are a
+few ways in which it does not act like a regular `Drawable`.
 
 ### Invalidation
 
-The most important caveat here is that you are responsible for invalidating the drawable anytime a relevant property changes. That is, if you change its rotation, for example, you need to invalidate the current draw. If the drawable's callback is set appropriately - e.g., like it would be when acting as a `View`'s background – then you likely need only to call `invalidateSelf()` on it. Otherwise, you'll need to `invalidate()` the `View` you're drawing in, or perform the analogous action in whatever context you're in.
+The most important caveat here is that you are responsible for invalidating the
+drawable anytime a relevant property changes. That is, if you change its
+rotation, for example, you need to invalidate the current draw. If the
+drawable's callback is set appropriately - e.g., like it would be when acting as
+a `View`'s background – then you likely need only to call `invalidateSelf()` on
+it. Otherwise, you'll need to `invalidate()` the `View` you're drawing in, or
+perform the analogous action in whatever context you're in.
 
 Depending on the current internal configuration, the drawable could simply not redraw at all until you invalidate, or you could possibly end up with a worse artifact than the clip is meant to fix, if the draw goes out of sync while that's in use.
 
@@ -405,30 +667,70 @@ The drawable's bounds do not affect the size, shape, or location of the shadow d
 
 A compositing layer is necessary any time the `colorCompat` value is set to any color that's not black and not transparent. Also, due to platform variations, a layer is necessary for even default black shadows on API levels 24 through 28, so the bounds warning applies for all colors on those versions.
 
-If you intend to use `colorCompat`, you must use the constructor that takes a `View`, and it must be one that is attached to the on-screen hierarchy; usually, just the one you're drawing in. If one is not provided, no tint will be applied, and the shadow will simply draw in the default black.
+If you intend to use `colorCompat`, you must use the constructor that takes
+a `View`, and it must be one that is attached to the on-screen hierarchy;
+usually, just the one you're drawing in. If one is not provided, no tint will be
+applied, and the shadow will simply draw in the default black.
 
 `Drawable`'s required `setColorFilter()` override is a no-op.
 
 ### Disposal
 
-It is rather important to `dispose()` of these drawables when appropriate – e.g., in a `Fragment`'s `onDestroyView()`. This is technically not necessary if the drawable was created with the `@RequiresApi(29)` constructor that doesn't take a `View`, but it is still safe to call `dispose()` on those instances. Use after disposal is not an automatic `Exception` but it's not advised, and there is no guaranteed behavior.
+It is rather important to `dispose()` of these drawables when appropriate –
+e.g., in a `Fragment`'s `onDestroyView()`. This is technically not necessary if
+the drawable was created with the `@RequiresApi(29)` constructor that doesn't
+take a `View`, but it is still safe to call `dispose()` on those instances. Use
+after disposal is not an automatic `Exception` but it's not advised, and there
+is no guaranteed behavior.
 
-The [second color compat page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/CompatDrawableTopic.kt) in the demo app shows an example drawable that's been customized to automatically center, along with some controls to fiddle with the color and rotation and such.
+The [second color compat page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/CompatDrawableTopic.kt)
+in the demo app shows an example drawable that's been customized to
+automatically center, along with some controls to fiddle with the color and
+rotation and such.
 
 <br />
 
+## Notes for Views
+
++ The bug with `Inline` shadows in non-library parents that was previously noted
+  above has been resolved. However, due to variations in the platform, such
+  shadows on those versions require a layer and will always be clipped to their
+  parents' bounds.
+
++ To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped
+  in a custom implementation. This has the possibility of breaking something if
+  some function or component is expecting the `View` to have one of the static
+  platform implementations; i.e., `ViewOutlineProvider.BACKGROUND`, `BOUNDS`,
+  or `PADDED_BOUNDS`. This shouldn't cause a fatal error, or anything – it's no
+  different than anything else that uses a custom `ViewOutlineProvider` – but
+  you might need to rework some background drawables or the like.
+
+  This also means that if you are using a custom `ViewOutlineProvider` of your
+  own on a target, it should be set _before_ enabling the clipped shadow, or at
+  least before the target `View` attaches to its `Window`.
+
++ If you only need the fix for `View`s in a simple static setup or two – e.g., a
+  basic `CardView` – you might prefer to put something together from the core
+  techniques demonstrated
+  in [this Stack Overflow answer](https://stackoverflow.com/a/70076301). The
+  main benefits of this library are its additional features on top of those
+  methods, like its automatic handling of target state and animations. If that
+  core solution is sufficient, you probably don't want the overhead here.
+
++ The layout inflation helpers' description and demonstration have been wholly
+  removed to the
+  wiki ([link](https://github.com/zed-alpha/shadow-gadgets/wiki/Layout_Inflation_Reference)).
+  They are a rather niche tool, unlikely of much use to others, and probably
+  won't be updated any further, apart from possible minor maintenance.
+
+<br />
 
 ## **Compose**
 
-## Experimental
-
-Color compat in Compose currently requires `@OptIn`, as it still needs some improvements and fine-tuning. Additionally, color compat here is currently accomplished similarly to how `Inline` shadows are handled for Views, meaning the same internal requirements and overhead apply to this. Please refer to [the Performance and overhead section](#performance-and-overhead) for Views.
-
-The [last page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/CompatStressTestTopic.kt) in the demo app has a stress test setup for Compose that's visually identical to the one for Views, apart from some minor irrelevant color variations, so you can compare them side by side.
-
 ## Modifier.clippedShadow()
 
-`clippedShadow()` behaves just like `shadow()`, and the base function has the exact same signature:
+`clippedShadow()` behaves just like `shadow()`, and the base function has the
+exact same signature:
 
 ```kotlin
 fun Modifier.clippedShadow(
@@ -464,75 +766,126 @@ Color compat has been added to `clippedShadow()` with an overload:
 
 ```kotlin
 fun Modifier.clippedShadow(
-    elevation: Dp,
-    shape: Shape = RectangleShape,
-    clip: Boolean = elevation > 0.dp,
-    ambientColor: Color = DefaultShadowColor,
-    spotColor: Color = DefaultShadowColor,
-    colorCompat: Color? = DefaultShadowColor,
-    forceColorCompat: Boolean = false
+  elevation: Dp,
+  shape: Shape = RectangleShape,
+  clip: Boolean = elevation > 0.dp,
+  ambientColor: Color = DefaultShadowColor,
+  spotColor: Color = DefaultShadowColor,
+  colorCompat: Color? = DefaultShadowColor,
+  forceColorCompat: Boolean = false
 )
 ```
 
-`forceColorCompat` acts like the corresponding `View` property to force the compat mechanism to be used on API levels >= 28, for testing and comparisons and whatnot.
+`forceColorCompat` acts like the corresponding `View` property to force the
+compat mechanism to be used on API levels >= 28, for testing and comparisons and
+whatnot.
 
-The `colorCompat` parameter defaults to black, but is also nullable to allow a special behavior that's described in the next section.
-
-## Modifier.shadowCompat()
-
-This one is for use when you only need the color compat functionality without the clip, in order to save some overhead:
-
-```kotlin
-fun Modifier.shadowCompat(
-    elevation: Dp,
-    shape: Shape = RectangleShape,
-    clip: Boolean = elevation > 0.dp,
-    ambientColor: Color = DefaultShadowColor,
-    spotColor: Color = DefaultShadowColor,
-    colorCompat: Color? = null,
-    forceColorCompat: Boolean = false
-)
-```
-
-It has the same parameter list as the `clippedShadow()` overload, but here `colorCompat`'s default value is null, which causes it to be automatically calculated as a blend of the supplied `ambientColor` and `spotColor`, in the same manner as described for `ShadowColorsBlender` in [the Color compat section](#color-compat) above. A separate helper object is not necessary here, though, since the ambient and spot are always supplied and simply ignored on older versions, where we can use them to figure our stand-in color. You can disable this behavior by simply providing any non-null value for `colorCompat`.
-
-The [first color compat page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/ComposeIntroPanel.kt) in the demo app is set up to demonstrate these unclipped, tinted shadows with automatic color blending alongside the analogous View version.
+The `colorCompat` parameter defaults to black, but is also nullable to allow a
+special behavior that's described in the next section.
 
 <br />
 
+## Modifier.shadowCompat()
+
+This one is for use when you only need the color compat functionality without
+the clip, in order to save some overhead:
+
+```kotlin
+fun Modifier.shadowCompat(
+  elevation: Dp,
+  shape: Shape = RectangleShape,
+  clip: Boolean = elevation > 0.dp,
+  ambientColor: Color = DefaultShadowColor,
+  spotColor: Color = DefaultShadowColor,
+  colorCompat: Color? = null,
+  forceColorCompat: Boolean = false
+)
+```
+
+It has the same parameter list as the `clippedShadow()` overload, but
+here `colorCompat`'s default value is null, which causes it to be automatically
+calculated as a blend of the supplied `ambientColor` and `spotColor`, in the
+same manner as described for `ShadowColorsBlender`
+in [the Color compat section](#color-compat) above. A separate helper object is
+not necessary here, though, since the ambient and spot are always supplied and
+simply ignored on older versions, where we can use them to figure our stand-in
+color. You can disable this behavior by passing any non-null value
+for `colorCompat`.
+
+The [first color compat page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/ComposeIntroPanel.kt)
+in the demo app is set up to demonstrate these unclipped, tinted shadows with
+automatic color blending alongside the analogous View version.
+The [last page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/compat/CompatStressTestTopic.kt)
+has a color compat "stress test" setup for Compose that's visually identical to
+the one for Views, apart from some minor irrelevant color variations, so you can
+compare them side by side.
+
+<br />
+
+## Notes for Compose
+
++ Color compat in Compose currently requires `@OptIn`, as it still needs some
+  improvements and fine-tuning.
+
++ Color compat here is currently accomplished similarly to how `Inline` shadows
+  are handled for Views, meaning the same internal requirements and overhead
+  apply to this. Please refer
+  to [the Performance and overhead section](#performance-and-overhead) above.
+
+<br />
 
 ## **General**
 
-## Notes
+## Project notes
 
-+ [2.2.0-beta](https://github.com/zed-alpha/shadow-gadgets/releases/tag/2.2.0-beta) has been marked as a pre-release, so it doesn't show in the sidebar, apparently, even though it's listed at the top of [the Releases page](https://github.com/zed-alpha/shadow-gadgets/releases).
++ [2.2.0-beta](https://github.com/zed-alpha/shadow-gadgets/releases/tag/2.2.0-beta)
+  has been marked as a pre-release, so it doesn't show in the sidebar,
+  apparently, even though it's listed at the top
+  of [the Releases page](https://github.com/zed-alpha/shadow-gadgets/releases).
 
-+ The actual documentation in the wiki is extremely out of date, and has been mostly unlinked from here until I can update it for the current API. Until then, this too-long README and the examples in the demo module will have to serve as ad hoc docs.
+  **NB:** For some reason, a JitPack build from a previous untagged commit is
+  showing as newer than this. Ignore that; 2.2.0-beta is the newest. Apparently
+  it's not possible to delete anything on JitPack once it builds successfully,
+  so I think we might be stuck with that.
 
-+ The bug with `Inline` shadows in non-library parents that was previously noted above has been resolved. However, due to variations in the platform, such shadows on those versions require a layer and will always be clipped to their parents' bounds.
++ **NB:** The clip area for clipped shadows has been inset on all sides by the
+  slightest bit possible in order to address a couple of potential visual and
+  internal issues. I'm not sure that the difference is really noticeable, even
+  in the demo app with the alphas raised significantly, but if this change is
+  going to be problematic, I'm happy to rework it as an optional setting. This
+  is one of the reasons for the beta version of this release.
 
-+ The clip area for clipped shadows has been inset on all sides by the slightest bit possible in order to address a couple of potential visual and internal issues. I'm not sure that the difference is really noticeable, even in the demo app with the alphas raised significantly, but if this change is going to be problematic, I'm happy to rework it as an optional setting. This is one of the reasons for the beta version of this release.
++ The native ambient and spot shadow colors are supported on Pie and above,
+  technically. They absolutely do work for Q+, but I cannot get the native
+  shadow colors to work _at all_ on Pie itself, with or without this library
+  involved. All of the relevant methods and attributes were introduced with that
+  version, and the documentation indicates that they should work like normal,
+  but none of the emulators I've tested on show anything but black shadows. The
+  code is in place here for Pie, though, if it's somehow functional for other
+  installations. The demo
+  app's [Intro page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/IntroTopic.kt)
+  has a setup that lets you fiddle with the shadow color, so that could be used
+  as a quick test, if you're curious. It is set up to fall back to the new color
+  compat mechanism for API levels <28, but 28 itself uses the native ambient and
+  spot colors.
 
-+ If you only need the fix for `View`s in a simple static setup or two – e.g., a basic `CardView` – you might prefer to put something together from the core techniques demonstrated in [this Stack Overflow answer](https://stackoverflow.com/a/70076301). The main benefits of this library are its additional features on top of those methods, like its automatic handling of target state and animations. If that core solution is sufficient, you probably don't want the overhead here.
++ The actual documentation in the wiki is extremely out of date, and has been
+  mostly unlinked from here until I can update it for the current API. Until
+  then, this too-long README and the examples in the demo module will have to
+  serve as ad hoc docs.
 
-+ The native ambient and spot shadow colors are supported on Pie and above, technically. They absolutely do work for Q+, but I cannot get the native shadow colors to work _at all_ on Pie itself, with or without this library involved. All of the relevant methods and attributes were introduced with that version, and the documentation indicates that they should work like normal, but none of the emulators I've tested on show anything but black shadows. The code is in place here for Pie, though, if it's somehow functional for other installations. The demo app's [Intro page](/demo/src/main/java/com/zedalpha/shadowgadgets/demo/topic/IntroTopic.kt) has a setup that lets you fiddle with the shadow color, so that could be used as a quick test, if you're curious. It is set up to fall back to the new color compat mechanism for API levels <28, but 28 itself uses the native ambient and spot colors.
-
-+ To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped in a custom implementation. This has the possibility of breaking something if some function or component is expecting the `View` to have one of the static platform implementations; i.e., `ViewOutlineProvider.BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`. This shouldn't cause a fatal error, or anything – it's no different than anything else that uses a custom `ViewOutlineProvider` – but you might need to rework some background drawables or the like.
-
-    This also means that if you are using a custom `ViewOutlineProvider` of your own on a target, it should be set _before_ enabling the clipped shadow, or at least before the target `View` attaches to its `Window`.
-
-+ To be able to draw the clipped shadows in the `Background` plane, the parent `ViewGroup` itself must have a non-null background. If it does not have one at the time that such a shadow is added, a special library `object` is set automatically. For efficiency, this is the only time it is checked, so you should _not_ set the parent's background to specifically `null` any time it has `Background` shadows active. Any other non-null value is perfectly fine, but otherwise, the clipped shadows in that plane may end up drawing on the wrong background, possibly disappearing completely.
-
-+ The layout inflation helpers' description and demonstration have been wholly removed to the wiki ([link](https://github.com/zed-alpha/shadow-gadgets/wiki/Layout_Inflation_Reference)). They are a rather niche tool, unlikely of much use to others, and probably won't be updated any further, apart from possible minor maintenance.
-
-+ The demo app was designed and tested on 1080x1920 xxhdpi devices and not much else, so things might not look that great on other configurations. Just a heads up.
++ The demo app was designed and tested on 1080x1920 xxhdpi devices and not much
+  else, so things might not look that great on other configurations. Just a
+  heads up.
 
 <br />
 
 
 ## Download
 
-The initial releases are available through JitPack. In the appropriate `repositories`, simply add their Maven URL:
+If you'd prefer a pre-compiled dependency, it's available through the very handy
+service [JitPack](https://jitpack.io). In the appropriate `repositories`, simply
+add their Maven URL:
 
 ```gradle
 repositories {

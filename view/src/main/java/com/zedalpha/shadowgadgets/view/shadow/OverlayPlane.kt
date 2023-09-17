@@ -68,10 +68,10 @@ internal open class OverlayPlane(
         shadows.forEach { shadow ->
             if (shadow.checkInvalidate()) {
                 invalidatePlane()
+                layers.refresh()
                 return
             }
         }
-        layers.refresh()
     }
 
     @CallSuper

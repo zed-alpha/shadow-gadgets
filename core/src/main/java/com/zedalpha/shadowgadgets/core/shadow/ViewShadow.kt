@@ -154,7 +154,7 @@ internal class ViewShadow(ownerView: View) : CoreShadow() {
     }
 
     override fun onDraw(canvas: Canvas) {
-        painter.drawView(canvas, shadowView)
+        painter.drawShadowView(canvas, shadowView)
     }
 }
 

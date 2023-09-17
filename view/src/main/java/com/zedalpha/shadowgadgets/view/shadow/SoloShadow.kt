@@ -32,7 +32,7 @@ internal class SoloShadow(private val targetView: View) : ViewShadow {
         targetView.clipOutlineShadow
     ) {
         override fun draw(canvas: Canvas) {
-            if (!(isShown && targetView.checkDrawAndUpdate(coreShadow))) return
+            if (!(targetView.updateAndCheckDraw(coreShadow) && isShown)) return
 
             updateBounds()
 
@@ -77,6 +77,8 @@ internal class SoloShadow(private val targetView: View) : ViewShadow {
     }
 
     private fun checkInvalidate(): Boolean {
+        if (!isShown) return false
+
         val target = targetView
         val shadow = drawable.coreShadow
 

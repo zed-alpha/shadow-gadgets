@@ -3,12 +3,23 @@ package com.zedalpha.shadowgadgets.view.shadow
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.widget.ExpandableListView
+import android.widget.GridView
+import android.widget.ListView
+import android.widget.StackView
 import androidx.annotation.CallSuper
+import androidx.recyclerview.widget.RecyclerView
 import com.zedalpha.shadowgadgets.core.layer.LocationTracker
+
 
 internal abstract class ShadowController(protected val parentView: ViewGroup) {
 
     protected val shadows = mutableMapOf<View, GroupShadow>()
+
+    protected val isRecyclingGroup =
+        RecyclingViewGroupClasses.any { groupClass ->
+            groupClass.isAssignableFrom(parentView.javaClass)
+        }
 
     private val attachListener =
         object : View.OnAttachStateChangeListener {
@@ -19,13 +30,11 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
 
             override fun onViewDetachedFromWindow(v: View) {
                 removePreDrawListener()
-                onParentViewDetached()
+                if (isRecyclingGroup) detachAllShadows()
             }
         }
 
     protected open fun onParentViewAttached() {}
-
-    protected open fun onParentViewDetached() {}
 
     private val tracker = LocationTracker(parentView)
 
@@ -89,4 +98,12 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
         // Must copy because detachFromTarget() modifies shadows
         shadows.values.toList().forEach { it.detachFromTarget() }
     }
+}
+
+internal val RecyclingViewGroupClasses = buildList {
+    add(RecyclerView::class.java)
+    add(ListView::class.java)
+    add(GridView::class.java)
+    add(ExpandableListView::class.java)
+    add(StackView::class.java)
 }

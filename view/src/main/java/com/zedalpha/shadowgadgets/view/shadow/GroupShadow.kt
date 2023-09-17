@@ -94,11 +94,13 @@ internal class GroupShadow(
     override var isShown = true
 
     override fun draw(canvas: Canvas) {
-        if (!(isShown && targetView.checkDrawAndUpdate(coreShadow))) return
+        if (!(targetView.updateAndCheckDraw(coreShadow) && isShown)) return
         coreShadow.draw(canvas)
     }
 
     fun checkInvalidate(): Boolean {
+        if (!isShown) return false
+
         val shadow = coreShadow
         val target = targetView
 

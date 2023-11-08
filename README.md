@@ -94,7 +94,7 @@ the SDK.
 + [**Documentation**](https://zed-alpha.github.io/shadow-gadgets)
 
   Generated from the upcoming 2.2.0's source, but it has everything from the
-  current one, too. Note that inherited members are suppressed, to prevent, for
+  current one, too. Note that inherited members are suppressed to prevent, for
   example, all of `ViewGroup`s members being listed for each `ShadowsViewGroup`.
 
 <br />
@@ -849,7 +849,7 @@ rotation and such.
   a couple of different ways to apply the library's custom properties by hooking
   into the inflation pipeline. I doubt that they're of much use to anyone else,
   so I stopped updating them. Their old README section was removed to
-  ([this wiki page](https://github.com/zed-alpha/shadow-gadgets/wiki/Layout-Inflation-Helpers)).
+  [this wiki page](https://github.com/zed-alpha/shadow-gadgets/wiki/Layout-Inflation-Helpers).
 
 <br />
 

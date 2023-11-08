@@ -11,6 +11,20 @@ import androidx.annotation.CallSuper
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 
 
+/**
+ * A custom [RadioGroup] that implements [ShadowsViewGroup].
+ *
+ * Apart from the additional handling of the library's shadow properties and
+ * draw operations, this group behaves just like its base class.
+ *
+ * Currently, this class directly extends its deprecated `Clipped` predecessor
+ * in order to keep everything working without making breaking changes during
+ * the transition. User code should not expect or rely on this fact, as the
+ * `Clipped*` classes will eventually be removed altogether.
+ *
+ * Also, due to this inheritance, and the settings chosen to generate minimal
+ * documentation, some of [ShadowsViewGroup]'s members do not show here.
+ */
 class ShadowsRadioGroup @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
@@ -28,25 +42,16 @@ class ShadowsRadioGroup @JvmOverloads constructor(
             super.childClippedShadowsPlane = value
         }
 
-    override var clipAllChildShadows: Boolean
-        get() = super.clipAllChildShadows
-        set(value) {
-            super.clipAllChildShadows = value
-        }
-
     override var childOutlineShadowsColorCompat
             by manager::childOutlineShadowsColorCompat
 
     override var forceChildOutlineShadowsColorCompat
             by manager::forceChildOutlineShadowsColorCompat
-
-    override var ignoreInlineChildShadows: Boolean
-        get() = super.ignoreInlineChildShadows
-        set(value) {
-            super.ignoreInlineChildShadows = value
-        }
 }
 
+/**
+ * Replaced by [ShadowsRadioGroup]
+ */
 @Deprecated("Replaced by ShadowsRadioGroup", ReplaceWith("ShadowsRadioGroup"))
 open class ClippedShadowRadioGroup @JvmOverloads constructor(
     context: Context,

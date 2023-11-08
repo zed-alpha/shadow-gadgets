@@ -9,14 +9,26 @@ import android.view.LayoutInflater
 import androidx.annotation.XmlRes
 
 
+/**
+ * Attaches the platform helper, and searches the theme and manifest for the
+ * (optional) matchers XML reference. Must be called before setContentView.
+ */
 fun Activity.attachShadowHelper() {
     attachShadowHelper(buildMatchersFromResources(this))
 }
 
+/**
+ * Attaches the platform helper with matchers built from the provided XML
+ * resource. Must be called before setContentView.
+ */
 fun Activity.attachShadowHelper(@XmlRes xmlResId: Int) {
     attachShadowHelper(buildMatchersFromXml(this, xmlResId))
 }
 
+/**
+ * Attaches the platform helper with the given list of matchers. Must be called
+ * before setContentView.
+ */
 fun Activity.attachShadowHelper(matchers: List<TagMatcher>) {
     layoutInflater.factory = ShadowHelperFactory(this, matchers)
 }
@@ -24,8 +36,8 @@ fun Activity.attachShadowHelper(matchers: List<TagMatcher>) {
 internal class ShadowHelperFactory(
     context: Context,
     matchers: List<TagMatcher>
-) :
-    LayoutInflater.Factory {
+) : LayoutInflater.Factory {
+
     private val helper = ShadowHelper(context, matchers)
 
     override fun onCreateView(
@@ -35,6 +47,11 @@ internal class ShadowHelperFactory(
     ) = helper.processTag(name, context, attrs)
 }
 
+/**
+ * A simple Application subclass that unconditionally sets the platform shadow
+ * inflater helper on every Activity instance that is created. Included mainly
+ * for illustrative purposes.
+ */
 class ShadowHelperApplication : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -49,16 +66,26 @@ class ShadowHelperApplication : Application() {
     }
 }
 
+/**
+ * This is an adapter interface with empty defaults for all of
+ * ActivityLifecycleCallbacks functions except the one.
+ */
 interface ActivityCreatedCallback : Application.ActivityLifecycleCallbacks {
+
+    // Overridden for dokka
+    override fun onActivityCreated(
+        activity: Activity,
+        savedInstanceState: Bundle?
+    )
+
     override fun onActivityStarted(activity: Activity) {}
     override fun onActivityResumed(activity: Activity) {}
     override fun onActivityPaused(activity: Activity) {}
     override fun onActivityStopped(activity: Activity) {}
+    override fun onActivityDestroyed(activity: Activity) {}
     override fun onActivitySaveInstanceState(
         activity: Activity,
         outState: Bundle
     ) {
     }
-
-    override fun onActivityDestroyed(activity: Activity) {}
 }

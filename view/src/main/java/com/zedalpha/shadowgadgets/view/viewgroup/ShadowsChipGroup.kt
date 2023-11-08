@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.zedalpha.shadowgadgets.view.viewgroup
 
 import android.content.Context
@@ -10,7 +12,22 @@ import com.google.android.material.chip.ChipGroup
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 
 
-@Suppress("DEPRECATION")
+/**
+ * A custom
+ * [ChipGroup](https://developer.android.com/reference/com/google/android/material/chip/ChipGroup)
+ *  that implements [ShadowsViewGroup].
+ *
+ * Apart from the additional handling of the library's shadow properties and
+ * draw operations, this group behaves just like its base class.
+ *
+ * Currently, this class directly extends its deprecated `Clipped` predecessor
+ * in order to keep everything working without making breaking changes during
+ * the transition. User code should not expect or rely on this fact, as the
+ * `Clipped*` classes will eventually be removed altogether.
+ *
+ * Also, due to this inheritance, and the settings chosen to generate minimal
+ * documentation, some of [ShadowsViewGroup]'s members do not show here.
+ */
 class ShadowsChipGroup @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -36,7 +53,9 @@ class ShadowsChipGroup @JvmOverloads constructor(
             by manager::forceChildOutlineShadowsColorCompat
 }
 
-@Suppress("DEPRECATION")
+/**
+ * Replaced by [ShadowsChipGroup]
+ */
 @Deprecated("Replaced by ShadowsChipGroup", ReplaceWith("ShadowsChipGroup"))
 open class ClippedShadowsChipGroup @JvmOverloads constructor(
     context: Context,

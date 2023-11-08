@@ -15,12 +15,12 @@ class Layer(
     private var width: Int,
     private var height: Int,
 ) {
-    private var paint = Paint()
-
-    private var layer = when {
+    private val layer = when {
         RenderNodeFactory.isOpen -> RenderNodeLayer(::contentDraw)
         else -> ViewLayer(ownerView, ::contentDraw)
     }.apply { setSize(width, height) }
+
+    private val paint = Paint()
 
     var color: Int = Color.TRANSPARENT
         set(value) {
@@ -48,8 +48,7 @@ class Layer(
 
     fun setSize(width: Int, height: Int) {
         if (this.width == width && this.height == height) return
-        this.width = width
-        this.height = height
+        this.width = width; this.height = height
         layer.setSize(width, height)
     }
 

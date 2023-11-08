@@ -11,6 +11,20 @@ import androidx.annotation.CallSuper
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 
 
+/**
+ * A custom [FrameLayout] that implements [ShadowsViewGroup].
+ *
+ * Apart from the additional handling of the library's shadow properties and
+ * draw operations, this group behaves just like its base class.
+ *
+ * Currently, this class directly extends its deprecated `Clipped` predecessor
+ * in order to keep everything working without making breaking changes during
+ * the transition. User code should not expect or rely on this fact, as the
+ * `Clipped*` classes will eventually be removed altogether.
+ *
+ * Also, due to this inheritance, and the settings chosen to generate minimal
+ * documentation, some of [ShadowsViewGroup]'s members do not show here.
+ */
 class ShadowsFrameLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -38,6 +52,9 @@ class ShadowsFrameLayout @JvmOverloads constructor(
             by manager::forceChildOutlineShadowsColorCompat
 }
 
+/**
+ * Replaced by [ShadowsFrameLayout]
+ */
 @Deprecated(
     "Replaced by ShadowsFrameLayout",
     ReplaceWith("ShadowsFrameLayout")

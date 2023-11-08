@@ -48,5 +48,5 @@ afterEvaluate {
 dependencies {
     implementation(project(":core"))
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.compose.ui:ui:1.5.1")
+    implementation("androidx.compose.ui:ui:1.5.4")
 }

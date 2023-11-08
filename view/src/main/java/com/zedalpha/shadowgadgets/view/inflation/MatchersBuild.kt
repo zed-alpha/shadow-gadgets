@@ -13,6 +13,10 @@ import com.zedalpha.shadowgadgets.view.R
 import org.xmlpull.v1.XmlPullParser
 
 
+/**
+ * Constant of the name for manifest `<meta-data>` elements that point to XML
+ * resources for tag matchers.
+ */
 const val META_DATA_TAG_MATCHERS =
     "com.zedalpha.shadowgadgets.SHADOW_TAG_MATCHERS"
 

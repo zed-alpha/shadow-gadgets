@@ -16,6 +16,13 @@ import com.zedalpha.shadowgadgets.compose.internal.baseShadow
 import com.zedalpha.shadowgadgets.compose.internal.blend
 
 
+/**
+ * Creates a clipped replacement for the regular shadow.
+ *
+ * Refer to
+ * [shadow's documentation](https://developer.android.com/reference/kotlin/androidx/compose/ui/draw/package-summary#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color))
+ * for parameter details.
+ */
 @OptIn(ExperimentalColorCompat::class)
 @Stable
 fun Modifier.clippedShadow(
@@ -34,6 +41,11 @@ fun Modifier.clippedShadow(
     forceColorCompat = false
 )
 
+/**
+ * A [clippedShadow] overload that can be tinted with the color compat mechanism.
+ *
+ * Refer to [shadowCompat] for color compat details.
+ */
 @ExperimentalColorCompat
 @Stable
 fun Modifier.clippedShadow(

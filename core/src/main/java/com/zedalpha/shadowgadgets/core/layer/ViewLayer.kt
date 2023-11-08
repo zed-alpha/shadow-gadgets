@@ -26,7 +26,7 @@ internal class ViewLayer(
 
     private var layerView = createLayerView()
 
-    private var painter = ViewPainterProxy(ownerView, layerView)
+    private val painter = ViewPainterProxy(ownerView, layerView)
 
     override fun recreate() {
         val newLayerView = createLayerView()

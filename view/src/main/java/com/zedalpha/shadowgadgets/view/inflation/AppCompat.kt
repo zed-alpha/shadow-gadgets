@@ -24,20 +24,69 @@ import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 
 
+/**
+ * Attaches the helper for AppCompat themes, and searches the theme and manifest
+ * for the (optional) matchers XML reference. Must be called before
+ * super.onCreate.
+ */
 fun AppCompatActivity.attachAppCompatShadowHelper() {
     attachAppCompatShadowHelper(buildMatchersFromResources(this))
 }
 
+/**
+ * Attaches the helper for AppCompat themes with matchers built from the
+ * provided XML resource. Must be called before super.onCreate.
+ */
 fun AppCompatActivity.attachAppCompatShadowHelper(@XmlRes xmlResId: Int) {
     attachAppCompatShadowHelper(buildMatchersFromXml(this, xmlResId))
 }
 
+/**
+ * Attaches the helper for AppCompat themes with the given list of matchers.
+ * Must be called before super.onCreate
+ */
 fun AppCompatActivity.attachAppCompatShadowHelper(matchers: List<TagMatcher>) {
     tagMatchers = matchers
     theme.applyStyle(R.style.ThemeOverlay_ShadowGadgets_AppCompat, true)
 }
 
-// Must be public. Instantiated by AppCompatDelegateImpl from theme attribute value.
+/**
+ * A specialized [AppCompatViewInflater] that hooks into the layout inflation
+ * pipeline to apply the library's custom properties to selected Views.
+ *
+ * This is not meant to be used directly, but it must be public so that the
+ * androidx appcompat framework has access. It can be applied either through
+ * resources with an XML theme attribute, or by doing the equivalent thing in
+ * code with a helper function.
+ *
+ * For example, using an XML theme:
+ *
+ * ```xml
+ * <style name="Theme.YourApp" parent="Theme.AppCompat…">
+ *     …
+ *     <!-- Can use the fully qualified class name instead of the @string. -->
+ *     <item name="viewInflaterClass">@string/appcompat_shadow_helper</item>
+ * </style>
+ * ```
+ *
+ * Or, using a helper function, which simply adds the attribute setting to the
+ * current theme programmatically:
+ *
+ * ```kotlin
+ * class YourActivity : AppCompatActivity() {
+ *     override fun onCreate(savedInstanceState: Bundle?) {
+ *         attachAppCompatShadowHelper()
+ *         super.onCreate(savedInstanceState)
+ *         …
+ *     }
+ * }
+ * ```
+ *
+ * On its own, the helper looks for any tag with
+ * `app:clipOutlineShadow="true"`.
+ * For any other selection criteria one might need, the helper can use any
+ * number of [TagMatcher]s. Refer to its documentation for details.
+ */
 class AppCompatShadowHelper : AppCompatViewInflater() {
 
     private lateinit var helper: ShadowHelper

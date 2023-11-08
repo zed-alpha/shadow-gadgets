@@ -24,7 +24,7 @@ internal class ViewShadow(ownerView: View) : CoreShadow() {
         }
     }
 
-    private var painter = ViewPainterProxy(ownerView)
+    private val painter = ViewPainterProxy(ownerView)
 
     override fun dispose() {
         painter.dispose()

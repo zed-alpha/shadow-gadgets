@@ -65,6 +65,9 @@ open class ShadowDrawable private constructor(
      * The base constructor for all API levels requires an [ownerView] in order
      * to be able to hook into the hardware-accelerated draw routine.
      *
+     * This View must be attached to the on-screen hierarchy; usually, it's just
+     * the one in which the draw happens.
+     *
      * [isClipped] determines whether the drawable will draw a clipped or a
      * regular shadow, the latter being useful when color compat is needed
      * without the clipping.
@@ -78,7 +81,8 @@ open class ShadowDrawable private constructor(
     )
 
     /**
-     * At API level 29, no owner View is needed.
+     * At API level 29, an owner View is not required, but color compat is
+     * unavailable for these instances.
      *
      * [isClipped] determines whether the drawable will draw a clipped or a
      * regular shadow, the latter being useful when color compat is needed
@@ -205,7 +209,9 @@ open class ShadowDrawable private constructor(
         set(value) {
             if (field == value) return
             field = value
-            if (layer == null) coreShadow.ambientColor = value
+            if (layer == null) {
+                coreShadow.ambientColor = value
+            }
         }
 
     @get:ColorInt
@@ -214,7 +220,9 @@ open class ShadowDrawable private constructor(
         set(value) {
             if (field == value) return
             field = value
-            if (layer == null) coreShadow.spotColor = value
+            if (layer == null) {
+                coreShadow.spotColor = value
+            }
         }
 
     @get:ColorInt

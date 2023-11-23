@@ -1,9 +1,14 @@
--if class androidx.appcompat.app.AppCompatViewInflater
--keep class com.zedalpha.shadowgadgets.view.inflation.AppCompatShadowHelper {
-    <init>();
-}
+-if class androidx.constraintlayout.motion.widget.KeyFrames
+-keep class androidx.constraintlayout.motion.widget.KeyAttributes
 
--if class androidx.appcompat.app.AppCompatViewInflater
--keep class com.zedalpha.shadowgadgets.view.inflation.MaterialComponentsShadowHelper {
-    <init>();
-}
+-if class androidx.constraintlayout.motion.widget.KeyFrames
+-keep class androidx.constraintlayout.motion.widget.KeyPosition
+
+-if class androidx.constraintlayout.motion.widget.KeyFrames
+-keep class androidx.constraintlayout.motion.widget.KeyCycle
+
+-if class androidx.constraintlayout.motion.widget.KeyFrames
+-keep class androidx.constraintlayout.motion.widget.KeyTimeCycle
+
+-if class androidx.constraintlayout.motion.widget.KeyFrames
+-keep class androidx.constraintlayout.motion.widget.KeyTrigger

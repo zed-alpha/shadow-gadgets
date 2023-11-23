@@ -46,7 +46,7 @@ class ClippedShadow private constructor(
             if (getOutlineRect(outline, bounds) && !bounds.isEmpty) {
                 val outlineRadius = getOutlineRadius(outline)
                 path.addRoundRect(
-                    tmpRectF.apply { set(bounds); inset(0.5F, 0.5F) },
+                    tmpRectF.apply { set(bounds) },
                     outlineRadius,
                     outlineRadius,
                     Path.Direction.CW

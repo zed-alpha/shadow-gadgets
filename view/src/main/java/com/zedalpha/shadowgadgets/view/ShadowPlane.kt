@@ -71,8 +71,7 @@ var View.shadowPlane: ShadowPlane
     }
 
 /**
- * Determines where a target View's library shadow is inserted into the
- * hierarchy's draw routine.
+ * Replaced by [ShadowPlane]
  */
 @Deprecated("Replaced by ShadowPlane", ReplaceWith("ShadowPlane"))
 typealias ClippedShadowPlane = ShadowPlane

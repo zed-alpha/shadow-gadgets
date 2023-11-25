@@ -47,8 +47,8 @@ enum class ShadowPlane {
      *   [ignoreInlineChildShadows][com.zedalpha.shadowgadgets.view.viewgroup.ShadowsViewGroup.ignoreInlineChildShadows]
      *   set to false.
      *
-     * Refer to
-     * [the README](https://github.com/zed-alpha/shadow-gadgets/blob/master/README.md#inline-plane)
+     * Refer to [ShadowPlane's wiki
+     * page](https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowPlane#inline-plane)
      * for further details.
      */
     Inline;

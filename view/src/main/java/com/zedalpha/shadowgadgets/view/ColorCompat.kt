@@ -72,6 +72,9 @@ var View.forceOutlineShadowColorCompat: Boolean
  * This is a passive flag that should be set during initialization. Modifying
  * its value while a library shadow is active will not automatically update that
  * instance.
+ *
+ * More information is available on
+ * [this wiki page](https://github.com/zed-alpha/shadow-gadgets/wiki/View.forceShadowLayer).
  */
 var View.forceShadowLayer: Boolean
     get() = getTag(R.id.force_shadow_layer) == true

@@ -24,6 +24,17 @@ import kotlin.math.roundToInt
  * allowing its shadows to be drawn manually without having to use the core
  * module directly.
  *
+ * Clipped instances with irregular shapes on API levels 30+ must have the
+ * shape Path set manually using the [setClipPathProvider] function. This is
+ * analogous to setting a
+ * [ViewPathProvider][com.zedalpha.shadowgadgets.view.ViewPathProvider] on a
+ * target View.
+ *
+ * This drawable suffers from the same potential clip alignment glitch that the
+ * View solution does on API levels 24..28. The [forceLayer] property is
+ * available to address the issue as described for
+ * [View.forceShadowLayer][com.zedalpha.shadowgadgets.view.forceShadowLayer].
+ *
  * All ShadowDrawable instances created with an [ownerView] should call
  * [dispose]. This is technically not necessary for the @RequiresApi(29) ones,
  * but it is still safe to call [dispose] on those instances. Use after disposal
@@ -70,9 +81,11 @@ open class ShadowDrawable private constructor(
      *
      * [isClipped] determines whether the drawable will draw a clipped or a
      * regular shadow, the latter being useful when color compat is needed
-     * without the clipping.
+     * without the clip. Clipped instances with irregular shapes on API levels
+     * 30+ require that the shape Path be set manually through
+     * [setClipPathProvider].
      *
-     * It's rather important to [dispose] of these instances when appropriate.
+     * It is rather important to [dispose] of these instances when appropriate.
      */
     constructor(ownerView: View, isClipped: Boolean) : this(
         if (isClipped) ClippedShadow(ownerView) else Shadow(ownerView),
@@ -86,7 +99,9 @@ open class ShadowDrawable private constructor(
      *
      * [isClipped] determines whether the drawable will draw a clipped or a
      * regular shadow, the latter being useful when color compat is needed
-     * without the clipping.
+     * without the clip. Clipped instances with irregular shapes on API levels
+     * 30+ require that the shape Path be set manually through
+     * [setClipPathProvider].
      *
      * It is not necessary to call [dispose] on these instances, but it is safe
      * to do so.
@@ -121,88 +136,150 @@ open class ShadowDrawable private constructor(
         layer?.dispose()
     }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#setAlpha(float)),
+     * but taking an Int to conform to Drawable's interface.
+     */
     @CallSuper
     override fun setAlpha(alpha: Int) {
         coreShadow.alpha = alpha / 255F
     }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#getAlpha()),
+     * but returning an Int to conform to Drawable's interface.
+     */
     @CallSuper
     override fun getAlpha(): Int {
         return (255 * coreShadow.alpha).roundToInt()
     }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getCameraDistance()).
+     */
     var cameraDistance: Float
         get() = coreShadow.cameraDistance
         set(value) {
             coreShadow.cameraDistance = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getElevation()).
+     */
     var elevation: Float
         get() = coreShadow.elevation
         set(value) {
             coreShadow.elevation = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getPivotX()).
+     */
     var pivotX: Float
         get() = coreShadow.pivotX
         set(value) {
             coreShadow.pivotX = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getPivotY()).
+     */
     var pivotY: Float
         get() = coreShadow.pivotY
         set(value) {
             coreShadow.pivotY = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getRotationX()).
+     */
     var rotationX: Float
         get() = coreShadow.rotationX
         set(value) {
             coreShadow.rotationX = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getRotationY()).
+     */
     var rotationY: Float
         get() = coreShadow.rotationY
         set(value) {
             coreShadow.rotationY = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getRotationZ()).
+     */
     var rotationZ: Float
         get() = coreShadow.rotationZ
         set(value) {
             coreShadow.rotationZ = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getScaleX()).
+     */
     var scaleX: Float
         get() = coreShadow.scaleX
         set(value) {
             coreShadow.scaleX = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getScaleY()).
+     */
     var scaleY: Float
         get() = coreShadow.scaleY
         set(value) {
             coreShadow.scaleY = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getTranslationX()).
+     */
     var translationX: Float
         get() = coreShadow.translationX
         set(value) {
             coreShadow.translationX = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getTranslationY()).
+     */
     var translationY: Float
         get() = coreShadow.translationY
         set(value) {
             coreShadow.translationY = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getTranslationZ()).
+     */
     var translationZ: Float
         get() = coreShadow.translationZ
         set(value) {
             coreShadow.translationZ = value
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getAmbientShadowColor()).
+     */
     @get:ColorInt
     @setparam:ColorInt
     var ambientColor: Int = DefaultShadowColorInt
@@ -214,6 +291,10 @@ open class ShadowDrawable private constructor(
             }
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getSpotShadowColor()).
+     */
     @get:ColorInt
     @setparam:ColorInt
     var spotColor: Int = DefaultShadowColorInt
@@ -225,6 +306,19 @@ open class ShadowDrawable private constructor(
             }
         }
 
+    /**
+     * The color that the compat mechanism uses to tint the shadow.
+     * The default value is black (#FF000000), which disables the tint. If any
+     * other color is set, the compat mechanism takes over, and the ambient and
+     * spot values are ignored.
+     *
+     * Color compat requires that the drawable instance be created with a View
+     * object that's attached to the on-screen hierarchy. If the View is not
+     * attached to the hierarchy, there is no guaranteed behavior. If the
+     * @Requires29 constructor is used, color compat is ignored.
+     *
+     * Color compat shadows are always clipped to the drawable's bounds.
+     */
     @get:ColorInt
     @setparam:ColorInt
     var colorCompat: Int = DefaultShadowColorInt
@@ -234,21 +328,46 @@ open class ShadowDrawable private constructor(
             configureLayer()
         }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#setPosition(int,%20int,%20int,%20int)).
+     */
     fun setPosition(left: Int, top: Int, right: Int, bottom: Int) {
         coreShadow.setPosition(left, top, right, bottom)
     }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#setOutline(android.graphics.Outline)).
+     */
     fun setOutline(outline: Outline) {
         coreShadow.setOutline(outline)
     }
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#hasIdentityMatrix()).
+     */
     fun hasIdentityMatrix(): Boolean =
         coreShadow.hasIdentityMatrix()
 
+    /**
+     * Analogous to the corresponding
+     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#getMatrix(android.graphics.Matrix)).
+     */
     fun getMatrix(outMatrix: Matrix) {
         coreShadow.getMatrix(outMatrix)
     }
 
+    /**
+     * Flag to indicate whether the library shadow should always be composited
+     * through a layer, whether or not color compat is in use.
+     *
+     * Addresses the issue described for
+     * [View.forceShadowLayer][com.zedalpha.shadowgadgets.view.forceShadowLayer].
+     *
+     * This is a passive flag that should be set at initialization.
+     */
     var forceLayer = false
 
     private var layer: SoloLayer? = null

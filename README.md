@@ -3,45 +3,45 @@
 A utility library for Android with various tools that help to remedy a couple of
 shortcomings in the native material shadows.
 
-+ **Visual artifacts**
+**Visual artifacts**
 
-  Unsightly draw defects are visible on `View`s and `Composable`s with
-  see-through backgrounds.
+Unsightly draw defects are visible on `View`s and `Composable`s with
+see-through backgrounds.
 
-  <p align="center">
-  <img src="images/intro_clip_broken.png" 
-  alt="Examples of various translucent UI elements showing the artifacts." 
-  width="50%" />
-  </p>
+<p align="center">
+<img src="images/intro_clip_broken.png" 
+alt="Examples of various translucent UI elements showing the artifacts." 
+width="60%" />
+</p>
 
-  The clip tools use the same classes and methods that the native framework uses
-  to render shadows, simply replacing the originals with clipped copies.
+The clip tools use the same classes and methods that the native framework uses
+to render shadows, simply replacing the originals with clipped copies.
 
-  <p align="center">
-  <img src="images/intro_clip_fixed.png" 
-  alt="The above examples with the clip fix applied to each." 
-  width="50%" />
-  </p>
+<p align="center">
+<img src="images/intro_clip_fixed.png" 
+alt="The above examples with the clip fix applied to each." 
+width="60%" />
+</p>
 
-+ **Color support**
+**Color support**
 
-  Shadow colors were not added to the SDK until API level 28 (Pie). Prior to
-  that, only the alpha values of plain black hues could be manipulated.
+Shadow colors were not added to the SDK until API level 28 (Pie). Prior to
+that, only the alpha values of plain black hues could be manipulated.
 
-  Like the clip feature, color compat uses the same native classes and methods,
-  replacing the originals with tinted copies. This can be used with or without
-  the clip functionality.
+Like the clip feature, color compat uses the same native classes and methods,
+replacing the originals with tinted copies. This can be used with or without
+the clip functionality.
 
-  <p align="center">
-  <img src="images/intro_color_compat.png" 
-  alt="Two shadows, one with native colors, the other tinted with color compat." 
-  width="50%" />
-  </p>
+<p align="center">
+<img src="images/intro_color_compat.png" 
+alt="Two shadows, one with native colors, the other tinted with color compat." 
+width="60%" />
+</p>
 
-  Tinting a shadow with this method allows only one color to be applied, rather
-  than the two – ambient and spot – that the native ones use on Pie and above.
-  Though the differences are noticeable when compared side by side, the compat
-  results are likely sufficient for many cases.
+Tinting a shadow with this method allows only one color to be applied, rather
+than the two – ambient and spot – that the native ones use on Pie and above.
+Though the differences are noticeable when compared side by side, the compat
+results are likely sufficient for many cases.
 
 <br />
 
@@ -67,27 +67,27 @@ instead.
 
 ## Contents
 
-+ [Views](#views)
++ [**Views**](#views)
 
   The `view` package contains several extension properties and helper classes
   to apply the library's clip fix and color compat functionalities in Android's
   native framework.
 
-+ [Compose](#compose)
++ [**Compose**](#compose)
 
   For the analogous features in the modern UI toolkit, the `compose` package
   comprises just two functions (and one overload) as direct replacements for the
   inbuilt shadow.
 
-+ [Project notes](#project-notes)
++ [**Project notes**](#project-notes)
 
   Important details, caveats, release notes, etc.
 
-+ [Download](#download)
++ [**Download**](#download)
 
   Available through JitPack.
 
-+ [Documentation][Documentation]
++ [**Documentation**][Documentation]
 
   Note that inherited members are suppressed to prevent, for example, all of
   `ViewGroup`s visible members being listed for each `ShadowsViewGroup`.
@@ -164,18 +164,18 @@ settings.
   between siblings.
 
   Details for the specific enum values and their respective behaviors and
-  requirements are given on the [ShadowPlane wiki page][ShadowPlaneWiki].
+  requirements are given on [the ShadowPlane wiki page][ShadowPlaneWiki].
 
 + #### Irregular shapes on Android R+
 
   `View`s that are not shaped as circles, plain rectangles, or single-radius
   round rectangles have their outlines defined by a `Path` field that became
-  inaccessible starting with API level 30. Targets using `clipOutlineShadow` on
-  those newer versions require that the user provide the `Path`. This is done
-  with the library's [`ViewPathProvider`][ViewPathProvider] interface and its
-  corresponding extension property, [`View.pathProvider`][pathProvider].
-  Details and examples of this feature are discussed on [its wiki
-  page][ViewPathProviderWiki].
+  inaccessible starting with API level 30. Such targets using
+  `clipOutlineShadow` on those newer versions require that the user provide
+  the `Path`. This is done with the library's
+  [`ViewPathProvider`][ViewPathProvider] interface and its corresponding
+  extension property, [`View.pathProvider`][pathProvider]. Details and examples
+  of this feature are discussed on [its wiki page][ViewPathProviderWiki].
 
 + #### Parent matrix on Android N-P
 
@@ -191,11 +191,10 @@ settings.
   </p>
 
   The exact underlying cause is currently unknown, and any targets using
-  `clipOutlineShadow` on API levels 24-28 that are children of parents that will
-  have a non-identity matrix applied, by any means, should be thoroughly tested
-  for this glitch. If found, the
-  [`View.forceShadowLayer`][forceShadowLayer] property can be used to
-  mitigate, as explained on [its wiki page][forceShadowLayerWiki].
+  `clipOutlineShadow` on API levels 24..28 that are children of parents that will
+  have a non-identity matrix applied, by any means, should be tested for this
+  glitch. If found, the [`View.forceShadowLayer`][forceShadowLayer] property can
+  be used to mitigate, as explained on [its wiki page][forceShadowLayerWiki].
 
 ### Color compat
 
@@ -205,7 +204,7 @@ implementation, since it uses a single color in place of the two native ones.
 As with the clip, this is designed to be easy and straightforward.
 
 ```kotlin
-view.outlineShadowColorCompat = android.graphics.Color.RED
+view.outlineShadowColorCompat = Color.RED
 ```
 
 The [`View.outlineShadowColorCompat`][outlineShadowColorCompat] property takes
@@ -228,15 +227,16 @@ Several specialized subclasses of common `ViewGroup`s are included mainly as
 helpers to set shadow properties on `View`s from attributes in layout XML,
 without the need for extra code. They all implement a [common
 interface][ShadowsViewGroup] with a few properties that are mostly conveniences
-for setting a single value on all of its children.
+for setting a single value on all child `View`s.
 
 These groups also have a special behavior with shadows in the
 [`Inline`][Inline] plane, to handle those rare cases where a library shadow
 must be interleaved between the target's siblings, but the required layout
 settings cannot be accommodated.
 
-The library's features work well in Android Studio's layout editor, so even if
-you don't intend to use them at runtime, they may still be useful during design.
+The library's features work rather well in Android Studio's layout preview, so
+even if you don't intend to use them at runtime, they may still be useful during
+design.
 
 <p align="center">
 <img src="images/layout_editor.png" 
@@ -245,9 +245,9 @@ that's automatically fixed a child's shadow in the design view."
 width="35%" />
 </p>
 
-Unfortunately, we lose some of the custom lint inspections for certain ones;
-e.g., the `MissingConstraints` inspection doesn't work inside
-`ShadowsConstraintLayout`. This will be corrected in a future version.
+Unfortunately, we lose some of the custom lint inspections; e.g., the
+`MissingConstraints` doesn't work inside `ShadowsConstraintLayout`. This will be
+corrected in a future version.
 
 Information on the two general types of groups – Regular and Recycling – along
 with descriptions of their behaviors and usage in layout XML can be found on
@@ -255,12 +255,12 @@ the [ViewGroups wiki page][ViewGroupsWiki].
 
 ### Drawable
 
-[`ShadowDrawable`][ShadowDrawable] thin wrapper around the core classes to
-allow these shadows to be drawn manually without having to work with the
+[`ShadowDrawable`][ShadowDrawable] is a thin wrapper around the core classes
+that allows these shadows to be drawn manually without having to work with the
 `core` module directly. As with the other tools, this class requires a
 hardware-accelerated `Canvas` to draw.
 
-Details on requirements and usage, and links to examples can be found on the
+Details on requirements and usage, and links to examples, can be found on the
 [Drawable wiki page][DrawableWiki].
 
 ### Notes for Views
@@ -297,7 +297,7 @@ Details on requirements and usage, and links to examples can be found on the
 
 ## Compose
 
-The Compose version of the library's features are achieved with just a few
+The Compose versions of the library's features are achieved with just a few
 custom modifier functions to replace the inbuilt [`shadow`][shadow].
 
 The base [`clippedShadow`][clippedShadow] is a drop-in replacement for the
@@ -342,21 +342,22 @@ Details and examples are to be found on the [Compose wiki page][ComposeWiki].
   version, and the documentation indicates that they should work like normal,
   but none of the emulators I've tested on show anything but black shadows. The
   code is in place here for Pie, though, if it's somehow functional for other
-  installations. The demo app's Intro page has a setup that lets you fiddle with
-  the shadow color, so that could be used as a quick test, if you're curious. It
-  is set up to fall back to the new color compat mechanism for API levels <28,
-  but 28 itself uses the native ambient and spot colors.
+  installations.
 
-+ The demo app was designed and tested on 1080x1920 xxhdpi devices and not much
-  else, so things might not look that great on other configurations. Just a
-  heads up.
+  The demo app's Intro page has a setup that lets you fiddle with the shadow
+  color, so that could be used as a quick test, if you're curious. It is set up
+  to fall back to the new color compat mechanism for API levels <28, but 28
+  itself uses the native ambient and spot colors.
+
++ The demo app was designed mostly by eye on 1080x1920 xxhdpi devices, so things
+  might not look that great on other configurations. Just a heads up.
 
 <br />
 
 
 ## Download
 
-If you'd prefer a pre-compiled dependency, it's available through the very handy
+If you'd prefer a compiled dependency, it's available through the very handy
 service [JitPack](https://jitpack.io). To enable download in a modern Gradle
 setup, add their Maven URL to the `repositories` block that's inside the
 `dependencyResolutionManagement` block in the root project's

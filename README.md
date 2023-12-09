@@ -9,8 +9,8 @@ Unsightly draw defects are visible on `View`s and `Composable`s with
 see-through backgrounds.
 
 <p align="center">
-<img src="images/intro_clip_broken.png" 
-alt="Examples of various translucent UI elements showing the artifacts." 
+<img src="images/intro_clip_broken.png"
+alt="Examples of various translucent UI elements showing the artifacts."
 width="60%" />
 </p>
 
@@ -18,8 +18,8 @@ The clip tools use the same classes and methods that the native framework uses
 to render shadows, simply replacing the originals with clipped copies.
 
 <p align="center">
-<img src="images/intro_clip_fixed.png" 
-alt="The above examples with the clip fix applied to each." 
+<img src="images/intro_clip_fixed.png"
+alt="The above examples with the clip fix applied to each."
 width="60%" />
 </p>
 
@@ -33,9 +33,9 @@ replacing the originals with tinted copies. This can be used with or without
 the clip functionality.
 
 <p align="center">
-<img src="images/intro_color_compat.png" 
-alt="Two shadows, one with native colors, the other tinted with color compat." 
-width="60%" />
+<img src="images/intro_color_compat.png"
+alt="Two shadows, one with native colors, the other tinted with color compat."
+width="40%" />
 </p>
 
 Tinting a shadow with this method allows only one color to be applied, rather
@@ -125,18 +125,18 @@ That's it. Unless your setup requires that a sibling `View` overlap a target
 of the fix, or it involves a target with an irregular shape on Android R and
 above, that's possibly all you need.
 
-The `Boolean`-value [`clipOutlineShadow`][clipOutlineShadow] extension property
-is basically a switch to toggle the fix on `View`s individually, and it's
-designed to mimic an intrinsic property as much as possible. Though the shadow
-is actually being handled and drawn in the parent `ViewGroup`, the property can
-be set on the target `View` at any time, even while it's unattached, so there's
-no need to worry about timing. Additionally, the clipped shadow automatically
-animates and transforms along with its target, and it will handle moving itself
-to any new parents, should the target be moved.
+The `Boolean`-value [`View.clipOutlineShadow`][clipOutlineShadow] extension
+property is basically a switch to toggle the fix on `View`s individually, and
+it was designed to mimic an intrinsic property as much as possible. Though the
+shadow is actually being handled and drawn in the parent `ViewGroup`, the
+property can be set on the target `View` at any time, even while it's
+unattached, so there's no need to worry about timing. Additionally, the clipped
+shadow automatically animates and transforms along with its target, and it will
+handle moving itself to any new parents, should the target be moved.
 
 It is hoped that that simple usage should cover most cases. For those setups
 that might be problematic, the library offers a few other configuration
-properties as possible remedies.
+properties as possible fixes.
 
 ### Limitations and recourses
 
@@ -151,9 +151,8 @@ settings.
   when a sibling with a higher elevation overlaps the target.
 
   <p align="center">
-  <img src="images/plane_foreground_broken.png" 
-  alt="A target's clipped shadow incorrectly drawn on top of its higher
-  sibling View." 
+  <img src="images/plane_foreground_broken.png"
+  alt="A target's clipped shadow incorrectly drawn on top of its higher sibling View."
   width="25%" />
   </p>
 
@@ -185,8 +184,8 @@ settings.
   running animation.
 
   <p align="center">
-  <img src="images/parent_matrix_defect.png" 
-  alt="A misaligned clip region is shown in a parent scaled by an animation." 
+  <img src="images/parent_matrix_defect.png"
+  alt="A misaligned clip region is shown in a parent scaled by an animation."
   width="25%" />
   </p>
 
@@ -201,7 +200,7 @@ settings.
 This feature can apply an extrinsic tint to the native shadows, allowing for
 color shadows on older API levels, though with a somewhat rudimentary
 implementation, since it uses a single color in place of the two native ones.
-As with the clip, this is designed to be easy and straightforward.
+As with the clip, this was designed to be easy and straightforward.
 
 ```kotlin
 view.outlineShadowColorCompat = Color.RED
@@ -227,25 +226,19 @@ Several specialized subclasses of common `ViewGroup`s are included mainly as
 helpers to set shadow properties on `View`s from attributes in layout XML,
 without the need for extra code. They all implement a [common
 interface][ShadowsViewGroup] with a few properties that are mostly conveniences
-for setting a single value on all child `View`s.
-
-These groups also have a special behavior with shadows in the
-[`Inline`][Inline] plane, to handle those rare cases where a library shadow
-must be interleaved between the target's siblings, but the required layout
-settings cannot be accommodated.
+for setting a single library value on all child `View`s.
 
 The library's features work rather well in Android Studio's layout preview, so
-even if you don't intend to use them at runtime, they may still be useful during
-design.
+even if you don't intend to use them at runtime, these groups may still be
+useful during design.
 
 <p align="center">
-<img src="images/layout_editor.png" 
-alt="Screenshot of Android Studio editing layout XML, showing a custom group
-that's automatically fixed a child's shadow in the design view." 
-width="35%" />
+<img src="images/layout_editor.png"
+alt="Screenshot of Android Studio editing layout XML, showing a custom group that's automatically fixed a child's shadow in the design view."
+width="40%" />
 </p>
 
-Unfortunately, we lose some of the custom lint inspections; e.g., the
+Unfortunately, we lose a lot of the custom lint inspections; e.g.,
 `MissingConstraints` doesn't work inside `ShadowsConstraintLayout`. This will be
 corrected in a future version.
 
@@ -357,7 +350,7 @@ Details and examples are to be found on the [Compose wiki page][ComposeWiki].
 
 ## Download
 
-If you'd prefer a compiled dependency, it's available through the very handy
+The library is available as a compiled dependency through the very handy
 service [JitPack](https://jitpack.io). To enable download in a modern Gradle
 setup, add their Maven URL to the `repositories` block that's inside the
 `dependencyResolutionManagement` block in the root project's
@@ -449,8 +442,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   [ViewColorCompatWiki]:https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat
 
   [ShadowsViewGroup]:https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.viewgroup/-shadows-view-group/index.html
-
-  [Inline]:https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-plane/-inline/index.html
 
   [ViewGroupsWiki]:https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
 

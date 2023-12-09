@@ -47,15 +47,15 @@ enum class ShadowPlane {
      *   [ignoreInlineChildShadows][com.zedalpha.shadowgadgets.view.viewgroup.ShadowsViewGroup.ignoreInlineChildShadows]
      *   set to false.
      *
-     * Refer to [ShadowPlane's wiki
-     * page](https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowPlane#inline-plane)
+     * Refer to
+     * [ShadowPlane's wiki page](https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowPlane#inline-plane)
      * for further details.
      */
     Inline;
 
     internal companion object {
         // Maps XML attribute values to enum values.
-        fun forValue(value: Int) = values()[value]
+        fun forValue(value: Int) = entries[value]
     }
 }
 

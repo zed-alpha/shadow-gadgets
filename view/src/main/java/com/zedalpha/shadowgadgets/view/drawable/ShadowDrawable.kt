@@ -46,10 +46,10 @@ import kotlin.math.roundToInt
  * possible defects, depending on the specific setup, including misaligned clip
  * regions, stale draws, etc.
  *
- * This drawable's bounds do not affect the shadow's size, shape, or position.
- * Those are initialized from the properties of the Outline set with
- * [setOutline], and are able to be modified afterward with the relevant
- * functions and properties; e.g, [setPosition], [translationX], [scaleY], etc.
+ * This drawable's bounds do not affect the shadow's size or shape. Those are
+ * initialized from the properties of the Outline passed to [setOutline], and
+ * are modifiable afterward with the relevant functions and properties;
+ * e.g, [setPosition], [translationX], [scaleY], etc.
  *
  * The color compat functionality is exposed here through the [colorCompat]
  * property, which is set to black by default, disabling the compat tinting.

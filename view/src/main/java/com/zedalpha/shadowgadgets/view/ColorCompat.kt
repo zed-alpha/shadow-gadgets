@@ -9,7 +9,7 @@ import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.DefaultSpotShadowAlpha
 import com.zedalpha.shadowgadgets.core.blendShadowColors
 import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
-import com.zedalpha.shadowgadgets.view.shadow.notifyPropertyChanged
+import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
 import com.zedalpha.shadowgadgets.view.shadow.shadow
 
 
@@ -41,7 +41,7 @@ var View.outlineShadowColorCompat: Int
     set(color) {
         if (outlineShadowColorCompat == color) return
         setTag(R.id.outline_shadow_color_compat, color)
-        updateColorOutlineShadow()
+        updateColorOutlineShadow(this)
         shadow?.updateColorCompat(color)
     }
 
@@ -61,7 +61,7 @@ var View.forceOutlineShadowColorCompat: Boolean
     set(force) {
         if (forceOutlineShadowColorCompat == force) return
         setTag(R.id.force_outline_shadow_color_compat, force)
-        updateColorOutlineShadow()
+        updateColorOutlineShadow(this)
         shadow?.invalidate()
     }
 
@@ -132,9 +132,10 @@ class ShadowColorsBlender(private val context: Context) {
     }
 }
 
-private fun View.updateColorOutlineShadow() {
-    colorOutlineShadow = outlineShadowColorCompat != DefaultShadowColorInt &&
-            (Build.VERSION.SDK_INT < 28 || forceOutlineShadowColorCompat)
+private fun updateColorOutlineShadow(view: View) {
+    view.colorOutlineShadow =
+        view.outlineShadowColorCompat != DefaultShadowColorInt &&
+                (Build.VERSION.SDK_INT < 28 || view.forceOutlineShadowColorCompat)
 }
 
 internal var View.colorOutlineShadow: Boolean
@@ -142,5 +143,5 @@ internal var View.colorOutlineShadow: Boolean
     private set(value) {
         if (colorOutlineShadow == value) return
         setTag(R.id.color_outline_shadow, value)
-        notifyPropertyChanged()
+        ShadowSwitch.notifyPropertyChanged(this)
     }

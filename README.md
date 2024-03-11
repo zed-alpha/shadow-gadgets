@@ -1,6 +1,6 @@
 # Shadow Gadgets
 
-A utility library for Android with various tools that help to remedy a couple of
+A utility library for Android with various tools to help remedy a couple of
 shortcomings in the native material shadows.
 
 **Visual artifacts**
@@ -29,8 +29,9 @@ Shadow colors were not added to the SDK until API level 28 (Pie). Prior to
 that, only the alpha values of plain black hues could be manipulated.
 
 Like the clip feature, color compat uses the same native classes and methods,
-replacing the originals with tinted copies. This can be used with or without
-the clip functionality.
+replacing the originals with tinted copies. Only one color can be applied with
+this technique, however; it's not possible to separate the ambient and spot
+shadows at this level.
 
 <p align="center">
 <img src="images/intro_color_compat.png"
@@ -38,8 +39,6 @@ alt="Two shadows, one with native colors, the other tinted with color compat."
 width="40%" />
 </p>
 
-Tinting a shadow with this method allows only one color to be applied, rather
-than the two – ambient and spot – that the native ones use on Pie and above.
 Though the differences are noticeable when compared side by side, the compat
 results are likely sufficient for many cases.
 
@@ -100,7 +99,7 @@ instead.
 <details>
   <summary>Subsections</summary>
 
-  + [Basic usage](#basic-usage)
+  + [Artifact removal](#artifact-removal)
   + [Limitations and recourses](#limitations-and-recourses)
     + [Overlapping sibling Views](#overlapping-sibling-views)
     + [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
@@ -111,11 +110,11 @@ instead.
   + [Notes for Views](#notes-for-views)
 </details>
 
-### Basic usage
+### Artifact removal
 
 Nobody wants to mess with a whole library for such a small thing that should've
 already been handled in the native UI framework, so this was designed to be as
-simple and familiar as possible.
+simple and familiar as possible:
 
 ```kotlin
 view.clipOutlineShadow = true
@@ -168,7 +167,7 @@ settings.
 + #### Irregular shapes on Android R+
 
   `View`s that are not shaped as circles, plain rectangles, or single-radius
-  round rectangles have their outlines defined by a `Path` field that became
+  rounded rectangles have their outlines defined by a `Path` field that became
   inaccessible starting with API level 30. Such targets using
   `clipOutlineShadow` on those newer versions require that the user provide
   the `Path`. This is done with the library's
@@ -200,7 +199,7 @@ settings.
 This feature can apply an extrinsic tint to the native shadows, allowing for
 color shadows on older API levels, though with a somewhat rudimentary
 implementation, since it uses a single color in place of the two native ones.
-As with the clip, this was designed to be easy and straightforward.
+As with the clip, this was designed to be easy and straightforward:
 
 ```kotlin
 view.outlineShadowColorCompat = Color.RED
@@ -216,6 +215,11 @@ By default, the color compat value is applied only on API levels 27 and below.
 The [`View.forceOutlineShadowColorCompat`][forceOutlineShadowColorCompat]
 property can be used to enable it on newer versions.
 
+Color compat can be used with or without the clip functionality. When used on
+its own, a more performant shadow implementation is substituted, allowing it to
+skip expensive clip operations if that area is going to be covered by an
+opaque background anyway.
+
 Important information regarding performance and overhead, along with further
 details on the feature's behavior and helpers, can be found on [its wiki
 page][ViewColorCompatWiki].
@@ -223,8 +227,8 @@ page][ViewColorCompatWiki].
 ### ViewGroups
 
 Several specialized subclasses of common `ViewGroup`s are included mainly as
-helpers to set shadow properties on `View`s from attributes in layout XML,
-without the need for extra code. They all implement a [common
+helpers that allow shadow properties to be set on `View`s from attributes in
+layout XML, without the need for extra code. They all implement a [common
 interface][ShadowsViewGroup] with a few properties that are mostly conveniences
 for setting a single library value on all child `View`s.
 
@@ -278,12 +282,13 @@ Details on requirements and usage, and links to examples, can be found on the
   state and animations. If that core solution is sufficient, you probably don't
   want the overhead here.
 
-+ The `inflation` package and tools therein haven't been updated since the first
-  few versions, apart from minor maintenance and the project-wide docs overhaul.
-  This package just offers a couple of different ways to apply the library's
-  custom properties by hooking into the inflation pipeline. I doubt that they're
-  of much use to anyone else, so I stopped working on them. Their old README
-  section was removed to [this wiki page][LayoutInflationHelpersWiki].
++ The `inflation` package and tools haven't been updated since the first few
+  versions, apart from minor maintenance and docs updates. These tools just
+  offer a couple of additional ways to apply the library's custom properties,
+  by hooking into the layout inflation pipeline. I doubt that they're of much
+  use to anyone else, so I stopped working on them. They're still perfectly
+  functional, however, and their original README section can be found on
+  [this wiki page][LayoutInflationHelpersWiki].
 
 <br />
 
@@ -299,7 +304,7 @@ also an overload with two extra parameters in order to employ the color compat
 mechanism here.
 
 For those cases where color compat is needed but the clipping is not necessary,
-[`shadowCompat`][shadowCompat] is offered as a slightly more performant option.
+[`shadowCompat`][shadowCompat] is offered as a more performant option.
 
 Details and examples are to be found on the [Compose wiki page][ComposeWiki].
 
@@ -315,13 +320,12 @@ Details and examples are to be found on the [Compose wiki page][ComposeWiki].
 
 + Color compat in Compose currently requires `@OptIn`, as work is still being
   done internally to cut down on overhead. The public API is locked, however,
-  and the feature is apparently as stable and robust as the clip.
+  and the feature is as stable and robust as the clip.
 
 + Color compat here is currently accomplished similarly to how `Inline` shadows
   are handled for Views, meaning the same internal requirements and overhead
   apply to this, for the time being. Please refer to [the Performance and
-  overhead section][PerformanceOverhead] on the Color Compat
-  wiki page.
+  overhead section][PerformanceOverhead] on the Color Compat wiki page.
 
 <br />
 
@@ -351,10 +355,10 @@ Details and examples are to be found on the [Compose wiki page][ComposeWiki].
 ## Download
 
 The library is available as a compiled dependency through the very handy
-service [JitPack](https://jitpack.io). To enable download in a modern Gradle
-setup, add their Maven URL to the `repositories` block that's inside the
-`dependencyResolutionManagement` block in the root project's
- `settings.gradle[.kts]` file; e.g.:
+service [JitPack](https://jitpack.io/#zed-alpha/shadow-gadgets). To enable
+download in a modern Gradle setup, add their Maven URL to the `repositories`
+block that's inside the `dependencyResolutionManagement` block in the root
+project's `settings.gradle[.kts]` file; e.g.:
 
 ```kotlin
 dependencyResolutionManagement {
@@ -389,7 +393,7 @@ notice.
 
 MIT License
 
-Copyright (c) 2023 ZedAlpha
+Copyright (c) 2024 zed-alpha
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

@@ -13,7 +13,7 @@ internal class OverlayController(parentView: ViewGroup) :
 
     private var foregroundPlane: OverlayPlane? = null
 
-    private var backgroundPlane: BackgroundOverlayPlane? = null
+    private var backgroundPlane: ProjectorOverlayPlane? = null
 
     private val layoutListener =
         View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
@@ -50,7 +50,7 @@ internal class OverlayController(parentView: ViewGroup) :
         }
 
     private fun getOrCreateBackgroundPlane() =
-        backgroundPlane ?: BackgroundOverlayPlane(parentView, this).apply {
+        backgroundPlane ?: ProjectorOverlayPlane(parentView, this).apply {
             setSize(parentView.width, parentView.height)
             attach()
             backgroundPlane = this

@@ -28,10 +28,13 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.FloatingActionButtonElevation
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -45,6 +48,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -131,7 +135,7 @@ private fun ComposeContent() {
             Card(
                 backgroundColor = Color(0x22007fff),
                 elevation = 0.dp,
-                shape = GenericShape(CardShapeBuilder),
+                shape = GenericShape(cardShapeBuilder),
                 modifier = Modifier
                     .padding(
                         start = if (Build.VERSION.SDK_INT < 30) 0.dp else 8.dp
@@ -139,7 +143,7 @@ private fun ComposeContent() {
                     .size(80.dp)
                     .clippedShadow(
                         elevation = 10.dp,
-                        shape = GenericShape(CardShapeBuilder),
+                        shape = GenericShape(cardShapeBuilder),
                         ambientColor = Color(0xff007fff),
                         spotColor = Color(0xff007fff)
                     )
@@ -153,37 +157,42 @@ internal fun ColorfulLazyColumn(
     modifier: Modifier,
     shadowModifier: Modifier.(elevation: Dp, Shape, Color) -> Modifier
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        modifier = modifier
-    ) {
-        items(count = COUNT) { position ->
-            val color = lerp(
-                if (position < HALF_COUNT) itemRed else itemGreen,
-                if (position < HALF_COUNT) itemGreen else itemBlue,
-                (position % HALF_COUNT).toFloat() / HALF_COUNT
-            )
-            Card(
-                backgroundColor = color,
-                elevation = 0.dp,
-                shape = RoundedCornerShape(6.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .run {
-                        shadowModifier(
-                            10.dp,
-                            RoundedCornerShape(6.dp),
-                            color
-                        )
-                    }
-            ) {
-                Text(
-                    text = "Item $position",
-                    fontSize = 22.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    modifier = Modifier.padding(10.dp)
+    val textStyle = LocalTextStyle.current.copy(
+        platformStyle = PlatformTextStyle(includeFontPadding = true)
+    )
+    CompositionLocalProvider(LocalTextStyle provides textStyle) {
+        LazyColumn(
+            contentPadding = PaddingValues(vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = modifier
+        ) {
+            items(count = COUNT) { position ->
+                val color = lerp(
+                    if (position < HALF_COUNT) itemRed else itemGreen,
+                    if (position < HALF_COUNT) itemGreen else itemBlue,
+                    (position % HALF_COUNT).toFloat() / HALF_COUNT
                 )
+                Card(
+                    backgroundColor = color,
+                    elevation = 0.dp,
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .run {
+                            shadowModifier(
+                                10.dp,
+                                RoundedCornerShape(6.dp),
+                                color
+                            )
+                        }
+                ) {
+                    Text(
+                        text = "Item $position",
+                        fontSize = 22.sp,
+                        fontFamily = FontFamily.SansSerif,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
             }
         }
     }
@@ -317,9 +326,7 @@ private val compassPointerBuilder: Path.(Size, LayoutDirection) -> Unit =
         )
     }
 
-internal val CardShapeBuilder =
-    if (Build.VERSION.SDK_INT >= 30) {
-        puzzlePieceBuilder
-    } else {
-        compassPointerBuilder
-    }
+private val cardShapeBuilder = when {
+    Build.VERSION.SDK_INT >= 30 -> puzzlePieceBuilder
+    else -> compassPointerBuilder
+}

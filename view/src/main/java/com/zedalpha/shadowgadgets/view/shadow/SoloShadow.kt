@@ -11,7 +11,6 @@ import android.view.ViewOutlineProvider
 import android.view.ViewTreeObserver
 import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
 import com.zedalpha.shadowgadgets.view.BuildConfig
-import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.colorOutlineShadow
 import com.zedalpha.shadowgadgets.view.drawable.ShadowDrawable
 import com.zedalpha.shadowgadgets.view.forceShadowLayer
@@ -19,26 +18,20 @@ import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.pathProvider
 
 
-internal class SoloShadow(private val targetView: View) : ViewShadow {
-
-    override var isShown = true
-
-    private var matrix: Matrix? = null
+internal class SoloShadow(targetView: View) : ViewShadow(targetView) {
 
     private var parentView: View? = null
 
-    private val drawable = object : ShadowDrawable(
-        targetView,
-        targetView.clipOutlineShadow
-    ) {
+    private val drawable = object : ShadowDrawable(targetView, isClipped) {
+
         override fun draw(canvas: Canvas) {
-            if (!(targetView.updateAndCheckDraw(coreShadow) && isShown)) return
+            if (!targetView.updateAndCheckDraw(coreShadow) || !isShown) return
 
             updateBounds()
 
             canvas.save()
             if (!hasIdentityMatrix()) {
-                val matrix = matrix ?: Matrix().also { matrix = it }
+                val matrix = tmpMatrix ?: Matrix().also { tmpMatrix = it }
                 getMatrix(matrix)
                 matrix.invert(matrix)
                 canvas.concat(matrix)
@@ -50,14 +43,15 @@ internal class SoloShadow(private val targetView: View) : ViewShadow {
 
         fun updateBounds() {
             val parent = parentView ?: return
-            val target = targetView
             setBounds(
-                -target.left,
-                -target.top,
-                -target.left + parent.width,
-                -target.top + parent.height
+                -targetView.left,
+                -targetView.top,
+                -targetView.left + parent.width,
+                -targetView.top + parent.height
             )
         }
+
+        private var tmpMatrix: Matrix? = null
     }
 
     private val attachListener =
@@ -99,19 +93,16 @@ internal class SoloShadow(private val targetView: View) : ViewShadow {
 
     private val provider = targetView.outlineProvider
 
-    private val isEnabled = canDrawAround(targetView)
+    private val isDrawing = canDrawAround(targetView)
 
     init {
-        val target = targetView
-        target.shadow = this
-
-        if (isEnabled) {
-            target.addOnAttachStateChangeListener(attachListener)
-            if (target.isAttachedToWindow) attach()
-            if (target.colorOutlineShadow) {
-                drawable.colorCompat = target.outlineShadowColorCompat
+        if (isDrawing) {
+            targetView.addOnAttachStateChangeListener(attachListener)
+            if (targetView.isAttachedToWindow) attach()
+            if (targetView.colorOutlineShadow) {
+                drawable.colorCompat = targetView.outlineShadowColorCompat
             }
-            drawable.forceLayer = target.forceShadowLayer
+            drawable.forceLayer = targetView.forceShadowLayer
         } else {
             // Still disable the native shadow, because no shadow is better
             // than a mangled draw, possibly with the artifact still there.
@@ -125,9 +116,9 @@ internal class SoloShadow(private val targetView: View) : ViewShadow {
     }
 
     override fun detachFromTarget() {
-        targetView.shadow = null
+        super.detachFromTarget()
         drawable.dispose()
-        if (isEnabled) {
+        if (isDrawing) {
             targetView.removeOnAttachStateChangeListener(attachListener)
             detach()
         } else {
@@ -173,9 +164,6 @@ internal class SoloShadow(private val targetView: View) : ViewShadow {
         }
         parentView = null
     }
-
-    override fun checkRecreate() =
-        targetView.clipOutlineShadow != drawable.isClipped
 
     override fun updateColorCompat(color: Int) {
         drawable.run {

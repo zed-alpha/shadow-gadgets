@@ -7,9 +7,9 @@
         </item>
 
         <!-- Default ambient value: 0.039 -->
-        <item name="android:ambientShadowAlpha">0.2</item>
+        <item name="android:ambientShadowAlpha">0.15</item>
         <!-- Default spot value: 0.19 -->
-        <item name="android:spotShadowAlpha">0.4</item>
+        <item name="android:spotShadowAlpha">0.35</item>
 
         <item name="checkboxStyle">@style/Widget.Demo.CheckBox</item>
         <item name="materialButtonStyle">@style/Widget.Demo.Button</item>

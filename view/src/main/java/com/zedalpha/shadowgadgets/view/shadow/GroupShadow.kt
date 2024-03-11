@@ -11,26 +11,25 @@ import com.zedalpha.shadowgadgets.core.PathProvider
 import com.zedalpha.shadowgadgets.core.Shadow
 import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
 import com.zedalpha.shadowgadgets.core.layer.LayerDraw
-import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.colorOutlineShadow
 import com.zedalpha.shadowgadgets.view.forceShadowLayer
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.pathProvider
 
 internal class GroupShadow(
-    private val targetView: View,
+    targetView: View,
     private val plane: DrawPlane
-) : ViewShadow, LayerDraw {
+) : ViewShadow(targetView), LayerDraw {
 
     private val coreShadow = targetView.let { target ->
-        if (target.clipOutlineShadow) {
-            ClippedShadow(target).also { shadow ->
+        when {
+            isClipped -> ClippedShadow(target).also { shadow ->
                 shadow.pathProvider = PathProvider { path ->
                     target.pathProvider?.getPath(target, path)
                 }
             }
-        } else {
-            Shadow(target)
+
+            else -> Shadow(target)
         }
     }
 
@@ -39,9 +38,7 @@ internal class GroupShadow(
     val forceLayer = targetView.forceShadowLayer
 
     init {
-        val target = targetView
-        target.shadow = this
-        target.outlineProvider = object : ViewOutlineProvider() {
+        targetView.outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
                 provider.getOutline(view, outline)
                 coreShadow.setOutline(outline)
@@ -50,8 +47,8 @@ internal class GroupShadow(
         }
         plane.addShadow(
             this,
-            if (target.colorOutlineShadow) {
-                target.outlineShadowColorCompat
+            if (targetView.colorOutlineShadow) {
+                targetView.outlineShadowColorCompat
             } else {
                 DefaultShadowColorInt
             }
@@ -59,15 +56,11 @@ internal class GroupShadow(
     }
 
     override fun detachFromTarget() {
-        targetView.shadow = null
+        super.detachFromTarget()
         targetView.outlineProvider = provider
         plane.removeShadow(this)
         coreShadow.dispose()
     }
-
-    val isClipped = coreShadow is ClippedShadow
-
-    override fun checkRecreate() = targetView.clipOutlineShadow != isClipped
 
     override fun updateColorCompat(color: Int) {
         if (Build.VERSION.SDK_INT >= 28 &&
@@ -91,10 +84,8 @@ internal class GroupShadow(
         plane.invalidatePlane()
     }
 
-    override var isShown = true
-
     override fun draw(canvas: Canvas) {
-        if (!(targetView.updateAndCheckDraw(coreShadow) && isShown)) return
+        if (!targetView.updateAndCheckDraw(coreShadow) || !isShown) return
         coreShadow.draw(canvas)
     }
 

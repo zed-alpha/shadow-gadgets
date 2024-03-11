@@ -16,10 +16,7 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
 
     protected val shadows = mutableMapOf<View, GroupShadow>()
 
-    protected val isRecyclingGroup =
-        RecyclingViewGroupClasses.any { groupClass ->
-            groupClass.isAssignableFrom(parentView.javaClass)
-        }
+    protected val isRecyclingViewGroup = parentView.isRecyclingViewGroup
 
     private val attachListener =
         object : View.OnAttachStateChangeListener {
@@ -30,7 +27,7 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
 
             override fun onViewDetachedFromWindow(v: View) {
                 removePreDrawListener()
-                if (isRecyclingGroup) detachAllShadows()
+                if (isRecyclingViewGroup) detachAllShadows()
             }
         }
 
@@ -82,7 +79,7 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
         viewTreeObserver = null
     }
 
-    fun createShadowForView(target: View) {
+    fun createShadow(target: View) {
         shadows[target] = GroupShadow(target, providePlane(target))
     }
 
@@ -100,7 +97,10 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
     }
 }
 
-internal val RecyclingViewGroupClasses = buildList {
+internal val ViewGroup.isRecyclingViewGroup: Boolean
+    get() = RecyclingViewGroups.any { it.isAssignableFrom(javaClass) }
+
+private val RecyclingViewGroups = buildList {
     add(RecyclerView::class.java)
     add(ListView::class.java)
     add(GridView::class.java)

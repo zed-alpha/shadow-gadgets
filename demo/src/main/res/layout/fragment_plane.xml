@@ -15,8 +15,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginEnd="4dp"
-        android:paddingHorizontal="4dp"
         android:background="@color/off_white"
+        android:paddingHorizontal="4dp"
         android:text="Clip shadows" />
 
     <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout
@@ -61,7 +61,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/control_gray"
-            android:elevation="20dp"
+            android:elevation="30dp"
             android:outlineProvider="none"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -76,7 +76,7 @@
             android:layout_marginEnd="20dp"
             android:backgroundTint="@color/see_through_blue"
             android:backgroundTintMode="src_in"
-            android:elevation="15dp" />
+            android:elevation="25dp" />
 
     </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout>
 

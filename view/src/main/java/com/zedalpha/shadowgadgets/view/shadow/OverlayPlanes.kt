@@ -91,7 +91,7 @@ internal open class OverlayPlane(
     }
 }
 
-internal class BackgroundOverlayPlane(
+internal class ProjectorOverlayPlane(
     parentView: ViewGroup,
     controller: OverlayController
 ) : OverlayPlane(parentView, controller) {

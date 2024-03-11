@@ -137,7 +137,7 @@ internal class ViewPainter(private val ownerView: ViewGroup) :
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 }
 
-internal var ViewGroup.viewPainter: ViewPainter?
+private var ViewGroup.viewPainter: ViewPainter?
     get() = getTag(R.id.view_painter) as? ViewPainter
     set(value) = setTag(R.id.view_painter, value)
 

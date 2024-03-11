@@ -14,6 +14,17 @@ android {
     buildTypes.all {
         consumerProguardFiles("consumer-rules.pro")
     }
+    buildTypes {
+        debug {
+            buildConfigField("Boolean", "DEBUG", "true")
+        }
+        release {
+            buildConfigField("Boolean", "DEBUG", "false")
+        }
+    }
+    buildFeatures {
+        buildConfig = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -43,5 +54,5 @@ dependencies {
     implementation(project(":core"))
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.10.0")
+    implementation("com.google.android.material:material:1.11.0")
 }

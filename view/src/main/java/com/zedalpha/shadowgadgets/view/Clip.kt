@@ -4,8 +4,7 @@ import android.graphics.Path
 import android.view.View
 import com.zedalpha.shadowgadgets.view.internal.MaterialShapeDrawableReflector
 import com.zedalpha.shadowgadgets.view.internal.findMaterialShapeDrawable
-import com.zedalpha.shadowgadgets.view.shadow.notifyPropertyChanged
-import com.zedalpha.shadowgadgets.view.shadow.recreateShadow
+import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
 
 
 /**
@@ -25,14 +24,14 @@ var View.clipOutlineShadow: Boolean
     set(value) {
         if (clipOutlineShadow == value) return
         setTag(R.id.clip_outline_shadow, value)
-        notifyPropertyChanged()
+        ShadowSwitch.notifyPropertyChanged(this)
     }
 
 /**
  * An interface through which to set the clip Path for irregularly shaped Views
  * on API levels 30 and above.
  *
- * Views that are not plain rectangles, regular round rectangles, or circles
+ * Views that are not plain rectangles, regular rounded rectangles, or circles
  * have their shapes defined by a Path field that became inaccessible starting
  * with Android R.
  *
@@ -60,7 +59,7 @@ var View.pathProvider: ViewPathProvider?
     set(value) {
         if (pathProvider == value) return
         setTag(R.id.path_provider, value)
-        recreateShadow()
+        ShadowSwitch.recreateShadow(this)
     }
 
 /**

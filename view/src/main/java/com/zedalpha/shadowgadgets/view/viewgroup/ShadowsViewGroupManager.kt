@@ -50,7 +50,7 @@ internal abstract class ShadowsViewGroupManager(
     protected val View.forceNotSet
         get() = getTag(R.id.force_outline_shadow_color_compat) == null
 
-    var ignoreInlineChildShadows by initOnly(isRecyclingGroup) {}
+    var ignoreInlineChildShadows by initOnly(isRecyclingViewGroup) {}
 
     protected var unattached = true
 
@@ -193,7 +193,6 @@ internal abstract class ShadowsViewGroupManager(
         }
 
         disableZ(canvas)
-
         val result: Boolean
         if (shadow.isClipped) {
             result = superDrawChild()
@@ -202,7 +201,6 @@ internal abstract class ShadowsViewGroupManager(
             drawShadow(canvas, shadow)
             result = superDrawChild()
         }
-
         enableZ(canvas)
         return result
     }

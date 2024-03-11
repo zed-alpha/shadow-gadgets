@@ -2,36 +2,41 @@ package com.zedalpha.shadowgadgets.view.shadow
 
 import android.os.Build
 import android.view.View
+import androidx.annotation.CallSuper
 import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.core.Shadow
 import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
 import com.zedalpha.shadowgadgets.view.R
+import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 
 
-internal interface ViewShadow {
+internal abstract class ViewShadow(protected val targetView: View) {
 
-    var isShown: Boolean
+    val isClipped: Boolean = targetView.clipOutlineShadow
 
-    fun detachFromTarget()
+    var isShown: Boolean = true
 
-    fun checkRecreate(): Boolean
+    init {
+        @Suppress("LeakingThis")
+        targetView.shadow = this
+    }
 
-    fun updateColorCompat(color: Int)
+    @CallSuper
+    open fun detachFromTarget() {
+        targetView.shadow = null
+    }
 
-    fun invalidate()
+    abstract fun updateColorCompat(color: Int)
+
+    abstract fun invalidate()
 }
 
 internal var View.shadow: ViewShadow?
     get() = getTag(R.id.shadow) as? ViewShadow
-    set(value) = setTag(R.id.shadow, value)
+    private set(value) = setTag(R.id.shadow, value)
 
 internal fun View.updateAndCheckDraw(shadow: Shadow): Boolean {
-    shadow.setPosition(
-        left,
-        top,
-        right,
-        bottom
-    )
+    shadow.setPosition(left, top, right, bottom)
     shadow.alpha = alpha
     shadow.cameraDistance = cameraDistance
     shadow.elevation = elevation

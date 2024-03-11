@@ -2,12 +2,12 @@ package com.zedalpha.shadowgadgets.view
 
 import android.view.View
 import com.zedalpha.shadowgadgets.view.ShadowPlane.Foreground
-import com.zedalpha.shadowgadgets.view.shadow.recreateShadow
+import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
 
 
 /**
- * Determines where a target View's library shadow is inserted into the
- * hierarchy's draw routine.
+ * Options for where a target's library shadow is inserted into the hierarchy's
+ * draw routine.
  */
 enum class ShadowPlane {
     /**
@@ -67,7 +67,7 @@ var View.shadowPlane: ShadowPlane
     set(value) {
         if (shadowPlane == value) return
         setTag(R.id.shadow_plane, value)
-        recreateShadow()
+        ShadowSwitch.recreateShadow(this)
     }
 
 /**

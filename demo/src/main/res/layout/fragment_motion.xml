@@ -23,7 +23,7 @@
             android:layout_marginEnd="20dp"
             android:backgroundTint="@color/whisper_gray"
             android:backgroundTintMode="multiply"
-            android:elevation="30dp" />
+            android:elevation="25dp" />
 
     </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout>
 

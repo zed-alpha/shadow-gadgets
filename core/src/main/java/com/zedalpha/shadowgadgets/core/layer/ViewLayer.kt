@@ -6,7 +6,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.core.shadow.ViewPainterProxy
 
-
 internal class ViewLayer(
     private val ownerView: View,
     override val drawContent: (Canvas) -> Unit

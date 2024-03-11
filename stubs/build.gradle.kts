@@ -12,5 +12,5 @@ android {
 }
 
 dependencies {
-    api("androidx.annotation:annotation:1.7.0")
+    api("androidx.annotation:annotation:1.7.1")
 }

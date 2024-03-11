@@ -25,7 +25,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     publishing {
         singleVariant("release")
@@ -48,5 +48,5 @@ afterEvaluate {
 dependencies {
     implementation(project(":core"))
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.compose.ui:ui:1.5.4")
+    implementation("androidx.compose.ui:ui:1.6.3")
 }

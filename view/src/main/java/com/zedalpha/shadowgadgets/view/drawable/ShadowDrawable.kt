@@ -68,8 +68,7 @@ import kotlin.math.roundToInt
  */
 open class ShadowDrawable private constructor(
     internal val coreShadow: Shadow,
-    private val ownerView: View?,
-    val isClipped: Boolean
+    private val ownerView: View?
 ) : Drawable() {
 
     /**
@@ -89,8 +88,7 @@ open class ShadowDrawable private constructor(
      */
     constructor(ownerView: View, isClipped: Boolean) : this(
         if (isClipped) ClippedShadow(ownerView) else Shadow(ownerView),
-        ownerView,
-        isClipped
+        ownerView
     )
 
     /**
@@ -108,7 +106,7 @@ open class ShadowDrawable private constructor(
      */
     @RequiresApi(29)
     constructor(isClipped: Boolean) :
-            this(if (isClipped) ClippedShadow() else Shadow(), null, isClipped)
+            this(if (isClipped) ClippedShadow() else Shadow(), null)
 
     /**
      * Sets the function through which to provide irregular Paths for clipping

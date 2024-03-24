@@ -51,7 +51,6 @@
         app:layout_constraintTop_toTopOf="@id/seek_rotation"
         tools:ignore="HardcodedText" />
 
-
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/clip_switch"
         android:layout_width="wrap_content"

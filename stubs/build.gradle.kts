@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.library")
+    alias(libs.plugins.android.library)
 }
 
 android {
@@ -12,5 +12,5 @@ android {
 }
 
 dependencies {
-    api("androidx.annotation:annotation:1.7.1")
+    api(libs.androidx.annotation)
 }

@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -17,7 +17,10 @@ android {
             useSupportLibrary = true
         }
     }
-
+    buildFeatures {
+        viewBinding = true
+        compose = true
+    }
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -32,15 +35,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+    }
     kotlinOptions {
         jvmTarget = "17"
-    }
-    buildFeatures {
-        viewBinding = true
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.10"
     }
     packaging {
         resources {
@@ -52,11 +51,12 @@ android {
 dependencies {
     implementation(project(":view"))
     implementation(project(":compose"))
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.compose.foundation:foundation:1.6.3")
-    implementation("androidx.compose.material:material:1.6.3")
-    implementation("androidx.compose.runtime:runtime:1.6.3")
-    implementation("androidx.compose.ui:ui:1.6.3")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.material.components)
+    implementation(libs.androidx.constraintlayout)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.ui)
 }

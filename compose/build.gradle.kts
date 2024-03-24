@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     id("maven-publish")
 }
 
@@ -10,6 +10,9 @@ android {
 
     defaultConfig {
         minSdk = 21
+    }
+    buildFeatures {
+        compose = true
     }
     buildTypes.all {
         consumerProguardFiles("consumer-rules.pro")
@@ -21,11 +24,8 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildFeatures {
-        compose = true
-    }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.10"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
     publishing {
         singleVariant("release")
@@ -47,6 +47,7 @@ afterEvaluate {
 
 dependencies {
     implementation(project(":core"))
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.compose.ui:ui:1.6.3")
+    implementation(libs.androidx.core.ktx)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
 }

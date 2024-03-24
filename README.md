@@ -11,7 +11,7 @@ see-through backgrounds.
 <p align="center">
 <img src="images/intro_clip_broken.png"
 alt="Examples of various translucent UI elements showing the artifacts."
-width="60%" />
+width="65%" />
 </p>
 
 The clip tools use the same classes and methods that the native framework uses
@@ -20,7 +20,7 @@ to render shadows, simply replacing the originals with clipped copies.
 <p align="center">
 <img src="images/intro_clip_fixed.png"
 alt="The above examples with the clip fix applied to each."
-width="60%" />
+width="65%" />
 </p>
 
 **Color support**
@@ -36,7 +36,7 @@ shadows at this level.
 <p align="center">
 <img src="images/intro_color_compat.png"
 alt="Two shadows, one with native colors, the other tinted with color compat."
-width="40%" />
+width="50%" />
 </p>
 
 Though the differences are noticeable when compared side by side, the compat
@@ -239,12 +239,8 @@ useful during design.
 <p align="center">
 <img src="images/layout_editor.png"
 alt="Screenshot of Android Studio editing layout XML, showing a custom group that's automatically fixed a child's shadow in the design view."
-width="40%" />
+width="50%" />
 </p>
-
-Unfortunately, we lose a lot of the custom lint inspections; e.g.,
-`MissingConstraints` doesn't work inside `ShadowsConstraintLayout`. This will be
-corrected in a future version.
 
 Information on the two general types of groups – Regular and Recycling – along
 with descriptions of their behaviors and usage in layout XML can be found on
@@ -261,6 +257,12 @@ Details on requirements and usage, and links to examples, can be found on the
 [Drawable wiki page][DrawableWiki].
 
 ### Notes for Views
+
++ The library now includes lint checks for the `ShadowsViewGroup`s. Most of the
+  standard ones for the base Android classes are exactly duplicated here for the
+  library groups, except for one `RecyclerView` check. The details can be found
+  in the [Lint integration section][ViewGroupsLintWiki] on the ViewGroups wiki
+  page.
 
 + To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped
   in a custom implementation. This has the possibility of breaking something if
@@ -452,6 +454,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   [ShadowDrawable]:https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
 
   [DrawableWiki]:https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
+
+  [ViewGroupsLintWiki]:https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups#lint-integration
 
   [SOViewAnswer]:https://stackoverflow.com/a/70076301
 

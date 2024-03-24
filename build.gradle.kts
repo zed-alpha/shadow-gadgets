@@ -1,22 +1,25 @@
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import java.time.Year
 
 plugins {
-    id("com.android.library") version "8.3.0" apply false
-    id("com.android.application") version "8.3.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.22" apply false
-    id("org.jetbrains.dokka") version "1.9.20"
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.lint) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.dokka) apply false
 }
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-base:1.9.20")
+        classpath(libs.dokka.base)
     }
 }
 
-tasks.dokkaHtmlMultiModule {
+tasks.withType<DokkaMultiModuleTask>().configureEach {
     outputDirectory.set(file("docs"))
     pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
         customAssets = listOf(file("images/logo-icon.svg"))

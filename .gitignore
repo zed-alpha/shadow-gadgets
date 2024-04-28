@@ -8,3 +8,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+/compose
+/core
+/demo
+/stubs
+/view

@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -17,75 +16,71 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-internal object MotionTopic : Topic {
+internal val MotionTopic = Topic(
+    "Motion",
+    R.string.description_motion,
+    MotionFragment::class.java
+)
 
-    override val title = "Motion"
+class MotionFragment : TopicFragment<FragmentMotionBinding>(
+    FragmentMotionBinding::inflate
+) {
+    @SuppressLint("ShowToast")
+    override fun loadUi(ui: FragmentMotionBinding) {
+        val snackbar = Snackbar.make(
+            ui.fabStart,
+            "I'm translucent!",
+            Snackbar.LENGTH_SHORT
+        )
+        snackbar.setTextColor(Color.BLACK)
+        snackbar.view.backgroundTintList =
+            ColorStateList.valueOf(DefaultTargetColor)
 
-    override val descriptionResId = R.string.description_motion
+        ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
+            ui.motionView.clipOutlineShadow = isChecked
+            ui.fabStart.clipOutlineShadow = isChecked
+            ui.fabCenter.clipOutlineShadow = isChecked
+            ui.fabEnd.clipOutlineShadow = isChecked
+            snackbar.view.clipOutlineShadow = isChecked
+        }
 
-    override fun createContentFragment() = Content()
+        // Race conditions still possible, but it's good enough for a
+        // simple demonstration. Just don't whack-a-mole the buttons.
+        var animating = false
 
-    class Content : ContentFragment(R.layout.fragment_motion) {
-
-        @SuppressLint("ShowToast")
-        override fun loadUi(view: View) {
-            val ui = FragmentMotionBinding.bind(view)
-
-            val snackbar = Snackbar.make(
-                ui.fabStart,
-                "I'm translucent!",
-                Snackbar.LENGTH_SHORT
-            )
-            snackbar.setTextColor(Color.BLACK)
-            snackbar.view.backgroundTintList =
-                ColorStateList.valueOf(DefaultTargetColor)
-
-            ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
-                ui.motionView.clipOutlineShadow = isChecked
-                ui.fabStart.clipOutlineShadow = isChecked
-                ui.fabCenter.clipOutlineShadow = isChecked
-                ui.fabEnd.clipOutlineShadow = isChecked
-                snackbar.view.clipOutlineShadow = isChecked
+        ui.fabStart.setOnClickListener {
+            if (animating) return@setOnClickListener
+            viewLifecycleOwner.lifecycleScope.launch {
+                animating = true
+                snackbar.showAndAwait()
+                delay(1000)
+                snackbar.dismiss()
+                animating = false
             }
-
-            // Race conditions still possible, but it's good enough for a
-            // simple demonstration. Just don't whack-a-mole the buttons.
-            var animating = false
-
-            ui.fabStart.setOnClickListener {
-                if (animating) return@setOnClickListener
-                viewLifecycleOwner.lifecycleScope.launch {
-                    animating = true
-                    snackbar.showAndAwait()
-                    delay(1000)
-                    snackbar.dismiss()
-                    animating = false
-                }
+        }
+        ui.fabCenter.setOnClickListener {
+            if (animating) return@setOnClickListener
+            viewLifecycleOwner.lifecycleScope.launch {
+                animating = true
+                snackbar.showAndAwait()
+                delay(20)
+                ui.fabStart.hide(); ui.fabCenter.hide(); ui.fabEnd.hide()
+                delay(1000)
+                ui.fabStart.show(); ui.fabCenter.show()
+                ui.fabEnd.showAndAwait()
+                delay(20)
+                snackbar.dismiss()
+                animating = false
             }
-            ui.fabCenter.setOnClickListener {
-                if (animating) return@setOnClickListener
-                viewLifecycleOwner.lifecycleScope.launch {
-                    animating = true
-                    snackbar.showAndAwait()
-                    delay(20)
-                    ui.fabStart.hide(); ui.fabCenter.hide(); ui.fabEnd.hide()
-                    delay(1000)
-                    ui.fabStart.show(); ui.fabCenter.show()
-                    ui.fabEnd.showAndAwait()
-                    delay(20)
-                    snackbar.dismiss()
-                    animating = false
-                }
-            }
-            ui.fabEnd.setOnClickListener {
-                if (animating) return@setOnClickListener
-                viewLifecycleOwner.lifecycleScope.launch {
-                    animating = true
-                    ui.fabStart.hide(); ui.fabCenter.hide(); ui.fabEnd.hide()
-                    delay(1000)
-                    ui.fabStart.show(); ui.fabCenter.show(); ui.fabEnd.show()
-                    animating = false
-                }
+        }
+        ui.fabEnd.setOnClickListener {
+            if (animating) return@setOnClickListener
+            viewLifecycleOwner.lifecycleScope.launch {
+                animating = true
+                ui.fabStart.hide(); ui.fabCenter.hide(); ui.fabEnd.hide()
+                delay(1000)
+                ui.fabStart.show(); ui.fabCenter.show(); ui.fabEnd.show()
+                animating = false
             }
         }
     }

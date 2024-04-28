@@ -49,16 +49,18 @@ class ShadowAttributesDetector : LayoutDetector() {
 
     override fun visitElement(context: XmlContext, element: Element) {
         for (child in element) {
-            if (!child.isViewTag(context) ||
-                !child.hasChildShadowAttributes() ||
-                child.hasAttributeNS(ANDROID_URI, ATTR_ID)
-            ) continue
-            context.report(
-                MISSING_ID,
-                context.getNameLocation(child),
-                "This ${child.tagName} requires an android:id to enable its shadow attributes",
-                fix().set().todo(ANDROID_URI, ATTR_ID, NEW_ID_PREFIX).build()
-            )
+            if (child.isViewTag(context) &&
+                child.hasChildShadowAttributes() &&
+                !child.hasAttributeNS(ANDROID_URI, ATTR_ID)
+            ) {
+                context.report(
+                    MISSING_ID,
+                    context.getNameLocation(child),
+                    "This ${child.tagName} requires an android:id to enable its shadow attributes",
+                    fix().set().todo(ANDROID_URI, ATTR_ID, NEW_ID_PREFIX)
+                        .build()
+                )
+            }
         }
     }
 }
@@ -68,7 +70,7 @@ private fun Element.isViewTag(context: XmlContext): Boolean {
     return when {
         tagName == VIEW -> true
         tagName == TAG_INCLUDE || tagName == VIEW_MERGE -> false
-        isLayoutMarkerTag(this) -> true
+        isLayoutMarkerTag(this) -> false
         context.sdkInfo.getParentViewName(tagName) != null -> true
         tagName.indexOf('.') <= 0 -> false
         else -> {

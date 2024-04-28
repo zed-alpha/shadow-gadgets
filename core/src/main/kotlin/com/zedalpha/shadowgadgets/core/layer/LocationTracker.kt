@@ -12,12 +12,12 @@ class LocationTracker(private val view: View) {
 
     private val tmp = IntArray(2)
 
-    fun checkLocationChanged() = tmp.let { location ->
+    fun checkLocationChanged(): Boolean = tmp.let { location ->
         view.getLocationOnScreen(location)
         current.checkUpdate(location)
     }
 
-    private fun IntArray.checkUpdate(other: IntArray) =
+    private fun IntArray.checkUpdate(other: IntArray): Boolean =
         if (this[0] != other[0] || this[1] != other[1]) {
             this[0] = other[0]; this[1] = other[1]
             true

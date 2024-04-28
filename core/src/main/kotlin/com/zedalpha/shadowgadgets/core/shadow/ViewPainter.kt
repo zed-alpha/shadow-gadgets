@@ -104,7 +104,7 @@ internal class ViewPainter(private val ownerView: ViewGroup) :
     }
 
     fun drawShadowView(canvas: Canvas, shadowView: View) {
-        addViewInLayout(shadowView, 0, emptyLayoutParams, true)
+        addViewInLayout(shadowView, -1, emptyLayoutParams, true)
         draw(canvas)
         removeViewInLayout(shadowView)
     }

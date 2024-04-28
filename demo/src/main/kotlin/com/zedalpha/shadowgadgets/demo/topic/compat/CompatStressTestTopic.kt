@@ -4,7 +4,6 @@ import android.animation.ArgbEvaluator
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,36 +20,31 @@ import com.zedalpha.shadowgadgets.demo.databinding.FragmentCompatStressTestBindi
 import com.zedalpha.shadowgadgets.demo.topic.COUNT
 import com.zedalpha.shadowgadgets.demo.topic.ColorfulHolder
 import com.zedalpha.shadowgadgets.demo.topic.ColorfulLazyColumn
-import com.zedalpha.shadowgadgets.demo.topic.ContentFragment
 import com.zedalpha.shadowgadgets.demo.topic.HALF_COUNT
 import com.zedalpha.shadowgadgets.demo.topic.ITEM_BLUE
 import com.zedalpha.shadowgadgets.demo.topic.ITEM_GREEN
 import com.zedalpha.shadowgadgets.demo.topic.ITEM_RED
 import com.zedalpha.shadowgadgets.demo.topic.Topic
+import com.zedalpha.shadowgadgets.demo.topic.TopicFragment
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.shadowPlane
 
-internal object CompatStressTestTopic : Topic {
+internal val CompatStressTestTopic = Topic(
+    "Compat - Stress Test",
+    R.string.description_compat_stress_test,
+    CompatStressTestFragment::class.java
+)
 
-    override val title = "Compat - Stress Test"
-
-    override val descriptionResId = R.string.description_compat_stress_test
-
-    override fun createContentFragment() = Content()
-
-    class Content : ContentFragment(R.layout.fragment_compat_stress_test) {
-
-        override fun loadUi(view: View) {
-            val ui = FragmentCompatStressTestBinding.bind(view)
-
-            ui.recycler.adapter = VeryColorfulAdapter()
-
-            ui.composeView.apply {
-                setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
-                setContent { ComposeContent() }
-            }
+class CompatStressTestFragment : TopicFragment<FragmentCompatStressTestBinding>(
+    FragmentCompatStressTestBinding::inflate
+) {
+    override fun loadUi(ui: FragmentCompatStressTestBinding) {
+        ui.recycler.adapter = VeryColorfulAdapter()
+        ui.composeView.apply {
+            setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
+            setContent { ComposeContent() }
         }
     }
 }

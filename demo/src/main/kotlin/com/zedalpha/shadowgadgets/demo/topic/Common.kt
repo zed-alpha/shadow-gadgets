@@ -6,17 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import androidx.viewbinding.ViewBinding
 import com.zedalpha.shadowgadgets.demo.view.ContentCardView
 
-internal interface Topic {
-    val title: String
-    val descriptionResId: Int
-    fun createContentFragment(): ContentFragment
+internal class Topic<T : TopicFragment<*>>(
+    val title: String,
+    val descriptionResId: Int,
+    private val fragmentClass: Class<T>
+) {
+    fun createFragment(): T = fragmentClass.getConstructor().newInstance()
 }
 
-internal abstract class ContentFragment(
-    private val contentLayout: Int
+abstract class TopicFragment<T : ViewBinding>(
+    private val inflate: (LayoutInflater, ViewGroup?, Boolean) -> T
 ) : Fragment() {
+
+    protected lateinit var ui: T
 
     final override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,14 +32,14 @@ internal abstract class ContentFragment(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
-        inflater.inflate(contentLayout, this)
+        ui = inflate(inflater, this, true)
     }
 
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        loadUi((view as ViewGroup).getChildAt(0))
+        loadUi(ui)
     }
 
-    abstract fun loadUi(view: View)
+    abstract fun loadUi(ui: T)
 }
 
 internal fun interface SeekChangeListener : SeekBar.OnSeekBarChangeListener {

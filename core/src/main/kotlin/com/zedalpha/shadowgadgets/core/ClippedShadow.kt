@@ -23,40 +23,36 @@ class ClippedShadow private constructor(
 
     private val clipPath = Path()
 
-    override fun setOutline(outline: Outline) {
-        shadow.setOutline(outline)
-        calculateClipPath(clipPath, shadow.outline)
-    }
-
     var pathProvider: PathProvider? = null
 
-    private fun calculateClipPath(path: Path, outline: Outline) {
-        path.reset()
-        if (!outline.isEmpty) {
-            val bounds = tmpRect
-            if (getOutlineRect(outline, bounds) && !bounds.isEmpty) {
-                val outlineRadius = getOutlineRadius(outline)
-                path.addRoundRect(
-                    tmpRectF.apply { set(bounds) },
-                    outlineRadius,
-                    outlineRadius,
-                    Path.Direction.CW
-                )
-            } else if (!OutlinePathReflector.getPath(path, outline)) {
-                pathProvider?.getPath(path)
-            }
+    override fun setOutline(outline: Outline) {
+        shadow.setOutline(outline)
+
+        val path = clipPath
+        path.rewind()
+        if (outline.isEmpty) return
+
+        val bounds = tmpRect
+        if (getOutlineRect(outline, bounds) && !bounds.isEmpty) {
+            val radius = getOutlineRadius(outline)
+            val boundsF = tmpRectF
+            boundsF.set(bounds)
+            path.addRoundRect(boundsF, radius, radius, Path.Direction.CW)
+            return
         }
+        if (OutlinePathReflector.getPath(path, outline)) return
+        pathProvider?.getPath(path)
     }
 
     override fun draw(canvas: Canvas) {
         if (!canvas.isHardwareAccelerated || clipPath.isEmpty) return
 
+        val matrix = tmpMatrix
+        getMatrix(matrix)
         val shadow = shadow
-        val path = tmpMatrix.let { matrix ->
-            if (hasIdentityMatrix()) matrix.reset() else getMatrix(matrix)
-            matrix.postTranslate(shadow.left.toFloat(), shadow.top.toFloat())
-            tmpPath.also { clipPath.transform(matrix, it) }
-        }
+        matrix.postTranslate(shadow.left.toFloat(), shadow.top.toFloat())
+        val path = tmpPath
+        clipPath.transform(matrix, path)
 
         canvas.save()
         clipOutPath(canvas, path)

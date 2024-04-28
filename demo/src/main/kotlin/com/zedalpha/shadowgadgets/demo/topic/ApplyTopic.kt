@@ -11,20 +11,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentApplyBinding
 
-internal object ApplyTopic : Topic {
+internal val ApplyTopic = Topic(
+    "Apply",
+    R.string.description_apply,
+    ApplyFragment::class.java
+)
 
-    override val title = "Apply"
-
-    override val descriptionResId = R.string.description_apply
-
-    override fun createContentFragment() = Content()
-
-    class Content : ContentFragment(R.layout.fragment_apply) {
-
-        override fun loadUi(view: View) {
-            val ui = FragmentApplyBinding.bind(view)
-            ui.recycler.adapter = ColorfulAdapter()
-        }
+class ApplyFragment : TopicFragment<FragmentApplyBinding>(
+    FragmentApplyBinding::inflate
+) {
+    override fun loadUi(ui: FragmentApplyBinding) {
+        ui.recycler.adapter = ColorfulAdapter()
     }
 }
 

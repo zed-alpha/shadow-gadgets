@@ -114,7 +114,7 @@ private class ContentAdapter(activity: FragmentActivity) :
     override fun getItemCount() = topicList.size
 
     override fun createFragment(position: Int) =
-        topicList[position].createContentFragment()
+        topicList[position].createFragment()
 }
 
 private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {

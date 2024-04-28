@@ -14,97 +14,91 @@ import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.forceShadowLayer
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 
-internal object IntroTopic : Topic {
+internal val IntroTopic = Topic(
+    "Intro",
+    R.string.description_intro,
+    IntroFragment::class.java
+)
 
-    override val title = "Intro"
+class IntroFragment : TopicFragment<FragmentIntroBinding>(
+    FragmentIntroBinding::inflate
+) {
+    private var viewColor: Int = DefaultTargetColor
+        set(color) {
+            field = color
+            ui.target.background.setTint(color)
+        }
 
-    override val descriptionResId = R.string.description_intro
-
-    override fun createContentFragment() = Content()
-
-    class Content : ContentFragment(R.layout.fragment_intro) {
-
-        private lateinit var ui: FragmentIntroBinding
-
-        private var viewColor: Int = DefaultTargetColor
-            set(color) {
-                field = color
-                ui.target.background.setTint(color)
+    private var shadowColor: Int = Color.BLACK
+        set(color) {
+            field = color
+            if (Build.VERSION.SDK_INT >= 28) {
+                ui.target.outlineAmbientShadowColor = color
+                ui.target.outlineSpotShadowColor = color
+            } else {
+                ui.target.outlineShadowColorCompat = color
             }
+        }
 
-        private var shadowColor: Int = Color.BLACK
-            set(color) {
-                field = color
-                if (Build.VERSION.SDK_INT >= 28) {
-                    ui.target.outlineAmbientShadowColor = color
-                    ui.target.outlineSpotShadowColor = color
+    override fun loadUi(ui: FragmentIntroBinding) {
+        if (Build.VERSION.SDK_INT in 24..28) {
+            ui.target.forceShadowLayer = true
+        }
+
+        ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
+            ui.target.clipOutlineShadow = isChecked
+        }
+
+        // Drag and drop
+        val dragListener = SimpleDragListener(ui.target)
+        ui.frameOne.setOnDragListener(dragListener)
+        ui.frameTwo.setOnDragListener(dragListener)
+        ui.target.setOnLongClickListener { target ->
+            target.startDragging(GrayShadow(target), target.parent)
+            true
+        }
+
+        // Color and elevation
+        ui.colorSelect.setOnCheckedChangeListener { _, checkedId ->
+            ui.controls.color = when (checkedId) {
+                R.id.view_selection -> viewColor
+                else -> shadowColor
+            }
+        }
+        ui.controls.apply {
+            onColorChanged { color ->
+                if (ui.colorSelect.checkedRadioButtonId == R.id.view_selection) {
+                    viewColor = color
                 } else {
-                    ui.target.outlineShadowColorCompat = color
+                    shadowColor = color
                 }
             }
-
-        override fun loadUi(view: View) {
-            ui = FragmentIntroBinding.bind(view)
-
-            if (Build.VERSION.SDK_INT in 24..28) {
-                ui.target.forceShadowLayer = true
+            onElevationChanged { elevation ->
+                ui.target.elevation = elevation.toFloat()
             }
-
-            ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
-                ui.target.clipOutlineShadow = isChecked
-            }
-
-            // Drag and drop
-            val dragListener = SimpleDragListener(ui.target)
-            ui.frameOne.setOnDragListener(dragListener)
-            ui.frameTwo.setOnDragListener(dragListener)
-            ui.target.setOnLongClickListener { target ->
-                target.startDragging(GrayShadow(target), target.parent)
-                true
-            }
-
-            // Color and elevation
-            ui.colorSelect.setOnCheckedChangeListener { _, checkedId ->
-                ui.controls.color = when (checkedId) {
-                    R.id.view_selection -> viewColor
-                    else -> shadowColor
-                }
-            }
-            ui.controls.apply {
-                onColorChanged { color ->
-                    if (ui.colorSelect.checkedRadioButtonId == R.id.view_selection) {
-                        viewColor = color
-                    } else {
-                        shadowColor = color
-                    }
-                }
-                onElevationChanged { elevation ->
-                    ui.target.elevation = elevation.toFloat()
-                }
-                color = viewColor
-                elevation = 50
-            }
+            color = viewColor
+            elevation = 50
         }
+    }
 
-        override fun onSaveInstanceState(outState: Bundle) {
-            super.onSaveInstanceState(outState)
-            outState.putBoolean("reparent", ui.target.parent == ui.frameTwo)
-            outState.putInt("view_color", viewColor)
-            outState.putInt("shadow_color", shadowColor)
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("reparent", ui.target.parent == ui.frameTwo)
+        outState.putInt("view_color", viewColor)
+        outState.putInt("shadow_color", shadowColor)
+    }
 
-        override fun onViewStateRestored(savedInstanceState: Bundle?) {
-            super.onViewStateRestored(savedInstanceState)
-            if (savedInstanceState?.getBoolean("reparent") == true) {
-                ui.frameOne.removeView(ui.target)
-                ui.frameTwo.addView(ui.target)
-            }
-            viewColor = savedInstanceState?.getInt("view_color") ?: viewColor
-            savedInstanceState?.getInt("shadow_color")?.let { color ->
-                shadowColor = color
-            }
-            ui.controls.syncElevation()
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState?.getBoolean("reparent") == true) {
+            ui.frameOne.removeView(ui.target)
+            ui.frameTwo.addView(ui.target)
         }
+        viewColor = savedInstanceState?.getInt("view_color") ?: viewColor
+        savedInstanceState?.getInt("shadow_color")?.let { color ->
+            shadowColor = color
+        }
+        ui.controls.syncElevation()
     }
 }
 

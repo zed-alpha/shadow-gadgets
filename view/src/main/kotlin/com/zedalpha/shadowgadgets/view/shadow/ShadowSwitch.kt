@@ -49,8 +49,8 @@ internal object ShadowSwitch : View.OnAttachStateChangeListener {
 private fun handleAttach(view: View) {
     val parent = view.parent as? ViewGroup
     if (view.isRecyclingViewGroupChild && view.previousParent != parent) {
-        view.previousParent = parent
         view.shadow?.detachFromTarget()
+        view.previousParent = parent
     }
     val shadow = view.shadow
     if (shadow != null) {

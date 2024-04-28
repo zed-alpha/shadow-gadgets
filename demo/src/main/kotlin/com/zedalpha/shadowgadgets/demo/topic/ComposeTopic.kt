@@ -1,7 +1,6 @@
 package com.zedalpha.shadowgadgets.demo.topic
 
 import android.os.Build
-import android.view.View
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -58,22 +57,19 @@ import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentComposeBinding
 
-internal object ComposeTopic : Topic {
+internal val ComposeTopic = Topic(
+    "Compose",
+    R.string.description_compose,
+    ComposeFragment::class.java
+)
 
-    override val title = "Compose"
-
-    override val descriptionResId = R.string.description_compose
-
-    override fun createContentFragment() = Content()
-
-    class Content : ContentFragment(R.layout.fragment_compose) {
-
-        override fun loadUi(view: View) {
-            val ui = FragmentComposeBinding.bind(view)
-            ui.composeView.apply {
-                setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
-                setContent { ComposeContent() }
-            }
+class ComposeFragment : TopicFragment<FragmentComposeBinding>(
+    FragmentComposeBinding::inflate
+) {
+    override fun loadUi(ui: FragmentComposeBinding) {
+        ui.composeView.apply {
+            setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
+            setContent { ComposeContent() }
         }
     }
 }
@@ -268,11 +264,12 @@ private fun ClippedShadowButton(
     }
 }
 
-internal val itemRed = Color(ITEM_RED)
-internal val itemGreen = Color(ITEM_GREEN)
-internal val itemBlue = Color(ITEM_BLUE)
+private val cardShapeBuilder = when {
+    Build.VERSION.SDK_INT >= 30 -> puzzlePieceBuilder()
+    else -> compassPointerBuilder()
+}
 
-private val puzzlePieceBuilder: Path.(Size, LayoutDirection) -> Unit =
+private fun puzzlePieceBuilder(): Path.(Size, LayoutDirection) -> Unit =
     { size, _ ->
         val side = minOf(size.width, size.height)
         translate(Offset((size.width - side) / 2, (size.height - side) / 2))
@@ -306,7 +303,7 @@ private val puzzlePieceBuilder: Path.(Size, LayoutDirection) -> Unit =
         close()
     }
 
-private val compassPointerBuilder: Path.(Size, LayoutDirection) -> Unit =
+private fun compassPointerBuilder(): Path.(Size, LayoutDirection) -> Unit =
     { size, _ ->
         val side = minOf(size.width, size.height)
         translate(Offset((size.width - side) / 2, (size.height - side) / 2))
@@ -325,7 +322,6 @@ private val compassPointerBuilder: Path.(Size, LayoutDirection) -> Unit =
         )
     }
 
-private val cardShapeBuilder = when {
-    Build.VERSION.SDK_INT >= 30 -> puzzlePieceBuilder
-    else -> compassPointerBuilder
-}
+internal val itemRed = Color(ITEM_RED)
+internal val itemGreen = Color(ITEM_GREEN)
+internal val itemBlue = Color(ITEM_BLUE)

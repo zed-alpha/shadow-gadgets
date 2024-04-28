@@ -21,7 +21,7 @@
             android:layout_height="56dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:backgroundTint="@color/whisper_gray"
+            android:backgroundTint="@color/see_through_white"
             android:backgroundTintMode="multiply"
             android:elevation="25dp" />
 

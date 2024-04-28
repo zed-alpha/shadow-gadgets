@@ -11,54 +11,48 @@ import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentDrawableBinding
 import com.zedalpha.shadowgadgets.view.drawable.ShadowDrawable
 
-internal object DrawableTopic : Topic {
+internal val DrawableTopic = Topic(
+    "Drawable",
+    R.string.description_drawable,
+    DrawableFragment::class.java
+)
 
-    override val title = "Drawable"
+class DrawableFragment : TopicFragment<FragmentDrawableBinding>(
+    FragmentDrawableBinding::inflate
+) {
+    private lateinit var syncedDrawable: DemoClippedShadowDrawable
+    private lateinit var unsyncedDrawable: DemoClippedShadowDrawable
 
-    override val descriptionResId = R.string.description_drawable
+    override fun loadUi(ui: FragmentDrawableBinding) {
+        syncedDrawable = DemoClippedShadowDrawable(ui.syncedView)
+        ui.syncedView.background = syncedDrawable
+        ui.seekSynced.setOnSeekBarChangeListener(
+            SeekChangeListener { progress ->
+                syncedDrawable.rotationZ = progress.toFloat()
+                syncedDrawable.invalidateSelf()
+            }
+        )
 
-    override fun createContentFragment() = Content()
+        unsyncedDrawable = DemoClippedShadowDrawable(ui.unsyncedView)
+        ui.unsyncedView.background = unsyncedDrawable
+        ui.seekUnsynced.setOnSeekBarChangeListener(
+            SeekChangeListener { progress ->
+                unsyncedDrawable.rotationZ = progress.toFloat()
+                // No call to invalidateSelf()
+            }
+        )
+    }
 
-    class Content : ContentFragment(R.layout.fragment_drawable) {
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        syncedDrawable.rotationZ = ui.seekSynced.progress.toFloat()
+        unsyncedDrawable.rotationZ = ui.seekUnsynced.progress.toFloat()
+    }
 
-        private lateinit var ui: FragmentDrawableBinding
-
-        private lateinit var syncedDrawable: DemoClippedShadowDrawable
-        private lateinit var unsyncedDrawable: DemoClippedShadowDrawable
-
-        override fun loadUi(view: View) {
-            ui = FragmentDrawableBinding.bind(view)
-
-            syncedDrawable = DemoClippedShadowDrawable(ui.syncedView)
-            ui.syncedView.background = syncedDrawable
-            ui.seekSynced.setOnSeekBarChangeListener(
-                SeekChangeListener { progress ->
-                    syncedDrawable.rotationZ = progress.toFloat()
-                    syncedDrawable.invalidateSelf()
-                }
-            )
-
-            unsyncedDrawable = DemoClippedShadowDrawable(ui.unsyncedView)
-            ui.unsyncedView.background = unsyncedDrawable
-            ui.seekUnsynced.setOnSeekBarChangeListener(
-                SeekChangeListener { progress ->
-                    unsyncedDrawable.rotationZ = progress.toFloat()
-                    // No call to invalidateSelf()
-                }
-            )
-        }
-
-        override fun onViewStateRestored(savedInstanceState: Bundle?) {
-            super.onViewStateRestored(savedInstanceState)
-            syncedDrawable.rotationZ = ui.seekSynced.progress.toFloat()
-            unsyncedDrawable.rotationZ = ui.seekUnsynced.progress.toFloat()
-        }
-
-        override fun onDestroyView() {
-            super.onDestroyView()
-            syncedDrawable.dispose()
-            unsyncedDrawable.dispose()
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        syncedDrawable.dispose()
+        unsyncedDrawable.dispose()
     }
 }
 

@@ -8,76 +8,68 @@ import android.os.Bundle
 import android.view.View
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentCompatDrawableBinding
-import com.zedalpha.shadowgadgets.demo.topic.ContentFragment
 import com.zedalpha.shadowgadgets.demo.topic.SeekChangeListener
 import com.zedalpha.shadowgadgets.demo.topic.Topic
+import com.zedalpha.shadowgadgets.demo.topic.TopicFragment
 import com.zedalpha.shadowgadgets.demo.topic.setToCompassPointer
 import com.zedalpha.shadowgadgets.demo.topic.setToPuzzlePiece
 import com.zedalpha.shadowgadgets.view.drawable.ShadowDrawable
 import android.graphics.Color as AndroidColor
 
-internal object CompatDrawableTopic : Topic {
+internal val CompatDrawableTopic = Topic(
+    "Compat - Drawable",
+    R.string.description_compat_drawable,
+    CompatDrawableFragment::class.java
+)
 
-    override val title = "Compat - Drawable"
+class CompatDrawableFragment : TopicFragment<FragmentCompatDrawableBinding>(
+    FragmentCompatDrawableBinding::inflate
+) {
+    private lateinit var drawable: DemoCompatShadowDrawable
 
-    override val descriptionResId = R.string.description_compat_drawable
-
-    override fun createContentFragment() = Content()
-
-    class Content : ContentFragment(R.layout.fragment_compat_drawable) {
-
-        private lateinit var ui: FragmentCompatDrawableBinding
-
-        private lateinit var drawable: DemoCompatShadowDrawable
-
-        override fun loadUi(view: View) {
-            ui = FragmentCompatDrawableBinding.bind(view)
-
-            ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
-                setDrawable(isChecked)
+    override fun loadUi(ui: FragmentCompatDrawableBinding) {
+        ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
+            setDrawable(isChecked)
+        }
+        ui.seekRotation.setOnSeekBarChangeListener(
+            SeekChangeListener { progress ->
+                drawable.rotationZ = progress.toFloat()
+                drawable.invalidateSelf()
             }
-
-            ui.seekRotation.setOnSeekBarChangeListener(
-                SeekChangeListener { progress ->
-                    drawable.rotationZ = progress.toFloat()
-                    drawable.invalidateSelf()
-                }
-            )
-
-            ui.controls.apply {
-                onColorChanged { color ->
-                    drawable.colorCompat = color
-                    drawable.invalidateSelf()
-                }
-                onElevationChanged { elevation ->
-                    drawable.elevation = elevation.toFloat()
-                    drawable.invalidateSelf()
-                }
-                color = AndroidColor.RED
-                elevation = 30
+        )
+        ui.controls.apply {
+            onColorChanged { color ->
+                drawable.colorCompat = color
+                drawable.invalidateSelf()
             }
+            onElevationChanged { elevation ->
+                drawable.elevation = elevation.toFloat()
+                drawable.invalidateSelf()
+            }
+            color = AndroidColor.RED
+            elevation = 30
         }
+    }
 
-        private fun setDrawable(clipped: Boolean) {
-            if (::drawable.isInitialized) drawable.dispose()
-            drawable =
-                DemoCompatShadowDrawable(ui.drawableView, clipped).apply {
-                    ui.drawableView.background = this
-                }
-            ui.controls.syncColor()
-            ui.controls.syncElevation()
-            drawable.rotationZ = ui.seekRotation.progress.toFloat()
-        }
+    private fun setDrawable(clipped: Boolean) {
+        if (::drawable.isInitialized) drawable.dispose()
+        drawable =
+            DemoCompatShadowDrawable(ui.drawableView, clipped).apply {
+                ui.drawableView.background = this
+            }
+        ui.controls.syncColor()
+        ui.controls.syncElevation()
+        drawable.rotationZ = ui.seekRotation.progress.toFloat()
+    }
 
-        override fun onViewStateRestored(savedInstanceState: Bundle?) {
-            super.onViewStateRestored(savedInstanceState)
-            setDrawable(ui.clipSwitch.isChecked)
-        }
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        setDrawable(ui.clipSwitch.isChecked)
+    }
 
-        override fun onDestroyView() {
-            super.onDestroyView()
-            drawable.dispose()
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        drawable.dispose()
     }
 }
 

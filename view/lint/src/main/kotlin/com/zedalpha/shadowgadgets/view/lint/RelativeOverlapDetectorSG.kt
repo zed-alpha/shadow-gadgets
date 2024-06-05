@@ -4,7 +4,6 @@ import com.android.tools.lint.checks.RelativeOverlapDetector
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Scope
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_RELATIVE_LAYOUT
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_RELATIVE_LAYOUT
 
 class RelativeOverlapDetectorSG : BaseDetector() {
@@ -26,8 +25,5 @@ class RelativeOverlapDetectorSG : BaseDetector() {
         RelativeOverlapDetector.ISSUE to ISSUE_SG
     )
 
-    override val elements = listOf(
-        SHADOWS_RELATIVE_LAYOUT,
-        CLIPPED_SHADOWS_RELATIVE_LAYOUT
-    )
+    override val elements = listOf(SHADOWS_RELATIVE_LAYOUT)
 }

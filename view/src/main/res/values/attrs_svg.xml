@@ -9,8 +9,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsChipGroup_Layout">
@@ -18,8 +16,6 @@
         <attr name="clipOutlineShadow" />
         <attr name="outlineShadowColorCompat" />
         <attr name="forceOutlineShadowColorCompat" />
-        <!-- @deprecated -->
-        <attr name="clippedShadowPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsConstraintLayout">
@@ -28,8 +24,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsConstraintLayout_Layout">
@@ -37,8 +31,6 @@
         <attr name="clipOutlineShadow" />
         <attr name="outlineShadowColorCompat" />
         <attr name="forceOutlineShadowColorCompat" />
-        <!-- @deprecated -->
-        <attr name="clippedShadowPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsCoordinatorLayout">
@@ -47,8 +39,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsCoordinatorLayout_Layout">
@@ -56,8 +46,6 @@
         <attr name="clipOutlineShadow" />
         <attr name="outlineShadowColorCompat" />
         <attr name="forceOutlineShadowColorCompat" />
-        <!-- @deprecated -->
-        <attr name="clippedShadowPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsMaterialButtonToggleGroup">
@@ -66,8 +54,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsMaterialButtonToggleGroup_Layout">
@@ -75,8 +61,6 @@
         <attr name="clipOutlineShadow" />
         <attr name="outlineShadowColorCompat" />
         <attr name="forceOutlineShadowColorCompat" />
-        <!-- @deprecated -->
-        <attr name="clippedShadowPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsMotionLayout">
@@ -85,8 +69,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsMotionLayout_Layout">
@@ -94,8 +76,6 @@
         <attr name="clipOutlineShadow" />
         <attr name="outlineShadowColorCompat" />
         <attr name="forceOutlineShadowColorCompat" />
-        <!-- @deprecated -->
-        <attr name="clippedShadowPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsFrameLayout">
@@ -104,8 +84,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsFrameLayout_Layout">
@@ -113,8 +91,6 @@
         <attr name="clipOutlineShadow" />
         <attr name="outlineShadowColorCompat" />
         <attr name="forceOutlineShadowColorCompat" />
-        <!-- @deprecated -->
-        <attr name="clippedShadowPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsLinearLayout">
@@ -123,8 +99,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsLinearLayout_Layout">
@@ -132,8 +106,6 @@
         <attr name="clipOutlineShadow" />
         <attr name="outlineShadowColorCompat" />
         <attr name="forceOutlineShadowColorCompat" />
-        <!-- @deprecated -->
-        <attr name="clippedShadowPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsRadioGroup">
@@ -142,8 +114,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsRadioGroup_Layout">
@@ -151,8 +121,6 @@
         <attr name="clipOutlineShadow" />
         <attr name="outlineShadowColorCompat" />
         <attr name="forceOutlineShadowColorCompat" />
-        <!-- @deprecated -->
-        <attr name="clippedShadowPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsRelativeLayout">
@@ -161,8 +129,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsRelativeLayout_Layout">
@@ -170,8 +136,6 @@
         <attr name="clipOutlineShadow" />
         <attr name="outlineShadowColorCompat" />
         <attr name="forceOutlineShadowColorCompat" />
-        <!-- @deprecated -->
-        <attr name="clippedShadowPlane" />
     </declare-styleable>
 
     <!-- Recycling groups. No XML children allowed, so no _Layout attrs. -->
@@ -182,8 +146,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsExpandableListView">
@@ -192,8 +154,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsGridView">
@@ -202,8 +162,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsListView">
@@ -212,8 +170,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsStackView">
@@ -222,8 +178,6 @@
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
         <attr name="ignoreInlineChildShadows" />
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" />
     </declare-styleable>
 
 </resources>

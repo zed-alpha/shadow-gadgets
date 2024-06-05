@@ -7,7 +7,6 @@ import com.android.tools.lint.detector.api.Incident
 import com.android.tools.lint.detector.api.LintMap
 import com.android.tools.lint.detector.api.Scope
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_MOTION_LAYOUT
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_MOTION_LAYOUT
 
 class ObjectAnimatorDetectorSG : BaseDetector() {
@@ -29,11 +28,7 @@ class ObjectAnimatorDetectorSG : BaseDetector() {
         ObjectAnimatorDetector.MISSING_KEEP to MISSING_KEEP_SG
     )
 
-    override val elements = listOf(
-        SHADOWS_MOTION_LAYOUT,
-        CLIPPED_SHADOWS_MOTION_LAYOUT,
-        "CustomAttribute"
-    )
+    override val elements = listOf(SHADOWS_MOTION_LAYOUT, "CustomAttribute")
 
     override fun filterIncident(
         context: Context,

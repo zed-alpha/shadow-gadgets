@@ -4,7 +4,6 @@ import com.android.tools.lint.checks.UseCompoundDrawableDetector
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Scope
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_LINEAR_LAYOUT
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_LINEAR_LAYOUT
 
 class UseCompoundDrawableDetectorSG : BaseDetector() {
@@ -26,8 +25,5 @@ class UseCompoundDrawableDetectorSG : BaseDetector() {
         UseCompoundDrawableDetector.ISSUE to ISSUE_SG
     )
 
-    override val elements = listOf(
-        SHADOWS_LINEAR_LAYOUT,
-        CLIPPED_SHADOWS_LINEAR_LAYOUT
-    )
+    override val elements = listOf(SHADOWS_LINEAR_LAYOUT)
 }

@@ -4,8 +4,6 @@ import com.android.tools.lint.checks.ConstraintLayoutDetector
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Scope
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_CONSTRAINT_LAYOUT
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_MOTION_LAYOUT
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_CONSTRAINT_LAYOUT
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_MOTION_LAYOUT
 
@@ -30,8 +28,6 @@ class ConstraintLayoutDetectorSG : BaseDetector() {
 
     override val elements = listOf(
         SHADOWS_CONSTRAINT_LAYOUT,
-        CLIPPED_SHADOWS_CONSTRAINT_LAYOUT,
-        SHADOWS_MOTION_LAYOUT,
-        CLIPPED_SHADOWS_MOTION_LAYOUT
+        SHADOWS_MOTION_LAYOUT
     )
 }

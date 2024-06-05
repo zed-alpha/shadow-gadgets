@@ -23,7 +23,7 @@ class IrregularFragment : TopicFragment<FragmentIrregularBinding>(
     override fun loadUi(ui: FragmentIrregularBinding) {
         if (Build.VERSION.SDK_INT < 30) {
             ui.caveat.text = getString(
-                R.string.caveat_irregular,
+                R.string.message_irregular,
                 Build.VERSION.SDK_INT
             )
             ui.labelBroken.isInvisible = true

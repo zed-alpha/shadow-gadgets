@@ -39,31 +39,11 @@ class ChildCountDetectorSGTest {
                     
                         </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsGridView>
                     
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsListView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsListView>
-                    
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsGridView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsGridView>
-                    
                         <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsListView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
                     
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsGridView
+                        <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsGridView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
                     
@@ -81,13 +61,7 @@ class ChildCountDetectorSGTest {
                 res/layout/list_view_child.xml:17: Warning: A list/grid should have no children declared in XML [AdapterViewChildrenSG]
                     <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsGridView
                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/list_view_child.xml:27: Warning: A list/grid should have no children declared in XML [AdapterViewChildrenSG]
-                    <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsListView
-                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/list_view_child.xml:37: Warning: A list/grid should have no children declared in XML [AdapterViewChildrenSG]
-                    <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsGridView
-                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                0 errors, 4 warnings"""
+                0 errors, 2 warnings"""
             )
     }
 }

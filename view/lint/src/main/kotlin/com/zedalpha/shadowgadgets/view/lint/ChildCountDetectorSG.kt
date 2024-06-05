@@ -4,8 +4,6 @@ import com.android.tools.lint.checks.ChildCountDetector
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Scope
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_GRID_VIEW
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_LIST_VIEW
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_GRID_VIEW
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_LIST_VIEW
 
@@ -28,10 +26,5 @@ class ChildCountDetectorSG : BaseDetector() {
         ChildCountDetector.ADAPTER_VIEW_ISSUE to ADAPTER_VIEW_ISSUE_SG
     )
 
-    override val elements = listOf(
-        SHADOWS_GRID_VIEW,
-        CLIPPED_SHADOWS_GRID_VIEW,
-        SHADOWS_LIST_VIEW,
-        CLIPPED_SHADOWS_LIST_VIEW
-    )
+    override val elements = listOf(SHADOWS_GRID_VIEW, SHADOWS_LIST_VIEW)
 }

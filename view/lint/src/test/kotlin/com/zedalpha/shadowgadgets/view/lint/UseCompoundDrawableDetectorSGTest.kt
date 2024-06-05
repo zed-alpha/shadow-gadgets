@@ -13,43 +13,21 @@ class UseCompoundDrawableDetectorSGTest {
                 xml(
                     "res/layout/compound.xml",
                     """
-                    <LinearLayout
+                    <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsLinearLayout
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-                    
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsLinearLayout
+                        android:layout_height="match_parent">
+                                    
+                        <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent" />
                     
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                    
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:contentDescription="@string/app_name" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsLinearLayout>
-                    
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsLinearLayout
+                        <ImageView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/app_name" />
                     
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent" />
-                    
-                            <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:contentDescription="@string/app_name" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsLinearLayout>
-                    
-                    </LinearLayout>
+                    </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsLinearLayout>
                     """.trimIndent()
                 )
             )
@@ -57,13 +35,10 @@ class UseCompoundDrawableDetectorSGTest {
             .run()
             .expect(
                 """
-                res/layout/compound.xml:7: Warning: This tag and its children can be replaced by one <TextView/> and a compound drawable [UseCompoundDrawablesSG]
-                    <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsLinearLayout
-                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/compound.xml:22: Warning: This tag and its children can be replaced by one <TextView/> and a compound drawable [UseCompoundDrawablesSG]
-                    <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsLinearLayout
-                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                0 errors, 2 warnings"""
+                res/layout/compound.xml:1: Warning: This tag and its children can be replaced by one <TextView/> and a compound drawable [UseCompoundDrawablesSG]
+                <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsLinearLayout
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                0 errors, 1 warnings"""
             )
     }
 }

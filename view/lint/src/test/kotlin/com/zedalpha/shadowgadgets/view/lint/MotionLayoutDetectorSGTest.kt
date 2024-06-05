@@ -54,16 +54,7 @@ class MotionLayoutDetectorSGTest {
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
                     
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsMotionLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-                    
                         <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            app:layoutDescription="@string/not_a_motion_scene" />
-                    
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsMotionLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             app:layoutDescription="@string/not_a_motion_scene" />
@@ -72,11 +63,6 @@ class MotionLayoutDetectorSGTest {
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             app:layoutDescription="@xml/missing_scene" />
-                    
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsMotionLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            app:layoutDescription="@xml/missing_scene2" />
                     
                     </LinearLayout>
                     """.trimIndent()
@@ -89,22 +75,13 @@ class MotionLayoutDetectorSGTest {
                 res/layout/invalid_motion_scene.xml:7: Error: The attribute: layoutDescription is missing [MotionLayoutInvalidSceneFileReferenceSG]
                     <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout
                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/invalid_motion_scene.xml:11: Error: The attribute: layoutDescription is missing [MotionLayoutInvalidSceneFileReferenceSG]
-                    <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsMotionLayout
-                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/invalid_motion_scene.xml:18: Error: @string/not_a_motion_scene is an invalid value for layoutDescription [MotionLayoutInvalidSceneFileReferenceSG]
+                res/layout/invalid_motion_scene.xml:14: Error: @string/not_a_motion_scene is an invalid value for layoutDescription [MotionLayoutInvalidSceneFileReferenceSG]
                         app:layoutDescription="@string/not_a_motion_scene" />
                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/invalid_motion_scene.xml:23: Error: @string/not_a_motion_scene is an invalid value for layoutDescription [MotionLayoutInvalidSceneFileReferenceSG]
-                        app:layoutDescription="@string/not_a_motion_scene" />
-                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/invalid_motion_scene.xml:28: Error: The motion scene file: @xml/missing_scene doesn't exist [MotionLayoutInvalidSceneFileReferenceSG]
+                res/layout/invalid_motion_scene.xml:19: Error: The motion scene file: @xml/missing_scene doesn't exist [MotionLayoutInvalidSceneFileReferenceSG]
                         app:layoutDescription="@xml/missing_scene" />
                                                ~~~~~~~~~~~~~~~~~~
-                res/layout/invalid_motion_scene.xml:33: Error: The motion scene file: @xml/missing_scene2 doesn't exist [MotionLayoutInvalidSceneFileReferenceSG]
-                        app:layoutDescription="@xml/missing_scene2" />
-                                               ~~~~~~~~~~~~~~~~~~~
-                6 errors, 0 warnings"""
+                3 errors, 0 warnings"""
             )
     }
 }

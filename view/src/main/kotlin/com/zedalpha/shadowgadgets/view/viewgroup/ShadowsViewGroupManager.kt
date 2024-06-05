@@ -71,19 +71,13 @@ internal abstract class ShadowsViewGroupManager(
             R.styleable.ShadowsViewGroup
         )
         registerDebugData(parentView.context, attributeSet, array)
-        when {
-            array.hasValue(R.styleable.ShadowsViewGroup_childShadowsPlane) -> {
-                R.styleable.ShadowsViewGroup_childShadowsPlane
-            }
-
-            array.hasValue(R.styleable.ShadowsViewGroup_childClippedShadowsPlane) -> {
-                R.styleable.ShadowsViewGroup_childClippedShadowsPlane
-            }
-
-            else -> null
-        }?.let { plane ->
-            childShadowsPlane =
-                ShadowPlane.forValue(array.getInt(plane, Foreground.ordinal))
+        if (array.hasValue(R.styleable.ShadowsViewGroup_childShadowsPlane)) {
+            childShadowsPlane = ShadowPlane.forValue(
+                array.getInt(
+                    R.styleable.ShadowsViewGroup_childShadowsPlane,
+                    Foreground.ordinal
+                )
+            )
         }
         if (array.hasValue(R.styleable.ShadowsViewGroup_clipAllChildShadows)) {
             clipAllChildShadows = array.getBoolean(
@@ -228,7 +222,7 @@ internal abstract class ShadowsViewGroupManager(
     }
 }
 
-internal var ViewGroup.inlineController: ShadowController
+internal inline var ViewGroup.inlineController: ShadowController
     get() = getTag(R.id.inline_controller) as ShadowController
     private set(value) = setTag(R.id.inline_controller, value)
 

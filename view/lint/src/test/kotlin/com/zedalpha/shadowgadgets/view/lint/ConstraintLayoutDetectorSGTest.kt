@@ -39,26 +39,6 @@ class ConstraintLayoutDetectorSGTest {
                     
                         </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout>
                     
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsConstraintLayout>
-                    
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsMotionLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsMotionLayout>
-                    
                     </LinearLayout>
                     """.trimIndent()
                 )
@@ -73,13 +53,7 @@ class ConstraintLayoutDetectorSGTest {
                 res/layout/missing_constraints.xml:21: Error: This view is not constrained. It only has designtime positions, so it will jump to (0,0) at runtime unless you add the constraints [MissingConstraintsSG]
                         <TextView
                          ~~~~~~~~
-                res/layout/missing_constraints.xml:31: Error: This view is not constrained. It only has designtime positions, so it will jump to (0,0) at runtime unless you add the constraints [MissingConstraintsSG]
-                        <TextView
-                         ~~~~~~~~
-                res/layout/missing_constraints.xml:41: Error: This view is not constrained. It only has designtime positions, so it will jump to (0,0) at runtime unless you add the constraints [MissingConstraintsSG]
-                        <TextView
-                         ~~~~~~~~
-                4 errors, 0 warnings"""
+                2 errors, 0 warnings"""
             )
     }
 }

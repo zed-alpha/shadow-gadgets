@@ -5,7 +5,6 @@ import com.android.tools.lint.checks.InefficientWeightDetector
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Scope
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_LINEAR_LAYOUT
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_LINEAR_LAYOUT
 
 class InefficientWeightDetectorSG : BaseDetector() {
@@ -50,7 +49,6 @@ class InefficientWeightDetectorSG : BaseDetector() {
 
     override val elements = listOf(
         SHADOWS_LINEAR_LAYOUT,
-        CLIPPED_SHADOWS_LINEAR_LAYOUT,
         SdkConstants.LINEAR_LAYOUT
     )
 }

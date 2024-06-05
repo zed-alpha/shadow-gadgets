@@ -5,16 +5,12 @@
     <public name="clipOutlineShadow" type="attr" />
     <public name="outlineShadowColorCompat" type="attr" />
     <public name="forceOutlineShadowColorCompat" type="attr" />
-    <!-- @deprecated -->
-    <public name="clippedShadowPlane" type="attr" />
 
     <public name="childShadowsPlane" type="attr" />
     <public name="clipAllChildShadows" type="attr" />
     <public name="childOutlineShadowsColorCompat" type="attr" />
     <public name="forceChildOutlineShadowsColorCompat" type="attr" />
     <public name="ignoreInlineChildShadows" type="attr" />
-    <!-- @deprecated -->
-    <public name="childClippedShadowsPlane" type="attr" />
 
     <public name="appcompat_shadow_helper" type="string" />
     <public name="material_components_shadow_helper" type="string" />

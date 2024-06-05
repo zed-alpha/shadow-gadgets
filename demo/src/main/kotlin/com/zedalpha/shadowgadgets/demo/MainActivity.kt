@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         var current = 0
-        ui.title.setText(topicList[0].title)
+        ui.title.setText(topics[0].title)
 
         fun setTopic(index: Int) {
             if (current == index) return
@@ -54,10 +54,10 @@ class MainActivity : AppCompatActivity() {
             ui.contentPager.currentItem = index
             ui.title.apply {
                 setDirection(index > current)
-                setText(topicList[index].title)
+                setText(topics[index].title)
             }
             ui.backward.isInvisible = index == 0
-            ui.forward.isInvisible = index == topicList.size - 1
+            ui.forward.isInvisible = index == topics.size - 1
             current = index
         }
 
@@ -65,27 +65,26 @@ class MainActivity : AppCompatActivity() {
             if (current > 0) setTopic(current - 1)
         }
         ui.forward.setOnClickListener {
-            if (current < topicList.size - 1) setTopic(current + 1)
+            if (current < topics.size - 1) setTopic(current + 1)
         }
         ui.title.setOnClickListener { view ->
             PopupMenu(this, view).apply {
-                topicList.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
+                topics.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
                 menu.getItem(current).isEnabled = false
                 setOnMenuItemClickListener { setTopic(it.itemId); true }
             }.show()
         }
 
         if (savedInstanceState == null) {
-            val hide = getPreferences(Context.MODE_PRIVATE)
+            val hideWelcome = getPreferences(Context.MODE_PRIVATE)
                 .getBoolean(PREF_HIDE_WELCOME, false)
-            if (!hide) {
+            if (!hideWelcome) {
                 val dialog = AlertDialog.Builder(this)
                     .setView(R.layout.dialog_welcome)
                     .setPositiveButton("Close", null)
                     .show()
-                val check =
-                    dialog.findViewById<CheckBox>(R.id.check_hide_welcome)
-                check?.setOnCheckedChangeListener { _, isChecked ->
+                val checkBox = dialog.findViewById<CheckBox>(R.id.hide_welcome)
+                checkBox?.setOnCheckedChangeListener { _, isChecked ->
                     getPreferences(Context.MODE_PRIVATE).edit()
                         .putBoolean(PREF_HIDE_WELCOME, isChecked)
                         .apply()
@@ -95,26 +94,26 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private val topicList = buildList {
-    add(IntroTopic)
-    add(MotionTopic)
-    add(PlaneTopic)
-    add(ApplyTopic)
-    add(IrregularTopic)
-    add(DrawableTopic)
-    add(ComposeTopic)
-    add(CompatIntroTopic)
-    add(CompatDrawableTopic)
-    add(CompatStressTestTopic)
-}
+private val topics = listOf(
+    IntroTopic,
+    MotionTopic,
+    PlaneTopic,
+    ApplyTopic,
+    IrregularTopic,
+    DrawableTopic,
+    ComposeTopic,
+    CompatIntroTopic,
+    CompatDrawableTopic,
+    CompatStressTestTopic
+)
 
 private class ContentAdapter(activity: FragmentActivity) :
     FragmentStateAdapter(activity) {
 
-    override fun getItemCount() = topicList.size
+    override fun getItemCount() = topics.size
 
     override fun createFragment(position: Int) =
-        topicList[position].createFragment()
+        topics[position].createFragment()
 }
 
 private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
@@ -124,10 +123,10 @@ private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
                 .inflate(R.layout.item_description, parent, false)
         )
 
-    override fun getItemCount() = topicList.size
+    override fun getItemCount() = topics.size
 
     override fun onBindViewHolder(holder: InfoHolder, position: Int) {
-        holder.text.setText(topicList[position].descriptionResId)
+        holder.text.setText(topics[position].descriptionResId)
     }
 }
 

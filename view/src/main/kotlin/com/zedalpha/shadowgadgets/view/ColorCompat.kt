@@ -40,7 +40,7 @@ var View.outlineShadowColorCompat: Int
     set(color) {
         if (outlineShadowColorCompat == color) return
         setTag(R.id.outline_shadow_color_compat, color)
-        updateColorOutlineShadow(this)
+        updateColorOutlineShadow()
         shadow?.updateColorCompat(color)
     }
 
@@ -60,7 +60,7 @@ var View.forceOutlineShadowColorCompat: Boolean
     set(force) {
         if (forceOutlineShadowColorCompat == force) return
         setTag(R.id.force_outline_shadow_color_compat, force)
-        updateColorOutlineShadow(this)
+        updateColorOutlineShadow()
         shadow?.invalidate()
     }
 
@@ -111,12 +111,7 @@ class ShadowColorsBlender(private val context: Context) {
     fun blend(
         @ColorInt ambientColor: Int,
         @ColorInt spotColor: Int
-    ) = blendShadowColors(
-        ambientColor,
-        ambientAlpha,
-        spotColor,
-        spotAlpha
-    )
+    ) = blendShadowColors(ambientColor, ambientAlpha, spotColor, spotAlpha)
 
     /**
      * To be called from the corresponding function in the relevant UI component.
@@ -131,10 +126,9 @@ class ShadowColorsBlender(private val context: Context) {
     }
 }
 
-private fun updateColorOutlineShadow(view: View) {
-    view.colorOutlineShadow =
-        view.outlineShadowColorCompat != DefaultShadowColorInt &&
-                (Build.VERSION.SDK_INT < 28 || view.forceOutlineShadowColorCompat)
+private fun View.updateColorOutlineShadow() {
+    colorOutlineShadow = outlineShadowColorCompat != DefaultShadowColorInt &&
+            (Build.VERSION.SDK_INT < 28 || forceOutlineShadowColorCompat)
 }
 
 internal inline var View.colorOutlineShadow: Boolean

@@ -11,13 +11,8 @@
         <!-- Default spot value: 0.19 -->
         <item name="android:spotShadowAlpha">0.35</item>
 
-        <item name="checkboxStyle">@style/Widget.Demo.CheckBox</item>
         <item name="materialButtonStyle">@style/Widget.Demo.Button</item>
         <item name="radioButtonStyle">@style/Widget.Demo.RadioButton</item>
-    </style>
-
-    <style name="Widget.Demo.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
-        <item name="android:minHeight">44dp</item>
     </style>
 
     <style name="Widget.Demo.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">

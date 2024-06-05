@@ -13,47 +13,23 @@ class RelativeOverlapDetectorSGTest {
                 xml(
                     "res/layout/overlap.xml",
                     """
-                    <LinearLayout
+                    <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent">
                     
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                        <TextView
+                            android:id="@+id/text1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                     
-                            <TextView
-                                android:id="@+id/text1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                        <Button
+                            android:id="@+id/button1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true" />
                     
-                            <Button
-                                android:id="@+id/button1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout>
-                    
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
-                            <TextView
-                                android:id="@+id/text2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                            <Button
-                                android:id="@+id/button2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout>
-                    
-                    </LinearLayout>
+                    </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout>
                     """.trimIndent()
                 )
             )
@@ -61,13 +37,10 @@ class RelativeOverlapDetectorSGTest {
             .run()
             .expect(
                 """
-                res/layout/overlap.xml:16: Warning: @id/button1 can overlap @id/text1 if @id/text1, @id/button1 grow due to localized text expansion [RelativeOverlapSG]
-                        <Button
-                         ~~~~~~
-                res/layout/overlap.xml:33: Warning: @id/button2 can overlap @id/text2 if @id/text2, @id/button2 grow due to localized text expansion [RelativeOverlapSG]
-                        <Button
-                         ~~~~~~
-                0 errors, 2 warnings"""
+                res/layout/overlap.xml:11: Warning: @id/button1 can overlap @id/text1 if @id/text1, @id/button1 grow due to localized text expansion [RelativeOverlapSG]
+                    <Button
+                     ~~~~~~
+                0 errors, 1 warnings"""
             )
     }
 }

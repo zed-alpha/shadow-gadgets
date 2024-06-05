@@ -7,6 +7,7 @@ import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.colorOutlineShadow
 import com.zedalpha.shadowgadgets.view.shadowPlane
+import com.zedalpha.shadowgadgets.view.viewgroup.ShadowsViewGroup
 import com.zedalpha.shadowgadgets.view.viewgroup.inlineController
 import java.lang.ref.WeakReference
 
@@ -72,17 +73,16 @@ private fun handleDetach(view: View) {
 private fun createShadow(view: View) {
     val parent = view.parent as? ViewGroup ?: return
     view.isRecyclingViewGroupChild = parent.isRecyclingViewGroup
-    if (view.shadowPlane != ShadowPlane.Inline) {
-        parent.getOrCreateOverlayController().createShadow(view)
-    } else {
-        @Suppress("DEPRECATION")
-        if (parent is com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsViewGroup &&
-            !parent.ignoreInlineChildShadows
-        ) {
-            parent.inlineController.createShadow(view)
-        } else {
-            SoloShadow(view)
+    when {
+        view.shadowPlane != ShadowPlane.Inline -> {
+            parent.getOrCreateOverlayController().createShadow(view)
         }
+
+        parent is ShadowsViewGroup && !parent.ignoreInlineChildShadows -> {
+            parent.inlineController.createShadow(view)
+        }
+
+        else -> SoloShadow(view)
     }
 }
 

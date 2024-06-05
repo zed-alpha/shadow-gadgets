@@ -18,8 +18,8 @@ import com.android.tools.lint.detector.api.Severity
 import com.android.tools.lint.detector.api.XmlContext
 import com.android.tools.lint.detector.api.isLayoutMarkerTag
 import com.android.utils.iterator
-import com.zedalpha.shadowgadgets.view.lint.internal.ALL_CHILD_SHADOW_ATTRIBUTES
-import com.zedalpha.shadowgadgets.view.lint.internal.ALL_LIBRARY_VIEW_GROUPS
+import com.zedalpha.shadowgadgets.view.lint.internal.CHILD_SHADOW_ATTRIBUTES
+import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_VIEW_GROUPS
 import org.w3c.dom.Element
 
 class ShadowAttributesDetector : LayoutDetector() {
@@ -45,7 +45,7 @@ class ShadowAttributesDetector : LayoutDetector() {
         )
     }
 
-    override fun getApplicableElements() = ALL_LIBRARY_VIEW_GROUPS
+    override fun getApplicableElements() = SHADOWS_VIEW_GROUPS
 
     override fun visitElement(context: XmlContext, element: Element) {
         for (child in element) {
@@ -66,7 +66,7 @@ class ShadowAttributesDetector : LayoutDetector() {
 }
 
 private fun Element.isViewTag(context: XmlContext): Boolean {
-    val tagName = tagName
+    val tagName = this.tagName
     return when {
         tagName == VIEW -> true
         tagName == TAG_INCLUDE || tagName == VIEW_MERGE -> false
@@ -77,10 +77,10 @@ private fun Element.isViewTag(context: XmlContext): Boolean {
             val evaluator = context.client
                 .getUastParser(context.project).evaluator
             val view = findViewForTag(tagName, evaluator)
-            return view != null && evaluator.extendsClass(view, CLASS_VIEW)
+            view != null && evaluator.extendsClass(view, CLASS_VIEW)
         }
     }
 }
 
 private fun Element.hasChildShadowAttributes() =
-    ALL_CHILD_SHADOW_ATTRIBUTES.any { hasAttributeNS(AUTO_URI, it) }
+    CHILD_SHADOW_ATTRIBUTES.any { hasAttributeNS(AUTO_URI, it) }

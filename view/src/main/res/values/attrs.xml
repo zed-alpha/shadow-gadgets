@@ -11,13 +11,6 @@
         <attr name="clipOutlineShadow" format="boolean" />
         <attr name="outlineShadowColorCompat" format="color" />
         <attr name="forceOutlineShadowColorCompat" format="boolean" />
-
-        <!-- @deprecated --> <!-- The tools ignore these; they're just FYI. -->
-        <attr name="clippedShadowPlane" format="enum">
-            <enum name="foreground" value="0" />
-            <enum name="background" value="1" />
-            <enum name="inline" value="2" />
-        </attr>
     </declare-styleable>
 
     <declare-styleable name="ShadowsViewGroup">
@@ -30,13 +23,6 @@
         <attr name="childOutlineShadowsColorCompat" format="color" />
         <attr name="forceChildOutlineShadowsColorCompat" format="boolean" />
         <attr name="ignoreInlineChildShadows" format="boolean" />
-
-        <!-- @deprecated -->
-        <attr name="childClippedShadowsPlane" format="enum">
-            <enum name="foreground" value="0" />
-            <enum name="background" value="1" />
-            <enum name="inline" value="2" />
-        </attr>
     </declare-styleable>
 
 

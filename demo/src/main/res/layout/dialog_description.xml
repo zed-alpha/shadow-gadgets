@@ -5,14 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fadeScrollbars="false"
-    android:padding="15dp"
+    android:paddingStart="15dp"
+    android:paddingTop="15dp"
+    android:paddingEnd="10dp"
+    android:scrollbarStyle="outsideInset"
     tools:viewBindingIgnore="true">
 
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingEnd="10dp"
         android:textAppearance="?android:textAppearanceMedium"
         tools:ignore="RtlSymmetry" />
 

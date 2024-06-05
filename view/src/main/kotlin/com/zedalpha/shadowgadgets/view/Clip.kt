@@ -27,16 +27,14 @@ var View.clipOutlineShadow: Boolean
     }
 
 /**
- * An interface through which to set the clip Path for irregularly shaped Views
- * on API levels 30 and above.
+ * An interface through which to set the clip [Path] for irregularly shaped
+ * Views on API levels 30 and above.
  *
- * Views that are not plain rectangles, regular rounded rectangles, or circles
- * have their shapes defined by a Path field that became inaccessible starting
- * with Android R.
- *
- * For those cases where the shape cannot be determined automatically, this
- * interface and its corresponding extension property – [pathProvider] –
- * provide a fallback mechanism through which it can be set manually.
+ * Views that are not circles, plain rectangles, or single-radius rounded
+ * rectangles have their shapes defined by a Path field that became inaccessible
+ * starting with Android R. For those cases, this interface and its
+ * corresponding extension property – [pathProvider] – provide a fallback
+ * mechanism through which it can be set manually.
  */
 fun interface ViewPathProvider {
     /**

@@ -13,35 +13,17 @@ class WrongIdDetectorSGTest {
                 xml(
                     "res/layout/unknown_ids.xml",
                     """
-                    <LinearLayout
+                    <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent">
                     
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_above="@id/unknown1" />
                     
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_above="@id/unknown1" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout>
-                    
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_above="@id/unknown2" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout>
-                    
-                    </LinearLayout>
+                    </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout>
                     """.trimIndent()
                 )
             )
@@ -49,13 +31,10 @@ class WrongIdDetectorSGTest {
             .run()
             .expect(
                 """
-                res/layout/unknown_ids.xml:14: Error: The id "unknown1" is not defined anywhere. [UnknownIdSG]
-                            android:layout_above="@id/unknown1" />
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/unknown_ids.xml:25: Error: The id "unknown2" is not defined anywhere. [UnknownIdSG]
-                            android:layout_above="@id/unknown2" />
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                2 errors, 0 warnings"""
+                res/layout/unknown_ids.xml:9: Error: The id "unknown1" is not defined anywhere. [UnknownIdSG]
+                        android:layout_above="@id/unknown1" />
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                1 errors, 0 warnings"""
             )
     }
 
@@ -89,23 +68,6 @@ class WrongIdDetectorSGTest {
                     
                         </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout>
                     
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                            
-                            <TextView
-                                android:id="@+id/sibling2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_above="@id/sibling2"
-                                android:layout_below="@id/uncle" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout>
-                        
                         <TextView
                                 android:id="@+id/uncle"
                                 android:layout_width="wrap_content"
@@ -122,10 +84,7 @@ class WrongIdDetectorSGTest {
                 res/layout/unknown_ids.xml:20: Error: @id/uncle is not a sibling in the same RelativeLayout [NotSiblingSG]
                             android:layout_below="@id/uncle" />
                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/unknown_ids.xml:37: Error: @id/uncle is not a sibling in the same RelativeLayout [NotSiblingSG]
-                            android:layout_below="@id/uncle" />
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                2 errors, 0 warnings"""
+                1 errors, 0 warnings"""
             )
     }
 
@@ -136,65 +95,32 @@ class WrongIdDetectorSGTest {
                 xml(
                     "res/layout/unknown_ids.xml",
                     """
-                    <LinearLayout
+                    <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent">
                     
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                        <TextView
+                            android:id="@+id/"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                     
-                            <TextView
-                                android:id="@+id/"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@+id/foo/bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                     
-                            <TextView
-                                android:id="@+id/foo/bar"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@foo/bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                     
-                            <TextView
-                                android:id="@foo/bar"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@string/foo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                     
-                            <TextView
-                                android:id="@string/foo"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout>
-                    
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
-                            <TextView
-                                android:id="@+id/"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                            <TextView
-                                android:id="@+id/foo/bar"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                            <TextView
-                                android:id="@foo/bar"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                            <TextView
-                                android:id="@string/foo"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsRelativeLayout>
-                    
-                    </LinearLayout>
+                    </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsRelativeLayout>
                     """.trimIndent()
                 )
             )
@@ -202,31 +128,20 @@ class WrongIdDetectorSGTest {
             .run()
             .expect(
                 """
-                res/layout/unknown_ids.xml:12: Error: Invalid id: missing value [InvalidIdSG]
-                            android:id="@+id/"
-                            ~~~~~~~~~~~~~~~~~~
-                res/layout/unknown_ids.xml:17: Error: ID definitions must be of the form @+id/name; try using @+id/foo_bar [InvalidIdSG]
-                            android:id="@+id/foo/bar"
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/unknown_ids.xml:22: Error: Invalid id; ID definitions must be of the form @+id/name [InvalidIdSG]
-                            android:id="@foo/bar"
-                            ~~~~~~~~~~~~~~~~~~~~~
-                res/layout/unknown_ids.xml:27: Error: Invalid id; ID definitions must be of the form @+id/name; did you mean @+id/foo? [InvalidIdSG]
-                            android:id="@string/foo"
-                            ~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/unknown_ids.xml:38: Error: Invalid id: missing value [InvalidIdSG]
-                            android:id="@+id/"
-                            ~~~~~~~~~~~~~~~~~~
-                res/layout/unknown_ids.xml:43: Error: ID definitions must be of the form @+id/name; try using @+id/foo_bar [InvalidIdSG]
-                            android:id="@+id/foo/bar"
-                            ~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/unknown_ids.xml:48: Error: Invalid id; ID definitions must be of the form @+id/name [InvalidIdSG]
-                            android:id="@foo/bar"
-                            ~~~~~~~~~~~~~~~~~~~~~
-                res/layout/unknown_ids.xml:53: Error: Invalid id; ID definitions must be of the form @+id/name; did you mean @+id/foo? [InvalidIdSG]
-                            android:id="@string/foo"
-                            ~~~~~~~~~~~~~~~~~~~~~~~~
-                8 errors, 0 warnings"""
+                res/layout/unknown_ids.xml:7: Error: Invalid id: missing value [InvalidIdSG]
+                        android:id="@+id/"
+                        ~~~~~~~~~~~~~~~~~~
+                res/layout/unknown_ids.xml:12: Error: ID definitions must be of the form @+id/name; try using @+id/foo_bar [InvalidIdSG]
+                        android:id="@+id/foo/bar"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~
+                res/layout/unknown_ids.xml:17: Error: Invalid id; ID definitions must be of the form @+id/name [InvalidIdSG]
+                        android:id="@foo/bar"
+                        ~~~~~~~~~~~~~~~~~~~~~
+                res/layout/unknown_ids.xml:22: Error: Invalid id; ID definitions must be of the form @+id/name; did you mean @+id/foo? [InvalidIdSG]
+                        android:id="@string/foo"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~
+                4 errors, 0 warnings"""
+
             )
     }
 }

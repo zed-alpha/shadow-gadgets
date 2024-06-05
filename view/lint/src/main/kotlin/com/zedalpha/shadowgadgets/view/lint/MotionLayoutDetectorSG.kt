@@ -6,7 +6,6 @@ import com.android.tools.lint.detector.api.Context
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Scope
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_MOTION_LAYOUT
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_MOTION_LAYOUT
 
 class MotionLayoutDetectorSG : BaseDetector() {
@@ -30,11 +29,7 @@ class MotionLayoutDetectorSG : BaseDetector() {
                 INVALID_SCENE_FILE_REFERENCE_SG
     )
 
-    override val elements = listOf(
-        SHADOWS_MOTION_LAYOUT,
-        CLIPPED_SHADOWS_MOTION_LAYOUT,
-        MOTION_SCENE
-    )
+    override val elements = listOf(SHADOWS_MOTION_LAYOUT, MOTION_SCENE)
 
     override fun afterCheckRootProject(context: Context) {
         detector.afterCheckRootProject(contextWrapper)

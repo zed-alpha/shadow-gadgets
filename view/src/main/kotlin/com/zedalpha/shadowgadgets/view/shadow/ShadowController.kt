@@ -94,7 +94,7 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
     }
 }
 
-internal inline val ViewGroup.isRecyclingViewGroup: Boolean
+internal val ViewGroup.isRecyclingViewGroup: Boolean
     get() = javaClass.let { groupClass ->
         when {
             RecyclerView::class.java.isAssignableFrom(groupClass) -> true

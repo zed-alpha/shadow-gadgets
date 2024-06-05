@@ -24,8 +24,8 @@ class DrawableFragment : TopicFragment<FragmentDrawableBinding>(
     private lateinit var unsyncedDrawable: DemoClippedShadowDrawable
 
     override fun loadUi(ui: FragmentDrawableBinding) {
-        syncedDrawable = DemoClippedShadowDrawable(ui.syncedView)
-        ui.syncedView.background = syncedDrawable
+        syncedDrawable = DemoClippedShadowDrawable(ui.viewSynced)
+        ui.viewSynced.background = syncedDrawable
         ui.seekSynced.setOnSeekBarChangeListener(
             SeekChangeListener { progress ->
                 syncedDrawable.rotationZ = progress.toFloat()
@@ -33,8 +33,8 @@ class DrawableFragment : TopicFragment<FragmentDrawableBinding>(
             }
         )
 
-        unsyncedDrawable = DemoClippedShadowDrawable(ui.unsyncedView)
-        ui.unsyncedView.background = unsyncedDrawable
+        unsyncedDrawable = DemoClippedShadowDrawable(ui.viewUnsynced)
+        ui.viewUnsynced.background = unsyncedDrawable
         ui.seekUnsynced.setOnSeekBarChangeListener(
             SeekChangeListener { progress ->
                 unsyncedDrawable.rotationZ = progress.toFloat()

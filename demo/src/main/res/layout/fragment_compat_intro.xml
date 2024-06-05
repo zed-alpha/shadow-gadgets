@@ -12,7 +12,7 @@
         android:id="@+id/label_normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:background="@color/off_white"
         android:paddingHorizontal="4dp"
         android:text="Normal"
@@ -24,7 +24,7 @@
         android:id="@+id/label_compat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:background="@color/off_white"
         android:paddingHorizontal="4dp"
         android:text="Compat"
@@ -39,6 +39,7 @@
         android:clipChildren="false"
         android:inAnimation="@android:anim/fade_in"
         android:outAnimation="@android:anim/fade_out"
+        android:paddingTop="20dp"
         app:layout_constraintBottom_toTopOf="@id/horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +74,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="2dp"
         android:background="@color/off_white"
-        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintBottom_toTopOf="@id/framework_select"
         app:layout_constraintEnd_toStartOf="@id/vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/backgrounds_switch">
@@ -114,20 +115,10 @@
         android:id="@+id/controls"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintBottom_toTopOf="@id/framework_select"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/vertical"
         app:layout_constraintTop_toBottomOf="@+id/horizontal" />
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginHorizontal="20dp"
-        android:background="@color/control_gray"
-        app:layout_constraintBottom_toTopOf="@id/framework_select"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <RadioGroup
         android:id="@+id/framework_select"

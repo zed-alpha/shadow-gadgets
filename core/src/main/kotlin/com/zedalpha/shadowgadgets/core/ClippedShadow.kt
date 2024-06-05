@@ -40,6 +40,7 @@ class ClippedShadow private constructor(
             path.addRoundRect(boundsF, radius, radius, Path.Direction.CW)
             return
         }
+
         if (OutlinePathReflector.getPath(path, outline)) return
         pathProvider?.getPath(path)
     }
@@ -47,11 +48,12 @@ class ClippedShadow private constructor(
     override fun draw(canvas: Canvas) {
         if (!canvas.isHardwareAccelerated || clipPath.isEmpty) return
 
-        val matrix = tmpMatrix
-        getMatrix(matrix)
         val shadow = shadow
-        matrix.postTranslate(shadow.left.toFloat(), shadow.top.toFloat())
+        val matrix = tmpMatrix
         val path = tmpPath
+
+        getMatrix(matrix)
+        matrix.postTranslate(shadow.left.toFloat(), shadow.top.toFloat())
         clipPath.transform(matrix, path)
 
         canvas.save()

@@ -6,8 +6,6 @@ import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.XmlContext
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_GRID_VIEW
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_LIST_VIEW
 import com.zedalpha.shadowgadgets.view.lint.internal.ElementWrapper
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_GRID_VIEW
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_LIST_VIEW
@@ -35,9 +33,7 @@ class NestedScrollingWidgetDetectorSG : BaseDetector() {
     override val elements = buildList {
         detector.getApplicableElements()?.let { addAll(it) }
         add(SHADOWS_GRID_VIEW)
-        add(CLIPPED_SHADOWS_GRID_VIEW)
         add(SHADOWS_LIST_VIEW)
-        add(CLIPPED_SHADOWS_LIST_VIEW)
     }
 
     override fun beforeCheckFile(context: Context) {

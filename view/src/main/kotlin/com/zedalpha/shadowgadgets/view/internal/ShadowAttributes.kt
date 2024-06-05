@@ -28,17 +28,14 @@ internal fun AttributeSet?.extractShadowAttributes(
             R.styleable.ShadowAttributes_android_id,
             View.NO_ID
         ),
-        when {
-            array.hasValue(R.styleable.ShadowAttributes_shadowPlane) -> {
-                R.styleable.ShadowAttributes_shadowPlane
-            }
-
-            array.hasValue(R.styleable.ShadowAttributes_clippedShadowPlane) -> {
-                R.styleable.ShadowAttributes_clippedShadowPlane
-            }
-
-            else -> null
-        }?.let { ShadowPlane.forValue(array.getInt(it, Foreground.ordinal)) },
+        if (array.hasValue(R.styleable.ShadowAttributes_shadowPlane)) {
+            ShadowPlane.forValue(
+                array.getInt(
+                    R.styleable.ShadowAttributes_shadowPlane,
+                    Foreground.ordinal
+                )
+            )
+        } else null,
         if (array.hasValue(R.styleable.ShadowAttributes_clipOutlineShadow)) {
             array.getBoolean(
                 R.styleable.ShadowAttributes_clipOutlineShadow,

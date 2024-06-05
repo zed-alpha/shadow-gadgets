@@ -33,27 +33,7 @@ class NestedScrollingWidgetDetectorSGTest {
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
                     
-                            <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsListView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                        </ScrollView>
-                    
-                        <ScrollView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
                             <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsGridView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                        </ScrollView>
-                    
-                        <ScrollView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
-                            <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsGridView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content" />
                     
@@ -69,16 +49,6 @@ class NestedScrollingWidgetDetectorSGTest {
                     
                         </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsListView>
                     
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsListView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                    
-                            <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsListView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
-                    
-                        </com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsListView>
-                    
                     </LinearLayout>
                     """.trimIndent()
                 )
@@ -90,22 +60,13 @@ class NestedScrollingWidgetDetectorSGTest {
                 res/layout/nested_scrolls.xml:11: Warning: The vertically scrolling ScrollView should not contain another vertically scrolling widget (ListView) [NestedScrollingSG]
                         <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsListView
                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/nested_scrolls.xml:21: Warning: The vertically scrolling ScrollView should not contain another vertically scrolling widget (ListView) [NestedScrollingSG]
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsListView
-                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/nested_scrolls.xml:31: Warning: The vertically scrolling ScrollView should not contain another vertically scrolling widget (GridView) [NestedScrollingSG]
+                res/layout/nested_scrolls.xml:21: Warning: The vertically scrolling ScrollView should not contain another vertically scrolling widget (GridView) [NestedScrollingSG]
                         <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsGridView
                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/nested_scrolls.xml:41: Warning: The vertically scrolling ScrollView should not contain another vertically scrolling widget (GridView) [NestedScrollingSG]
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsGridView
-                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/nested_scrolls.xml:51: Warning: The vertically scrolling ListView should not contain another vertically scrolling widget (ListView) [NestedScrollingSG]
+                res/layout/nested_scrolls.xml:31: Warning: The vertically scrolling ListView should not contain another vertically scrolling widget (ListView) [NestedScrollingSG]
                         <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsListView
                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                res/layout/nested_scrolls.xml:61: Warning: The vertically scrolling ListView should not contain another vertically scrolling widget (ListView) [NestedScrollingSG]
-                        <com.zedalpha.shadowgadgets.view.viewgroup.ClippedShadowsListView
-                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                0 errors, 6 warnings"""
+                0 errors, 3 warnings"""
             )
     }
 }

@@ -19,14 +19,10 @@ internal class ElementWrapper(
         when (val actual = wrapped.tagName) {
             // NestedScrollingWidgetDetector
             SHADOWS_LIST_VIEW -> SdkConstants.LIST_VIEW
-            CLIPPED_SHADOWS_LIST_VIEW -> SdkConstants.LIST_VIEW
             SHADOWS_GRID_VIEW -> SdkConstants.GRID_VIEW
-            CLIPPED_SHADOWS_GRID_VIEW -> SdkConstants.GRID_VIEW
             // WrongIdDetector
             SHADOWS_RELATIVE_LAYOUT -> SdkConstants.RELATIVE_LAYOUT
-            CLIPPED_SHADOWS_RELATIVE_LAYOUT -> SdkConstants.RELATIVE_LAYOUT
             SHADOWS_CONSTRAINT_LAYOUT -> AndroidXConstants.CONSTRAINT_LAYOUT.newName()
-            CLIPPED_SHADOWS_CONSTRAINT_LAYOUT -> AndroidXConstants.CONSTRAINT_LAYOUT.newName()
             else -> actual
         }
 

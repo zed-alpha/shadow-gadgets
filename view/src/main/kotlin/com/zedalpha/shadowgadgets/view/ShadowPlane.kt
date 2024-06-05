@@ -68,16 +68,3 @@ var View.shadowPlane: ShadowPlane
         setTag(R.id.shadow_plane, value)
         ShadowSwitch.recreateShadow(this)
     }
-
-/**
- * Replaced by [ShadowPlane]
- */
-@Deprecated("Replaced by ShadowPlane", ReplaceWith("ShadowPlane"))
-typealias ClippedShadowPlane = ShadowPlane
-
-/**
- * Replaced by [shadowPlane]
- */
-@Suppress("DEPRECATION")
-@Deprecated("Replaced by shadowPlane", ReplaceWith("shadowPlane"))
-var View.clippedShadowPlane: ClippedShadowPlane by View::shadowPlane

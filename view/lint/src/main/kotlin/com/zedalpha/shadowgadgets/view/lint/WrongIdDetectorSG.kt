@@ -6,8 +6,6 @@ import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.XmlContext
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_CONSTRAINT_LAYOUT
-import com.zedalpha.shadowgadgets.view.lint.internal.CLIPPED_SHADOWS_RELATIVE_LAYOUT
 import com.zedalpha.shadowgadgets.view.lint.internal.ElementWrapper
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_CONSTRAINT_LAYOUT
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_RELATIVE_LAYOUT
@@ -54,9 +52,7 @@ class WrongIdDetectorSG : BaseDetector() {
 
     override val elements = listOf(
         SHADOWS_RELATIVE_LAYOUT,
-        CLIPPED_SHADOWS_RELATIVE_LAYOUT,
-        SHADOWS_CONSTRAINT_LAYOUT,
-        CLIPPED_SHADOWS_CONSTRAINT_LAYOUT
+        SHADOWS_CONSTRAINT_LAYOUT
     )
 
     override fun getApplicableAttributes(): Collection<String>? {

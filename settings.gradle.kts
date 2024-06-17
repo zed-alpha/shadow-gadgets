@@ -16,6 +16,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Shadow Gadgets"
+
 include(":stubs")
 include(":core")
 include(":view")

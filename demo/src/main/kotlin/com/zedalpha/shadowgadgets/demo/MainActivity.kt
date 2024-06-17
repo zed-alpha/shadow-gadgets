@@ -1,6 +1,6 @@
 package com.zedalpha.shadowgadgets.demo
 
-import android.content.Context
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
             adapter = ContentAdapter(this@MainActivity)
             isUserInputEnabled = false
         }
-
         ui.infoPager.apply {
             adapter = InfoAdapter()
             isUserInputEnabled = false
@@ -75,22 +74,7 @@ class MainActivity : AppCompatActivity() {
             }.show()
         }
 
-        if (savedInstanceState == null) {
-            val hideWelcome = getPreferences(Context.MODE_PRIVATE)
-                .getBoolean(PREF_HIDE_WELCOME, false)
-            if (!hideWelcome) {
-                val dialog = AlertDialog.Builder(this)
-                    .setView(R.layout.dialog_welcome)
-                    .setPositiveButton("Close", null)
-                    .show()
-                val checkBox = dialog.findViewById<CheckBox>(R.id.hide_welcome)
-                checkBox?.setOnCheckedChangeListener { _, isChecked ->
-                    getPreferences(Context.MODE_PRIVATE).edit()
-                        .putBoolean(PREF_HIDE_WELCOME, isChecked)
-                        .apply()
-                }
-            }
-        }
+        if (savedInstanceState == null) showWelcomeDialog()
     }
 }
 
@@ -142,6 +126,23 @@ private class InfoHolder(view: View) : ViewHolder(view) {
                 .show()
                 .findViewById<TextView>(R.id.text)?.text = text.text
             true
+        }
+    }
+}
+
+private fun Activity.showWelcomeDialog() {
+    val hideWelcome = getPreferences(AppCompatActivity.MODE_PRIVATE)
+        .getBoolean(PREF_HIDE_WELCOME, false)
+    if (!hideWelcome) {
+        val dialog = AlertDialog.Builder(this)
+            .setView(R.layout.dialog_welcome)
+            .setPositiveButton("Close", null)
+            .show()
+        val checkBox = dialog.findViewById<CheckBox>(R.id.hide_welcome)
+        checkBox?.setOnCheckedChangeListener { _, isChecked ->
+            getPreferences(AppCompatActivity.MODE_PRIVATE).edit()
+                .putBoolean(PREF_HIDE_WELCOME, isChecked)
+                .apply()
         }
     }
 }

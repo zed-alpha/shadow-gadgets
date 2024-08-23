@@ -284,9 +284,7 @@ open class ShadowDrawable private constructor(
         set(value) {
             if (field == value) return
             field = value
-            if (layer == null) {
-                coreShadow.ambientColor = value
-            }
+            if (layer == null) coreShadow.ambientColor = value
         }
 
     /**
@@ -299,9 +297,7 @@ open class ShadowDrawable private constructor(
         set(value) {
             if (field == value) return
             field = value
-            if (layer == null) {
-                coreShadow.spotColor = value
-            }
+            if (layer == null) coreShadow.spotColor = value
         }
 
     /**

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
-import com.zedalpha.shadowgadgets.demo.view.ContentCardView
+import com.zedalpha.shadowgadgets.demo.internal.ContentCardView
 
 internal class Topic<T : TopicFragment<*>>(
     val title: String,

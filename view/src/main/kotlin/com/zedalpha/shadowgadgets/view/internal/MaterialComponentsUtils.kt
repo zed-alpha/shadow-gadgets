@@ -23,12 +23,10 @@ internal fun findMaterialShapeDrawable(drawable: Drawable): MaterialShapeDrawabl
             }
             null
         }
-
         else -> when {
             Build.VERSION.SDK_INT >= 23 && drawable is DrawableWrapper -> {
                 drawable.drawable as? MaterialShapeDrawable
             }
-
             else -> null
         }
     }

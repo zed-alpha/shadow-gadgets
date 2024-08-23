@@ -24,14 +24,14 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLif
 import androidx.compose.ui.unit.dp
 import com.zedalpha.shadowgadgets.compose.ExperimentalColorCompat
 import com.zedalpha.shadowgadgets.compose.shadowCompat
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentComposeBinding
+import com.zedalpha.shadowgadgets.demo.databinding.ComposeViewBinding
 
 internal class ComposeIntroPanel(
     inflater: LayoutInflater,
     parent: ViewGroup
 ) : IntroPanel {
 
-    override val ui = FragmentComposeBinding.inflate(inflater, parent, true)
+    override val ui = ComposeViewBinding.inflate(inflater, parent, true)
 
     private var ambientColor by mutableStateOf(Color.Red)
     override var outlineAmbientShadowColor: Int

@@ -111,7 +111,7 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-    <com.zedalpha.shadowgadgets.demo.view.ControlView
+    <com.zedalpha.shadowgadgets.demo.internal.ControlView
         android:id="@+id/controls"
         android:layout_width="0dp"
         android:layout_height="0dp"

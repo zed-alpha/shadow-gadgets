@@ -1,4 +1,4 @@
-package com.zedalpha.shadowgadgets.demo.view
+package com.zedalpha.shadowgadgets.demo.internal
 
 import android.content.Context
 import android.content.res.ColorStateList

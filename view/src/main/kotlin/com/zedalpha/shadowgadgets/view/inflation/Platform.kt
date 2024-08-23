@@ -6,38 +6,19 @@ import android.content.Context
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.annotation.XmlRes
 
 /**
- * Attaches the platform helper, and searches the theme and manifest for the
- * (optional) matchers XML reference. Must be called before setContentView.
+ * Attaches the platform layout inflation helper.
+ *
+ * Must be called before `setContentView()`.
  */
 fun Activity.attachShadowHelper() {
-    attachShadowHelper(buildMatchersFromResources(this))
+    layoutInflater.factory = PlatformShadowHelper(this)
 }
 
-/**
- * Attaches the platform helper with matchers built from the provided XML
- * resource. Must be called before setContentView.
- */
-fun Activity.attachShadowHelper(@XmlRes xmlResId: Int) {
-    attachShadowHelper(buildMatchersFromXml(this, xmlResId))
-}
+private class PlatformShadowHelper(context: Context) : LayoutInflater.Factory {
 
-/**
- * Attaches the platform helper with the given list of matchers. Must be called
- * before setContentView.
- */
-fun Activity.attachShadowHelper(matchers: List<TagMatcher>) {
-    layoutInflater.factory = ShadowHelperFactory(this, matchers)
-}
-
-internal class ShadowHelperFactory(
-    context: Context,
-    matchers: List<TagMatcher>
-) : LayoutInflater.Factory {
-
-    private val helper = ShadowHelper(context, matchers)
+    private val helper = InflationHelper(context)
 
     override fun onCreateView(
         name: String,
@@ -47,29 +28,28 @@ internal class ShadowHelperFactory(
 }
 
 /**
- * A simple Application subclass that unconditionally sets the platform shadow
- * inflater helper on every Activity instance that is created. Included mainly
+ * A simple [Application] subclass that unconditionally sets the platform shadow
+ * inflater helper on every [Activity] instance that is created. Included mainly
  * for illustrative purposes.
  */
-class ShadowHelperApplication : Application() {
+class PlatformShadowHelperApplication : Application() {
+
     override fun onCreate() {
         super.onCreate()
-        registerActivityLifecycleCallbacks(object : ActivityCreatedCallback {
-            override fun onActivityCreated(
-                activity: Activity,
-                savedInstanceState: Bundle?
-            ) {
+
+        registerActivityLifecycleCallbacks(
+            ActivityCreatedCallback { activity, _ ->
                 activity.attachShadowHelper()
             }
-        })
+        )
     }
 }
 
 /**
  * This is an adapter interface with empty defaults for all of
- * ActivityLifecycleCallbacks functions except the one.
+ * [Application.ActivityLifecycleCallbacks]' functions except the one.
  */
-interface ActivityCreatedCallback : Application.ActivityLifecycleCallbacks {
+fun interface ActivityCreatedCallback : Application.ActivityLifecycleCallbacks {
 
     // Overridden for dokka
     override fun onActivityCreated(

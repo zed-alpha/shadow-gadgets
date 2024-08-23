@@ -140,9 +140,10 @@ internal class SoloShadow(targetView: View) : ViewShadow(targetView) {
         }
 
         // Must set before outlineProvider
-        val pathProvider = target.pathProvider
-        drawable.setClipPathProvider { path ->
-            pathProvider?.getPath(target, path)
+        target.pathProvider?.let { pathProvider ->
+            drawable.setClipPathProvider { path ->
+                pathProvider.getPath(target, path)
+            }
         }
         target.outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {

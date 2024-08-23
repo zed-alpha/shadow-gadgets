@@ -3,8 +3,6 @@ package com.zedalpha.shadowgadgets.view.inflation
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.annotation.XmlRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatViewInflater
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.appcompat.widget.AppCompatButton
@@ -20,33 +18,16 @@ import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.AppCompatToggleButton
+import androidx.core.app.ComponentActivity
 import com.google.android.material.theme.MaterialComponentsViewInflater
 import com.zedalpha.shadowgadgets.view.R
-import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 
 /**
- * Attaches the helper for Material Components themes, and searches the theme
- * and manifest for the (optional) matchers XML reference. Must be called before
- * super.onCreate.
+ * Attaches the layout inflation helper for Material Components themes.
+ *
+ * Must be called before `super.onCreate()`.
  */
-fun AppCompatActivity.attachMaterialComponentsShadowHelper() {
-    attachMaterialComponentsShadowHelper(buildMatchersFromResources(this))
-}
-
-/**
- * Attaches the helper for Material Components themes with matchers built from
- * the provided XML resource. Must be called before super.onCreate.
- */
-fun AppCompatActivity.attachMaterialComponentsShadowHelper(@XmlRes xmlResId: Int) {
-    attachMaterialComponentsShadowHelper(buildMatchersFromXml(this, xmlResId))
-}
-
-/**
- * Attaches the helper for Material Components themes with the given list of
- * matchers. Must be called before super.onCreate.
- */
-fun AppCompatActivity.attachMaterialComponentsShadowHelper(matchers: List<TagMatcher>) {
-    tagMatchers = matchers
+fun ComponentActivity.attachMaterialComponentsShadowHelper() {
     theme.applyStyle(
         R.style.ThemeOverlay_ShadowGadgets_MaterialComponents,
         true
@@ -55,7 +36,7 @@ fun AppCompatActivity.attachMaterialComponentsShadowHelper(matchers: List<TagMat
 
 /**
  * A specialized [AppCompatViewInflater] that hooks into the layout inflation
- * pipeline to apply the library's custom properties to selected Views.
+ * pipeline to process the library's custom attributes.
  *
  * This is not meant to be used directly, but it must be public so that the
  * androidx appcompat framework has access. It can be applied either through
@@ -67,7 +48,7 @@ fun AppCompatActivity.attachMaterialComponentsShadowHelper(matchers: List<TagMat
  * ```xml
  * <style name="Theme.YourApp" parent="Theme.MaterialComponents…">
  *     …
- *     <!-- Can use the fully qualified class name instead of the @string. -->
+ *     <!-- Or use the fully qualified class name in place of the @string. -->
  *     <item name="viewInflaterClass">
  *         @string/material_components_shadow_helper
  *     </item>
@@ -86,33 +67,21 @@ fun AppCompatActivity.attachMaterialComponentsShadowHelper(matchers: List<TagMat
  *     }
  * }
  * ```
- *
- * On its own, the helper looks for any tag with `app:clipOutlineShadow="true"`.
- * For any other selection criteria one might need, the helper can use any
- * number of [TagMatcher]s. Refer to its documentation for details.
  */
+@Suppress("unused")
 class MaterialComponentsShadowHelper : MaterialComponentsViewInflater() {
 
-    private lateinit var helper: ShadowHelper
+    private var helper: InflationHelper? = null
 
-    private fun ensureHelper(context: Context) {
-        if (!this::helper.isInitialized) {
-            // Try build again if null, in case someone else is using this class.
-            val matchers = unwrapActivity(context)?.tagMatchers
-                ?: buildMatchersFromResources(context)
-            helper = ShadowHelper(context, matchers)
-        }
-    }
+    private fun ensureHelper(context: Context): InflationHelper =
+        helper ?: InflationHelper(context).also { helper = it }
 
     private fun <T : View> checkView(
         view: T,
         tagName: String,
         attrs: AttributeSet
     ): T {
-        ensureHelper(view.context)
-        if (helper.checkMatchers(view, tagName, attrs)) {
-            view.clipOutlineShadow = true
-        }
+        ensureHelper(view.context).processView(view, tagName, attrs)
         return view
     }
 
@@ -120,10 +89,7 @@ class MaterialComponentsShadowHelper : MaterialComponentsViewInflater() {
         context: Context,
         name: String,
         attrs: AttributeSet
-    ): View? {
-        ensureHelper(context)
-        return helper.processTag(name, context, attrs)
-    }
+    ): View? = ensureHelper(context).processTag(name, context, attrs)
 
     override fun createTextView(
         context: Context,

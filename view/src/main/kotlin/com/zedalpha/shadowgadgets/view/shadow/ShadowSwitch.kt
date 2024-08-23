@@ -77,11 +77,9 @@ private fun createShadow(view: View) {
         view.shadowPlane != ShadowPlane.Inline -> {
             parent.getOrCreateOverlayController().createShadow(view)
         }
-
         parent is ShadowsViewGroup && !parent.ignoreInlineChildShadows -> {
             parent.inlineController.createShadow(view)
         }
-
         else -> SoloShadow(view)
     }
 }

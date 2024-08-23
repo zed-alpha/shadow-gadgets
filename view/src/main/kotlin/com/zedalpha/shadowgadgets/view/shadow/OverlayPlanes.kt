@@ -18,6 +18,7 @@ internal open class OverlayPlane(
     protected val shadows = mutableListOf<GroupShadow>()
 
     protected val drawable = object : BaseDrawable() {
+
         override fun draw(canvas: Canvas) = with(parentView) {
             when {
                 clipToPadding -> canvas.withClip(
@@ -87,8 +88,8 @@ internal open class OverlayPlane(
 
     @CallSuper
     override fun invalidatePlane() {
-        parentView.invalidate()
         layers.invalidate()
+        drawable.invalidateSelf()
     }
 
     fun recreateLayers() {
@@ -111,7 +112,7 @@ internal class ProjectorOverlayPlane(
 
     override fun attachToOverlay(overlay: ViewGroupOverlay) {
         projector.addToOverlay(overlay)
-        if (parentView.background == null) {
+        if (parentView.background === null) {
             parentView.background = EmptyDrawable
         }
         parentView.postInvalidate()
@@ -119,7 +120,7 @@ internal class ProjectorOverlayPlane(
 
     override fun detachFromOverlay(overlay: ViewGroupOverlay) {
         projector.removeFromOverlay(overlay)
-        if (parentView.background == EmptyDrawable) {
+        if (parentView.background === EmptyDrawable) {
             parentView.background = null
         }
     }

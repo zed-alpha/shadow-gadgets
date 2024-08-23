@@ -8,19 +8,35 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ShadowGadgets.Demo"
         tools:ignore="DataExtractionRules">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.ShadowGadgets.Demo"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <!-- Layout inflation helper examples. -->
+        <!-- This page in demo app is currently commented out in MainActivity. -->
+
+        <activity
+            android:name=".topic.PlatformActivity"
+            android:theme="@style/Theme.Platform" />
+
+        <activity
+            android:name=".topic.CompatActivity"
+            android:theme="@style/Theme.Compat" />
+
+        <activity
+            android:name=".topic.ComponentsActivity"
+            android:theme="@style/Theme.Components" />
 
     </application>
 

@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content_pager" />
 
-    <com.zedalpha.shadowgadgets.demo.view.TitleSwitcher
+    <com.zedalpha.shadowgadgets.demo.internal.TitleSwitcher
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

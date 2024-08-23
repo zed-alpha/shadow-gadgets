@@ -34,12 +34,12 @@ class CompatIntroFragment : TopicFragment<FragmentCompatIntroBinding>(
         )
 
         val ambientIndicator = PaintDrawable(AndroidColor.BLACK).apply {
-            setBounds(0, 0, 40, 40)
+            setBounds(0, 0, 50, 50)
             setCornerRadius(10F)
             ui.ambientSelection.setCompoundDrawables(null, null, this, null)
         }
         val spotIndicator = PaintDrawable(AndroidColor.BLACK).apply {
-            setBounds(0, 0, 40, 40)
+            setBounds(0, 0, 50, 50)
             setCornerRadius(10F)
             ui.spotSelection.setCompoundDrawables(null, null, this, null)
         }

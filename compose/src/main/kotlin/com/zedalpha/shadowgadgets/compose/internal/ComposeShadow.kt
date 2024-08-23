@@ -43,7 +43,6 @@ internal class ComposeShadow(
         clipped -> ClippedShadow(view).apply {
             pathProvider = PathProvider { it.set(androidPath) }
         }
-
         else -> Shadow(view)
     }
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RequiresApi
@@ -14,10 +15,8 @@ import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.shadowPlane
 import java.lang.reflect.Array
 
-internal class ShadowHelper(
-    private val context: Context,
-    private val matchers: List<TagMatcher>
-) {
+internal class InflationHelper(private val context: Context) {
+
     private val inflater: ViewInflater by lazy {
         if (Build.VERSION.SDK_INT >= 29) {
             NewViewInflater(context)
@@ -27,41 +26,37 @@ internal class ShadowHelper(
     }
 
     fun processTag(name: String, context: Context, attrs: AttributeSet): View? {
-        val view = if (name !in ignoredTags) {
-            inflater.tryCreate(name, context, attrs)
-        } else {
-            null
-        }
-        if (view != null) {
-            if (checkMatchers(view, name, attrs)) {
-                with(attrs.extractShadowAttributes(context)) {
-                    shadowPlane?.let { plane ->
-                        view.shadowPlane = plane
-                    }
-                    clipOutlineShadow?.let { clip ->
-                        view.clipOutlineShadow = clip
-                    }
-                    outlineShadowColorCompat?.let { color ->
-                        view.outlineShadowColorCompat = color
-                    }
-                    forceOutlineShadowColorCompat?.let { force ->
-                        view.forceOutlineShadowColorCompat = force
-                    }
-                }
-            }
-        }
+        val view = when (name) {
+            in ignoredTags -> null
+            else -> inflater.tryCreate(name, context, attrs)
+        } ?: return null
+        processView(view, name, attrs)
         return view
     }
 
-    fun checkMatchers(
-        view: View,
-        tagName: String,
-        attrs: AttributeSet
-    ): Boolean {
-        for (matcher in matchers) {
-            if (matcher.matches(view, tagName, attrs)) return true
+    fun processView(view: View, tagName: String, attrs: AttributeSet) {
+        val attributes = attrs.extractShadowAttributes(context)
+        Log.d(
+            "QQQ", "process: ${
+                try {
+                    context.resources.getResourceEntryName(attributes.id)
+                } catch (e: Exception) {
+                    null
+                }
+            } $attributes"
+        )
+        attributes.shadowPlane?.let { plane ->
+            view.shadowPlane = plane
         }
-        return false
+        attributes.clipOutlineShadow?.let { clip ->
+            view.clipOutlineShadow = clip
+        }
+        attributes.outlineShadowColorCompat?.let { color ->
+            view.outlineShadowColorCompat = color
+        }
+        attributes.forceOutlineShadowColorCompat?.let { force ->
+            view.forceOutlineShadowColorCompat = force
+        }
     }
 }
 
@@ -105,16 +100,14 @@ private class NewViewInflater(context: Context) : ViewInflater(context) {
         name: String,
         context: Context,
         attrs: AttributeSet
-    ): View? {
-        return try {
-            if (name.indexOf('.') == -1) {
-                onCreateView(context, null, name, attrs)
-            } else {
-                createView(context, name, null, attrs)
-            }
-        } catch (e: Exception) {
-            null
+    ): View? = try {
+        if (name.indexOf('.') == -1) {
+            onCreateView(context, null, name, attrs)
+        } else {
+            createView(context, name, null, attrs)
         }
+    } catch (e: Exception) {
+        null
     }
 }
 

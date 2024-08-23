@@ -142,15 +142,12 @@ private class SimpleDragListener(private val target: View) :
             DragEvent.ACTION_DRAG_STARTED -> {
                 if (viewOver == event.localState) viewOver.scale(0.95F)
             }
-
             DragEvent.ACTION_DRAG_ENTERED -> {
                 if (viewOver != event.localState) viewOver.scale(1.05F)
             }
-
             DragEvent.ACTION_DRAG_EXITED -> {
                 if (viewOver != event.localState) viewOver.scale(1.0F)
             }
-
             DragEvent.ACTION_DROP -> {
                 if (viewOver != event.localState) {
                     (event.localState as ViewGroup).removeView(target)
@@ -158,7 +155,6 @@ private class SimpleDragListener(private val target: View) :
                     viewOver.scale(1.0F)
                 }
             }
-
             DragEvent.ACTION_DRAG_ENDED -> {
                 if (viewOver == event.localState) {
                     val oldParent = event.localState as ViewGroup

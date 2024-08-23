@@ -42,6 +42,7 @@ class ClippedShadow private constructor(
         }
 
         if (OutlinePathReflector.getPath(path, outline)) return
+
         pathProvider?.getPath(path)
     }
 
@@ -63,11 +64,8 @@ class ClippedShadow private constructor(
     }
 
     private val tmpRect = Rect()
-
     private val tmpRectF = RectF()
-
     private val tmpMatrix = Matrix()
-
     private val tmpPath = Path()
 }
 

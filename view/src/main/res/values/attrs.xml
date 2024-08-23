@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <attr name="shadowPlane" format="enum">
+        <enum name="foreground" value="0" />
+        <enum name="background" value="1" />
+        <enum name="inline" value="2" />
+    </attr>
+    <attr name="clipOutlineShadow" format="boolean" />
+    <attr name="outlineShadowColorCompat" format="color" />
+    <attr name="forceOutlineShadowColorCompat" format="boolean" />
+
     <declare-styleable name="ShadowAttributes">
         <attr name="android:id" />
-        <attr name="shadowPlane" format="enum">
-            <enum name="foreground" value="0" />
-            <enum name="background" value="1" />
-            <enum name="inline" value="2" />
-        </attr>
-        <attr name="clipOutlineShadow" format="boolean" />
-        <attr name="outlineShadowColorCompat" format="color" />
-        <attr name="forceOutlineShadowColorCompat" format="boolean" />
+        <attr name="shadowPlane" />
+        <attr name="clipOutlineShadow" />
+        <attr name="outlineShadowColorCompat" />
+        <attr name="forceOutlineShadowColorCompat" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsViewGroup">
@@ -23,29 +28,6 @@
         <attr name="childOutlineShadowsColorCompat" format="color" />
         <attr name="forceChildOutlineShadowsColorCompat" format="boolean" />
         <attr name="ignoreInlineChildShadows" format="boolean" />
-    </declare-styleable>
-
-
-    <!-- Tag Matchers -->
-
-    <attr name="shadowTagMatchers" format="reference" />
-
-    <attr name="matchRule" format="enum">
-        <enum name="equals" value="0" />
-        <enum name="contains" value="1" />
-        <enum name="startsWith" value="2" />
-        <enum name="endsWith" value="3" />
-    </attr>
-
-    <declare-styleable name="IdMatcher">
-        <attr name="android:id" />
-        <attr name="android:name" />
-        <attr name="matchRule" />
-    </declare-styleable>
-
-    <declare-styleable name="NameMatcher">
-        <attr name="android:name" />
-        <attr name="matchRule" />
     </declare-styleable>
 
 </resources>

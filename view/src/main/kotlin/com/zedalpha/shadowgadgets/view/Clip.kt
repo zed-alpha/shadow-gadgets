@@ -15,7 +15,7 @@ import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
  * before enabling this feature, or at least before the View attaches to its
  * Window.
  *
- * When true, the View's intrinsic shadow is always disabled, even if the
+ * When `true`, the View's intrinsic shadow is always disabled, even if the
  * clipped replacement cannot be drawn, for whatever reason.
  */
 var View.clipOutlineShadow: Boolean

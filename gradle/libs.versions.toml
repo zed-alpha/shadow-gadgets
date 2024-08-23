@@ -1,14 +1,14 @@
 [versions]
-agp = "8.5.0"
-androidxAnnotation = "1.8.0"
+agp = "8.5.2"
+androidxAnnotation = "1.8.2"
 androidxAppcompat = "1.7.0"
 androidxConstraintLayout = "2.1.4"
 androidxCoreKtx = "1.13.1"
-composeBom = "2024.06.00"
+composeBom = "2024.08.00"
 dokka = "1.9.20"
 junit = "4.13.2"
 kotlin = "2.0.0"
-lint = '31.5.0'
+lint = '31.5.2'
 materialComponents = "1.12.0"
 
 [libraries]

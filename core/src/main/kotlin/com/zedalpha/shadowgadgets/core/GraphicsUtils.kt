@@ -213,7 +213,6 @@ internal object CanvasZReflector {
         } catch (e: Exception) {
             null
         }
-
         else -> try {
             Canvas::class.java.getDeclaredMethod("insertReorderBarrier")
         } catch (e: Exception) {
@@ -232,7 +231,6 @@ internal object CanvasZReflector {
         } catch (e: Exception) {
             null
         }
-
         else -> try {
             Canvas::class.java.getDeclaredMethod("insertInorderBarrier")
         } catch (e: Exception) {

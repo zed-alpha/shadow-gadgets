@@ -40,6 +40,7 @@ internal val CompatStressTestTopic = Topic(
 class CompatStressTestFragment : TopicFragment<FragmentCompatStressTestBinding>(
     FragmentCompatStressTestBinding::inflate
 ) {
+
     override fun loadUi(ui: FragmentCompatStressTestBinding) {
         ui.recycler.adapter = VeryColorfulAdapter()
         ui.composeView.apply {

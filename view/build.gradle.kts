@@ -17,14 +17,6 @@ android {
     buildTypes.all {
         consumerProguardFiles("consumer-rules.pro")
     }
-    buildTypes {
-        debug {
-            buildConfigField("Boolean", "DEBUG", "true")
-        }
-        release {
-            buildConfigField("Boolean", "DEBUG", "false")
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

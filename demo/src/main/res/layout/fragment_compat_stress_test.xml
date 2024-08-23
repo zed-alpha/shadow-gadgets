@@ -12,12 +12,12 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:paddingStart="10dp"
-        app:ignoreInlineChildShadows="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:ignoreInlineChildShadows="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:ignore="RtlSymmetry" />
 
     <androidx.constraintlayout.widget.Guideline

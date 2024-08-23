@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:padding="10dp"
+    tools:context=".topic.ComponentsActivity"
+    tools:ignore="ContentDescription"
+    tools:viewBindingIgnore="true">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="#77DDDDFF"
+        android:elevation="4dp"
+        android:padding="10dp"
+        app:layout_constraintBottom_toTopOf="@id/text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:clipOutlineShadow="true"
+        app:subtitle="@string/material_subtitle"
+        app:title="@string/material_title" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/bg_rounded_rectangle"
+        android:backgroundTint="#77FFFFFF"
+        android:elevation="4dp"
+        android:outlineProvider="background"
+        android:padding="10dp"
+        android:text="@string/info_material"
+        app:layout_constraintBottom_toTopOf="@id/button_green"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:clipOutlineShadow="true" />
+
+    <Button
+        android:id="@+id/button_red"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:backgroundTint="#44FF4444"
+        app:layout_constraintBottom_toBottomOf="@id/button_green"
+        app:layout_constraintEnd_toStartOf="@id/button_green"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/button_green"
+        app:clipOutlineShadow="true"
+        app:forceOutlineShadowColorCompat="true"
+        app:outlineShadowColorCompat="#FF0000" />
+
+    <Button
+        android:id="@+id/button_green"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:backgroundTint="#4444FF44"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_blue"
+        app:layout_constraintStart_toEndOf="@id/button_red"
+        app:layout_constraintTop_toBottomOf="@id/text"
+        app:clipOutlineShadow="true"
+        app:forceOutlineShadowColorCompat="true"
+        app:outlineShadowColorCompat="#00FF00" />
+
+    <Button
+        android:id="@+id/button_blue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:backgroundTint="#444444FF"
+        app:layout_constraintBottom_toBottomOf="@id/button_green"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/button_green"
+        app:layout_constraintTop_toTopOf="@id/button_green"
+        app:clipOutlineShadow="true"
+        app:forceOutlineShadowColorCompat="true"
+        app:outlineShadowColorCompat="#0000FF" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

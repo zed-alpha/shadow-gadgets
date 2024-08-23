@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentComposeBinding
+import com.zedalpha.shadowgadgets.demo.databinding.ComposeViewBinding
 
 internal val ComposeTopic = Topic(
     "Compose",
@@ -63,10 +63,10 @@ internal val ComposeTopic = Topic(
     ComposeFragment::class.java
 )
 
-class ComposeFragment : TopicFragment<FragmentComposeBinding>(
-    FragmentComposeBinding::inflate
+class ComposeFragment : TopicFragment<ComposeViewBinding>(
+    ComposeViewBinding::inflate
 ) {
-    override fun loadUi(ui: FragmentComposeBinding) {
+    override fun loadUi(ui: ComposeViewBinding) {
         ui.composeView.apply {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent { ComposeContent() }

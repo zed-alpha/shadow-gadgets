@@ -65,7 +65,9 @@ internal class OverlayLayerSet(private val ownerView: ViewGroup) {
     }
 
     fun draw(canvas: Canvas) {
-        activeLayers.values.forEach { it.draw(canvas) }
+        activeLayers.values.run {
+            if (isNotEmpty()) forEach { it.draw(canvas) }
+        }
         drawLayers.entries.forEach { (shadow, layer) ->
             if (layer == null) shadow.draw(canvas)
         }

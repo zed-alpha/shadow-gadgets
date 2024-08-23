@@ -23,12 +23,11 @@ internal class GroupShadow(
 
     private val coreShadow = when {
         isClipped -> ClippedShadow(targetView).also { shadow ->
-            val pathProvider = targetView.pathProvider
+            val pathProvider = targetView.pathProvider ?: return@also
             shadow.pathProvider = PathProvider { path ->
-                pathProvider?.getPath(targetView, path)
+                pathProvider.getPath(targetView, path)
             }
         }
-
         else -> Shadow(targetView)
     }
 

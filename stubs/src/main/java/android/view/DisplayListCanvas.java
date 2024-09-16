@@ -4,8 +4,10 @@ import android.graphics.Canvas;
 
 import androidx.annotation.NonNull;
 
+/**
+ * @noinspection EmptyMethod, unused
+ */
 public class DisplayListCanvas extends Canvas {
 
-    @SuppressWarnings("EmptyMethod")
     public void drawRenderNode(@NonNull RenderNode renderNode) {}
 }

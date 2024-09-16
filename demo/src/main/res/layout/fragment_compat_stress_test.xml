@@ -13,19 +13,12 @@
         android:layout_weight="1"
         android:paddingStart="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/vertical"
+        app:layout_constraintEnd_toStartOf="@id/compose_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:ignoreInlineChildShadows="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:ignore="RtlSymmetry" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
 
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/compose_view"
@@ -34,7 +27,7 @@
         android:layout_weight="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/vertical"
+        app:layout_constraintStart_toEndOf="@id/recycler"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

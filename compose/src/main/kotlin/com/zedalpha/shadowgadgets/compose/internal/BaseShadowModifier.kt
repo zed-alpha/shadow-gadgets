@@ -56,9 +56,5 @@ internal fun Modifier.baseShadow(
     } else {
         this
     }
-    if (clip) {
-        drawShadow then clip(shape)
-    } else {
-        drawShadow
-    }
+    if (clip) drawShadow.clip(shape) else drawShadow
 }

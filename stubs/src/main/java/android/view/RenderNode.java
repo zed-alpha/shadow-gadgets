@@ -9,6 +9,9 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/**
+ * @noinspection EmptyMethod, unused
+ */
 public class RenderNode {
 
     private RenderNode(String name, View owningView) {}
@@ -23,7 +26,6 @@ public class RenderNode {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("EmptyMethod")
     public void end(@NonNull DisplayListCanvas canvas) {}
 
     public boolean isValid() {
@@ -31,11 +33,9 @@ public class RenderNode {
     }
 
     // API levels 21..23
-    @SuppressWarnings("EmptyMethod")
     public void destroyDisplayListData() {}
 
     // API levels 24+
-    @SuppressWarnings("EmptyMethod")
     public void discardDisplayList() {}
 
     public float getAlpha() {
@@ -170,7 +170,6 @@ public class RenderNode {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("EmptyMethod")
     public void getMatrix(@NonNull Matrix outMatrix) {}
 
     public boolean setProjectBackwards(boolean shouldProject) {

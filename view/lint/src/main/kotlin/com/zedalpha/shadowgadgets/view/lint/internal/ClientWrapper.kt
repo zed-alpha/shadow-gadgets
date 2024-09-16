@@ -1,7 +1,5 @@
 package com.zedalpha.shadowgadgets.view.lint.internal
 
-import com.android.ide.common.gradle.Dependency
-import com.android.ide.common.gradle.Version
 import com.android.ide.common.resources.ResourceItem
 import com.android.ide.common.resources.ResourceRepository
 import com.android.ide.common.util.PathString
@@ -40,7 +38,6 @@ import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.net.URLConnection
-import java.util.function.Predicate
 
 class ClientWrapper(
     private val delegate: LintClient,
@@ -301,12 +298,6 @@ class ClientWrapper(
 
     override fun getGeneratedResourceFolders(project: Project): List<File> =
         delegate.getGeneratedResourceFolders(project)
-
-    @Suppress("UnstableApiUsage")
-    override fun getHighestKnownVersion(
-        dependency: Dependency,
-        filter: Predicate<Version>?
-    ): Version? = delegate.getHighestKnownVersion(dependency, filter)
 
     override fun readBytes(resourcePath: PathString): ByteArray =
         delegate.readBytes(resourcePath)

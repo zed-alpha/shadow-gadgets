@@ -9,7 +9,7 @@
     android:orientation="vertical"
     tools:ignore="ContentDescription,HardcodedText">
 
-    <com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -25,7 +25,7 @@
             android:backgroundTintMode="multiply"
             android:elevation="25dp" />
 
-    </com.zedalpha.shadowgadgets.view.viewgroup.ShadowsMotionLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/clip_switch"

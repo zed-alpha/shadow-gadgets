@@ -11,6 +11,6 @@ java {
 
 dependencies {
     compileOnly(libs.bundles.lint.api)
+    // TODO: Causes a warning that it depends on IDE JARs. I don't see how.
     testImplementation(libs.bundles.lint.tests)
-    testImplementation(libs.junit)
 }

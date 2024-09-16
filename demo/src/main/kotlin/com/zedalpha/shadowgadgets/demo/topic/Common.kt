@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
@@ -28,10 +29,7 @@ abstract class TopicFragment<T : ViewBinding>(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = ContentCardView(requireContext()).apply {
-        layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
+        layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
         ui = inflate(inflater, this, true)
     }
 

@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.zedalpha.shadowgadgets.demo"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.zedalpha.shadowgadgets.demo"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         vectorDrawables {

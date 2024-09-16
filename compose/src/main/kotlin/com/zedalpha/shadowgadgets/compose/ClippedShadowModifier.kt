@@ -8,9 +8,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.isSpecified
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.debugInspectorInfo
-import androidx.compose.ui.platform.inspectable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.zedalpha.shadowgadgets.compose.internal.baseShadow
@@ -76,24 +75,23 @@ fun Modifier.clippedShadow(
     spotColor: Color = DefaultShadowColor,
     colorCompat: Color = DefaultShadowColor,
     forceColorCompat: Boolean = false
-) = if (elevation > 0.dp || clip) {
-    inspectable(
-        inspectorInfo = debugInspectorInfo {
-            name = "clippedShadow"
-            properties["elevation"] = elevation
-            properties["shape"] = shape
-            properties["clip"] = clip
-            properties["ambientColor"] = ambientColor
-            properties["spotColor"] = spotColor
-            properties["colorCompat"] = colorCompat
-            properties["forceColorCompat"] = forceColorCompat
-        }
-    ) {
-        composed {
+) = when {
+    elevation > 0.dp || clip -> {
+        composed(
+            inspectorInfo = debugInspectorInfo {
+                name = "clippedShadow"
+                properties["elevation"] = elevation
+                properties["shape"] = shape
+                properties["clip"] = clip
+                properties["ambientColor"] = ambientColor
+                properties["spotColor"] = spotColor
+                properties["colorCompat"] = colorCompat
+                properties["forceColorCompat"] = forceColorCompat
+            }
+        ) {
             val compat = when {
-                Build.VERSION.SDK_INT < 28 || forceColorCompat -> when {
-                    colorCompat.isSpecified -> colorCompat
-                    else -> blend(ambientColor, spotColor)
+                Build.VERSION.SDK_INT < 28 || forceColorCompat -> {
+                    colorCompat.takeOrElse { blend(ambientColor, spotColor) }
                 }
                 else -> DefaultShadowColor
             }
@@ -108,6 +106,5 @@ fun Modifier.clippedShadow(
             )
         }
     }
-} else {
-    this
+    else -> this
 }

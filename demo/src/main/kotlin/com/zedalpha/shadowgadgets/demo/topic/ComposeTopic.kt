@@ -103,12 +103,8 @@ private fun ComposeContent() {
             ClippedShadowFloatingActionButton(
                 onClick = {},
                 backgroundColor = Color(0x22ff4444),
-                elevation = FloatingActionButtonDefaults.elevation(
-                    16.dp,
-                    22.dp,
-                    18.dp,
-                    18.dp
-                ),
+                elevation = FloatingActionButtonDefaults
+                    .elevation(16.dp, 22.dp, 18.dp, 18.dp),
                 shadowAmbientColor = Color(0xffff4444),
                 shadowSpotColor = Color(0xffff4444)
             ) {}
@@ -116,13 +112,8 @@ private fun ComposeContent() {
             ClippedShadowButton(
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(Color(0x357fcc7f)),
-                elevation = ButtonDefaults.elevation(
-                    12.dp,
-                    18.dp,
-                    0.dp,
-                    14.dp,
-                    14.dp
-                ),
+                elevation = ButtonDefaults
+                    .elevation(12.dp, 18.dp, 0.dp, 14.dp, 14.dp),
                 shadowAmbientColor = Color(0xff448866),
                 shadowSpotColor = Color(0xff448866)
             ) {}
@@ -305,19 +296,16 @@ private fun puzzlePieceBuilder(): Path.(Size, LayoutDirection) -> Unit =
 
 private fun compassPointerBuilder(): Path.(Size, LayoutDirection) -> Unit =
     { size, _ ->
+        reset()
+
         val side = minOf(size.width, size.height)
         translate(Offset((size.width - side) / 2, (size.height - side) / 2))
-
-        val h = side / 2
-        reset()
         addRoundRect(
             RoundRect(
-                0F,
-                0F,
-                side,
-                side,
-                topRightCornerRadius = CornerRadius(h),
-                bottomLeftCornerRadius = CornerRadius(h)
+                0F, 0F,
+                side, side,
+                topRightCornerRadius = CornerRadius(side / 2),
+                bottomLeftCornerRadius = CornerRadius(side / 2)
             )
         )
     }

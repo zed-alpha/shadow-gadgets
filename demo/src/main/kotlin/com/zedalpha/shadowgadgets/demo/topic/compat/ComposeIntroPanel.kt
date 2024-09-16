@@ -33,7 +33,7 @@ internal class ComposeIntroPanel(
 
     override val ui = ComposeViewBinding.inflate(inflater, parent, true)
 
-    private var ambientColor by mutableStateOf(Color.Red)
+    private var ambientColor by mutableStateOf(DefaultShadowColor)
     override var outlineAmbientShadowColor: Int
         get() = ambientColor.toArgb()
         set(value) {

@@ -85,7 +85,7 @@ private val topics = listOf(
     ApplyTopic,
     IrregularTopic,
     DrawableTopic,
-//    InflationTopic,  // <- It works; it's just not advertised atm.
+//    InflationTopic,  // <- It works; it's just not advertised anymore.
     ComposeTopic,
     CompatIntroTopic,
     CompatDrawableTopic,

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.annotation.RequiresApi
@@ -17,34 +16,22 @@ import java.lang.reflect.Array
 
 internal class InflationHelper(private val context: Context) {
 
-    private val inflater: ViewInflater by lazy {
-        if (Build.VERSION.SDK_INT >= 29) {
-            NewViewInflater(context)
-        } else {
-            OldViewInflater(context)
-        }
+    private val inflater: ViewInflater = when {
+        Build.VERSION.SDK_INT >= 29 -> NewViewInflater(context)
+        else -> OldViewInflater(context)
     }
 
     fun processTag(name: String, context: Context, attrs: AttributeSet): View? {
         val view = when (name) {
-            in ignoredTags -> null
+            in IgnoredTags -> null
             else -> inflater.tryCreate(name, context, attrs)
         } ?: return null
-        processView(view, name, attrs)
+        applyAttributes(view, attrs)
         return view
     }
 
-    fun processView(view: View, tagName: String, attrs: AttributeSet) {
+    fun applyAttributes(view: View, attrs: AttributeSet) {
         val attributes = attrs.extractShadowAttributes(context)
-        Log.d(
-            "QQQ", "process: ${
-                try {
-                    context.resources.getResourceEntryName(attributes.id)
-                } catch (e: Exception) {
-                    null
-                }
-            } $attributes"
-        )
         attributes.shadowPlane?.let { plane ->
             view.shadowPlane = plane
         }
@@ -121,7 +108,7 @@ private abstract class ViewInflater(context: Context) :
     ): View?
 
     final override fun onCreateView(name: String, attrs: AttributeSet): View {
-        for (prefix in classPrefixes) {
+        for (prefix in ClassPrefixes) {
             try {
                 createView(name, prefix, attrs)?.let { return it }
             } catch (e: Exception) {
@@ -135,8 +122,8 @@ private abstract class ViewInflater(context: Context) :
         throw UnsupportedOperationException()
 }
 
-private val ignoredTags =
+private val IgnoredTags =
     arrayOf("include", "merge", "requestFocus", "tag", "fragment", "blink")
 
-private val classPrefixes =
+private val ClassPrefixes =
     arrayOf("android.widget.", "android.webkit.", "android.app.")

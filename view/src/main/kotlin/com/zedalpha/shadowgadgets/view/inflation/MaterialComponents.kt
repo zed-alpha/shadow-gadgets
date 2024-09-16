@@ -76,12 +76,8 @@ class MaterialComponentsShadowHelper : MaterialComponentsViewInflater() {
     private fun ensureHelper(context: Context): InflationHelper =
         helper ?: InflationHelper(context).also { helper = it }
 
-    private fun <T : View> checkView(
-        view: T,
-        tagName: String,
-        attrs: AttributeSet
-    ): T {
-        ensureHelper(view.context).processView(view, tagName, attrs)
+    private fun <T : View> checkView(view: T, attrs: AttributeSet): T {
+        ensureHelper(view.context).applyAttributes(view, attrs)
         return view
     }
 
@@ -94,142 +90,81 @@ class MaterialComponentsShadowHelper : MaterialComponentsViewInflater() {
     override fun createTextView(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatTextView {
-        return checkView(
-            super.createTextView(context, attrs),
-            "TextView",
-            attrs
-        )
-    }
+    ): AppCompatTextView =
+        checkView(super.createTextView(context, attrs), attrs)
 
     override fun createImageView(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatImageView {
-        return checkView(
-            super.createImageView(context, attrs),
-            "ImageView",
-            attrs
-        )
-    }
+    ): AppCompatImageView =
+        checkView(super.createImageView(context, attrs), attrs)
 
     override fun createButton(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatButton {
-        return checkView(super.createButton(context, attrs), "Button", attrs)
-    }
+    ): AppCompatButton = checkView(super.createButton(context, attrs), attrs)
 
     override fun createEditText(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatEditText {
-        return checkView(
-            super.createEditText(context, attrs),
-            "EditText",
-            attrs
-        )
-    }
+    ): AppCompatEditText =
+        checkView(super.createEditText(context, attrs), attrs)
 
     override fun createSpinner(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatSpinner {
-        return checkView(super.createSpinner(context, attrs), "Spinner", attrs)
-    }
+    ): AppCompatSpinner = checkView(super.createSpinner(context, attrs), attrs)
 
     override fun createImageButton(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatImageButton {
-        return checkView(
-            super.createImageButton(context, attrs),
-            "ImageButton",
-            attrs
-        )
-    }
+    ): AppCompatImageButton =
+        checkView(super.createImageButton(context, attrs), attrs)
 
     override fun createCheckBox(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatCheckBox {
-        return checkView(
-            super.createCheckBox(context, attrs),
-            "CheckBox",
-            attrs
-        )
-    }
+    ): AppCompatCheckBox =
+        checkView(super.createCheckBox(context, attrs), attrs)
 
     override fun createRadioButton(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatRadioButton {
-        return checkView(
-            super.createRadioButton(context, attrs),
-            "RadioButton",
-            attrs
-        )
-    }
+    ): AppCompatRadioButton =
+        checkView(super.createRadioButton(context, attrs), attrs)
 
     override fun createCheckedTextView(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatCheckedTextView {
-        return checkView(
-            super.createCheckedTextView(context, attrs),
-            "CheckedTextView",
-            attrs
-        )
-    }
+    ): AppCompatCheckedTextView =
+        checkView(super.createCheckedTextView(context, attrs), attrs)
 
     override fun createAutoCompleteTextView(
         context: Context,
         attrs: AttributeSet?
-    ): AppCompatAutoCompleteTextView {
-        return checkView(
-            super.createAutoCompleteTextView(context, attrs),
-            "AutoCompleteTextView",
-            attrs!!
-        )
-    }
+    ): AppCompatAutoCompleteTextView =
+        checkView(super.createAutoCompleteTextView(context, attrs), attrs!!)
 
     override fun createMultiAutoCompleteTextView(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatMultiAutoCompleteTextView {
-        return checkView(
-            super.createMultiAutoCompleteTextView(context, attrs),
-            "MultiAutoCompleteTextView",
-            attrs
-        )
-    }
+    ): AppCompatMultiAutoCompleteTextView =
+        checkView(super.createMultiAutoCompleteTextView(context, attrs), attrs)
 
     override fun createRatingBar(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatRatingBar {
-        return checkView(
-            super.createRatingBar(context, attrs),
-            "RatingBar",
-            attrs
-        )
-    }
+    ): AppCompatRatingBar =
+        checkView(super.createRatingBar(context, attrs), attrs)
 
     override fun createSeekBar(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatSeekBar {
-        return checkView(super.createSeekBar(context, attrs), "SeekBar", attrs)
-    }
+    ): AppCompatSeekBar = checkView(super.createSeekBar(context, attrs), attrs)
 
     override fun createToggleButton(
         context: Context,
         attrs: AttributeSet
-    ): AppCompatToggleButton {
-        return checkView(
-            super.createToggleButton(context, attrs),
-            "ToggleButton",
-            attrs
-        )
-    }
+    ): AppCompatToggleButton =
+        checkView(super.createToggleButton(context, attrs), attrs)
 }

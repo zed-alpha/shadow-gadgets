@@ -13,7 +13,7 @@ backgrounds.
 <p align="center">
 <img src="images/intro_clip_broken.png"
 alt="Examples of various translucent UI elements showing the artifacts."
-width="50%" />
+width="55%" />
 </p>
 
 The clip tools use the same classes and methods that the native framework uses
@@ -22,7 +22,7 @@ to render shadows, simply replacing the originals with clipped copies.
 <p align="center">
 <img src="images/intro_clip_fixed.png"
 alt="The above examples with the clip fix applied to each."
-width="50%" />
+width="55%" />
 </p>
 
 **Color support**
@@ -85,7 +85,7 @@ one over the solid, and set that as the element's background instead.
 
   Available through JitPack.
 
-- [**Documentation**][Documentation]
+- [**Documentation ↗**][Documentation]
 
   Note that inherited members are suppressed to prevent, for example, all of
   `ViewGroup`s visible members being listed for each `ShadowsViewGroup`.
@@ -150,7 +150,7 @@ settings.
   <p align="center">
   <img src="images/plane_foreground_broken.png"
   alt="A target's clipped shadow incorrectly drawn on top of its higher sibling View."
-  width="15%" />
+  width="20%" />
   </p>
 
   As a remedy, the [`ShadowPlane`][ShadowPlane] enum and its corresponding
@@ -183,7 +183,7 @@ settings.
   <p align="center">
   <img src="images/parent_matrix_defect.png"
   alt="A misaligned clip region is shown in a parent scaled by an animation."
-  width="15%" />
+  width="20%" />
   </p>
 
   The exact underlying cause is currently unknown, and any targets using
@@ -262,6 +262,14 @@ Details on requirements and usage, and links to examples, can be found on the
   in [this Stack Overflow answer][SOViewAnswer]. If that core solution is
   sufficient, you probably don't want the overhead here.
 
+- To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped
+  in a custom implementation. This has the possibility of breaking something if
+  some function or component is expecting the `View` to have one of the static
+  platform implementations; i.e., `BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`.
+  This shouldn't cause a fatal error, or anything – it's no different than
+  anything else that uses a custom provider – but you might need to rework some
+  background drawables or the like.
+
 - The library's particular technique causes a target's parent `ViewGroup` to be
   invalidated more that it normally would. For static shadows, it's just an
   extra time or two here and there. For animated shadows, though, the parent is
@@ -270,18 +278,10 @@ Details on requirements and usage, and links to examples, can be found on the
   presses, for example, aren't "free" when the button has an active library
   shadow.
 
-  It's not great, but it's likely not a huge deal for most setups, especially
+  It's not great, but it's likely not a big deal for most setups, especially
   considering that many animations will cause the same invalidations anyway. The
   app in the `demo` module has several different arrangements that translate and
   rotate and such, so you can investigate the effects, if curious.
-
-- To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped
-  in a custom implementation. This has the possibility of breaking something if
-  some function or component is expecting the `View` to have one of the static
-  platform implementations; i.e., `BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`.
-  This shouldn't cause a fatal error, or anything – it's no different than
-  anything else that uses a custom provider – but you might need to rework some
-  background drawables or the like.
 
 <br />
 
@@ -295,8 +295,6 @@ Details on requirements and usage, and links to examples, can be found on the
 - [Notes](#notes-1)
 
 </details>
-
-<br />
 
 Details and examples for both functions can be found on the [Compose wiki
 page][ComposeWiki].
@@ -396,8 +394,8 @@ Box(
   to fall back to the new color compat mechanism for API levels <28, but 28
   itself uses the native ambient and spot colors.
 
-- The demo app was put together by eye on 1080x1920 xxhdpi devices, so things
-  might not look that great on other configurations. Just a heads up.
+- The demo app was put together by eye on medium phone devices, so things might
+  not look that great on other configurations. Just a heads up.
 
 <br />
 

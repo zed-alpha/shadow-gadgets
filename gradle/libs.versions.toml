@@ -1,14 +1,14 @@
 [versions]
-agp = "8.6.0"
+agp = "8.6.1"
 androidxAnnotation = "1.8.2"
 androidxAppcompat = "1.7.0"
 androidxConstraintLayout = "2.1.4"
 androidxCoreKtx = "1.13.1"
-composeBom = "2024.09.01"
+composeBom = "2024.09.02"
 dokka = "1.9.20"
-junit = "4.13.2"
+junit4 = "4.13.2"
 kotlin = "2.0.20"
-lint = "31.6.0"
+lint = "31.6.1"
 materialComponents = "1.12.0"
 
 [libraries]
@@ -24,9 +24,11 @@ compose-material = { group = "androidx.compose.material", name = "material" }
 compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }
 
+dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
+
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
-dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
+junit = { group = "junit", name = "junit", version.ref = "junit4" }
 
 lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lint" }
 lint-checks = { module = "com.android.tools.lint:lint-checks", version.ref = "lint" }

@@ -12,6 +12,7 @@ internal class ViewLayer(
 ) : ManagedLayer {
 
     private fun createLayerView() = object : View(ownerView.context) {
+
         init {
             isVisible = false
             setLayerType(LAYER_TYPE_HARDWARE, null)

@@ -34,10 +34,8 @@ class IrregularFragment : TopicFragment<FragmentIrregularBinding>(
         ui.viewFixed.pathProvider = ViewPathProvider { v, p ->
             val side = v.width.toFloat()
             p.addRoundRect(
-                0F,
-                0F,
-                side,
-                side,
+                0F, 0F,
+                side, side,
                 floatArrayOf(side / 2, side / 2, 0F, 0F, 0F, 0F, 0F, 0F),
                 Path.Direction.CW
             )

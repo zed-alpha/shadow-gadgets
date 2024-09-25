@@ -14,16 +14,16 @@ internal class ViewPainterProxy(
     private var viewPainter: ViewPainter? = null
 
     private val attachListener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View) {
-            attachToRoot()
-        }
-
+        override fun onViewAttachedToWindow(v: View) = attachToRoot()
         override fun onViewDetachedFromWindow(v: View) {}
     }
 
     init {
-        ownerView.addOnAttachStateChangeListener(attachListener)
-        if (ownerView.isAttachedToWindow) attachToRoot()
+        if (ownerView.isAttachedToWindow) {
+            attachToRoot()
+        } else {
+            ownerView.addOnAttachStateChangeListener(attachListener)
+        }
     }
 
     private fun attachToRoot() {
@@ -39,8 +39,10 @@ internal class ViewPainterProxy(
 
     fun dispose() {
         ownerView.removeOnAttachStateChangeListener(attachListener)
-        viewPainter?.unregisterProxy(this)
-        viewPainter = null
+        viewPainter?.let { painter ->
+            painter.unregisterProxy(this)
+            viewPainter = null
+        }
     }
 
     fun drawShadowView(canvas: Canvas, shadowView: View) {
@@ -104,13 +106,13 @@ internal class ViewPainter(private val ownerView: ViewGroup) :
     }
 
     fun drawShadowView(canvas: Canvas, shadowView: View) {
-        addViewInLayout(shadowView, -1, emptyLayoutParams, true)
+        addViewInLayout(shadowView, -1, EmptyLayoutParams, true)
         draw(canvas)
         removeViewInLayout(shadowView)
     }
 
     fun addLayerView(layerView: View) {
-        addView(layerView, emptyLayoutParams)
+        addView(layerView, EmptyLayoutParams)
     }
 
     fun removeLayerView(layerView: View) {
@@ -125,7 +127,7 @@ internal class ViewPainter(private val ownerView: ViewGroup) :
     fun refreshLayerView(layerView: View) {
         if (indexOfChild(layerView) < 0) return
         detachViewFromParent(layerView)
-        attachViewToParent(layerView, 0, emptyLayoutParams)
+        attachViewToParent(layerView, 0, EmptyLayoutParams)
     }
 
     fun invalidateLayerView(layerView: View) {
@@ -136,8 +138,8 @@ internal class ViewPainter(private val ownerView: ViewGroup) :
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 }
 
-private inline var ViewGroup.viewPainter: ViewPainter?
+private var ViewGroup.viewPainter: ViewPainter?
     get() = getTag(R.id.view_painter) as? ViewPainter
     set(value) = setTag(R.id.view_painter, value)
 
-private val emptyLayoutParams = ViewGroup.LayoutParams(0, 0)
+private val EmptyLayoutParams = ViewGroup.LayoutParams(0, 0)

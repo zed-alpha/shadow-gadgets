@@ -17,10 +17,10 @@ import com.zedalpha.shadowgadgets.compose.ExperimentalColorCompat
 import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentCompatStressTestBinding
-import com.zedalpha.shadowgadgets.demo.topic.COUNT
+import com.zedalpha.shadowgadgets.demo.topic.ITEM_COUNT
 import com.zedalpha.shadowgadgets.demo.topic.ColorfulHolder
 import com.zedalpha.shadowgadgets.demo.topic.ColorfulLazyColumn
-import com.zedalpha.shadowgadgets.demo.topic.HALF_COUNT
+import com.zedalpha.shadowgadgets.demo.topic.HALF_ITEM_COUNT
 import com.zedalpha.shadowgadgets.demo.topic.ITEM_BLUE
 import com.zedalpha.shadowgadgets.demo.topic.ITEM_GREEN
 import com.zedalpha.shadowgadgets.demo.topic.ITEM_RED
@@ -66,9 +66,9 @@ private class VeryColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
 
     override fun onBindViewHolder(holder: ColorfulHolder, position: Int) {
         val color = evaluator.evaluate(
-            (position % HALF_COUNT).toFloat() / HALF_COUNT,
-            if (position < HALF_COUNT) ITEM_RED else ITEM_GREEN,
-            if (position < HALF_COUNT) ITEM_GREEN else ITEM_BLUE
+            (position % HALF_ITEM_COUNT).toFloat() / HALF_ITEM_COUNT,
+            if (position < HALF_ITEM_COUNT) ITEM_RED else ITEM_GREEN,
+            if (position < HALF_ITEM_COUNT) ITEM_GREEN else ITEM_BLUE
         ) as Int
         holder.itemView.apply {
             backgroundTintList = ColorStateList.valueOf(color)
@@ -83,7 +83,7 @@ private class VeryColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
         holder.textView.text = "Item $position"
     }
 
-    override fun getItemCount() = COUNT
+    override fun getItemCount() = ITEM_COUNT
 }
 
 @OptIn(ExperimentalColorCompat::class)

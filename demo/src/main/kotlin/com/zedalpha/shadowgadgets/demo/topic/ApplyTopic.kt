@@ -39,24 +39,24 @@ private class ColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
 
     override fun onBindViewHolder(holder: ColorfulHolder, position: Int) {
         val color = evaluator.evaluate(
-            (position % HALF_COUNT).toFloat() / HALF_COUNT,
-            if (position < HALF_COUNT) ITEM_RED else ITEM_GREEN,
-            if (position < HALF_COUNT) ITEM_GREEN else ITEM_BLUE
+            (position % HALF_ITEM_COUNT).toFloat() / HALF_ITEM_COUNT,
+            if (position < HALF_ITEM_COUNT) ITEM_RED else ITEM_GREEN,
+            if (position < HALF_ITEM_COUNT) ITEM_GREEN else ITEM_BLUE
         ) as Int
         holder.itemView.backgroundTintList = ColorStateList.valueOf(color)
         @SuppressLint("SetTextI18n")
         holder.textView.text = "Item $position"
     }
 
-    override fun getItemCount() = COUNT
+    override fun getItemCount() = ITEM_COUNT
 }
 
 internal class ColorfulHolder(view: View) : RecyclerView.ViewHolder(view) {
     val textView: TextView = view.findViewById(R.id.text)
 }
 
-internal const val COUNT = 50
-internal const val HALF_COUNT = 25
+internal const val ITEM_COUNT = 100
+internal const val HALF_ITEM_COUNT = ITEM_COUNT / 2
 internal const val ITEM_RED = 0x44FF0000
 internal const val ITEM_GREEN = 0x4400FF00
 internal const val ITEM_BLUE = 0x440000FF

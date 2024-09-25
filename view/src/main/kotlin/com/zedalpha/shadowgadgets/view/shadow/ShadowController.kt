@@ -17,18 +17,18 @@ internal abstract class ShadowController(protected val parentView: ViewGroup) {
 
     protected val isRecyclingViewGroup = parentView.isRecyclingViewGroup
 
-    private val attachListener =
-        object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(v: View) {
-                addPreDrawListener()
-                onParentViewAttached()
-            }
+    private val attachListener = object : View.OnAttachStateChangeListener {
 
-            override fun onViewDetachedFromWindow(v: View) {
-                removePreDrawListener()
-                if (isRecyclingViewGroup) detachAllShadows()
-            }
+        override fun onViewAttachedToWindow(v: View) {
+            addPreDrawListener()
+            onParentViewAttached()
         }
+
+        override fun onViewDetachedFromWindow(v: View) {
+            removePreDrawListener()
+            if (isRecyclingViewGroup) detachAllShadows()
+        }
+    }
 
     protected open fun onParentViewAttached() {}
 

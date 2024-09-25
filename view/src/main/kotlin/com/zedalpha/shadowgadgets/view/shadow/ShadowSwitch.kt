@@ -24,7 +24,7 @@ internal object ShadowSwitch : View.OnAttachStateChangeListener {
             } else {
                 view.isWatched = true
                 view.addOnAttachStateChangeListener(this)
-                if (view.isAttachedToWindow) handleAttach(view)
+                if (view.isAttachedToWindow) onViewAttachedToWindow(view)
             }
         } else if (view.isWatched) {
             view.isWatched = false
@@ -39,34 +39,26 @@ internal object ShadowSwitch : View.OnAttachStateChangeListener {
     }
 
     override fun onViewAttachedToWindow(view: View) {
-        handleAttach(view)
+        val parent = view.parent as? ViewGroup
+        if (view.isRecyclingViewGroupChild && view.previousParent !== parent) {
+            view.shadow?.detachFromTarget()
+            view.previousParent = parent
+        }
+        val shadow = view.shadow
+        if (shadow != null) {
+            shadow.isShown = true
+        } else {
+            createShadow(view)
+        }
     }
 
     override fun onViewDetachedFromWindow(view: View) {
-        handleDetach(view)
-    }
-}
-
-private fun handleAttach(view: View) {
-    val parent = view.parent as? ViewGroup
-    if (view.isRecyclingViewGroupChild && view.previousParent !== parent) {
-        view.shadow?.detachFromTarget()
-        view.previousParent = parent
-    }
-    val shadow = view.shadow
-    if (shadow != null) {
-        shadow.isShown = true
-    } else {
-        createShadow(view)
-    }
-}
-
-private fun handleDetach(view: View) {
-    val shadow = view.shadow ?: return
-    if (view.isRecyclingViewGroupChild) {
-        shadow.isShown = false
-    } else {
-        shadow.detachFromTarget()
+        val shadow = view.shadow ?: return
+        if (view.isRecyclingViewGroupChild) {
+            shadow.isShown = false
+        } else {
+            shadow.detachFromTarget()
+        }
     }
 }
 

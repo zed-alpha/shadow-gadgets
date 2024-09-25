@@ -90,6 +90,6 @@ internal class OverlayController(parentView: ViewGroup) :
 internal fun ViewGroup.getOrCreateOverlayController() =
     overlayController ?: OverlayController(this)
 
-internal inline var ViewGroup.overlayController: ShadowController?
+private inline var ViewGroup.overlayController: ShadowController?
     get() = getTag(R.id.overlay_controller) as? ShadowController
     private set(value) = setTag(R.id.overlay_controller, value)

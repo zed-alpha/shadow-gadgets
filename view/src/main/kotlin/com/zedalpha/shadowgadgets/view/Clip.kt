@@ -37,6 +37,7 @@ var View.clipOutlineShadow: Boolean
  * mechanism through which it can be set manually.
  */
 fun interface ViewPathProvider {
+
     /**
      * Called whenever the target View's shape cannot be determined internally.
      *
@@ -60,7 +61,7 @@ var View.pathProvider: ViewPathProvider?
     }
 
 /**
- * An implementation of [ViewPathProvider] that sets the Path from a
+ * An implementation of [ViewPathProvider] that sets the [Path] from a
  * [MaterialShapeDrawable](https://developer.android.com/reference/com/google/android/material/shape/MaterialShapeDrawable)
  * in the target's background.
  *

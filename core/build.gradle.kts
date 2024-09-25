@@ -33,7 +33,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.zedalpha.shadowgadgets"
                 artifactId = "core"
-                version = findProperty("library.version").toString()
+                version = rootProject.version.toString()
             }
         }
     }

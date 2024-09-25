@@ -206,7 +206,7 @@ private class ViewProjector(
     }
 
     init {
-        addView(projectedChild, emptyLayoutParams)
+        addView(projectedChild, EmptyLayoutParams)
         background = object : BaseDrawable() {
 
             override fun draw(canvas: Canvas) {
@@ -236,10 +236,10 @@ private class ViewProjector(
 
     override fun refresh() {
         detachViewFromParent(projectedChild)
-        attachViewToParent(projectedChild, 0, emptyLayoutParams)
+        attachViewToParent(projectedChild, 0, EmptyLayoutParams)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 }
 
-private val emptyLayoutParams = ViewGroup.LayoutParams(0, 0)
+private val EmptyLayoutParams = ViewGroup.LayoutParams(0, 0)

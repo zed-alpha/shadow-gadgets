@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         var current = 0
-        ui.title.setText(topics[0].title)
+        ui.title.setText(Topics[0].title)
 
         fun setTopic(index: Int) {
             if (current == index) return
@@ -53,10 +53,10 @@ class MainActivity : AppCompatActivity() {
             ui.contentPager.currentItem = index
             ui.title.apply {
                 setDirection(index > current)
-                setText(topics[index].title)
+                setText(Topics[index].title)
             }
             ui.backward.isInvisible = index == 0
-            ui.forward.isInvisible = index == topics.size - 1
+            ui.forward.isInvisible = index == Topics.size - 1
             current = index
         }
 
@@ -64,11 +64,11 @@ class MainActivity : AppCompatActivity() {
             if (current > 0) setTopic(current - 1)
         }
         ui.forward.setOnClickListener {
-            if (current < topics.size - 1) setTopic(current + 1)
+            if (current < Topics.size - 1) setTopic(current + 1)
         }
-        ui.title.setOnClickListener { view ->
-            PopupMenu(this, view).apply {
-                topics.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
+        ui.title.setOnClickListener { title ->
+            PopupMenu(this, title).apply {
+                Topics.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
                 menu.getItem(current).isEnabled = false
                 setOnMenuItemClickListener { setTopic(it.itemId); true }
             }.show()
@@ -78,14 +78,14 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-private val topics = listOf(
+private val Topics = listOf(
     IntroTopic,
     MotionTopic,
     PlaneTopic,
     ApplyTopic,
     IrregularTopic,
     DrawableTopic,
-//    InflationTopic,  // <- It works; it's just not advertised anymore.
+//    InflationTopic,  // Functional, but no longer advertised. See the wiki.
     ComposeTopic,
     CompatIntroTopic,
     CompatDrawableTopic,
@@ -95,10 +95,10 @@ private val topics = listOf(
 private class ContentAdapter(activity: FragmentActivity) :
     FragmentStateAdapter(activity) {
 
-    override fun getItemCount() = topics.size
+    override fun getItemCount() = Topics.size
 
     override fun createFragment(position: Int) =
-        topics[position].createFragment()
+        Topics[position].createFragment()
 }
 
 private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
@@ -108,10 +108,10 @@ private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
                 .inflate(R.layout.item_description, parent, false)
         )
 
-    override fun getItemCount() = topics.size
+    override fun getItemCount() = Topics.size
 
     override fun onBindViewHolder(holder: InfoHolder, position: Int) {
-        holder.text.setText(topics[position].descriptionResId)
+        holder.text.setText(Topics[position].descriptionResId)
     }
 }
 
@@ -134,18 +134,18 @@ private class InfoHolder(view: View) : ViewHolder(view) {
 private fun Activity.showWelcomeDialog() {
     val hideWelcome = getPreferences(AppCompatActivity.MODE_PRIVATE)
         .getBoolean(PREF_HIDE_WELCOME, false)
-    if (!hideWelcome) {
-        val dialog = AlertDialog.Builder(this)
-            .setView(R.layout.dialog_welcome)
-            .setPositiveButton("Close", null)
-            .show()
-        val checkBox = dialog.findViewById<CheckBox>(R.id.hide_welcome)
-        checkBox?.setOnCheckedChangeListener { _, isChecked ->
+    if (hideWelcome) return
+
+    AlertDialog.Builder(this)
+        .setView(R.layout.dialog_welcome)
+        .setPositiveButton("Close", null)
+        .show()
+        .findViewById<CheckBox>(R.id.hide_welcome)
+        ?.setOnCheckedChangeListener { _, isChecked ->
             getPreferences(AppCompatActivity.MODE_PRIVATE).edit()
                 .putBoolean(PREF_HIDE_WELCOME, isChecked)
                 .apply()
         }
-    }
 }
 
 private const val PREF_HIDE_WELCOME = "hide_welcome"

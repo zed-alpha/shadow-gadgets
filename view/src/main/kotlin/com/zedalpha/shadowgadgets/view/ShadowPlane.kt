@@ -5,10 +5,11 @@ import com.zedalpha.shadowgadgets.view.ShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
 
 /**
- * Options for where a target's library shadow is inserted into the hierarchy's
- * draw routine.
+ * Options for where a target's library shadow is inserted into the View
+ * hierarchy's draw routine.
  */
 enum class ShadowPlane {
+
     /**
      * Foreground shadows are drawn in the target View's parent's overlay.
      *
@@ -52,14 +53,15 @@ enum class ShadowPlane {
      */
     Inline;
 
-    internal companion object {
+    companion object {
+
         // Maps XML attribute values to enum values.
-        fun forValue(value: Int): ShadowPlane = entries[value]
+        internal fun forValue(value: Int): ShadowPlane = entries[value]
     }
 }
 
 /**
- * The current [ShadowPlane] for the receiver View's library shadow.
+ * The current [ShadowPlane] for the receiver [View]'s library shadow.
  */
 var View.shadowPlane: ShadowPlane
     get() = getTag(R.id.shadow_plane) as? ShadowPlane ?: Foreground

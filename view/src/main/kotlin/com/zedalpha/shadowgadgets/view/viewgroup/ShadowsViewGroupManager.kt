@@ -56,6 +56,7 @@ internal abstract class ShadowsViewGroupManager(
     var ignoreInlineChildShadows by initOnly(isRecyclingViewGroup) {}
 
     protected var attached = false
+        private set
 
     private fun <T> initOnly(initial: T, onSet: () -> Unit) =
         Delegates.vetoable(initial) { _, _, _ ->
@@ -163,7 +164,7 @@ internal abstract class ShadowsViewGroupManager(
                 unsorted[index] = child
                 sorted[index] = child
             }
-            sorted.sortWith(unsafeZComparator, 0, childCount)
+            sorted.sortWith(UnsafeZComparator, 0, childCount)
 
             reorderChildren(sorted, childCount)
             superDispatchDraw(canvas)
@@ -235,5 +236,5 @@ private const val ARRAY_CAPACITY_INCREMENT = 12
 private fun nextSize(childCount: Int) =
     (childCount / ARRAY_CAPACITY_INCREMENT + 1) * ARRAY_CAPACITY_INCREMENT
 
-private val unsafeZComparator =
+private val UnsafeZComparator =
     Comparator<View?> { v1, v2 -> v1!!.z.compareTo(v2!!.z) }

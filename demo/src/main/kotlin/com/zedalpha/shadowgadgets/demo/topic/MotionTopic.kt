@@ -102,6 +102,7 @@ private suspend fun Snackbar.showAndAwait() =
 private suspend fun FloatingActionButton.showAndAwait() =
     suspendCancellableCoroutine { continuation ->
         val listener = object : AnimatorListenerAdapter() {
+
             override fun onAnimationCancel(animation: Animator) {
                 if (continuation.isActive) continuation.cancel()
             }

@@ -128,10 +128,8 @@ internal fun Path.setToCompassPointer(sideLength: Float) {
 
     reset()
     addRoundRect(
-        0F,
-        0F,
-        sideLength,
-        sideLength,
+        0F, 0F,
+        sideLength, sideLength,
         floatArrayOf(0F, 0F, h, h, 0F, 0F, h, h),
         Path.Direction.CW
     )

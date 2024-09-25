@@ -43,17 +43,16 @@ abstract class BaseDetector : Detector(), XmlScanner {
 
     companion object {
 
-        internal fun Issue.copy(
-            implementation: Implementation
-        ) = Issue.create(
-            id = "${id}SG",
-            briefDescription = getBriefDescription(TextFormat.RAW),
-            explanation = getExplanation(TextFormat.RAW),
-            category = category,
-            priority = priority,
-            severity = defaultSeverity,
-            implementation = implementation
-        )
+        internal fun Issue.copy(implementation: Implementation): Issue =
+            Issue.create(
+                id = "${id}SG",
+                briefDescription = getBriefDescription(TextFormat.RAW),
+                explanation = getExplanation(TextFormat.RAW),
+                category = category,
+                priority = priority,
+                severity = defaultSeverity,
+                implementation = implementation
+            )
     }
 }
 

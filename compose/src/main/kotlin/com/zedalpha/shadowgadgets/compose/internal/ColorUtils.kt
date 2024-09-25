@@ -64,13 +64,8 @@ private class LocationDispatcher(private val view: View) {
     val screenLocation = _screenLocation.asSharedFlow()
 
     private val attachListener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View) {
-            attachPreDrawListener()
-        }
-
-        override fun onViewDetachedFromWindow(v: View) {
-            removePreDrawListener()
-        }
+        override fun onViewAttachedToWindow(v: View) = addPreDrawListener()
+        override fun onViewDetachedFromWindow(v: View) = removePreDrawListener()
     }
 
     private var location = InitialOffset
@@ -95,7 +90,7 @@ private class LocationDispatcher(private val view: View) {
     init {
         view.locationDispatcher = this
         view.addOnAttachStateChangeListener(attachListener)
-        if (view.isAttachedToWindow) attachPreDrawListener()
+        if (view.isAttachedToWindow) addPreDrawListener()
 
         _screenLocation.subscriptionCount
             .map { count ->
@@ -117,7 +112,7 @@ private class LocationDispatcher(private val view: View) {
 
     private var viewTreeObserver: ViewTreeObserver? = null
 
-    private fun attachPreDrawListener() {
+    private fun addPreDrawListener() {
         viewTreeObserver = view.viewTreeObserver.also { observer ->
             observer.addOnPreDrawListener(preDrawListener)
         }

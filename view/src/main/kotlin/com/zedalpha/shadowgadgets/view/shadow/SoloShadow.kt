@@ -53,16 +53,10 @@ internal class SoloShadow(targetView: View) : ViewShadow(targetView) {
         private var tmpMatrix: Matrix? = null
     }
 
-    private val attachListener =
-        object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(v: View) {
-                attach()
-            }
-
-            override fun onViewDetachedFromWindow(v: View) {
-                detach()
-            }
-        }
+    private val attachListener = object : View.OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View) = attach()
+        override fun onViewDetachedFromWindow(v: View) = detach()
+    }
 
     private val preDrawListener = ViewTreeObserver.OnPreDrawListener {
         if (isShown && checkInvalidate()) drawable.invalidateSelf()
@@ -179,16 +173,16 @@ internal class SoloShadow(targetView: View) : ViewShadow(targetView) {
     }
 }
 
-private fun canDrawAround(targetView: View): Boolean {
-    val clipChildren = (targetView.parent as? ViewGroup)?.clipChildren == true
-    val clipToOutline = targetView.clipToOutline
-    val canDraw = !clipChildren && !clipToOutline
+private fun canDrawAround(view: View): Boolean {
+    val clipToOutline = view.clipToOutline
+    val clipChildren = (view.parent as? ViewGroup)?.clipChildren == true
+    val canDraw = !clipToOutline && !clipChildren
     if (!canDraw && BuildConfig.DEBUG) {
         val message = buildString {
-            append("Inline shadow on ${targetView.debugName}: Added ")
-            if (clipChildren) append("in parent with clipChildren=true")
-            if (clipChildren && clipToOutline) append(", and ")
-            if (clipToOutline) append("on target with clipToOutline=true")
+            append("Inline shadow on ${view.debugName}: ")
+            if (clipToOutline) append("target has clipToOutline=true")
+            if (clipToOutline && clipChildren) append(", and ")
+            if (clipChildren) append("parent has clipChildren=true")
         }
         Log.w("ShadowGadgets", message)
     }

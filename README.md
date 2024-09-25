@@ -5,7 +5,7 @@ shortcomings in the native material shadows.
 
 <br />
 
-**Visual artifacts**
+**· Visual artifacts**
 
 Unsightly draw defects are visible on `View`s and `Composable`s with see-through
 backgrounds.
@@ -25,14 +25,14 @@ alt="The above examples with the clip fix applied to each."
 width="55%" />
 </p>
 
-**Color support**
+**· Color support**
 
 Shadow colors were not added to the SDK until API level 28 (Pie). Prior to that,
 only the alpha values of plain black hues could be manipulated.
 
 Like the clip feature, color compat uses the same native classes and methods,
 replacing the originals with tinted copies. Only one color can be applied with
-this technique, however; it's not possible to separate the ambient and spot
+this technique, however, as it's not possible to separate the ambient and spot
 shadows at this level.
 
 <p align="center">
@@ -48,7 +48,7 @@ results are likely sufficient for many cases.
 
 ### Before getting started…
 
-Please note that clipping that shadow artifact is not necessary if the region
+Please note that clipping the shadow artifact is not necessary if the region
 behind the UI element is a single solid color. In that case, it is preferable to
 simply calculate the opaque color that results from compositing the translucent
 one over the solid, and set that as the element's background instead.
@@ -106,6 +106,7 @@ one over the solid, and set that as the element's background instead.
 - [ViewGroups](#viewgroups)
 - [Drawable](#drawable)
 - [Notes](#notes)
+
 </details>
 
 ### Artifact removal
@@ -143,7 +144,7 @@ settings.
 - #### Overlapping sibling Views
 
   To accomplish its effect, the library disables a target's intrinsic shadow and
-  draws a clipped replacement in its parent `ViewGroup`'s overlay, by default,
+  draws a clipped replacement in its parent `ViewGroup`'s overlay by default,
   in front of all of the parent's children. This can cause a problem when a
   sibling with a higher elevation overlaps the target.
 
@@ -229,7 +230,7 @@ Several specialized subclasses of common `ViewGroup`s are included mainly as
 helpers that allow shadow properties to be set on `View`s from attributes in
 layout XML, without the need for extra code. They all implement a [common
 interface][ShadowsViewGroup] with a few properties that are mostly conveniences
-for setting a single library value on all child `View`s.
+for setting a single value on all child `View`s.
 
 The library's features work rather well in Android Studio's layout preview, so
 even if you don't intend to use them at runtime, these groups may still be
@@ -237,7 +238,7 @@ useful during design.
 
 <p align="center">
 <img src="images/layout_editor.png"
-alt="Screenshot of Android Studio editing layout XML, showing a custom group that's automatically fixed a child's shadow in the design view."
+alt="Screenshot of Android Studio showing library effects in the layout editor."
 width="40%" />
 </p>
 
@@ -259,14 +260,14 @@ Details on requirements and usage, and links to examples, can be found on the
 
 - If you only need the clip fix for `View`s in a simple static setup or two, you
   might prefer to put something together from the core techniques demonstrated
-  in [this Stack Overflow answer][SOViewAnswer]. If that core solution is
+  in [this Stack Overflow answer][SOViewAnswer]. If that base solution is
   sufficient, you probably don't want the overhead here.
 
 - To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped
   in a custom implementation. This has the possibility of breaking something if
   some function or component is expecting the `View` to have one of the static
   platform implementations; i.e., `BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`.
-  This shouldn't cause a fatal error, or anything – it's no different than
+  This shouldn't cause a fatal error or anything – it's no different than
   anything else that uses a custom provider – but you might need to rework some
   background drawables or the like.
 
@@ -278,7 +279,7 @@ Details on requirements and usage, and links to examples, can be found on the
   presses, for example, aren't "free" when the button has an active library
   shadow.
 
-  It's not great, but it's likely not a big deal for most setups, especially
+  It's not great, but it's likely not a huge deal for most setups, especially
   considering that many animations will cause the same invalidations anyway. The
   app in the `demo` module has several different arrangements that translate and
   rotate and such, so you can investigate the effects, if curious.
@@ -312,14 +313,14 @@ Box(
             elevation = 10.dp,
             shape = CircleShape
         )
-        …
+    …
 )
 ```
 
 ### Color compat
 
-The Composables handle color compat through additional parameters; e.g., using
-`clippedShadow`'s overload to add some color:
+The Composables handle color compat through additional parameters. For example,
+using `clippedShadow`'s overload to add some color:
 
 ```kotlin
 Box(
@@ -331,7 +332,7 @@ Box(
             spotColor = Color.Cyan,
             colorCompat = Color.Blue
         )
-        …
+    …
 )
 ```
 
@@ -351,9 +352,9 @@ Box(
             shape = CircleShape,
             ambientColor = Color.Blue,
             spotColor = Color.Cyan,
-            colorCompat = Color.Unspecified
+            forceColorCompat = true
         )
-        …
+    …
 )
 ```
 
@@ -402,10 +403,9 @@ Box(
 ## Download
 
 The library is available as a compiled dependency through the very handy service
-[JitPack](https://jitpack.io/#zed-alpha/shadow-gadgets). To enable download in a
-modern Gradle setup, add their Maven URL to the `repositories` block that's
-inside the `dependencyResolutionManagement` block in the root project's
-`settings.gradle[.kts]` file; e.g.:
+[JitPack][JitPack]. To enable download in a modern Gradle setup, add their Maven
+URL to the `repositories` block inside the `dependencyResolutionManagement` in
+the root project's `settings.gradle[.kts]` file; e.g.:
 
 ```kotlin
 dependencyResolutionManagement {
@@ -418,14 +418,14 @@ dependencyResolutionManagement {
 ```
 
 Then add a dependency for
-[the latest release](https://github.com/zed-alpha/shadow-gadgets/releases) of
+[the latest release][Releases] of
 whichever module is required, `view` or `compose`:
 
 ```kotlin
 dependencies {
-  …
-  implementation 'com.github.zed-alpha.shadow-gadgets:view:[latest-release]'
-  implementation 'com.github.zed-alpha.shadow-gadgets:compose:[latest-release]'
+    …
+    implementation 'com.github.zed-alpha.shadow-gadgets:view:[latest-release]'
+    implementation 'com.github.zed-alpha.shadow-gadgets:compose:[latest-release]'
 }
 ```
 
@@ -459,60 +459,64 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-[ComposeComposite]: https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color#(androidx.compose.ui.graphics.Color).compositeOver(androidx.compose.ui.graphics.Color)
+  [ComposeComposite]: https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color#(androidx.compose.ui.graphics.Color).compositeOver(androidx.compose.ui.graphics.Color)
 
-[ViewsComposite]: https://github.com/androidx/androidx/blob/fcb9a89959e0bbbdd1ec63ac82e279feb8336daa/graphics/graphics-core/src/androidTest/java/androidx/graphics/surface/SurfaceControlCompatTest.kt#L1783
+  [ViewsComposite]: https://github.com/androidx/androidx/blob/fcb9a89959e0bbbdd1ec63ac82e279feb8336daa/graphics/graphics-core/src/androidTest/java/androidx/graphics/surface/SurfaceControlCompatTest.kt#L1783
 
-[Documentation]: https://zed-alpha.github.io/shadow-gadgets
+  [Documentation]: https://zed-alpha.github.io/shadow-gadgets
 
-[clipOutlineShadow]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/clip-outline-shadow.html
+  [clipOutlineShadow]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/clip-outline-shadow.html
 
-[ShadowPlane]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-plane/index.html
+  [ShadowPlane]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-plane/index.html
 
-[shadowPlaneProperty]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/shadow-plane.html
+  [shadowPlaneProperty]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/shadow-plane.html
 
-[ShadowPlaneWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowPlane
+  [ShadowPlaneWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowPlane
 
-[ViewPathProvider]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-view-path-provider/index.html
+  [ViewPathProvider]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-view-path-provider/index.html
 
-[pathProvider]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/path-provider.html
+  [pathProvider]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/path-provider.html
 
-[ViewPathProviderWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewPathProvider
+  [ViewPathProviderWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewPathProvider
 
-[forceShadowLayer]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/force-shadow-layer.html
+  [forceShadowLayer]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/force-shadow-layer.html
 
-[forceShadowLayerWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/View.forceShadowLayer
+  [forceShadowLayerWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/View.forceShadowLayer
 
-[outlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/outline-shadow-color-compat.html
+  [outlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/outline-shadow-color-compat.html
 
-[ShadowColorsBlender]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-colors-blender/index.html
+  [ShadowColorsBlender]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-colors-blender/index.html
 
-[forceOutlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/force-outline-shadow-color-compat.html
+  [forceOutlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/force-outline-shadow-color-compat.html
 
-[ViewColorCompatWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat
+  [ViewColorCompatWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat
 
-[ShadowsViewGroup]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.viewgroup/-shadows-view-group/index.html
+  [ShadowsViewGroup]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.viewgroup/-shadows-view-group/index.html
 
-[ViewGroupsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
+  [ViewGroupsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
 
-[ShadowDrawable]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
+  [ShadowDrawable]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
 
-[DrawableWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
+  [DrawableWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
 
-[ViewGroupsLintWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups#lint-integration
+  [ViewGroupsLintWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups#lint-integration
 
-[SOViewAnswer]: https://stackoverflow.com/a/70076301
+  [SOViewAnswer]: https://stackoverflow.com/a/70076301
 
-[LayoutInflationHelpersWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Layout-inflation-helpers
+  [LayoutInflationHelpersWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Layout-inflation-helpers
 
-[shadow]: https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color)
+  [shadow]: https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color)
 
-[clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
+  [clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
 
-[shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
+  [shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
 
-[ComposeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Compose
+  [ComposeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Compose
 
-[SOComposeAnswer]: https://stackoverflow.com/a/71868521
+  [SOComposeAnswer]: https://stackoverflow.com/a/71868521
 
-[PerformanceOverhead]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat#performance-and-overhead
+  [PerformanceOverhead]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat#performance-and-overhead
+
+  [JitPack]: https://jitpack.io/#zed-alpha/shadow-gadgets
+
+  [Releases]: https://github.com/zed-alpha/shadow-gadgets/releases

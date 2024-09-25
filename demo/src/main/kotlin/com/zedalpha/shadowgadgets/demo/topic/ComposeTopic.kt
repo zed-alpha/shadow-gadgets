@@ -121,7 +121,7 @@ private fun ComposeContent() {
             Card(
                 backgroundColor = Color(0x22007fff),
                 elevation = 0.dp,
-                shape = GenericShape(cardShapeBuilder),
+                shape = GenericShape(CardShapeBuilder),
                 modifier = Modifier
                     .padding(
                         start = if (Build.VERSION.SDK_INT < 30) 0.dp else 8.dp
@@ -129,7 +129,7 @@ private fun ComposeContent() {
                     .size(80.dp)
                     .clippedShadow(
                         elevation = 10.dp,
-                        shape = GenericShape(cardShapeBuilder),
+                        shape = GenericShape(CardShapeBuilder),
                         ambientColor = Color(0xff007fff),
                         spotColor = Color(0xff007fff)
                     )
@@ -152,11 +152,11 @@ internal fun ColorfulLazyColumn(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = modifier
         ) {
-            items(count = COUNT) { position ->
+            items(ITEM_COUNT) { position ->
                 val color = lerp(
-                    if (position < HALF_COUNT) itemRed else itemGreen,
-                    if (position < HALF_COUNT) itemGreen else itemBlue,
-                    (position % HALF_COUNT).toFloat() / HALF_COUNT
+                    if (position < HALF_ITEM_COUNT) ItemRed else ItemGreen,
+                    if (position < HALF_ITEM_COUNT) ItemGreen else ItemBlue,
+                    (position % HALF_ITEM_COUNT).toFloat() / HALF_ITEM_COUNT
                 )
                 Card(
                     backgroundColor = color,
@@ -164,13 +164,7 @@ internal fun ColorfulLazyColumn(
                     shape = RoundedCornerShape(6.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .run {
-                            shadowModifier(
-                                10.dp,
-                                RoundedCornerShape(6.dp),
-                                color
-                            )
-                        }
+                        .shadowModifier(10.dp, RoundedCornerShape(6.dp), color)
                 ) {
                     Text(
                         text = "Item $position",
@@ -255,7 +249,7 @@ private fun ClippedShadowButton(
     }
 }
 
-private val cardShapeBuilder = when {
+private val CardShapeBuilder = when {
     Build.VERSION.SDK_INT >= 30 -> puzzlePieceBuilder()
     else -> compassPointerBuilder()
 }
@@ -266,6 +260,7 @@ private fun puzzlePieceBuilder(): Path.(Size, LayoutDirection) -> Unit =
         translate(Offset((size.width - side) / 2, (size.height - side) / 2))
 
         val q = side / 4
+
         // top
         moveTo(0F, q)
         lineTo(q, q)
@@ -300,6 +295,7 @@ private fun compassPointerBuilder(): Path.(Size, LayoutDirection) -> Unit =
 
         val side = minOf(size.width, size.height)
         translate(Offset((size.width - side) / 2, (size.height - side) / 2))
+
         addRoundRect(
             RoundRect(
                 0F, 0F,
@@ -310,6 +306,6 @@ private fun compassPointerBuilder(): Path.(Size, LayoutDirection) -> Unit =
         )
     }
 
-internal val itemRed = Color(ITEM_RED)
-internal val itemGreen = Color(ITEM_GREEN)
-internal val itemBlue = Color(ITEM_BLUE)
+internal val ItemRed = Color(ITEM_RED)
+internal val ItemGreen = Color(ITEM_GREEN)
+internal val ItemBlue = Color(ITEM_BLUE)

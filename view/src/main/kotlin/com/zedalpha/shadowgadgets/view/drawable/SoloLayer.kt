@@ -13,7 +13,7 @@ internal class SoloLayer(
     private val drawable: Drawable,
     private val ownerView: View,
     layerDraw: LayerDraw,
-    color: Int,
+    color: Int
 ) {
     private val layer = Layer(
         ownerView,
@@ -25,13 +25,8 @@ internal class SoloLayer(
     private val tracker = LocationTracker(ownerView)
 
     private val attachListener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View) {
-            addPreDrawListener()
-        }
-
-        override fun onViewDetachedFromWindow(v: View) {
-            removePreDrawListener()
-        }
+        override fun onViewAttachedToWindow(v: View) = addPreDrawListener()
+        override fun onViewDetachedFromWindow(v: View) = removePreDrawListener()
     }
 
     private val preDrawListener = ViewTreeObserver.OnPreDrawListener {

@@ -1,25 +1,26 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Matrix
-import android.graphics.Outline
+import android.graphics.Point
+import android.graphics.Rect
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewOutlineProvider
 import android.view.ViewTreeObserver
+import android.view.WindowManager
 import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
-import com.zedalpha.shadowgadgets.view.BuildConfig
 import com.zedalpha.shadowgadgets.view.colorOutlineShadow
 import com.zedalpha.shadowgadgets.view.drawable.ShadowDrawable
 import com.zedalpha.shadowgadgets.view.forceShadowLayer
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.pathProvider
 
-internal class SoloShadow(targetView: View) : ViewShadow(targetView) {
-
-    private var parentView: View? = null
+internal class SoloShadow(
+    targetView: View,
+    private val shadowScope: ViewGroup?
+) : ViewShadow(targetView) {
 
     private val drawable = object : ShadowDrawable(targetView, isClipped) {
 
@@ -35,27 +36,44 @@ internal class SoloShadow(targetView: View) : ViewShadow(targetView) {
                 matrix.invert(matrix)
                 canvas.concat(matrix)
             }
-            canvas.translate(bounds.left.toFloat(), bounds.top.toFloat())
+            if (shadowScope != null) {
+                canvas.translate(bounds.left.toFloat(), bounds.top.toFloat())
+            }
             super.draw(canvas)
             canvas.restore()
         }
 
+        private var tmpMatrix: Matrix? = null
+
         fun updateBounds() {
-            val parent = parentView ?: return
-            setBounds(
-                -targetView.left,
-                -targetView.top,
-                -targetView.left + parent.width,
-                -targetView.top + parent.height
-            )
+            val scope = shadowScope
+            val newBounds = tmpBounds
+
+            if (scope != null) {
+                newBounds.set(0, 0, scope.width, scope.height)
+                newBounds.offset(-targetView.left, -targetView.top)
+            } else {
+                val ints = tmpInts ?: IntArray(2).also { tmpInts = it }
+
+                val manager = windowManager
+                    ?: targetView.context.windowManager
+                        .also { windowManager = it }
+                manager.getScreenSize(ints)
+                newBounds.set(0, 0, ints[0], ints[1])
+
+                targetView.getLocationOnScreen(ints)
+                newBounds.offset(-ints[0], -ints[1])
+
+                translationX = ints[0].toFloat()
+                translationY = ints[1].toFloat()
+            }
+
+            bounds = newBounds
         }
 
-        private var tmpMatrix: Matrix? = null
-    }
-
-    private val attachListener = object : View.OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View) = attach()
-        override fun onViewDetachedFromWindow(v: View) = detach()
+        private val tmpBounds = Rect()
+        private var tmpInts: IntArray? = null
+        private var windowManager: WindowManager? = null
     }
 
     private val preDrawListener = ViewTreeObserver.OnPreDrawListener {
@@ -84,114 +102,69 @@ internal class SoloShadow(targetView: View) : ViewShadow(targetView) {
         return false
     }
 
-    private val provider: ViewOutlineProvider = targetView.outlineProvider
-
-    private val isDrawing = canDrawAround(targetView)
+    private var viewTreeObserver: ViewTreeObserver? = null
 
     init {
-        if (isDrawing) {
-            targetView.addOnAttachStateChangeListener(attachListener)
-            if (targetView.isAttachedToWindow) attach()
-            if (targetView.colorOutlineShadow) {
-                drawable.colorCompat = targetView.outlineShadowColorCompat
-            }
-            drawable.forceLayer = targetView.forceShadowLayer
-        } else {
-            // Still disable the native shadow, because no shadow is better
-            // than a mangled draw, possibly with the artifact still there.
-            targetView.outlineProvider = object : ViewOutlineProvider() {
-                override fun getOutline(view: View, outline: Outline) {
-                    provider.getOutline(view, outline)
-                    outline.alpha = 0F
-                }
+        drawable.updateBounds()
+        targetView.overlay.add(drawable)
+
+        // Must set this before wrapping the OutlineProvider.
+        targetView.pathProvider?.let { pathProvider ->
+            drawable.setClipPathProvider { path ->
+                pathProvider.getPath(targetView, path)
             }
         }
+        wrapOutlineProvider(drawable::setOutline)
+
+        viewTreeObserver = targetView.viewTreeObserver.apply {
+            if (isAlive) addOnPreDrawListener(preDrawListener)
+        }
+
+        if (targetView.colorOutlineShadow) {
+            drawable.colorCompat = targetView.outlineShadowColorCompat
+        }
+        drawable.forceLayer = targetView.forceShadowLayer
+        drawable.invalidateSelf()
     }
 
     override fun detachFromTarget() {
         super.detachFromTarget()
-        drawable.dispose()
-        if (isDrawing) {
-            targetView.removeOnAttachStateChangeListener(attachListener)
-            detach()
-        } else {
-            targetView.outlineProvider = provider
-        }
-    }
 
-    private var viewTreeObserver: ViewTreeObserver? = null
-
-    private fun attach() {
-        val target = targetView
-        val parent = target.parent as? View ?: return
-        parentView = parent
-
-        drawable.updateBounds()
-        target.overlay.add(drawable)
-
-        viewTreeObserver = target.viewTreeObserver.also { observer ->
-            observer.addOnPreDrawListener(preDrawListener)
-        }
-
-        // Must set before outlineProvider
-        target.pathProvider?.let { pathProvider ->
-            drawable.setClipPathProvider { path ->
-                pathProvider.getPath(target, path)
-            }
-        }
-        target.outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                provider.getOutline(view, outline)
-                drawable.setOutline(outline)
-                outline.alpha = 0F
-            }
-        }
-        drawable.invalidateSelf()
-    }
-
-    private fun detach() {
-        drawable.setClipPathProvider(null)
         targetView.overlay.remove(drawable)
-        targetView.outlineProvider = provider
+
         viewTreeObserver?.run {
             if (isAlive) removeOnPreDrawListener(preDrawListener)
             viewTreeObserver = null
         }
-        parentView = null
+
+        drawable.setClipPathProvider(null)
+        drawable.dispose()
     }
 
-    override fun updateColorCompat(color: Int) {
+    override fun updateColorCompat(color: Int) =
         drawable.run {
             if (colorCompat == color) return
             colorCompat = color
             invalidateSelf()
         }
-    }
 
-    override fun invalidate() {
-        drawable.invalidateSelf()
-    }
+    override fun invalidate() = drawable.invalidateSelf()
 }
 
-private fun canDrawAround(view: View): Boolean {
-    val clipToOutline = view.clipToOutline
-    val clipChildren = (view.parent as? ViewGroup)?.clipChildren == true
-    val canDraw = !clipToOutline && !clipChildren
-    if (!canDraw && BuildConfig.DEBUG) {
-        val message = buildString {
-            append("Inline shadow on ${view.debugName}: ")
-            if (clipToOutline) append("target has clipToOutline=true")
-            if (clipToOutline && clipChildren) append(", and ")
-            if (clipChildren) append("parent has clipChildren=true")
-        }
-        Log.w("ShadowGadgets", message)
-    }
-    return canDraw
-}
+private inline val Context.windowManager: WindowManager
+    get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-private inline val View.debugName: String
-    get() = buildString {
-        append(this@debugName.javaClass.simpleName)
-        if (id == View.NO_ID) return@buildString
-        append(" R.id.${resources.getResourceEntryName(id)}")
+private fun WindowManager.getScreenSize(outSize: IntArray) =
+    if (Build.VERSION.SDK_INT >= 30) {
+        val bounds = currentWindowMetrics.bounds
+        outSize[0] = bounds.width()
+        outSize[1] = bounds.height()
+    } else {
+        val point = tmpPoint ?: Point().also { tmpPoint = it }
+        @Suppress("DEPRECATION")
+        defaultDisplay.getSize(point)
+        outSize[0] = point.x
+        outSize[1] = point.y
     }
+
+private var tmpPoint: Point? = null

@@ -27,4 +27,4 @@ fun interface LayerDraw {
     fun draw(canvas: Canvas)
 }
 
-val VersionRequiresDefaultSoloLayer = Build.VERSION.SDK_INT in 24..28
+val DefaultInlineLayerRequired = Build.VERSION.SDK_INT in 24..28

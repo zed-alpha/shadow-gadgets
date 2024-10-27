@@ -15,12 +15,12 @@ internal class SoloLayer(
     layerDraw: LayerDraw,
     color: Int
 ) {
-    private val layer = Layer(
+    private val coreLayer = Layer(
         ownerView,
         color,
         drawable.bounds.width(),
         drawable.bounds.height()
-    ).apply { addDraw(layerDraw) }
+    )
 
     private val tracker = LocationTracker(ownerView)
 
@@ -31,15 +31,16 @@ internal class SoloLayer(
 
     private val preDrawListener = ViewTreeObserver.OnPreDrawListener {
         if (tracker.checkLocationChanged()) {
-            layer.recreate()
+            coreLayer.recreate()
             drawable.invalidateSelf()
         }
         true
     }
 
-    var color by layer::color
+    var color by coreLayer::color
 
     init {
+        coreLayer.addDraw(layerDraw)
         ownerView.addOnAttachStateChangeListener(attachListener)
         if (ownerView.isAttachedToWindow) addPreDrawListener()
     }
@@ -47,8 +48,8 @@ internal class SoloLayer(
     private var viewTreeObserver: ViewTreeObserver? = null
 
     private fun addPreDrawListener() {
-        viewTreeObserver = ownerView.viewTreeObserver.also { observer ->
-            observer.addOnPreDrawListener(preDrawListener)
+        viewTreeObserver = ownerView.viewTreeObserver.apply {
+            if (isAlive) addOnPreDrawListener(preDrawListener)
         }
         tracker.initialize()
     }
@@ -59,21 +60,16 @@ internal class SoloLayer(
         viewTreeObserver = null
     }
 
-    fun setSize(bounds: Rect) {
-        layer.setSize(bounds.width(), bounds.height())
-    }
+    fun setSize(bounds: Rect) =
+        coreLayer.setSize(bounds.width(), bounds.height())
 
-    fun draw(canvas: Canvas) {
-        layer.draw(canvas)
-    }
+    fun draw(canvas: Canvas) = coreLayer.draw(canvas)
 
-    fun refresh() {
-        layer.refresh()
-    }
+    fun refresh() = coreLayer.refresh()
 
     fun dispose() {
         ownerView.removeOnAttachStateChangeListener(attachListener)
         removePreDrawListener()
-        layer.dispose()
+        coreLayer.dispose()
     }
 }

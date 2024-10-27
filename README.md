@@ -5,7 +5,7 @@ shortcomings in the native material shadows.
 
 <br />
 
-**· Visual artifacts**
+**• Visual artifacts**
 
 Unsightly draw defects are visible on `View`s and `Composable`s with see-through
 backgrounds.
@@ -25,10 +25,10 @@ alt="The above examples with the clip fix applied to each."
 width="55%" />
 </p>
 
-**· Color support**
+**• Color support**
 
-Shadow colors were not added to the SDK until API level 28 (Pie). Prior to that,
-only the alpha values of plain black hues could be manipulated.
+Shadow colors were not added to the SDK until API level 28 (Pie). Before that,
+the only relevant adjustment available was the alpha value of plain black.
 
 Like the clip feature, color compat uses the same native classes and methods,
 replacing the originals with tinted copies. Only one color can be applied with
@@ -48,10 +48,11 @@ results are likely sufficient for many cases.
 
 ### Before getting started…
 
-Please note that clipping the shadow artifact is not necessary if the region
-behind the UI element is a single solid color. In that case, it is preferable to
-simply calculate the opaque color that results from compositing the translucent
-one over the solid, and set that as the element's background instead.
+Please note that clipping the artifact is not necessary if the UI element's
+background and the region behind it are each a single simple color. In that
+case, it is preferable to calculate the opaque color that results from
+compositing the translucent one over the other, and set that as the element's
+background instead.
 
 - Compose already has the [`compositeOver()`][ComposeComposite] function in its
   `androidx.compose.ui.graphics.Color` class that can do the necessary
@@ -77,13 +78,13 @@ one over the solid, and set that as the element's background instead.
   comprises just two functions (and one overload) as direct replacements for the
   inbuilt shadow.
 
-- [**Project notes**](#project-notes)
+- [**Notes**][notes]
 
-  Important details, caveats, release notes, etc.
+  Important information and caveats for each framework and the project overall.
 
 - [**Download**](#download)
 
-  Available through JitPack.
+  Compiled artifacts are available through JitPack.
 
 - [**Documentation ↗**][Documentation]
 
@@ -94,43 +95,37 @@ one over the solid, and set that as the element's background instead.
 
 ## Views
 
-<details>
-  <summary>Subsections</summary>
+The library's features are applied to individual `View`s through extension
+properties, the main two being:
 
-- [Artifact removal](#artifact-removal)
-- [Limitations and recourses](#limitations-and-recourses)
-  - [Overlapping sibling Views](#overlapping-sibling-views)
-  - [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
-  - [Parent matrix on Android N-P](#parent-matrix-on-android-n-p)
-- [Color compat](#color-compat)
-- [ViewGroups](#viewgroups)
-- [Drawable](#drawable)
-- [Notes](#notes)
+- [`var View.clipOutlineShadow: Boolean`][clipOutlineShadow]
 
-</details>
+  Basically a switch that toggles the clip fix on the receiver `View`. When
+  `true`, the intrinsic shadow is disabled and replaced with a clipped copy.
 
-### Artifact removal
+- [`var View.outlineShadowColorCompat: Int`][outlineShadowColorCompat]
 
-Nobody wants to mess with a whole library for such a small thing that should've
-been handled already in the native UI framework, so this was designed to be as
-simple and familiar as possible:
+  Takes a `@ColorInt` with which to tint replacement shadows on versions before
+  Pie. A separate extension is available to force it on newer versions, and it
+  can be used with or without the clip feature. The particulars can be found on
+  [its wiki page][ViewColorCompatWiki].
+
+Usage is as easy as it seems:
 
 ```kotlin
 view.clipOutlineShadow = true
+view.outlineShadowColorCompat = Color.BLUE
 ```
 
 That's it. Unless your setup requires that a sibling `View` overlap a target of
 the fix, or it involves a target with an irregular shape on Android R and above,
 that's possibly all you need.
 
-The `Boolean`-value [`View.clipOutlineShadow`][clipOutlineShadow] extension
-property is basically a switch to toggle the fix on `View`s individually, and it
-was designed to mimic an intrinsic property as much as possible. Though the
-shadow is actually being handled and drawn in the parent `ViewGroup`, the
-property can be set on the target `View` at any time, even while it's
-unattached, so there's no need to worry about timing. Additionally, the clipped
-shadow automatically animates and transforms along with its target, and it will
-handle moving itself to any new parents, should the target be moved.
+Though the library's shadow is actually being handled and drawn in the parent
+`ViewGroup`, these properties can be set on the target `View` at any time, even
+while it's unattached, so there's no need to worry about timing. Additionally,
+the shadow automatically animates and transforms along with its target, and it
+will handle moving itself to any new parents, should the target be moved.
 
 It is hoped that that simple usage should cover most cases. For those setups
 that might be problematic, the library offers a few other configuration
@@ -138,41 +133,38 @@ properties as possible fixes.
 
 ### Limitations and recourses
 
-There are currently three particular situations that might require further
-settings.
-
 - #### Overlapping sibling Views
 
   To accomplish its effect, the library disables a target's intrinsic shadow and
-  draws a clipped replacement in its parent `ViewGroup`'s overlay by default,
-  in front of all of the parent's children. This can cause a problem when a
-  sibling with a higher elevation overlaps the target.
+  draws a clipped replacement in its parent `ViewGroup`'s overlay by default, in
+  front of all of the parent's children. This can cause a problem when a sibling
+  with a higher elevation overlaps the target.
 
   <p align="center">
   <img src="images/plane_foreground_broken.png"
-  alt="A target's clipped shadow incorrectly drawn on top of its higher sibling View."
+  alt="A View's clipped shadow incorrectly drawn on top of its higher sibling."
   width="20%" />
   </p>
 
-  As a remedy, the [`ShadowPlane`][ShadowPlane] enum and its corresponding
-  [`View.shadowPlane`][shadowPlaneProperty] property are available to move the
-  shadow to behind all of the children instead, or, with a couple of extra
-  layout settings, to draw right along with the target itself, interleaved
-  between siblings.
-
-  Details for the specific enum values and their respective behaviors and
-  requirements are given on [the ShadowPlane wiki page][ShadowPlaneWiki].
+  The [`ShadowPlane`][ShadowPlane] enum defines other options for different points in
+  the hierarchy's draw routine where the library shadow can be inserted.
+  Specifics and requirements are given on [its wiki page][ShadowPlaneWiki].
 
 - #### Irregular shapes on Android R+
 
-  `View`s that are not shaped as circles, plain rectangles, or single-radius
-  rounded rectangles have their outlines defined by a `Path` field that became
-  inaccessible starting with API level 30. Such targets using
-  `clipOutlineShadow` on those newer versions require that the user provide the
-  `Path`. This is done with the library's [`ViewPathProvider`][ViewPathProvider]
-  interface and its corresponding extension property,
-  [`View.pathProvider`][pathProvider]. Details and examples of this feature are
-  discussed on [its wiki page][ViewPathProviderWiki].
+  Starting with API level 30, `View`s that are not shaped as circles, plain
+  rectangles, or single-radius rounded rectangles require that the user provide
+  the outline `Path` for the clip.
+
+  <p align="center">
+  <img src="images/view_path_provider.png"
+  alt="A View in the shape of a puzzle piece with its shadow clipped."
+  width="20%" />
+  </p>
+
+  This is done with the [`ViewPathProvider`][ViewPathProvider] interface,
+  details and examples for which are discussed on [its wiki
+  page][ViewPathProviderWiki].
 
 - #### Parent matrix on Android N-P
 
@@ -187,50 +179,14 @@ settings.
   width="20%" />
   </p>
 
-  The exact underlying cause is currently unknown, and any targets using
-  `clipOutlineShadow` on API levels 24..28 that are children of parents that
-  will have a non-identity matrix applied, by any means, should be tested for
-  this glitch. If found, the [`View.forceShadowLayer`][forceShadowLayer]
-  property can be used to mitigate, as explained on [its wiki
-  page][forceShadowLayerWiki].
-
-### Color compat
-
-This feature can apply an extrinsic tint to the native shadows, allowing for
-color shadows on older API levels, though with a somewhat rudimentary
-implementation, since it uses a single color in place of the two native ones. As
-with the clip, this was designed to be easy and straightforward:
-
-```kotlin
-view.outlineShadowColorCompat = Color.BLUE
-```
-
-The [`View.outlineShadowColorCompat`][outlineShadowColorCompat] property takes
-any `@ColorInt` value, and it's accompanied by an (optional) [helper
-class][ShadowColorsBlender] that can proportionally blend the ambient and spot
-colors a target uses on newer API levels into a single value for use with the
-compat property.
-
-By default, the color compat value is applied only on API levels 27 and below.
-The [`View.forceOutlineShadowColorCompat`][forceOutlineShadowColorCompat]
-property can be used to enable it on newer versions.
-
-Color compat can be used with or without the clip functionality. When used on
-its own, a more performant shadow implementation is substituted, allowing it to
-skip expensive clip operations if that area is going to be covered by an opaque
-background anyway.
-
-Important information regarding performance and overhead, along with further
-details on the feature's behavior and helpers, can be found on [its wiki
-page][ViewColorCompatWiki].
+  If observed, the [`View.forceShadowLayer`][forceShadowLayer] property can be
+  used to mitigate, as explained on [its wiki page][forceShadowLayerWiki].
 
 ### ViewGroups
 
 Several specialized subclasses of common `ViewGroup`s are included mainly as
 helpers that allow shadow properties to be set on `View`s from attributes in
-layout XML, without the need for extra code. They all implement a [common
-interface][ShadowsViewGroup] with a few properties that are mostly conveniences
-for setting a single value on all child `View`s.
+layout XML, without the need for extra code.
 
 The library's features work rather well in Android Studio's layout preview, so
 even if you don't intend to use them at runtime, these groups may still be
@@ -249,62 +205,21 @@ with descriptions of their behaviors and usage in layout XML can be found on the
 ### Drawable
 
 [`ShadowDrawable`][ShadowDrawable] is a thin wrapper around the core classes
-that allows these shadows to be drawn manually without having to work with the
-`core` module directly. As with the other tools, this class requires a
-hardware-accelerated `Canvas` to draw.
-
-Details on requirements and usage, and links to examples, can be found on the
-[Drawable wiki page][DrawableWiki].
-
-### Notes
-
-- If you only need the clip fix for `View`s in a simple static setup or two, you
-  might prefer to put something together from the core techniques demonstrated
-  in [this Stack Overflow answer][SOViewAnswer]. If that base solution is
-  sufficient, you probably don't want the overhead here.
-
-- To disable the target's inherent shadow, its `ViewOutlineProvider` is wrapped
-  in a custom implementation. This has the possibility of breaking something if
-  some function or component is expecting the `View` to have one of the static
-  platform implementations; i.e., `BACKGROUND`, `BOUNDS`, or `PADDED_BOUNDS`.
-  This shouldn't cause a fatal error or anything – it's no different than
-  anything else that uses a custom provider – but you might need to rework some
-  background drawables or the like.
-
-- The library's particular technique causes a target's parent `ViewGroup` to be
-  invalidated more that it normally would. For static shadows, it's just an
-  extra time or two here and there. For animated shadows, though, the parent is
-  invalidated on each step, no matter the type of animation, effectively
-  defeating some of the optimizations that hardware acceleration brings. Button
-  presses, for example, aren't "free" when the button has an active library
-  shadow.
-
-  It's not great, but it's likely not a huge deal for most setups, especially
-  considering that many animations will cause the same invalidations anyway. The
-  app in the `demo` module has several different arrangements that translate and
-  rotate and such, so you can investigate the effects, if curious.
+that allows these shadows to be drawn manually without having to mess with the
+`core` module. Information on requirements and usage, and links to examples can
+be found on the [Drawable wiki page][DrawableWiki].
 
 <br />
 
 ## Compose
 
-<details>
-  <summary>Subsections</summary>
-
-- [Artifact removal](#artifact-removal-1)
-- [Color compat](#color-compat-1)
-- [Notes](#notes-1)
-
-</details>
-
-Details and examples for both functions can be found on the [Compose wiki
-page][ComposeWiki].
-
-### Artifact removal
+Since Compose already allows shadows to be handled and manipulated as discrete
+UI elements, employing the library's features here is straightforward and
+routine.
 
 The base [`clippedShadow`][clippedShadow] is a drop-in replacement for Compose's
-[`shadow`][shadow] function, with the exact same signature and defaults, and the
-exact same usage. For example:
+[`shadow`][shadow] function, with the exact same signature and defaults, and
+identical usage. For example:
 
 ```kotlin
 Box(
@@ -317,15 +232,28 @@ Box(
 )
 ```
 
-### Color compat
-
-The Composables handle color compat through additional parameters. For example,
-using `clippedShadow`'s overload to add some color:
+Color compat is handled with additional parameters in an overload.
 
 ```kotlin
 Box(
     Modifier
         .clippedShadow(
+            elevation = 10.dp,
+            shape = CircleShape,
+            colorCompat = Color.Blue,
+            forceColorCompat = true
+        )
+    …
+)
+```
+
+For those cases where you need only color compat without the clip,
+[`shadowCompat`][shadowCompat] is a more performant option.
+
+```kotlin
+Box(
+    Modifier
+        .shadowCompat(
             elevation = 10.dp,
             shape = CircleShape,
             ambientColor = Color.Blue,
@@ -336,67 +264,8 @@ Box(
 )
 ```
 
-On API level 27 and below, the ambient and spot colors are ignored, and the
-normally black shadow will be tinted with `colorCompat`.
-
-For those cases where you need color compat but the clipping is unnecessary,
-[`shadowCompat`][shadowCompat] is a more performant option. It has the exact
-same signature and color behavior as the `clippedShadow` overload above, just
-without the shadow clipping.
-
-```kotlin
-Box(
-    Modifier
-        .shadowCompat(
-            elevation = 10.dp,
-            shape = CircleShape,
-            ambientColor = Color.Blue,
-            spotColor = Color.Cyan,
-            forceColorCompat = true
-        )
-    …
-)
-```
-
-### Notes
-
-- If you only need the clip fix in Compose for a relatively simple setup or two,
-  you might prefer to try something like the stacked `Composable` solution
-  demonstrated in [this Stack Overflow answer][SOComposeAnswer]. The primary
-  benefits of the library's Compose version are user convenience, and access to
-  the color compat functionality. If those aren't concerns, you might be able to
-  avoid the library overhead with just a custom `Layout` and some wrapper
-  functions.
-
-- Color compat here is currently accomplished similarly to how `Inline` shadows
-  are handled for Views, meaning the same internal requirements and overhead
-  apply to this, for the time being. Please refer to [the Performance and
-  overhead section][PerformanceOverhead] on the Color Compat wiki page.
-
-- Compose's color compat currently requires `@OptIn`, as work is still being
-  done internally to cut down on overhead. The public API is locked, however,
-  and the feature is as stable and robust as the clip.
-
-<br />
-
-## Project notes
-
-- The native ambient and spot shadow colors are supported on Pie and above,
-  technically. They absolutely do work for Q+, but I cannot get the native
-  shadow colors to work _at all_ on Pie itself, with or without this library
-  involved. All of the relevant methods and attributes were introduced with that
-  version, and the documentation indicates that they should work like normal,
-  but none of the emulators I've tested on show anything but black shadows. I
-  can't find mention of anyone else having the same issue, though, so I'm
-  completely baffled by this.
-
-  The demo app's Intro page has a setup that lets you fiddle with the shadow
-  color, so that could be used as a quick test, if you're curious. It is set up
-  to fall back to the new color compat mechanism for API levels <28, but 28
-  itself uses the native ambient and spot colors.
-
-- The demo app was put together by eye on medium phone devices, so things might
-  not look that great on other configurations. Just a heads up.
+Details and examples for both functions can be found on the [Compose wiki
+page][ComposeWiki].
 
 <br />
 
@@ -417,9 +286,8 @@ dependencyResolutionManagement {
 }
 ```
 
-Then add a dependency for
-[the latest release][Releases] of
-whichever module is required, `view` or `compose`:
+Then add a dependency for [the latest release][Releases] of whichever module is
+required, `view` or `compose`:
 
 ```kotlin
 dependencies {
@@ -463,19 +331,21 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
   [ViewsComposite]: https://github.com/androidx/androidx/blob/fcb9a89959e0bbbdd1ec63ac82e279feb8336daa/graphics/graphics-core/src/androidTest/java/androidx/graphics/surface/SurfaceControlCompatTest.kt#L1783
 
+  [notes]: https://github.com/zed-alpha/shadow-gadgets/wiki/Notes
+
   [Documentation]: https://zed-alpha.github.io/shadow-gadgets
 
   [clipOutlineShadow]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/clip-outline-shadow.html
 
-  [ShadowPlane]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-plane/index.html
+  [outlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/outline-shadow-color-compat.html
 
-  [shadowPlaneProperty]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/shadow-plane.html
+  [ViewColorCompatWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat
+
+  [ShadowPlane]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-plane/index.html
 
   [ShadowPlaneWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowPlane
 
   [ViewPathProvider]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-view-path-provider/index.html
-
-  [pathProvider]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/path-provider.html
 
   [ViewPathProviderWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewPathProvider
 
@@ -483,39 +353,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
   [forceShadowLayerWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/View.forceShadowLayer
 
-  [outlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/outline-shadow-color-compat.html
-
-  [ShadowColorsBlender]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-colors-blender/index.html
-
-  [forceOutlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/force-outline-shadow-color-compat.html
-
-  [ViewColorCompatWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat
-
-  [ShadowsViewGroup]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.viewgroup/-shadows-view-group/index.html
-
   [ViewGroupsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
 
   [ShadowDrawable]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
 
   [DrawableWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
 
-  [ViewGroupsLintWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups#lint-integration
-
-  [SOViewAnswer]: https://stackoverflow.com/a/70076301
-
-  [LayoutInflationHelpersWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Layout-inflation-helpers
+  [clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
 
   [shadow]: https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color)
-
-  [clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
 
   [shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
 
   [ComposeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Compose
-
-  [SOComposeAnswer]: https://stackoverflow.com/a/71868521
-
-  [PerformanceOverhead]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat#performance-and-overhead
 
   [JitPack]: https://jitpack.io/#zed-alpha/shadow-gadgets
 

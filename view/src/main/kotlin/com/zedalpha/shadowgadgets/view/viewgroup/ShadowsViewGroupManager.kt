@@ -1,6 +1,5 @@
 package com.zedalpha.shadowgadgets.view.viewgroup
 
-import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.os.Build
@@ -22,9 +21,10 @@ import kotlin.properties.Delegates
 internal abstract class ShadowsViewGroupManager(
     parentView: ViewGroup,
     attributeSet: AttributeSet?,
-    private val detachAllViewsFromParent: () -> Unit,
     private val attachViewToParent: (View, Int, LayoutParams) -> Unit,
-    private val superDispatchDraw: (Canvas) -> Unit
+    private val detachAllViewsFromParent: () -> Unit,
+    private val superDispatchDraw: (Canvas) -> Unit,
+    private val superDrawChild: (Canvas, View, Long) -> Boolean
 ) : ShadowController(parentView), DrawPlane {
 
     protected var groupPlaneSet = false
@@ -71,7 +71,8 @@ internal abstract class ShadowsViewGroupManager(
             attributeSet,
             R.styleable.ShadowsViewGroup
         )
-        registerDebugData(parentView.context, attributeSet, array)
+        parentView.saveDebugData(attributeSet, array)
+
         if (array.hasValue(R.styleable.ShadowsViewGroup_childShadowsPlane)) {
             childShadowsPlane = ShadowPlane.forValue(
                 array.getInt(
@@ -125,23 +126,15 @@ internal abstract class ShadowsViewGroupManager(
         parentView.invalidate()
     }
 
-    override fun invalidatePlane() {
-        parentView.invalidate()
-    }
+    override fun invalidatePlane() = parentView.invalidate()
 
-    override fun dispose() {
-        layers.dispose()
-    }
+    override fun dispose() = layers.dispose()
 
     override fun requiresTracking() = layers.requiresTracking()
 
-    override fun onLocationChanged() {
-        layers.recreate()
-    }
+    override fun onLocationChanged() = layers.recreate()
 
-    override fun checkInvalidate() {
-        layers.refresh()
-    }
+    override fun checkInvalidate() = layers.refresh()
 
     private var unsorted = arrayOfNulls<View>(ARRAY_INITIAL_CAPACITY)
 
@@ -182,44 +175,24 @@ internal abstract class ShadowsViewGroupManager(
         }
     }
 
-    fun drawChild(
-        canvas: Canvas,
-        child: View,
-        superDrawChild: () -> Boolean
-    ): Boolean {
+    fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
         val shadow = shadows[child]
         if (shadow == null || !canvas.isHardwareAccelerated) {
-            return superDrawChild()
+            return superDrawChild(canvas, child, drawingTime)
         }
 
         disableZ(canvas)
         val result: Boolean
         if (shadow.isClipped) {
-            result = superDrawChild()
+            result = superDrawChild(canvas, child, drawingTime)
             layers.draw(canvas, shadow)
         } else {
             layers.draw(canvas, shadow)
-            result = superDrawChild()
+            result = superDrawChild(canvas, child, drawingTime)
         }
         enableZ(canvas)
-        return result
-    }
 
-    private fun registerDebugData(
-        context: Context,
-        attrs: AttributeSet?,
-        array: TypedArray
-    ) {
-        if (Build.VERSION.SDK_INT >= 29) {
-            parentView.saveAttributeDataForStyleable(
-                context,
-                R.styleable.ShadowsViewGroup,
-                attrs,
-                array,
-                0,
-                0
-            )
-        }
+        return result
     }
 }
 
@@ -238,3 +211,10 @@ private fun nextSize(childCount: Int) =
 
 private val UnsafeZComparator =
     Comparator<View?> { v1, v2 -> v1!!.z.compareTo(v2!!.z) }
+
+private fun View.saveDebugData(attrs: AttributeSet?, array: TypedArray) {
+    if (Build.VERSION.SDK_INT < 29) return
+    saveAttributeDataForStyleable(
+        context, R.styleable.ShadowsViewGroup, attrs, array, 0, 0
+    )
+}

@@ -127,9 +127,7 @@ internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
     override fun hasIdentityMatrix(): Boolean =
         renderNode.hasIdentityMatrix()
 
-    override fun getMatrix(outMatrix: Matrix) {
-        renderNode.getMatrix(outMatrix)
-    }
+    override fun getMatrix(outMatrix: Matrix) = renderNode.getMatrix(outMatrix)
 
     override fun draw(canvas: Canvas) {
         if (!renderNode.isValid) recordEmptyDisplayList()
@@ -153,15 +151,12 @@ internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
     override fun beginRecording(width: Int, height: Int): Canvas =
         RenderNodeReflector.start(renderNode, width, height)
 
-    override fun endRecording(canvas: Canvas) {
+    override fun endRecording(canvas: Canvas) =
         RenderNodeReflector.end(renderNode, canvas as HardwareCanvas)
-    }
 
     override fun hasDisplayList(): Boolean = renderNode.isValid
 
-    override fun discardDisplayList() {
-        renderNode.destroyDisplayListData()
-    }
+    override fun discardDisplayList() = renderNode.destroyDisplayListData()
 
     override fun setUseCompositingLayer(
         forceToLayer: Boolean,

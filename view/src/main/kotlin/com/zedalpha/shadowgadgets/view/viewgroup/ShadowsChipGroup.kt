@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import com.google.android.material.chip.ChipGroup
 
 /**
- * A custom
- * [ChipGroup](https://developer.android.com/reference/com/google/android/material/chip/ChipGroup)
- * that implements [ShadowsViewGroup].
+ * A custom [ChipGroup] that implements [ShadowsViewGroup].
  *
  * Apart from the additional handling of the library's shadow properties and
  * draw operations, this group behaves just like its base class.
@@ -24,9 +22,11 @@ class ShadowsChipGroup @JvmOverloads constructor(
     internal val manager = RegularManager(
         this,
         attrs,
+        this::attachViewToParent,
         this::detachAllViewsFromParent,
-        this::attachViewToParent
-    ) { super.dispatchDraw(it) }
+        { c -> super.dispatchDraw(c) },
+        { c, v, t -> super.drawChild(c, v, t) }
+    )
 
     override var childShadowsPlane by manager::childShadowsPlane
 
@@ -58,7 +58,5 @@ class ShadowsChipGroup @JvmOverloads constructor(
         canvas: Canvas,
         child: View,
         drawingTime: Long
-    ): Boolean = manager.drawChild(canvas, child) {
-        super.drawChild(canvas, child, drawingTime)
-    }
+    ): Boolean = manager.drawChild(canvas, child, drawingTime)
 }

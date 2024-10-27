@@ -1,14 +1,14 @@
 [versions]
-agp = "8.6.1"
-androidxAnnotation = "1.8.2"
+agp = "8.7.1"
+androidxAnnotation = "1.9.0"
 androidxAppcompat = "1.7.0"
 androidxConstraintLayout = "2.1.4"
 androidxCoreKtx = "1.13.1"
-composeBom = "2024.09.02"
-dokka = "1.9.20"
+composeBom = "2024.10.00"
+dokka = "2.0.0-Beta"
 junit4 = "4.13.2"
-kotlin = "2.0.20"
-lint = "31.6.1"
+kotlin = "2.0.21"
+lint = "31.7.1"
 materialComponents = "1.12.0"
 
 [libraries]
@@ -24,9 +24,6 @@ compose-material = { group = "androidx.compose.material", name = "material" }
 compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }
 
-dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
-
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit4" }
 
@@ -34,6 +31,12 @@ lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lint" }
 lint-checks = { module = "com.android.tools.lint:lint-checks", version.ref = "lint" }
 lint-cli = { module = "com.android.tools.lint:lint", version.ref = "lint" }
 lint-tests = { module = "com.android.tools.lint:lint-tests", version.ref = "lint" }
+
+# Build logic
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
 
 [bundles]
 lint-api = ["kotlin-stdlib", "lint-api", "lint-checks"]
@@ -45,5 +48,9 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 android-lint = { id = "com.android.lint", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+
+# Local plugins
+shadowgadgets-android-library = { id = "shadowgadgets.android.library" }
+shadowgadgets-publish = { id = "shadowgadgets.publish" }

@@ -102,24 +102,24 @@ private fun ComposeContent() {
         ) {
             ClippedShadowFloatingActionButton(
                 onClick = {},
-                backgroundColor = Color(0x22ff4444),
+                backgroundColor = Color(0x22FF4444),
                 elevation = FloatingActionButtonDefaults
                     .elevation(16.dp, 22.dp, 18.dp, 18.dp),
-                shadowAmbientColor = Color(0xffff4444),
-                shadowSpotColor = Color(0xffff4444)
+                shadowAmbientColor = Color(0xFFFF4444),
+                shadowSpotColor = Color(0xFFFF4444)
             ) {}
 
             ClippedShadowButton(
                 onClick = {},
-                colors = ButtonDefaults.buttonColors(Color(0x357fcc7f)),
+                colors = ButtonDefaults.buttonColors(Color(0x357FCC7F)),
                 elevation = ButtonDefaults
                     .elevation(12.dp, 18.dp, 0.dp, 14.dp, 14.dp),
-                shadowAmbientColor = Color(0xff448866),
-                shadowSpotColor = Color(0xff448866)
+                shadowAmbientColor = Color(0xFF448866),
+                shadowSpotColor = Color(0xFF448866)
             ) {}
 
             Card(
-                backgroundColor = Color(0x22007fff),
+                backgroundColor = Color(0x22007FFF),
                 elevation = 0.dp,
                 shape = GenericShape(CardShapeBuilder),
                 modifier = Modifier
@@ -130,8 +130,8 @@ private fun ComposeContent() {
                     .clippedShadow(
                         elevation = 10.dp,
                         shape = GenericShape(CardShapeBuilder),
-                        ambientColor = Color(0xff007fff),
-                        spotColor = Color(0xff007fff)
+                        ambientColor = Color(0xFF007FFF),
+                        spotColor = Color(0xFF007FFF)
                     )
             ) {}
         }
@@ -249,16 +249,16 @@ private fun ClippedShadowButton(
     }
 }
 
-private val CardShapeBuilder = when {
-    Build.VERSION.SDK_INT >= 30 -> puzzlePieceBuilder()
-    else -> compassPointerBuilder()
-}
+private val CardShapeBuilder: Path.(Size, LayoutDirection) -> Unit =
+    if (Build.VERSION.SDK_INT >= 30) {
+        puzzlePieceBuilder()
+    } else {
+        compassPointerBuilder()
+    }
 
 private fun puzzlePieceBuilder(): Path.(Size, LayoutDirection) -> Unit =
     { size, _ ->
         val side = minOf(size.width, size.height)
-        translate(Offset((size.width - side) / 2, (size.height - side) / 2))
-
         val q = side / 4
 
         // top
@@ -287,6 +287,8 @@ private fun puzzlePieceBuilder(): Path.(Size, LayoutDirection) -> Unit =
         lineTo(0F, q)
 
         close()
+
+        translate(Offset((size.width - side) / 2, (size.height - side) / 2))
     }
 
 private fun compassPointerBuilder(): Path.(Size, LayoutDirection) -> Unit =
@@ -294,7 +296,6 @@ private fun compassPointerBuilder(): Path.(Size, LayoutDirection) -> Unit =
         reset()
 
         val side = minOf(size.width, size.height)
-        translate(Offset((size.width - side) / 2, (size.height - side) / 2))
 
         addRoundRect(
             RoundRect(
@@ -304,6 +305,8 @@ private fun compassPointerBuilder(): Path.(Size, LayoutDirection) -> Unit =
                 bottomLeftCornerRadius = CornerRadius(side / 2)
             )
         )
+
+        translate(Offset((size.width - side) / 2, (size.height - side) / 2))
     }
 
 internal val ItemRed = Color(ITEM_RED)

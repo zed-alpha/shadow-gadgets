@@ -11,24 +11,22 @@ import androidx.appcompat.graphics.drawable.DrawableWrapperCompat
 import com.google.android.material.shape.MaterialShapeDrawable
 import java.lang.reflect.Method
 
-internal fun findMaterialShapeDrawable(drawable: Drawable): MaterialShapeDrawable? =
-    when (drawable) {
-        is MaterialShapeDrawable -> drawable
-        is DrawableWrapperCompat -> drawable.drawable as? MaterialShapeDrawable
-        is InsetDrawable -> drawable.drawable as? MaterialShapeDrawable
-        is LayerDrawable -> {
-            repeat(drawable.numberOfLayers) { index ->
-                val layer = drawable.getDrawable(index)
+internal fun Drawable.findMaterialShapeDrawable(): MaterialShapeDrawable? =
+    when {
+        this is MaterialShapeDrawable -> this
+        this is DrawableWrapperCompat -> drawable as? MaterialShapeDrawable
+        this is InsetDrawable -> drawable as? MaterialShapeDrawable
+        this is LayerDrawable -> {
+            repeat(numberOfLayers) { index ->
+                val layer = getDrawable(index)
                 if (layer is MaterialShapeDrawable) return layer
             }
             null
         }
-        else -> when {
-            Build.VERSION.SDK_INT >= 23 && drawable is DrawableWrapper -> {
-                drawable.drawable as? MaterialShapeDrawable
-            }
-            else -> null
+        Build.VERSION.SDK_INT >= 23 && this is DrawableWrapper -> {
+            drawable as? MaterialShapeDrawable
         }
+        else -> null
     }
 
 internal object MaterialShapeDrawableReflector {
@@ -37,9 +35,10 @@ internal object MaterialShapeDrawableReflector {
 
     private var getBoundsAsRectFInitialized = false
 
-    private fun getBoundsMethod() = when {
-        getBoundsAsRectFInitialized -> getBoundsAsRectF
-        else -> {
+    private fun getBoundsMethod(): Method? =
+        if (getBoundsAsRectFInitialized) {
+            getBoundsAsRectF
+        } else {
             getBoundsAsRectFInitialized = true
             try {
                 MaterialShapeDrawable::class.java
@@ -49,15 +48,15 @@ internal object MaterialShapeDrawableReflector {
                 null
             }
         }
-    }
 
     private var calculatePath: Method? = null
 
     private var calculatePathInitialized = false
 
-    private fun getCalculateMethod() = when {
-        calculatePathInitialized -> calculatePath
-        else -> {
+    private fun getCalculateMethod(): Method? =
+        if (calculatePathInitialized) {
+            calculatePath
+        } else {
             calculatePathInitialized = true
             try {
                 MaterialShapeDrawable::class.java
@@ -71,7 +70,6 @@ internal object MaterialShapeDrawableReflector {
                 null
             }
         }
-    }
 
     fun setPathFromDrawable(
         path: Path,

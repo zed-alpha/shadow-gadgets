@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.view.ViewGroupOverlay
 import androidx.annotation.CallSuper
 import androidx.core.graphics.withClip
+import com.zedalpha.shadowgadgets.core.fastForEach
 import com.zedalpha.shadowgadgets.view.internal.BaseDrawable
 import com.zedalpha.shadowgadgets.view.internal.Projector
 
@@ -20,26 +21,23 @@ internal open class OverlayPlane(
     protected val drawable = object : BaseDrawable() {
 
         override fun draw(canvas: Canvas) = with(parentView) {
-            when {
-                clipToPadding -> canvas.withClip(
+            if (clipToPadding) {
+                canvas.withClip(
                     paddingLeft,
                     paddingTop,
                     width - paddingRight,
-                    height - paddingBottom
-                ) {
-                    layers.draw(canvas)
-                }
-
-                else -> layers.draw(canvas)
+                    height - paddingBottom,
+                    layers::draw
+                )
+            } else {
+                layers.draw(canvas)
             }
         }
     }
 
     fun requiresTracking() = layers.requiresTracking()
 
-    fun attach() {
-        attachToOverlay(parentView.overlay)
-    }
+    fun attach() = attachToOverlay(parentView.overlay)
 
     final override fun addShadow(shadow: GroupShadow, color: Int) {
         shadows.add(shadow)
@@ -57,17 +55,14 @@ internal open class OverlayPlane(
         }
     }
 
-    final override fun updateColor(shadow: GroupShadow, color: Int) {
+    final override fun updateColor(shadow: GroupShadow, color: Int) =
         layers.updateColor(shadow, color)
-    }
 
-    protected open fun attachToOverlay(overlay: ViewGroupOverlay) {
+    protected open fun attachToOverlay(overlay: ViewGroupOverlay) =
         overlay.add(drawable)
-    }
 
-    protected open fun detachFromOverlay(overlay: ViewGroupOverlay) {
+    protected open fun detachFromOverlay(overlay: ViewGroupOverlay) =
         overlay.remove(drawable)
-    }
 
     @CallSuper
     open fun setSize(width: Int, height: Int) {
@@ -76,15 +71,14 @@ internal open class OverlayPlane(
     }
 
     @CallSuper
-    open fun checkInvalidate() {
-        shadows.forEach { shadow ->
+    open fun checkInvalidate() =
+        shadows.fastForEach { shadow ->
             if (shadow.checkInvalidate()) {
                 invalidatePlane()
                 layers.refresh()
                 return
             }
         }
-    }
 
     @CallSuper
     override fun invalidatePlane() {
@@ -98,9 +92,7 @@ internal open class OverlayPlane(
     }
 
     @CallSuper
-    override fun dispose() {
-        layers.dispose()
-    }
+    override fun dispose() = layers.dispose()
 }
 
 internal class ProjectorOverlayPlane(

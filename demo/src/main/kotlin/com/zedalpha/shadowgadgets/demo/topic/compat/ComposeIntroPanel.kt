@@ -66,10 +66,8 @@ internal class ComposeIntroPanel(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = BiasAlignment.Vertical(0.1F),
         ) {
-            val background = when {
-                isShowingBackgrounds -> Color.White
-                else -> Color.Transparent
-            }
+            val background =
+                if (isShowingBackgrounds) Color.White else Color.Transparent
             val shadowElevation =
                 with(LocalDensity.current) { elevation.toDp() }
             val shape = RoundedCornerShape(15.dp)

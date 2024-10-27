@@ -1,10 +1,14 @@
 package com.zedalpha.shadowgadgets.view
 
 import android.graphics.Path
+import android.graphics.drawable.Drawable
 import android.view.View
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.zedalpha.shadowgadgets.view.internal.MaterialShapeDrawableReflector
 import com.zedalpha.shadowgadgets.view.internal.findMaterialShapeDrawable
-import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
+import com.zedalpha.shadowgadgets.view.shadow.checkShadow
+import com.zedalpha.shadowgadgets.view.shadow.recreateShadow
+import com.zedalpha.shadowgadgets.view.shadow.shadow
 
 /**
  * The current state of the clipped shadow fix for the receiver View.
@@ -16,14 +20,14 @@ import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
  * Window.
  *
  * When `true`, the View's intrinsic shadow is always disabled, even if the
- * clipped replacement cannot be drawn, for whatever reason.
+ * replacement cannot be drawn, for whatever reason.
  */
 var View.clipOutlineShadow: Boolean
     get() = getTag(R.id.clip_outline_shadow) == true
     set(value) {
         if (clipOutlineShadow == value) return
         setTag(R.id.clip_outline_shadow, value)
-        ShadowSwitch.notifyPropertyChanged(this)
+        checkShadow()
     }
 
 /**
@@ -57,19 +61,78 @@ var View.pathProvider: ViewPathProvider?
     set(value) {
         if (pathProvider == value) return
         setTag(R.id.path_provider, value)
-        ShadowSwitch.recreateShadow(this)
+        recreateShadow()
     }
 
 /**
- * An implementation of [ViewPathProvider] that sets the [Path] from a
- * [MaterialShapeDrawable](https://developer.android.com/reference/com/google/android/material/shape/MaterialShapeDrawable)
- * in the target's background.
+ * An implementation of [ViewPathProvider] that tries to set the [Path] from a
+ * [MaterialShapeDrawable] in the target's background.
  *
  * If a MaterialShapeDrawable cannot be found, the Path is left unchanged.
  */
+@Deprecated(
+    "Replaced with more performant MaterialShapeDrawableViewPathProvider",
+    ReplaceWith("MaterialShapeDrawableViewPathProvider()")
+)
 val MaterialComponentsViewPathProvider = ViewPathProvider { view, path ->
     val background = view.background ?: return@ViewPathProvider
-    findMaterialShapeDrawable(background)?.let { msd ->
+    background.findMaterialShapeDrawable()?.let { msd ->
         MaterialShapeDrawableReflector.setPathFromDrawable(path, msd)
+    }
+}
+
+/**
+ * An implementation of [ViewPathProvider] that tries to set the [Path] from a
+ * [MaterialShapeDrawable] in the target's background.
+ *
+ * If a MaterialShapeDrawable cannot be found, the Path is left unchanged.
+ */
+class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
+
+    private var background: Drawable? = null
+
+    private var msd: MaterialShapeDrawable? = null
+
+    override fun getPath(view: View, path: Path) {
+        val current: Drawable? = view.background
+        val msd = if (background !== current) {
+            background = current
+            view.shadow?.invalidate()
+            current?.findMaterialShapeDrawable().also { msd = it }
+        } else {
+            msd
+        }
+        msd ?: return
+        MaterialShapeDrawableReflector.setPathFromDrawable(path, msd)
+    }
+
+    companion object {
+
+        private var _canGetPath: Boolean? = null
+
+        /**
+         * Indicates whether [MaterialShapeDrawableViewPathProvider] is able
+         * to read and copy a [MaterialShapeDrawable]'s private outline [Path].
+         *
+         * That procedure involves reflection, and though it's on a non-system
+         * class, it might still be preferable in some cases to check first at
+         * runtime.
+         */
+        val canGetPath: Boolean
+            get() = _canGetPath?.let { return it } ?: Path().run {
+                val d = MaterialShapeDrawable().apply { setBounds(0, 0, 1, 1) }
+                MaterialShapeDrawableReflector.setPathFromDrawable(this, d)
+                (!isEmpty).also { _canGetPath = it }
+            }
+
+        /**
+         * Returns the [MaterialShapeDrawable] if [root] is or contains one.
+         *
+         * This is provided as a convenience to help ensure that
+         * [MaterialShapeDrawableViewPathProvider] will work correctly with a
+         * given [Drawable] at runtime.
+         */
+        fun findMaterialShapeDrawable(root: Drawable): MaterialShapeDrawable? =
+            root.findMaterialShapeDrawable()
     }
 }

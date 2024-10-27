@@ -16,7 +16,7 @@ import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.PathProvider
 import com.zedalpha.shadowgadgets.core.Shadow
-import com.zedalpha.shadowgadgets.core.layer.VersionRequiresDefaultSoloLayer
+import com.zedalpha.shadowgadgets.core.layer.DefaultInlineLayerRequired
 import kotlin.math.roundToInt
 
 /**
@@ -25,7 +25,7 @@ import kotlin.math.roundToInt
  * module directly.
  *
  * Clipped instances with irregular shapes on API levels 30+ must have the
- * shape Path set manually using the [setClipPathProvider] function. This is
+ * outline Path set manually using the [setClipPathProvider] function. This is
  * analogous to setting a
  * [ViewPathProvider][com.zedalpha.shadowgadgets.view.ViewPathProvider] on a
  * target View.
@@ -81,7 +81,7 @@ open class ShadowDrawable private constructor(
      * [isClipped] determines whether the drawable will draw a clipped or a
      * regular shadow, the latter being useful when color compat is needed
      * without the clip. Clipped instances with irregular shapes on API levels
-     * 30+ require that the shape Path be set manually through
+     * 30+ require that the outline Path be set manually through
      * [setClipPathProvider].
      *
      * It is rather important to [dispose] of these instances when appropriate.
@@ -98,7 +98,7 @@ open class ShadowDrawable private constructor(
      * [isClipped] determines whether the drawable will draw a clipped or a
      * regular shadow, the latter being useful when color compat is needed
      * without the clip. Clipped instances with irregular shapes on API levels
-     * 30+ require that the shape Path be set manually through
+     * 30+ require that the outline Path be set manually through
      * [setClipPathProvider].
      *
      * It is not necessary to call [dispose] on these instances, but it is safe
@@ -135,9 +135,9 @@ open class ShadowDrawable private constructor(
     }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#setAlpha(float)),
-     * but taking an Int to conform to Drawable's interface.
+     * Analogous to
+     * [RenderNode#setAlpha()][android.graphics.RenderNode.setAlpha],
+     * but takes an Int to conform to Drawable's API.
      */
     @CallSuper
     override fun setAlpha(alpha: Int) {
@@ -145,18 +145,18 @@ open class ShadowDrawable private constructor(
     }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#getAlpha()),
-     * but returning an Int to conform to Drawable's interface.
+     * Analogous to
+     * [RenderNode#getAlpha()][android.graphics.RenderNode.getAlpha],
+     * but returns an Int to conform to Drawable's API.
      */
     @CallSuper
-    override fun getAlpha(): Int {
-        return (255 * coreShadow.alpha).roundToInt()
-    }
+    override fun getAlpha(): Int = (255 * coreShadow.alpha).roundToInt()
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getCameraDistance()).
+     * Analogous to
+     * [RenderNode#getCameraDistance()][android.graphics.RenderNode.getCameraDistance]
+     * and
+     * [RenderNode#setCameraDistance()][android.graphics.RenderNode.setCameraDistance].
      */
     var cameraDistance: Float
         get() = coreShadow.cameraDistance
@@ -165,8 +165,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getElevation()).
+     * Analogous to
+     * [RenderNode#getElevation()][android.graphics.RenderNode.getElevation]
+     * and
+     * [RenderNode#setElevation()][android.graphics.RenderNode.setElevation].
      */
     var elevation: Float
         get() = coreShadow.elevation
@@ -175,8 +177,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getPivotX()).
+     * Analogous to
+     * [RenderNode#getPivotX()][android.graphics.RenderNode.getPivotX]
+     * and
+     * [RenderNode#setPivotX()][android.graphics.RenderNode.setPivotX].
      */
     var pivotX: Float
         get() = coreShadow.pivotX
@@ -185,8 +189,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getPivotY()).
+     * Analogous to
+     * [RenderNode#getPivotY()][android.graphics.RenderNode.getPivotY]
+     * and
+     * [RenderNode#setPivotY()][android.graphics.RenderNode.setPivotY].
      */
     var pivotY: Float
         get() = coreShadow.pivotY
@@ -195,8 +201,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getRotationX()).
+     * Analogous to
+     * [RenderNode#getRotationX()][android.graphics.RenderNode.getRotationX]
+     * and
+     * [RenderNode#setRotationX()][android.graphics.RenderNode.setRotationX].
      */
     var rotationX: Float
         get() = coreShadow.rotationX
@@ -205,8 +213,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getRotationY()).
+     * Analogous to
+     * [RenderNode#getRotationY()][android.graphics.RenderNode.getRotationY]
+     * and
+     * [RenderNode#setRotationY()][android.graphics.RenderNode.setRotationY].
      */
     var rotationY: Float
         get() = coreShadow.rotationY
@@ -215,8 +225,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getRotationZ()).
+     * Analogous to
+     * [RenderNode#getRotationZ()][android.graphics.RenderNode.getRotationZ]
+     * and
+     * [RenderNode#setRotationZ()][android.graphics.RenderNode.setRotationZ].
      */
     var rotationZ: Float
         get() = coreShadow.rotationZ
@@ -225,8 +237,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getScaleX()).
+     * Analogous to
+     * [RenderNode#getScaleX()][android.graphics.RenderNode.getScaleX]
+     * and
+     * [RenderNode#setScaleX()][android.graphics.RenderNode.setScaleX].
      */
     var scaleX: Float
         get() = coreShadow.scaleX
@@ -235,8 +249,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getScaleY()).
+     * Analogous to
+     * [RenderNode#getScaleY()][android.graphics.RenderNode.getScaleY]
+     * and
+     * [RenderNode#setScaleY()][android.graphics.RenderNode.setScaleY].
      */
     var scaleY: Float
         get() = coreShadow.scaleY
@@ -245,8 +261,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getTranslationX()).
+     * Analogous to
+     * [RenderNode#getTranslationX()][android.graphics.RenderNode.getTranslationX]
+     * and
+     * [RenderNode#setTranslationX()][android.graphics.RenderNode.setTranslationX].
      */
     var translationX: Float
         get() = coreShadow.translationX
@@ -255,8 +273,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getTranslationY()).
+     * Analogous to
+     * [RenderNode#getTranslationY()][android.graphics.RenderNode.getTranslationY]
+     * and
+     * [RenderNode#setTranslationY()][android.graphics.RenderNode.setTranslationY].
      */
     var translationY: Float
         get() = coreShadow.translationY
@@ -265,8 +285,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getTranslationZ()).
+     * Analogous to
+     * [RenderNode#getTranslationZ()][android.graphics.RenderNode.getTranslationZ]
+     * and
+     * [RenderNode#setTranslationZ()][android.graphics.RenderNode.setTranslationZ].
      */
     var translationZ: Float
         get() = coreShadow.translationZ
@@ -275,8 +297,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getAmbientShadowColor()).
+     * Analogous to
+     * [RenderNode#getAmbientShadowColor()][android.graphics.RenderNode.getAmbientShadowColor]
+     * and
+     * [RenderNode#setAmbientShadowColor()][android.graphics.RenderNode.setAmbientShadowColor].
      */
     @get:ColorInt
     @setparam:ColorInt
@@ -288,8 +312,10 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode methods](https://developer.android.com/reference/android/graphics/RenderNode#getSpotShadowColor()).
+     * Analogous to
+     * [RenderNode#getSpotShadowColor()][android.graphics.RenderNode.getSpotShadowColor]
+     * and
+     * [RenderNode#setSpotShadowColor()][android.graphics.RenderNode.setSpotShadowColor].
      */
     @get:ColorInt
     @setparam:ColorInt
@@ -323,35 +349,29 @@ open class ShadowDrawable private constructor(
         }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#setPosition(int,%20int,%20int,%20int)).
+     * Analogous to
+     * [RenderNode#setPosition()][android.graphics.RenderNode.setPosition].
      */
-    fun setPosition(left: Int, top: Int, right: Int, bottom: Int) {
+    fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
         coreShadow.setPosition(left, top, right, bottom)
-    }
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#setOutline(android.graphics.Outline)).
+     * Analogous to
+     * [RenderNode#setOutline()][android.graphics.RenderNode.setOutline].
      */
-    fun setOutline(outline: Outline) {
-        coreShadow.setOutline(outline)
-    }
+    fun setOutline(outline: Outline) = coreShadow.setOutline(outline)
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#hasIdentityMatrix()).
+     * Analogous to
+     * [RenderNode#hasIdentityMatrix()][android.graphics.RenderNode.hasIdentityMatrix].
      */
-    fun hasIdentityMatrix(): Boolean =
-        coreShadow.hasIdentityMatrix()
+    fun hasIdentityMatrix(): Boolean = coreShadow.hasIdentityMatrix()
 
     /**
-     * Analogous to the corresponding
-     * [RenderNode method](https://developer.android.com/reference/android/graphics/RenderNode#getMatrix(android.graphics.Matrix)).
+     * Analogous to
+     * [RenderNode#getMatrix()][android.graphics.RenderNode.getMatrix].
      */
-    fun getMatrix(outMatrix: Matrix) {
-        coreShadow.getMatrix(outMatrix)
-    }
+    fun getMatrix(outMatrix: Matrix) = coreShadow.getMatrix(outMatrix)
 
     /**
      * Flag to indicate whether the library shadow should always be composited
@@ -374,8 +394,8 @@ open class ShadowDrawable private constructor(
         val owner = ownerView
         val shadow = coreShadow
         val compat = colorCompat
-        val needsLayer = compat != DefaultShadowColorInt || forceLayer ||
-                VersionRequiresDefaultSoloLayer
+        val needsLayer = compat != DefaultShadowColorInt ||
+                DefaultInlineLayerRequired || forceLayer
         if (needsLayer && owner != null) {
             shadow.ambientColor = DefaultShadowColorInt
             shadow.spotColor = DefaultShadowColorInt
@@ -394,9 +414,8 @@ open class ShadowDrawable private constructor(
     }
 
     @CallSuper
-    override fun draw(canvas: Canvas) {
+    override fun draw(canvas: Canvas) =
         layer?.draw(canvas) ?: coreShadow.draw(canvas)
-    }
 
     @CallSuper
     override fun invalidateSelf() {

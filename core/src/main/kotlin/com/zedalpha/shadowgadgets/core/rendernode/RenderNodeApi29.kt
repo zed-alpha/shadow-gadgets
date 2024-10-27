@@ -121,16 +121,11 @@ internal class RenderNodeApi29(name: String?) : RenderNodeWrapper {
         renderNode.setOutline(outline)
     }
 
-    override fun hasIdentityMatrix(): Boolean =
-        renderNode.hasIdentityMatrix()
+    override fun hasIdentityMatrix(): Boolean = renderNode.hasIdentityMatrix()
 
-    override fun getMatrix(outMatrix: Matrix) {
-        renderNode.getMatrix(outMatrix)
-    }
+    override fun getMatrix(outMatrix: Matrix) = renderNode.getMatrix(outMatrix)
 
-    override fun draw(canvas: Canvas) {
-        canvas.drawRenderNode(renderNode)
-    }
+    override fun draw(canvas: Canvas) = canvas.drawRenderNode(renderNode)
 
     override fun setClipToBounds(clipToBounds: Boolean): Boolean =
         renderNode.setClipToBounds(clipToBounds)
@@ -144,15 +139,11 @@ internal class RenderNodeApi29(name: String?) : RenderNodeWrapper {
     override fun beginRecording(width: Int, height: Int): Canvas =
         renderNode.beginRecording(width, height)
 
-    override fun endRecording(canvas: Canvas) {
-        renderNode.endRecording()
-    }
+    override fun endRecording(canvas: Canvas) = renderNode.endRecording()
 
     override fun hasDisplayList(): Boolean = renderNode.hasDisplayList()
 
-    override fun discardDisplayList() {
-        renderNode.discardDisplayList()
-    }
+    override fun discardDisplayList() = renderNode.discardDisplayList()
 
     override fun setUseCompositingLayer(
         forceToLayer: Boolean,

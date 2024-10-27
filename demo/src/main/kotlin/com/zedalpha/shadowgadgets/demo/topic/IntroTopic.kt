@@ -60,10 +60,8 @@ class IntroFragment : TopicFragment<FragmentIntroBinding>(
 
         // Color and elevation
         ui.colorSelect.setOnCheckedChangeListener { _, checkedId ->
-            ui.controls.color = when (checkedId) {
-                R.id.view_selection -> viewColor
-                else -> shadowColor
-            }
+            ui.controls.color =
+                if (checkedId == R.id.view_selection) viewColor else shadowColor
         }
         ui.controls.apply {
             onColorChanged { color ->
@@ -121,7 +119,7 @@ private class GrayShadow(private val target: View) :
 
     val radius = target.resources.getDimension(R.dimen.target_corner_radius)
 
-    override fun onDrawShadow(canvas: Canvas) {
+    override fun onDrawShadow(canvas: Canvas) =
         canvas.drawRoundRect(
             0F,
             0F,
@@ -131,7 +129,6 @@ private class GrayShadow(private val target: View) :
             radius,
             paint
         )
-    }
 }
 
 private class SimpleDragListener(private val target: View) :

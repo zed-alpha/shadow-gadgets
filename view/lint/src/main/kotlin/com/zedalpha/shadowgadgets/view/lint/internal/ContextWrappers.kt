@@ -13,15 +13,13 @@ import java.lang.reflect.Field
 class ContextWrapper private constructor(
     driver: LintDriver,
     project: Project,
-    main: Project?,
     file: File,
     contents: CharSequence?,
-) : Context(driver, project, main, file, contents) {
+) : Context(driver, project, null, file, contents) {
 
     constructor(wrapped: Context, issues: Map<Issue, Issue>) : this(
         createDriver(wrapped, issues),
         wrapped.project,
-        null,
         wrapped.file,
         wrapped.getContents(),
     )
@@ -30,17 +28,15 @@ class ContextWrapper private constructor(
 class XmlContextWrapper private constructor(
     driver: LintDriver,
     project: Project,
-    main: Project?,
     file: File,
     folderType: ResourceFolderType?,
     contents: CharSequence?,
     document: Document,
-) : XmlContext(driver, project, main, file, folderType, contents, document) {
+) : XmlContext(driver, project, null, file, folderType, contents, document) {
 
     constructor(wrapped: XmlContext, issues: Map<Issue, Issue>) : this(
         createDriver(wrapped, issues),
         wrapped.project,
-        null,
         wrapped.file,
         wrapped.resourceFolderType,
         wrapped.getContents(),

@@ -12,11 +12,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import com.zedalpha.shadowgadgets.compose.R
 import com.zedalpha.shadowgadgets.core.blendShadowColors
+import com.zedalpha.shadowgadgets.core.layer.DefaultInlineLayerRequired
 import com.zedalpha.shadowgadgets.core.layer.LocationTracker
-import com.zedalpha.shadowgadgets.core.layer.VersionRequiresDefaultSoloLayer
 import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -34,25 +34,20 @@ internal fun blend(
     val context = LocalContext.current
     val (ambientAlpha, spotAlpha) =
         remember(LocalConfiguration.current) {
-            resolveThemeShadowAlphas(context)
+            context.resolveThemeShadowAlphas()
         }
-    return Color(
-        blendShadowColors(
-            ambientColor.toArgb(),
-            ambientAlpha,
-            spotColor.toArgb(),
-            spotAlpha
-        )
-    )
+    return remember(ambientColor, ambientAlpha, spotColor, spotAlpha) {
+        val ambient = ambientColor.toArgb()
+        val spot = spotColor.toArgb()
+        Color(blendShadowColors(ambient, ambientAlpha, spot, spotAlpha))
+    }
 }
 
 internal fun requiresLayer(colorCompat: Color) =
-    colorCompat != DefaultShadowColor || VersionRequiresDefaultSoloLayer
+    colorCompat != DefaultShadowColor || DefaultInlineLayerRequired
 
 internal val View.screenLocation: SharedFlow<IntOffset>
     get() = (locationDispatcher ?: LocationDispatcher(this)).screenLocation
-
-internal val InitialOffset = IntOffset(Int.MAX_VALUE, Int.MAX_VALUE)
 
 private inline var View.locationDispatcher: LocationDispatcher?
     get() = getTag(R.id.location_dispatcher) as? LocationDispatcher
@@ -63,29 +58,23 @@ private class LocationDispatcher(private val view: View) {
     private val _screenLocation = MutableSharedFlow<IntOffset>(replay = 1)
     val screenLocation = _screenLocation.asSharedFlow()
 
+    private val tracker = LocationTracker(view).apply { initialize() }
+
     private val attachListener = object : View.OnAttachStateChangeListener {
         override fun onViewAttachedToWindow(v: View) = addPreDrawListener()
         override fun onViewDetachedFromWindow(v: View) = removePreDrawListener()
     }
 
-    private var location = InitialOffset
-
-    private val tracker = LocationTracker(view).apply { initialize() }
-
-    private val preDrawListener =
-        ViewTreeObserver.OnPreDrawListener { checkLocation(); true }
-
-    private fun checkLocation() = with(tracker) {
-        if (checkLocationChanged()) {
+    private val preDrawListener = ViewTreeObserver.OnPreDrawListener {
+        with(tracker) {
+            if (!checkLocationChanged()) return@with
             val offset = IntOffset(current[0], current[1])
             _screenLocation.tryEmit(offset)
-            location = offset
         }
+        true
     }
 
-    private var wasSubscribedTo = false
-
-    private val scope = CoroutineScope(SupervisorJob())
+    private val scope = CoroutineScope(Dispatchers.Default)
 
     init {
         view.locationDispatcher = this
@@ -93,13 +82,9 @@ private class LocationDispatcher(private val view: View) {
         if (view.isAttachedToWindow) addPreDrawListener()
 
         _screenLocation.subscriptionCount
-            .map { count ->
-                (count > 0).also { if (it) wasSubscribedTo = true }
-            }
+            .map { count -> count > 0 }
             .distinctUntilChanged()
-            .onEach { hasSubscribers ->
-                if (wasSubscribedTo && !hasSubscribers) dispose()
-            }
+            .onEach { isActive -> if (!isActive) dispose() }
             .launchIn(scope)
     }
 
@@ -113,8 +98,8 @@ private class LocationDispatcher(private val view: View) {
     private var viewTreeObserver: ViewTreeObserver? = null
 
     private fun addPreDrawListener() {
-        viewTreeObserver = view.viewTreeObserver.also { observer ->
-            observer.addOnPreDrawListener(preDrawListener)
+        viewTreeObserver = view.viewTreeObserver.apply {
+            if (isAlive) addOnPreDrawListener(preDrawListener)
         }
     }
 

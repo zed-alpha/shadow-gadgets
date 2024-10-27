@@ -23,32 +23,28 @@ internal class RenderNodeApi23(name: String?) : RenderNodeApi21(name) {
     override fun beginRecording(width: Int, height: Int): Canvas =
         renderNode.start(width, height)
 
-    override fun endRecording(canvas: Canvas) {
+    override fun endRecording(canvas: Canvas) =
         renderNode.end(canvas as DisplayListCanvas)
-    }
 
-    override fun discardDisplayList() {
+    override fun discardDisplayList() =
         if (Build.VERSION.SDK_INT >= 24) {
             RenderNodeDiscardHelper24.discardDisplayList(renderNode)
         } else {
             RenderNodeDiscardHelper21.destroyDisplayListData(renderNode)
         }
-    }
 }
 
 private object RenderNodeDiscardHelper21 {
 
     @DoNotInline
-    fun destroyDisplayListData(renderNode: RenderNode) {
+    fun destroyDisplayListData(renderNode: RenderNode) =
         renderNode.destroyDisplayListData()
-    }
 }
 
 @RequiresApi(24)
 private object RenderNodeDiscardHelper24 {
 
     @DoNotInline
-    fun discardDisplayList(renderNode: RenderNode) {
+    fun discardDisplayList(renderNode: RenderNode) =
         renderNode.discardDisplayList()
-    }
 }

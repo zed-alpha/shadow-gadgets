@@ -34,18 +34,18 @@ object ViewShadowColorsHelper {
     }
 }
 
-fun resolveThemeShadowAlphas(context: Context): Pair<Float, Float> {
-    val array = context.obtainStyledAttributes(R.styleable.Lighting)
+fun Context.resolveThemeShadowAlphas(): Pair<Float, Float> {
+    val array = obtainStyledAttributes(R.styleable.Lighting)
     val ambientAlpha = array.getFloat(
         R.styleable.Lighting_android_ambientShadowAlpha,
         DefaultAmbientShadowAlpha
-    ).coerceIn(0F..1F)
+    )
     val spotAlpha = array.getFloat(
         R.styleable.Lighting_android_spotShadowAlpha,
         DefaultSpotShadowAlpha
-    ).coerceIn(0F..1F)
+    )
     array.recycle()
-    return ambientAlpha to spotAlpha
+    return ambientAlpha.coerceIn(0F..1F) to spotAlpha.coerceIn(0F..1F)
 }
 
 fun blendShadowColors(

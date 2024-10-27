@@ -12,14 +12,13 @@
     <item name="color_outline_shadow" type="id" />
 
     <item name="shadow" type="id" />
+    <item name="shadow_scope" type="id" />
+
     <item name="is_watched" type="id" />
+    <item name="is_initialized" type="id" />
+    <item name="is_recycling_view_group_child" type="id" />
+
     <item name="overlay_controller" type="id" />
     <item name="inline_controller" type="id" />
-
-    <item name="is_recycling_view_group_child" type="id" />
-    <item name="previous_parent" type="id" />
-    <item name="is_initialized" type="id" />
-
-    <item name="tag_matchers" type="id" />
 
 </resources>

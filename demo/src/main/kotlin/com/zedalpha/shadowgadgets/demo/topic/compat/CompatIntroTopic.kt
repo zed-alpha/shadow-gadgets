@@ -1,7 +1,9 @@
 package com.zedalpha.shadowgadgets.demo.topic.compat
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.drawable.PaintDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ViewSwitcher
@@ -25,6 +27,9 @@ class CompatIntroFragment : TopicFragment<FragmentCompatIntroBinding>(
     private lateinit var controller: PanelController
 
     override fun loadUi(ui: FragmentCompatIntroBinding) {
+        @SuppressLint("SetTextI18n")
+        if (Build.VERSION.SDK_INT < 28) ui.labelNative.text = "SDK < 28"
+
         controller = PanelController(
             ui.frame,
             true,
@@ -88,9 +93,8 @@ class CompatIntroFragment : TopicFragment<FragmentCompatIntroBinding>(
         ui.controls.syncElevation()
     }
 
-    private fun updateFramework() {
+    private fun updateFramework() =
         controller.loadPanel(ui.frameworkSelect.checkedRadioButtonId)
-    }
 }
 
 internal class PanelController(
@@ -149,16 +153,11 @@ internal class PanelController(
     }
 
     fun loadPanel(selection: Int) {
-        val newPanel = when (selection) {
-            R.id.view_selection -> viewPanel
-            else -> composePanel
-        }
-        if (currentPanel != newPanel) currentPanel = newPanel
+        currentPanel =
+            if (selection == R.id.view_selection) viewPanel else composePanel
     }
 
-    fun onConfigurationChanged() {
-        viewPanel.onConfigurationChanged()
-    }
+    fun onConfigurationChanged() = viewPanel.onConfigurationChanged()
 }
 
 internal interface IntroPanel {

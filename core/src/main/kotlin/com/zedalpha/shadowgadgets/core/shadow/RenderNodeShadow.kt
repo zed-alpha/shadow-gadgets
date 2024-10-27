@@ -116,16 +116,11 @@ internal class RenderNodeShadow : CoreShadow() {
         shadowNode.setOutline(outline)
     }
 
-    override fun hasIdentityMatrix(): Boolean =
-        shadowNode.hasIdentityMatrix()
+    override fun hasIdentityMatrix(): Boolean = shadowNode.hasIdentityMatrix()
 
-    override fun getMatrix(outMatrix: Matrix) {
-        shadowNode.getMatrix(outMatrix)
-    }
+    override fun getMatrix(outMatrix: Matrix) = shadowNode.getMatrix(outMatrix)
 
-    override fun onDraw(canvas: Canvas) {
-        shadowNode.draw(canvas)
-    }
+    override fun onDraw(canvas: Canvas) = shadowNode.draw(canvas)
 
     override fun dispose() {}
 }

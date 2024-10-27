@@ -6,7 +6,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentIrregularBinding
-import com.zedalpha.shadowgadgets.view.MaterialComponentsViewPathProvider
+import com.zedalpha.shadowgadgets.view.MaterialShapeDrawableViewPathProvider
 import com.zedalpha.shadowgadgets.view.ViewPathProvider
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.pathProvider
@@ -40,7 +40,7 @@ class IrregularFragment : TopicFragment<FragmentIrregularBinding>(
                 Path.Direction.CW
             )
         }
-        ui.buttonFixed.pathProvider = MaterialComponentsViewPathProvider
+        ui.buttonFixed.pathProvider = MaterialShapeDrawableViewPathProvider()
 
         ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
             ui.viewBroken.clipOutlineShadow = isChecked

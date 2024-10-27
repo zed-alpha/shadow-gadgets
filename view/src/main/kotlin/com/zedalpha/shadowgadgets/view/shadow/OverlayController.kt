@@ -33,13 +33,12 @@ internal class OverlayController(parentView: ViewGroup) :
         backgroundPlane?.dispose()
     }
 
-    override fun providePlane(target: View) = target.run {
-        if (clipOutlineShadow && shadowPlane == Foreground) {
+    override fun providePlane(target: View): OverlayPlane =
+        if (target.clipOutlineShadow && target.shadowPlane == Foreground) {
             getOrCreateForegroundPlane()
         } else {
             getOrCreateBackgroundPlane()
         }
-    }
 
     private fun getOrCreateForegroundPlane() =
         foregroundPlane ?: OverlayPlane(parentView, this).apply {
@@ -55,13 +54,12 @@ internal class OverlayController(parentView: ViewGroup) :
             backgroundPlane = this
         }
 
-    fun disposePlane(plane: OverlayPlane) {
+    fun disposePlane(plane: OverlayPlane) =
         if (plane == foregroundPlane) {
             foregroundPlane = null
         } else {
             backgroundPlane = null
         }
-    }
 
     override fun requiresTracking(): Boolean =
         foregroundPlane?.requiresTracking() == true ||
@@ -77,9 +75,7 @@ internal class OverlayController(parentView: ViewGroup) :
         backgroundPlane?.checkInvalidate()
     }
 
-    override fun onEmpty() {
-        detachFromParent()
-    }
+    override fun onEmpty() = detachFromParent()
 
     private fun setSize(width: Int, height: Int) {
         foregroundPlane?.setSize(width, height)
@@ -92,4 +88,4 @@ internal fun ViewGroup.getOrCreateOverlayController() =
 
 private inline var ViewGroup.overlayController: ShadowController?
     get() = getTag(R.id.overlay_controller) as? ShadowController
-    private set(value) = setTag(R.id.overlay_controller, value)
+    set(value) = setTag(R.id.overlay_controller, value)

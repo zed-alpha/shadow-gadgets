@@ -82,13 +82,14 @@ internal class PlatformDrawable : PaintDrawable(0x44FFBBBB) {
         val bottomRange = outBounds.centerY()..outBounds.bottom
 
         triangles = Array(2) { index ->
-            when (index) {
-                1 -> Triangle(
+            if (index == 1) {
+                Triangle(
                     leftRange.random().toFloat(), outBounds.top.toFloat(),
                     outBounds.right.toFloat(), bottomRange.random().toFloat(),
                     outBounds.left.toFloat(), bottomRange.random().toFloat()
                 )
-                else -> Triangle(
+            } else {
+                Triangle(
                     outBounds.right.toFloat(), topRange.random().toFloat(),
                     rightRange.random().toFloat(), outBounds.bottom.toFloat(),
                     outBounds.left.toFloat(), outBounds.bottom.toFloat()

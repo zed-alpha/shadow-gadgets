@@ -34,27 +34,17 @@ internal class ViewLayer(
         layerView = newLayerView
     }
 
-    override fun dispose() {
-        painter.dispose()
-    }
+    override fun dispose() = painter.dispose()
 
-    override fun setSize(width: Int, height: Int) {
+    override fun setSize(width: Int, height: Int) =
         layerView.layout(0, 0, width, height)
-    }
 
-    override fun setLayerPaint(paint: Paint) {
-        layerView.setLayerPaint(paint)
-    }
+    override fun setLayerPaint(paint: Paint) = layerView.setLayerPaint(paint)
 
-    override fun draw(canvas: Canvas) {
+    override fun draw(canvas: Canvas) =
         painter.drawLayerView(canvas, layerView)
-    }
 
-    override fun invalidate() {
-        painter.invalidateLayerView(layerView)
-    }
+    override fun invalidate() = painter.invalidateLayerView(layerView)
 
-    override fun refresh() {
-        painter.refreshLayerView(layerView)
-    }
+    override fun refresh() = painter.refreshLayerView(layerView)
 }

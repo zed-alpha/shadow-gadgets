@@ -1,5 +1,6 @@
 package com.zedalpha.shadowgadgets.demo.topic
 
+import android.graphics.Color
 import android.graphics.Outline
 import android.graphics.Path
 import android.graphics.Rect
@@ -64,6 +65,8 @@ private class DemoClippedShadowDrawable(
 
     init {
         elevation = 40F
+        ambientColor = Color.BLUE
+        spotColor = Color.BLUE
         setClipPathProvider { it.set(path) }
     }
 
@@ -94,8 +97,9 @@ private class DemoClippedShadowDrawable(
 internal fun Path.setToPuzzlePiece(sideLength: Float) {
     val q = sideLength / 4
 
-    // top
     reset()
+
+    // top
     moveTo(0F, q)
     lineTo(q, q)
     arcTo(q, 0F, 2 * q, q, 100F, 340F, false)

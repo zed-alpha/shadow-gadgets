@@ -15,9 +15,7 @@ internal class RenderNodeLayer(
         layerNode = RenderNodeFactory.newInstance("ManagedLayer")
     }
 
-    override fun dispose() {
-        layerNode.discardDisplayList()
-    }
+    override fun dispose() = layerNode.discardDisplayList()
 
     private var width = 0
 

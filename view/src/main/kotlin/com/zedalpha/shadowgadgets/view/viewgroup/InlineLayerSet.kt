@@ -42,23 +42,15 @@ internal class InlineLayerSet(private val ownerView: View) {
         Layer(this, color, width, height).apply { addDraw(shadow) }
     }
 
-    fun draw(canvas: Canvas, shadow: GroupShadow) {
+    fun draw(canvas: Canvas, shadow: GroupShadow) =
         drawLayers[shadow]?.draw(canvas) ?: shadow.draw(canvas)
-    }
 
-    fun setSize(width: Int, height: Int) {
+    fun setSize(width: Int, height: Int) =
         drawLayers.values.forEach { it?.setSize(width, height) }
-    }
 
-    fun refresh() {
-        drawLayers.values.forEach { it?.refresh() }
-    }
+    fun refresh() = drawLayers.values.forEach { it?.refresh() }
 
-    fun recreate() {
-        drawLayers.values.forEach { it?.recreate() }
-    }
+    fun recreate() = drawLayers.values.forEach { it?.recreate() }
 
-    fun dispose() {
-        drawLayers.values.forEach { it?.dispose() }
-    }
+    fun dispose() = drawLayers.values.forEach { it?.dispose() }
 }

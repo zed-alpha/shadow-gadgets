@@ -1,22 +1,15 @@
 package com.zedalpha.shadowgadgets.compose.internal
 
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.DefaultShadowColor
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
@@ -26,33 +19,43 @@ import androidx.compose.ui.unit.dp
 internal fun Modifier.baseShadow(
     clipped: Boolean,
     elevation: Dp,
-    shape: Shape = RectangleShape,
-    clip: Boolean = elevation > 0.dp,
-    ambientColor: Color = DefaultShadowColor,
-    spotColor: Color = DefaultShadowColor,
-    colorCompat: Color = DefaultShadowColor
-) = composed {
+    shape: Shape,
+    clip: Boolean,
+    ambientColor: Color,
+    spotColor: Color,
+    colorCompat: Color
+): Modifier = composed {
     val drawShadow = if (elevation > 0.dp) {
         val view = LocalView.current
         val shadow = remember(view, clipped) { ComposeShadow(view, clipped) }
-        DisposableEffect(view, clipped) { onDispose { shadow.dispose() } }
+        DisposableEffect(shadow) { onDispose { shadow.dispose() } }
 
-        var offsetInRoot by remember { mutableStateOf(Offset.Zero) }
-        val position = onGloballyPositioned { coordinates ->
-            val bounds = coordinates.boundsInRoot()
-            shadow.prepare(bounds, ambientColor, spotColor, colorCompat)
-            offsetInRoot = Offset(bounds.left, bounds.top)
-        }
+        val useLayer = requiresLayer(colorCompat)
+        val layer = if (useLayer) rememberComposeLayer(shadow) else null
 
-        var layerOffset by remember { mutableStateOf(InitialOffset) }
-        if (requiresLayer(colorCompat)) LaunchedEffect(view) {
-            view.screenLocation.collect { layerOffset = it }
-        }
-        val draw = drawBehind {
-            shadow.draw(this, elevation, shape, offsetInRoot, layerOffset)
-        }
-
-        position then draw
+        this
+            .onGloballyPositioned { coordinates ->
+                shadow.setPosition(coordinates, useLayer)
+                layer?.setPosition(coordinates)
+            }
+            .drawWithCache {
+                shadow.setShape(shape, size, layoutDirection, this)
+                onDrawBehind {
+                    shadow.prepareDraw(
+                        elevation.toPx(),
+                        ambientColor,
+                        spotColor,
+                        useLayer
+                    )
+                    if (layer != null) {
+                        layer.refresh()
+                        layer.color = colorCompat
+                        layer.draw(drawContext.canvas.nativeCanvas)
+                    } else {
+                        shadow.draw(drawContext.canvas.nativeCanvas)
+                    }
+                }
+            }
     } else {
         this
     }

@@ -20,9 +20,11 @@ class ShadowsRadioGroup @JvmOverloads constructor(
     internal val manager = RegularManager(
         this,
         attrs,
+        this::attachViewToParent,
         this::detachAllViewsFromParent,
-        this::attachViewToParent
-    ) { super.dispatchDraw(it) }
+        { c -> super.dispatchDraw(c) },
+        { c, v, t -> super.drawChild(c, v, t) }
+    )
 
     override var childShadowsPlane by manager::childShadowsPlane
 
@@ -54,7 +56,5 @@ class ShadowsRadioGroup @JvmOverloads constructor(
         canvas: Canvas,
         child: View,
         drawingTime: Long
-    ): Boolean = manager.drawChild(canvas, child) {
-        super.drawChild(canvas, child, drawingTime)
-    }
+    ): Boolean = manager.drawChild(canvas, child, drawingTime)
 }

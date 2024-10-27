@@ -25,9 +25,7 @@ internal class ViewShadow(ownerView: View) : CoreShadow() {
 
     private val painter = ViewPainterProxy(ownerView)
 
-    override fun dispose() {
-        painter.dispose()
-    }
+    override fun dispose() = painter.dispose()
 
     override var alpha: Float
         get() = shadowView.alpha
@@ -108,9 +106,10 @@ internal class ViewShadow(ownerView: View) : CoreShadow() {
         }
 
     override var ambientColor: Int
-        get() = when {
-            Build.VERSION.SDK_INT < 28 -> DefaultShadowColorInt
-            else -> ViewShadowColorsHelper.getAmbientColor(shadowView)
+        get() = if (Build.VERSION.SDK_INT < 28) {
+            DefaultShadowColorInt
+        } else {
+            ViewShadowColorsHelper.getAmbientColor(shadowView)
         }
         set(value) {
             if (Build.VERSION.SDK_INT >= 28) {
@@ -119,9 +118,10 @@ internal class ViewShadow(ownerView: View) : CoreShadow() {
         }
 
     override var spotColor: Int
-        get() = when {
-            Build.VERSION.SDK_INT < 28 -> DefaultShadowColorInt
-            else -> ViewShadowColorsHelper.getSpotColor(shadowView)
+        get() = if (Build.VERSION.SDK_INT < 28) {
+            DefaultShadowColorInt
+        } else {
+            ViewShadowColorsHelper.getSpotColor(shadowView)
         }
         set(value) {
             if (Build.VERSION.SDK_INT >= 28) {
@@ -137,31 +137,27 @@ internal class ViewShadow(ownerView: View) : CoreShadow() {
 
     override val bottom: Int get() = shadowView.bottom
 
-    override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) {
+    override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
         if (Build.VERSION.SDK_INT >= 29) {
             ViewPositionHelper.setPosition(shadowView, left, top, right, bottom)
         } else {
             shadowView.layout(left, top, right, bottom)
         }
-    }
 
     override fun hasIdentityMatrix(): Boolean =
         shadowView.matrix.isIdentity
 
-    override fun getMatrix(outMatrix: Matrix) {
+    override fun getMatrix(outMatrix: Matrix) =
         outMatrix.set(shadowView.matrix)
-    }
 
-    override fun onDraw(canvas: Canvas) {
+    override fun onDraw(canvas: Canvas) =
         painter.drawShadowView(canvas, shadowView)
-    }
 }
 
 @RequiresApi(29)
 private object ViewPositionHelper {
 
     @DoNotInline
-    fun setPosition(view: View, left: Int, top: Int, right: Int, bottom: Int) {
+    fun setPosition(view: View, left: Int, top: Int, right: Int, bottom: Int) =
         view.setLeftTopRightBottom(left, top, right, bottom)
-    }
 }

@@ -12,9 +12,8 @@ internal abstract class CoreShadow : Shadow {
     override val outline = Outline()
 
     @CallSuper
-    override fun setOutline(outline: Outline) {
+    override fun setOutline(outline: Outline) =
         this.outline.set(outline)
-    }
 
     override fun draw(canvas: Canvas) {
         if (!canvas.isHardwareAccelerated) return

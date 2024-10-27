@@ -7,9 +7,7 @@ import android.view.View
 import com.google.android.material.button.MaterialButtonToggleGroup
 
 /**
- * A custom
- * [MaterialButtonToggleGroup](https://developer.android.com/reference/com/google/android/material/button/MaterialButtonToggleGroup)
- * that implements [ShadowsViewGroup].
+ * A custom [MaterialButtonToggleGroup] that implements [ShadowsViewGroup].
  *
  * Apart from the additional handling of the library's shadow properties and
  * draw operations, this group behaves just like its base class.
@@ -23,9 +21,11 @@ class ShadowsMaterialButtonToggleGroup @JvmOverloads constructor(
     internal val manager = RegularManager(
         this,
         attrs,
+        this::attachViewToParent,
         this::detachAllViewsFromParent,
-        this::attachViewToParent
-    ) { super.dispatchDraw(it) }
+        { c -> super.dispatchDraw(c) },
+        { c, v, t -> super.drawChild(c, v, t) }
+    )
 
     override var childShadowsPlane by manager::childShadowsPlane
 
@@ -57,7 +57,5 @@ class ShadowsMaterialButtonToggleGroup @JvmOverloads constructor(
         canvas: Canvas,
         child: View,
         drawingTime: Long
-    ): Boolean = manager.drawChild(canvas, child) {
-        super.drawChild(canvas, child, drawingTime)
-    }
+    ): Boolean = manager.drawChild(canvas, child, drawingTime)
 }

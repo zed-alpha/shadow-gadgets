@@ -6,6 +6,7 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.view.View
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
+import com.zedalpha.shadowgadgets.core.fastForEach
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
 class Layer(
@@ -14,10 +15,12 @@ class Layer(
     private var width: Int,
     private var height: Int,
 ) {
-    private val layer: ManagedLayer = when {
-        RenderNodeFactory.isOpen -> RenderNodeLayer(::contentDraw)
-        else -> ViewLayer(ownerView, ::contentDraw)
-    }.apply { setSize(width, height) }
+    private val layer: ManagedLayer =
+        if (RenderNodeFactory.isOpen) {
+            RenderNodeLayer(::contentDraw)
+        } else {
+            ViewLayer(ownerView, ::contentDraw)
+        }
 
     private val paint = Paint()
 
@@ -30,6 +33,7 @@ class Layer(
         }
 
     init {
+        layer.setSize(width, height)
         this.color = color
     }
 
@@ -42,6 +46,7 @@ class Layer(
     }
 
     fun dispose() {
+        layerDraws.clear()
         layer.dispose()
     }
 
@@ -53,9 +58,8 @@ class Layer(
 
     private val layerDraws = mutableListOf<LayerDraw>()
 
-    private fun contentDraw(canvas: Canvas) {
-        layerDraws.forEach { it.draw(canvas) }
-    }
+    private fun contentDraw(canvas: Canvas) =
+        layerDraws.fastForEach { it.draw(canvas) }
 
     fun addDraw(draw: LayerDraw) {
         layerDraws.add(draw)
@@ -68,16 +72,12 @@ class Layer(
     fun isEmpty() = layerDraws.isEmpty()
 
     fun draw(canvas: Canvas) {
-        layer.draw(canvas)
+        if (canvas.isHardwareAccelerated) layer.draw(canvas)
     }
 
-    fun invalidate() {
-        layer.invalidate()
-    }
+    fun invalidate() = layer.invalidate()
 
-    fun refresh() {
-        layer.refresh()
-    }
+    fun refresh() = layer.refresh()
 }
 
 private fun Paint.setLayerFilter(color: Int) {

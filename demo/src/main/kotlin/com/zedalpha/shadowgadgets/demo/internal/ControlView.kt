@@ -13,10 +13,8 @@ class ControlView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
-    private val ui = InternalControlViewBinding.inflate(
-        LayoutInflater.from(context),
-        this
-    )
+    private val ui =
+        InternalControlViewBinding.inflate(LayoutInflater.from(context), this)
 
     var color: Int
         get() = Color.argb(
@@ -38,9 +36,7 @@ class ControlView @JvmOverloads constructor(
         onColorChanged = callback
     }
 
-    fun syncColor() {
-        onColorChanged(color)
-    }
+    fun syncColor() = onColorChanged(color)
 
     var elevation: Int
         get() = ui.seekElevation.progress
@@ -54,9 +50,7 @@ class ControlView @JvmOverloads constructor(
         onElevationChanged = callback
     }
 
-    fun syncElevation() {
-        onElevationChanged(elevation)
-    }
+    fun syncElevation() = onElevationChanged(elevation)
 
     init {
         val seekListener = SeekChangeListener { onColorChanged(color) }

@@ -4,24 +4,27 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
+import com.zedalpha.shadowgadgets.view.shadow.createShadow
+import com.zedalpha.shadowgadgets.view.shadow.isInitialized
 import com.zedalpha.shadowgadgets.view.shadowPlane
 
 internal class RecyclingManager(
     parentView: ViewGroup,
     attributeSet: AttributeSet?,
-    detachAllViewsFromParent: () -> Unit,
     attachViewToParent: (View, Int, ViewGroup.LayoutParams) -> Unit,
-    superDispatchDraw: (Canvas) -> Unit
+    detachAllViewsFromParent: () -> Unit,
+    superDispatchDraw: (Canvas) -> Unit,
+    superDrawChild: (Canvas, View, Long) -> Boolean
 ) : ShadowsViewGroupManager(
     parentView,
     attributeSet,
-    detachAllViewsFromParent,
     attachViewToParent,
-    superDispatchDraw
+    detachAllViewsFromParent,
+    superDispatchDraw,
+    superDrawChild
 ) {
     override fun onViewAdded(child: View) {
         if (child.isInitialized) return
@@ -30,7 +33,7 @@ internal class RecyclingManager(
             child.shadowPlane = childShadowsPlane
         }
 
-        // Recycling SVGs clip all of their children's shadows by default
+        // Recycling SVGs clip all of their children's shadows by default.
         if (child.clipNotSet) child.clipOutlineShadow =
             if (groupClipSet) clipAllChildShadows else true
 
@@ -45,9 +48,7 @@ internal class RecyclingManager(
         }
 
         child.isInitialized = true
+
+        child.createShadow()
     }
 }
-
-private inline var View.isInitialized: Boolean
-    get() = getTag(R.id.is_initialized) == true
-    set(value) = setTag(R.id.is_initialized, value)

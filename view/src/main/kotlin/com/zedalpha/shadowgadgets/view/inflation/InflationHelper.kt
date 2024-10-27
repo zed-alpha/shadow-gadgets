@@ -16,16 +16,20 @@ import java.lang.reflect.Array
 
 internal class InflationHelper(private val context: Context) {
 
-    private val inflater: ViewInflater = when {
-        Build.VERSION.SDK_INT >= 29 -> NewViewInflater(context)
-        else -> OldViewInflater(context)
-    }
+    private val inflater: ViewInflater =
+        if (Build.VERSION.SDK_INT >= 29) {
+            NewViewInflater(context)
+        } else {
+            OldViewInflater(context)
+        }
 
     fun processTag(name: String, context: Context, attrs: AttributeSet): View? {
-        val view = when (name) {
-            in IgnoredTags -> null
-            else -> inflater.tryCreate(name, context, attrs)
-        } ?: return null
+        val view = if (name in IgnoredTags) {
+            null
+        } else {
+            inflater.tryCreate(name, context, attrs)
+        }
+        view ?: return null
         applyAttributes(view, attrs)
         return view
     }

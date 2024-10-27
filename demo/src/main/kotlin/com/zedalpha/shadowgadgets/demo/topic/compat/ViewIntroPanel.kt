@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.demo.databinding.ViewPanelBinding
 import com.zedalpha.shadowgadgets.view.ShadowColorsBlender
+import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
+import com.zedalpha.shadowgadgets.view.shadowPlane
 import android.graphics.Color as AndroidColor
 
 internal class ViewIntroPanel(
@@ -20,6 +22,7 @@ internal class ViewIntroPanel(
     override val ui = ViewPanelBinding.inflate(inflater, parent, true)
 
     init {
+        ui.compat.shadowPlane = ShadowPlane.Background
         ui.compat.forceOutlineShadowColorCompat = true
     }
 

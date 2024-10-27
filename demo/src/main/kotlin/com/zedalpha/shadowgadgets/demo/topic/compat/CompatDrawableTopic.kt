@@ -46,7 +46,7 @@ class CompatDrawableFragment : TopicFragment<FragmentCompatDrawableBinding>(
                 drawable.elevation = elevation.toFloat()
                 drawable.invalidateSelf()
             }
-            color = AndroidColor.RED
+            color = AndroidColor.BLUE
             elevation = 30
         }
     }

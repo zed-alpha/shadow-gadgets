@@ -1,9 +1,15 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
+import android.content.res.Resources
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import androidx.recyclerview.widget.RecyclerView
+import com.zedalpha.shadowgadgets.view.BuildConfig
 import com.zedalpha.shadowgadgets.view.R
-import com.zedalpha.shadowgadgets.view.ShadowPlane
+import com.zedalpha.shadowgadgets.view.ShadowPlane.Background
+import com.zedalpha.shadowgadgets.view.ShadowPlane.Inline
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.colorOutlineShadow
 import com.zedalpha.shadowgadgets.view.shadowPlane
@@ -11,44 +17,39 @@ import com.zedalpha.shadowgadgets.view.viewgroup.ShadowsViewGroup
 import com.zedalpha.shadowgadgets.view.viewgroup.inlineController
 import java.lang.ref.WeakReference
 
-internal object ShadowSwitch : View.OnAttachStateChangeListener {
-
-    fun notifyPropertyChanged(view: View) {
-        if (view.clipOutlineShadow || view.colorOutlineShadow) {
-            if (view.isWatched) {
-                view.shadow?.let { shadow ->
-                    if (view.clipOutlineShadow != shadow.isClipped) {
-                        recreateShadow(view)
-                    }
-                }
-            } else {
-                view.isWatched = true
-                view.addOnAttachStateChangeListener(this)
-                if (view.isAttachedToWindow) onViewAttachedToWindow(view)
-            }
-        } else if (view.isWatched) {
-            view.isWatched = false
-            view.removeOnAttachStateChangeListener(this)
-            view.shadow?.detachFromTarget()
+internal fun View.checkShadow() {
+    if (clipOutlineShadow || colorOutlineShadow) {
+        if (isWatched) {
+            shadow?.run { if (isClipped != clipOutlineShadow) recreateShadow() }
+        } else {
+            isWatched = true
+            addOnAttachStateChangeListener(ShadowSwitch)
+            if (isAttachedToWindow) ShadowSwitch.onViewAttachedToWindow(this)
         }
+    } else if (isWatched) {
+        isWatched = false
+        removeOnAttachStateChangeListener(ShadowSwitch)
+        shadow?.detachFromTarget()
     }
+}
 
-    fun recreateShadow(view: View) {
-        view.shadow?.detachFromTarget() ?: return
-        createShadow(view)
-    }
+private object ShadowSwitch : View.OnAttachStateChangeListener {
 
     override fun onViewAttachedToWindow(view: View) {
-        val parent = view.parent as? ViewGroup
-        if (view.isRecyclingViewGroupChild && view.previousParent !== parent) {
-            view.shadow?.detachFromTarget()
-            view.previousParent = parent
-        }
         val shadow = view.shadow
-        if (shadow != null) {
-            shadow.isShown = true
+        val scope = view.parent as? ViewGroup
+        if (shadow == null || view.shadowScope !== scope) {
+            shadow?.detachFromTarget()
+            view.shadowScope = scope
+            val isRecyclingViewGroup = scope?.isRecyclingViewGroup == true
+            view.isRecyclingViewGroupChild = isRecyclingViewGroup
+            if (!(scope is ShadowsViewGroup && isRecyclingViewGroup) ||
+                view.isInitialized
+            ) {
+                view.createShadow()
+            }
         } else {
-            createShadow(view)
+            shadow.isShown = true
         }
     }
 
@@ -62,29 +63,84 @@ internal object ShadowSwitch : View.OnAttachStateChangeListener {
     }
 }
 
-private fun createShadow(view: View) {
-    val parent = view.parent as? ViewGroup ?: return
-    view.isRecyclingViewGroupChild = parent.isRecyclingViewGroup
+internal fun View.recreateShadow() {
+    shadow?.detachFromTarget() ?: return
+    createShadow()
+}
+
+internal fun View.createShadow() =
+    shadowScope?.let { childShadow(it) } ?: rootShadow()
+
+private fun View.childShadow(scope: ViewGroup) {
     when {
-        view.shadowPlane != ShadowPlane.Inline -> {
-            parent.getOrCreateOverlayController().createShadow(view)
+        colorOutlineShadow && !clipOutlineShadow && shadowPlane != Background -> {
+            nullShadow { "Color compat by itself must use the Background plane" }
         }
-        parent is ShadowsViewGroup && !parent.ignoreInlineChildShadows -> {
-            parent.inlineController.createShadow(view)
+        shadowPlane != Inline -> {
+            scope.getOrCreateOverlayController().createShadow(this)
         }
-        else -> SoloShadow(view)
+        scope is ShadowsViewGroup && !scope.ignoreInlineChildShadows -> {
+            scope.inlineController.createShadow(this)
+        }
+        clipToOutline || scope.clipChildren -> {
+            fun message() = buildString {
+                append("Inline shadow ")
+                if (clipToOutline) append("target has clipToOutline=true")
+                if (clipToOutline && scope.clipChildren) append(" and ")
+                if (scope.clipChildren) append("parent has clipChildren=true")
+            }
+            nullShadow(::message)
+        }
+        else -> SoloShadow(this, scope)
     }
 }
+
+private fun View.rootShadow() {
+    when {
+        colorOutlineShadow && !clipOutlineShadow -> {
+            nullShadow { "Color compat on root Views requires the clip too" }
+        }
+        shadowPlane != Inline -> {
+            nullShadow { "Shadows on root Views must use the Inline plane" }
+        }
+        clipToOutline -> {
+            nullShadow { "Inline shadow target has clipToOutline=true" }
+        }
+        else -> SoloShadow(this, null)
+    }
+}
+
+private fun View.nullShadow(logMessage: () -> String) {
+    if (BuildConfig.DEBUG) Log.w("ShadowGadgets", "$debugName: ${logMessage()}")
+    NullShadow(this)
+}
+
+internal inline var View.isInitialized: Boolean
+    get() = getTag(R.id.is_initialized) == true
+    set(value) = setTag(R.id.is_initialized, value)
+
+internal inline val ViewGroup.isRecyclingViewGroup: Boolean
+    get() = this is RecyclerView || this is AdapterView<*>
 
 private inline var View.isWatched: Boolean
     get() = getTag(R.id.is_watched) == true
     set(value) = setTag(R.id.is_watched, value)
 
+@get:Suppress("UNCHECKED_CAST")
+private inline var View.shadowScope: ViewGroup?
+    get() = (getTag(R.id.shadow_scope) as? WeakReference<ViewGroup>)?.get()
+    set(value) = setTag(R.id.shadow_scope, value?.let { WeakReference(it) })
+
 private inline var View.isRecyclingViewGroupChild: Boolean
     get() = getTag(R.id.is_recycling_view_group_child) == true
     set(value) = setTag(R.id.is_recycling_view_group_child, value)
 
-@get:Suppress("UNCHECKED_CAST")
-private inline var View.previousParent: ViewGroup?
-    get() = (getTag(R.id.previous_parent) as? WeakReference<ViewGroup>)?.get()
-    set(value) = setTag(R.id.previous_parent, value?.let { WeakReference(it) })
+private inline val View.debugName: String
+    get() = buildString {
+        append(this@debugName.javaClass.simpleName)
+        if (id != View.NO_ID) try {
+            append(", R.id.${resources.getResourceEntryName(id)}")
+        } catch (e: Resources.NotFoundException) {
+            ", id=$id"
+        }
+    }

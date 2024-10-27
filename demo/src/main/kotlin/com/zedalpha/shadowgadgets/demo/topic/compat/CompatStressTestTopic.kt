@@ -17,11 +17,11 @@ import com.zedalpha.shadowgadgets.compose.ExperimentalColorCompat
 import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentCompatStressTestBinding
-import com.zedalpha.shadowgadgets.demo.topic.ITEM_COUNT
 import com.zedalpha.shadowgadgets.demo.topic.ColorfulHolder
 import com.zedalpha.shadowgadgets.demo.topic.ColorfulLazyColumn
 import com.zedalpha.shadowgadgets.demo.topic.HALF_ITEM_COUNT
 import com.zedalpha.shadowgadgets.demo.topic.ITEM_BLUE
+import com.zedalpha.shadowgadgets.demo.topic.ITEM_COUNT
 import com.zedalpha.shadowgadgets.demo.topic.ITEM_GREEN
 import com.zedalpha.shadowgadgets.demo.topic.ITEM_RED
 import com.zedalpha.shadowgadgets.demo.topic.Topic
@@ -40,7 +40,6 @@ internal val CompatStressTestTopic = Topic(
 class CompatStressTestFragment : TopicFragment<FragmentCompatStressTestBinding>(
     FragmentCompatStressTestBinding::inflate
 ) {
-
     override fun loadUi(ui: FragmentCompatStressTestBinding) {
         ui.recycler.adapter = VeryColorfulAdapter()
         ui.composeView.apply {

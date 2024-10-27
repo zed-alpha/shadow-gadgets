@@ -111,13 +111,9 @@ internal class ViewPainter(private val ownerView: ViewGroup) :
         removeViewInLayout(shadowView)
     }
 
-    fun addLayerView(layerView: View) {
-        addView(layerView, EmptyLayoutParams)
-    }
+    fun addLayerView(layerView: View) = addView(layerView, EmptyLayoutParams)
 
-    fun removeLayerView(layerView: View) {
-        removeView(layerView)
-    }
+    fun removeLayerView(layerView: View) = removeView(layerView)
 
     fun drawLayerView(canvas: Canvas, layerView: View) {
         if (indexOfChild(layerView) < 0) return

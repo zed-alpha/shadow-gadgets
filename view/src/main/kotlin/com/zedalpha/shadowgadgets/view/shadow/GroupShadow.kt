@@ -1,10 +1,8 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
 import android.graphics.Canvas
-import android.graphics.Outline
 import android.os.Build
 import android.view.View
-import android.view.ViewOutlineProvider
 import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.PathProvider
@@ -21,28 +19,20 @@ internal class GroupShadow(
     private val plane: DrawPlane
 ) : ViewShadow(targetView), LayerDraw {
 
-    private val coreShadow = when {
-        isClipped -> ClippedShadow(targetView).also { shadow ->
+    private val coreShadow = if (isClipped) {
+        ClippedShadow(targetView).also { shadow ->
             val pathProvider = targetView.pathProvider ?: return@also
             shadow.pathProvider = PathProvider { path ->
                 pathProvider.getPath(targetView, path)
             }
         }
-        else -> Shadow(targetView)
+    } else {
+        Shadow(targetView)
     }
-
-    private val provider: ViewOutlineProvider = targetView.outlineProvider
 
     val forceLayer = targetView.forceShadowLayer
 
     init {
-        targetView.outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                provider.getOutline(view, outline)
-                coreShadow.setOutline(outline)
-                outline.alpha = 0.0F
-            }
-        }
         plane.addShadow(
             this,
             if (targetView.colorOutlineShadow) {
@@ -51,11 +41,11 @@ internal class GroupShadow(
                 DefaultShadowColorInt
             }
         )
+        wrapOutlineProvider(coreShadow::setOutline)
     }
 
     override fun detachFromTarget() {
         super.detachFromTarget()
-        targetView.outlineProvider = provider
         plane.removeShadow(this)
         coreShadow.dispose()
     }
@@ -78,9 +68,7 @@ internal class GroupShadow(
         invalidate()
     }
 
-    override fun invalidate() {
-        plane.invalidatePlane()
-    }
+    override fun invalidate() = plane.invalidatePlane()
 
     override fun draw(canvas: Canvas) {
         if (!targetView.updateAndCheckDraw(coreShadow) || !isShown) return

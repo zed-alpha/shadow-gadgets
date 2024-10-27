@@ -26,11 +26,11 @@ internal object ProjectorReflector {
 
     val isValid = try {
         val renderNodeClass = Class.forName("android.view.RenderNode")
-        val canvasClass = when (Build.VERSION.SDK_INT) {
-            in 21..22 -> Class.forName("android.view.HardwareCanvas")
-            else -> Class.forName("android.view.DisplayListCanvas")
+        val canvasClass = if (Build.VERSION.SDK_INT in 21..22) {
+            Class.forName("android.view.HardwareCanvas")
+        } else {
+            Class.forName("android.view.DisplayListCanvas")
         }
-
         if (Build.VERSION.SDK_INT == 28) {
             val getDeclared = Class::class.java.getDeclaredMethod(
                 "getDeclaredMethod",
@@ -161,9 +161,8 @@ internal object ProjectorReflector {
         setPosition.invoke(renderNode, left, top, right, bottom)
     }
 
-    fun start(renderNode: Any, width: Int, height: Int): Canvas {
-        return start.invoke(renderNode, width, height) as Canvas
-    }
+    fun start(renderNode: Any, width: Int, height: Int): Canvas =
+        start.invoke(renderNode, width, height) as Canvas
 
     fun end(renderNode: Any, canvas: Canvas) {
         end.invoke(renderNode, canvas)

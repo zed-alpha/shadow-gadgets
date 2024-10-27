@@ -9,7 +9,7 @@ import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.DefaultSpotShadowAlpha
 import com.zedalpha.shadowgadgets.core.blendShadowColors
 import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
-import com.zedalpha.shadowgadgets.view.shadow.ShadowSwitch
+import com.zedalpha.shadowgadgets.view.shadow.checkShadow
 import com.zedalpha.shadowgadgets.view.shadow.shadow
 
 /**
@@ -31,6 +31,9 @@ import com.zedalpha.shadowgadgets.view.shadow.shadow
  * in a custom library implementation. Any user implementations should be set
  * before enabling this feature, or at least before the View attaches to its
  * Window.
+ *
+ * When `true`, the View's intrinsic shadow is always disabled, even if the
+ * replacement cannot be drawn, for whatever reason.
  */
 @get:ColorInt
 @setparam:ColorInt
@@ -120,7 +123,7 @@ class ShadowColorsBlender(private val context: Context) {
      * manually, and different app themes have different shadow alpha values.
      */
     fun onConfigurationChanged() {
-        val (ambient, spot) = resolveThemeShadowAlphas(context)
+        val (ambient, spot) = context.resolveThemeShadowAlphas()
         ambientAlpha = ambient
         spotAlpha = spot
     }
@@ -136,5 +139,5 @@ internal inline var View.colorOutlineShadow: Boolean
     private set(value) {
         if (colorOutlineShadow == value) return
         setTag(R.id.color_outline_shadow, value)
-        ShadowSwitch.notifyPropertyChanged(this)
+        checkShadow()
     }

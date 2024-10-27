@@ -4,10 +4,14 @@ plugins {
 
 android {
     namespace = "com.zedalpha.shadowgadgets.stubs"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

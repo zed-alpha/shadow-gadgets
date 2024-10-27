@@ -58,9 +58,10 @@ internal object OutlinePathReflector {
     private var mPathInitialized = false
 
     @SuppressLint("PrivateApi", "SoonBlockedPrivateApi")
-    private fun getPathField() = when {
-        mPathInitialized -> mPath
-        else -> {
+    private fun getPathField(): Field? =
+        if (mPathInitialized) {
+            mPath
+        } else {
             mPathInitialized = true
             try {
                 if (Build.VERSION.SDK_INT >= 28) {
@@ -75,7 +76,6 @@ internal object OutlinePathReflector {
                 null
             }
         }
-    }
 
     fun getPath(path: Path, outline: Outline): Boolean {
         val pathField = getPathField() ?: return false
@@ -105,9 +105,10 @@ internal object OutlineRectReflector {
     private var mRectInitialized = false
 
     @SuppressLint("DiscouragedPrivateApi", "PrivateApi")
-    private fun getRectField() = when {
-        mRectInitialized -> mRect
-        else -> {
+    private fun getRectField(): Field? =
+        if (mRectInitialized) {
+            mRect
+        } else {
             mRectInitialized = true
             try {
                 Outline::class.java.getDeclaredField("mRect")
@@ -116,7 +117,6 @@ internal object OutlineRectReflector {
                 null
             }
         }
-    }
 
     fun getRect(outline: Outline, outRect: Rect): Boolean {
         val rectField = getRectField() ?: return false
@@ -134,9 +134,10 @@ internal object OutlineRectReflector {
     private var mRadiusInitialized = false
 
     @SuppressLint("PrivateApi", "SoonBlockedPrivateApi")
-    private fun getRadiusField() = when {
-        mRadiusInitialized -> mRadius
-        else -> {
+    private fun getRadiusField(): Field? =
+        if (mRadiusInitialized) {
+            mRadius
+        } else {
             mRadiusInitialized = true
             try {
                 Outline::class.java.getDeclaredField("mRadius")
@@ -145,7 +146,6 @@ internal object OutlineRectReflector {
                 null
             }
         }
-    }
 
     fun getRadius(outline: Outline): Float {
         val radiusField = getRadiusField() ?: return 0F
@@ -170,14 +170,10 @@ internal object CanvasClipHelper {
 internal object CanvasZHelper {
 
     @DoNotInline
-    fun enableZ(canvas: Canvas) {
-        canvas.enableZ()
-    }
+    fun enableZ(canvas: Canvas) = canvas.enableZ()
 
     @DoNotInline
-    fun disableZ(canvas: Canvas) {
-        canvas.disableZ()
-    }
+    fun disableZ(canvas: Canvas) = canvas.disableZ()
 }
 
 internal object CanvasZReflector {
@@ -186,9 +182,10 @@ internal object CanvasZReflector {
 
     private var getDeclaredInitialized = false
 
-    private fun getDeclaredMethod() = when {
-        getDeclaredInitialized -> getDeclared
-        else -> {
+    private fun getDeclaredMethod(): Method? =
+        if (getDeclaredInitialized) {
+            getDeclared
+        } else {
             getDeclaredInitialized = true
             try {
                 Class::class.java.getDeclaredMethod(
@@ -200,43 +197,50 @@ internal object CanvasZReflector {
                 null
             }
         }
+
+    @SuppressLint("PrivateApi")
+    private val reorderBarrierMethod: Method? = run {
+        val method = if (Build.VERSION.SDK_INT == 28) {
+            try {
+                getDeclaredMethod()?.invoke(
+                    Canvas::class.java,
+                    "insertReorderBarrier",
+                    emptyArray<Class<*>>()
+                ) as Method?
+            } catch (e: Exception) {
+                null
+            }
+        } else {
+            try {
+                Canvas::class.java.getDeclaredMethod("insertReorderBarrier")
+            } catch (e: Exception) {
+                null
+            }
+        }
+        method?.apply { isAccessible = true }
     }
 
     @SuppressLint("PrivateApi")
-    private val reorderBarrierMethod = when (Build.VERSION.SDK_INT) {
-        28 -> try {
-            getDeclaredMethod()?.invoke(
-                Canvas::class.java,
-                "insertReorderBarrier",
-                emptyArray<Class<*>>()
-            ) as Method?
-        } catch (e: Exception) {
-            null
+    private val inorderBarrierMethod: Method? = run {
+        val method = if (Build.VERSION.SDK_INT == 28) {
+            try {
+                getDeclaredMethod()?.invoke(
+                    Canvas::class.java,
+                    "insertInorderBarrier",
+                    emptyArray<Class<*>>()
+                ) as Method?
+            } catch (e: Exception) {
+                null
+            }
+        } else {
+            try {
+                Canvas::class.java.getDeclaredMethod("insertInorderBarrier")
+            } catch (e: Exception) {
+                null
+            }
         }
-        else -> try {
-            Canvas::class.java.getDeclaredMethod("insertReorderBarrier")
-        } catch (e: Exception) {
-            null
-        }
-    }?.apply { isAccessible = true }
-
-    @SuppressLint("PrivateApi")
-    private val inorderBarrierMethod = when (Build.VERSION.SDK_INT) {
-        28 -> try {
-            getDeclaredMethod()?.invoke(
-                Canvas::class.java,
-                "insertInorderBarrier",
-                emptyArray<Class<*>>()
-            ) as Method?
-        } catch (e: Exception) {
-            null
-        }
-        else -> try {
-            Canvas::class.java.getDeclaredMethod("insertInorderBarrier")
-        } catch (e: Exception) {
-            null
-        }
-    }?.apply { isAccessible = true }
+        method?.apply { isAccessible = true }
+    }
 
     fun enableZ(canvas: Canvas) {
         try {

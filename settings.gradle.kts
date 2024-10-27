@@ -1,12 +1,13 @@
-@file:Suppress("UnstableApiUsage")
-
 pluginManagement {
+    includeBuild("gradle/build-logic")
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
     }
 }
+
+@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -15,7 +16,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Shadow Gadgets"
+rootProject.name = "shadow-gadgets"
 
 include(":stubs")
 include(":core")

@@ -9,11 +9,10 @@ internal class ElementWrapper(
     private val wrapped: Element,
 ) : Element by wrapped {
 
-    override fun getParentNode(): Node =
-        when (val node = wrapped.parentNode) {
-            is Element -> ElementWrapper(node)
-            else -> node
-        }
+    override fun getParentNode(): Node = run {
+        val node = wrapped.parentNode
+        if (node is Element) ElementWrapper(node) else node
+    }
 
     override fun getTagName(): String =
         when (val actual = wrapped.tagName) {

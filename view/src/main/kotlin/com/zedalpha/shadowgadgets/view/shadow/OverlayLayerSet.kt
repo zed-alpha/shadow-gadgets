@@ -73,23 +73,14 @@ internal class OverlayLayerSet(private val ownerView: ViewGroup) {
         }
     }
 
-    fun setSize(width: Int, height: Int) {
+    fun setSize(width: Int, height: Int) =
         activeLayers.values.forEach { it.setSize(width, height) }
-    }
 
-    fun invalidate() {
-        activeLayers.values.forEach { it.invalidate() }
-    }
+    fun invalidate() = activeLayers.values.forEach { it.invalidate() }
 
-    fun refresh() {
-        activeLayers.values.forEach { it.refresh() }
-    }
+    fun refresh() = activeLayers.values.forEach { it.refresh() }
 
-    fun recreate() {
-        activeLayers.values.forEach { it.recreate() }
-    }
+    fun recreate() = activeLayers.values.forEach { it.recreate() }
 
-    fun dispose() {
-        activeLayers.values.forEach { it.dispose() }
-    }
+    fun dispose() = activeLayers.values.forEach { it.dispose() }
 }

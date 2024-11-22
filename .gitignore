@@ -8,9 +8,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+.kotlin
 /compose
 /core
 /demo
 /stubs
 /view
-.kotlin
+/gradle/build-logic

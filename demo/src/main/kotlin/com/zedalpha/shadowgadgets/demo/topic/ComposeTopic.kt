@@ -76,13 +76,10 @@ class ComposeFragment : TopicFragment<ComposeViewBinding>(
 
 @Composable
 private fun ComposeContent() {
-    Row(
-        modifier = Modifier.fillMaxSize(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(Modifier.fillMaxSize()) {
+
         ColorfulLazyColumn(
-            modifier = Modifier
+            Modifier
                 .fillMaxHeight()
                 .weight(0.6F)
                 .padding(start = 20.dp, end = 10.dp)
@@ -109,22 +106,14 @@ private fun ComposeContent() {
                 shadowSpotColor = Color(0xFFFF4444)
             ) {}
 
-            ClippedShadowButton(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(Color(0x357FCC7F)),
-                elevation = ButtonDefaults
-                    .elevation(12.dp, 18.dp, 0.dp, 14.dp, 14.dp),
-                shadowAmbientColor = Color(0xFF448866),
-                shadowSpotColor = Color(0xFF448866)
-            ) {}
-
             Card(
                 backgroundColor = Color(0x22007FFF),
                 elevation = 0.dp,
                 shape = GenericShape(CardShapeBuilder),
                 modifier = Modifier
                     .padding(
-                        start = if (Build.VERSION.SDK_INT < 30) 0.dp else 8.dp
+                        // So the puzzle piece looks centered on >= 30.
+                        start = if (Build.VERSION.SDK_INT >= 30) 8.dp else 0.dp
                     )
                     .size(80.dp)
                     .clippedShadow(
@@ -133,6 +122,15 @@ private fun ComposeContent() {
                         ambientColor = Color(0xFF007FFF),
                         spotColor = Color(0xFF007FFF)
                     )
+            ) {}
+
+            ClippedShadowButton(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(Color(0x357FCC7F)),
+                elevation = ButtonDefaults
+                    .elevation(12.dp, 18.dp, 0.dp, 14.dp, 14.dp),
+                shadowAmbientColor = Color(0xFF448866),
+                shadowSpotColor = Color(0xFF448866)
             ) {}
         }
     }
@@ -158,13 +156,18 @@ internal fun ColorfulLazyColumn(
                     if (position < HALF_ITEM_COUNT) ItemGreen else ItemBlue,
                     (position % HALF_ITEM_COUNT).toFloat() / HALF_ITEM_COUNT
                 )
+                val colorCompat = color.copy(alpha = 1F)
                 Card(
                     backgroundColor = color,
                     elevation = 0.dp,
                     shape = RoundedCornerShape(6.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadowModifier(10.dp, RoundedCornerShape(6.dp), color)
+                        .shadowModifier(
+                            10.dp,
+                            RoundedCornerShape(6.dp),
+                            colorCompat
+                        )
                 ) {
                     Text(
                         text = "Item $position",

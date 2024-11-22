@@ -38,7 +38,6 @@ import com.zedalpha.shadowgadgets.compose.internal.blend
  * if the ambient and spot colors are both fully opaque; i.e., only if both
  * have maximum alpha values.
  */
-@ExperimentalColorCompat
 @Stable
 fun Modifier.shadowCompat(
     elevation: Dp,
@@ -48,43 +47,48 @@ fun Modifier.shadowCompat(
     spotColor: Color = DefaultShadowColor,
     colorCompat: Color = Color.Unspecified,
     forceColorCompat: Boolean = false
-): Modifier = if (elevation > 0.dp || clip) {
-    val useNative = Build.VERSION.SDK_INT >= 28 && !forceColorCompat
-    val isDefault = colorCompat.isDefault || colorCompat.isUnspecified &&
+): Modifier =
+    if (elevation > 0.dp || clip) {
+
+        val useNative = Build.VERSION.SDK_INT >= 28 && !forceColorCompat
+
+        if (useNative ||
+            colorCompat.isDefault ||
+            colorCompat.isUnspecified &&
             ambientColor.isDefault && spotColor.isDefault
-    if (useNative || isDefault) {
-        val ambient = if (useNative) ambientColor else DefaultShadowColor
-        val spot = if (useNative) spotColor else DefaultShadowColor
-        shadow(elevation, shape, clip, ambient, spot)
-    } else {
-        composed(
-            inspectorInfo = debugInspectorInfo {
-                name = "shadowCompat"
-                properties["elevation"] = elevation
-                properties["shape"] = shape
-                properties["clip"] = clip
-                properties["ambientColor"] = ambientColor
-                properties["spotColor"] = spotColor
-                properties["colorCompat"] = colorCompat
-                properties["forceColorCompat"] = forceColorCompat
-            }
         ) {
-            val compat = colorCompat.takeOrElse {
-                blend(ambientColor, spotColor)
+            val ambient = if (useNative) ambientColor else DefaultShadowColor
+            val spot = if (useNative) spotColor else DefaultShadowColor
+            shadow(elevation, shape, clip, ambient, spot)
+        } else {
+            composed(
+                inspectorInfo = debugInspectorInfo {
+                    name = "shadowCompat"
+                    properties["elevation"] = elevation
+                    properties["shape"] = shape
+                    properties["clip"] = clip
+                    properties["ambientColor"] = ambientColor
+                    properties["spotColor"] = spotColor
+                    properties["colorCompat"] = colorCompat
+                    properties["forceColorCompat"] = forceColorCompat
+                }
+            ) {
+                val compat = colorCompat.takeOrElse {
+                    blend(ambientColor, spotColor)
+                }
+                baseShadow(
+                    clipped = false,
+                    elevation = elevation,
+                    shape = shape,
+                    clip = clip,
+                    ambientColor = ambientColor,
+                    spotColor = spotColor,
+                    colorCompat = compat
+                )
             }
-            baseShadow(
-                clipped = false,
-                elevation = elevation,
-                shape = shape,
-                clip = clip,
-                ambientColor = ambientColor,
-                spotColor = spotColor,
-                colorCompat = compat
-            )
         }
+    } else {
+        this
     }
-} else {
-    this
-}
 
 private inline val Color.isDefault: Boolean get() = this == DefaultShadowColor

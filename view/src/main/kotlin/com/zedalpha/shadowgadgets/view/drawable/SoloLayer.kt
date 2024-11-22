@@ -5,9 +5,9 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewTreeObserver
-import com.zedalpha.shadowgadgets.core.layer.Layer
 import com.zedalpha.shadowgadgets.core.layer.LayerDraw
 import com.zedalpha.shadowgadgets.core.layer.LocationTracker
+import com.zedalpha.shadowgadgets.core.layer.SingleDrawLayer
 
 internal class SoloLayer(
     private val drawable: Drawable,
@@ -15,12 +15,14 @@ internal class SoloLayer(
     layerDraw: LayerDraw,
     color: Int
 ) {
-    private val coreLayer = Layer(
-        ownerView,
-        color,
-        drawable.bounds.width(),
-        drawable.bounds.height()
-    )
+    private val coreLayer =
+        SingleDrawLayer(
+            ownerView,
+            color,
+            drawable.bounds.width(),
+            drawable.bounds.height(),
+            layerDraw
+        )
 
     private val tracker = LocationTracker(ownerView)
 
@@ -40,7 +42,6 @@ internal class SoloLayer(
     var color by coreLayer::color
 
     init {
-        coreLayer.addDraw(layerDraw)
         ownerView.addOnAttachStateChangeListener(attachListener)
         if (ownerView.isAttachedToWindow) addPreDrawListener()
     }

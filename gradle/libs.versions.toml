@@ -1,14 +1,14 @@
 [versions]
-agp = "8.7.1"
-androidxAnnotation = "1.9.0"
+agp = "8.7.2"
+androidxAnnotation = "1.9.1"
 androidxAppcompat = "1.7.0"
-androidxConstraintLayout = "2.1.4"
-androidxCoreKtx = "1.13.1"
-composeBom = "2024.10.00"
+androidxConstraintLayout = "2.2.0"
+androidxCoreKtx = "1.15.0"
+composeBom = "2024.11.00"
 dokka = "2.0.0-Beta"
 junit4 = "4.13.2"
 kotlin = "2.0.21"
-lint = "31.7.1"
+lint = "31.7.2"
 materialComponents = "1.12.0"
 
 [libraries]
@@ -23,6 +23,8 @@ compose-foundation = { group = "androidx.compose.foundation", name = "foundation
 compose-material = { group = "androidx.compose.material", name = "material" }
 compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit4" }

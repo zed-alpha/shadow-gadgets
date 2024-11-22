@@ -87,10 +87,9 @@ internal class SoloShadow(
         val target = targetView
         val shadow = drawable.coreShadow
 
-        if (shadow.alpha != target.alpha) return true
-        if (shadow.cameraDistance != target.cameraDistance) return true
-        if (shadow.elevation != target.elevation) return true
         if (shadow.translationZ != target.translationZ) return true
+        if (shadow.elevation != target.elevation) return true
+        if (shadow.alpha != target.alpha) return true
         if (Build.VERSION.SDK_INT >= 28) {
             if (shadow.ambientColor !=
                 ViewShadowColorsHelper.getAmbientColor(target)
@@ -99,6 +98,7 @@ internal class SoloShadow(
                 ViewShadowColorsHelper.getSpotColor(target)
             ) return true
         }
+        if (shadow.cameraDistance != target.cameraDistance) return true
         return false
     }
 

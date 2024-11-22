@@ -8,6 +8,7 @@ package com.zedalpha.shadowgadgets.compose
  * as solid as the clip, so if the overhead is acceptable for a given setup,
  * there shouldn't be any other issues.
  */
+@Deprecated("Opt-in requirement for color compat has been removed.")
 @RequiresOptIn("Color compat requires @OptIn. It is currently experimental.")
 @Retention(AnnotationRetention.BINARY)
 @Target(AnnotationTarget.FUNCTION)

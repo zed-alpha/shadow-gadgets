@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLif
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
-import com.zedalpha.shadowgadgets.compose.ExperimentalColorCompat
 import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentCompatStressTestBinding
@@ -85,18 +84,17 @@ private class VeryColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
     override fun getItemCount() = ITEM_COUNT
 }
 
-@OptIn(ExperimentalColorCompat::class)
 @Composable
 private fun ComposeContent() {
     ColorfulLazyColumn(
         Modifier
             .fillMaxSize()
             .padding(start = 10.dp, end = 20.dp)
-    ) { elevation, shape, color ->
+    ) { elevation, shape, colorCompat ->
         clippedShadow(
             elevation = elevation,
             shape = shape,
-            colorCompat = color.copy(alpha = 1.0F),
+            colorCompat = colorCompat,
             forceColorCompat = true
         )
     }

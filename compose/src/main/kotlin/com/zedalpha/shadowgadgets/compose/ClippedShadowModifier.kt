@@ -21,7 +21,6 @@ import com.zedalpha.shadowgadgets.compose.internal.blend
  * Refer to [shadow][androidx.compose.ui.draw.shadow]'s docs for parameter
  * details.
  */
-@OptIn(ExperimentalColorCompat::class)
 @Stable
 fun Modifier.clippedShadow(
     elevation: Dp,
@@ -62,7 +61,6 @@ fun Modifier.clippedShadow(
  * [forceColorCompat] is available to force the color compat tinting to be used
  * on API levels 28 and above.
  */
-@ExperimentalColorCompat
 @Stable
 fun Modifier.clippedShadow(
     elevation: Dp,
@@ -72,34 +70,35 @@ fun Modifier.clippedShadow(
     spotColor: Color = DefaultShadowColor,
     colorCompat: Color = DefaultShadowColor,
     forceColorCompat: Boolean = false
-): Modifier = if (elevation > 0.dp || clip) {
-    composed(
-        inspectorInfo = debugInspectorInfo {
-            name = "clippedShadow"
-            properties["elevation"] = elevation
-            properties["shape"] = shape
-            properties["clip"] = clip
-            properties["ambientColor"] = ambientColor
-            properties["spotColor"] = spotColor
-            properties["colorCompat"] = colorCompat
-            properties["forceColorCompat"] = forceColorCompat
+): Modifier =
+    if (elevation > 0.dp || clip) {
+        composed(
+            inspectorInfo = debugInspectorInfo {
+                name = "clippedShadow"
+                properties["elevation"] = elevation
+                properties["shape"] = shape
+                properties["clip"] = clip
+                properties["ambientColor"] = ambientColor
+                properties["spotColor"] = spotColor
+                properties["colorCompat"] = colorCompat
+                properties["forceColorCompat"] = forceColorCompat
+            }
+        ) {
+            val compat = if (Build.VERSION.SDK_INT < 28 || forceColorCompat) {
+                colorCompat.takeOrElse { blend(ambientColor, spotColor) }
+            } else {
+                DefaultShadowColor
+            }
+            baseShadow(
+                clipped = true,
+                elevation = elevation,
+                shape = shape,
+                clip = clip,
+                ambientColor = ambientColor,
+                spotColor = spotColor,
+                colorCompat = compat
+            )
         }
-    ) {
-        val compat = if (Build.VERSION.SDK_INT < 28 || forceColorCompat) {
-            colorCompat.takeOrElse { blend(ambientColor, spotColor) }
-        } else {
-            DefaultShadowColor
-        }
-        baseShadow(
-            clipped = true,
-            elevation = elevation,
-            shape = shape,
-            clip = clip,
-            ambientColor = ambientColor,
-            spotColor = spotColor,
-            colorCompat = compat
-        )
+    } else {
+        this
     }
-} else {
-    this
-}

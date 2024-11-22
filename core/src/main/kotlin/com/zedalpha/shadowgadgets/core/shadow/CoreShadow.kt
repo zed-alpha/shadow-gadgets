@@ -9,7 +9,7 @@ import com.zedalpha.shadowgadgets.core.enableZ
 
 internal abstract class CoreShadow : Shadow {
 
-    override val outline = Outline()
+    protected val outline = Outline()
 
     @CallSuper
     override fun setOutline(outline: Outline) =

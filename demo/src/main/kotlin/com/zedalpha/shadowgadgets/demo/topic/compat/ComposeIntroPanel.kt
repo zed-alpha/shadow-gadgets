@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.compose.ui.unit.dp
-import com.zedalpha.shadowgadgets.compose.ExperimentalColorCompat
 import com.zedalpha.shadowgadgets.compose.shadowCompat
 import com.zedalpha.shadowgadgets.demo.databinding.ComposeViewBinding
 
@@ -58,7 +57,6 @@ internal class ComposeIntroPanel(
         }
     }
 
-    @OptIn(ExperimentalColorCompat::class)
     @Composable
     private fun ComposeContent() {
         Row(

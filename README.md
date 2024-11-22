@@ -5,7 +5,7 @@ shortcomings in the native material shadows.
 
 <br />
 
-**• Visual artifacts**
+**Visual artifacts**
 
 Unsightly draw defects are visible on `View`s and `Composable`s with see-through
 backgrounds.
@@ -25,7 +25,7 @@ alt="The above examples with the clip fix applied to each."
 width="55%" />
 </p>
 
-**• Color support**
+**Color support**
 
 Shadow colors were not added to the SDK until API level 28 (Pie). Before that,
 the only relevant adjustment available was the alpha value of plain black.
@@ -43,24 +43,6 @@ width="30%" />
 
 Though the differences are noticeable when compared side by side, the compat
 results are likely sufficient for many cases.
-
-<br />
-
-### Before getting started…
-
-Please note that clipping the artifact is not necessary if the UI element's
-background and the region behind it are each a single simple color. In that
-case, it is preferable to calculate the opaque color that results from
-compositing the translucent one over the other, and set that as the element's
-background instead.
-
-- Compose already has the [`compositeOver()`][ComposeComposite] function in its
-  `androidx.compose.ui.graphics.Color` class that can do the necessary
-  calculations internally.
-
-- The View framework has no such function out of the box, but [this
-  extension][ViewsComposite] from the androidx test source shows how to do the
-  math for `android.graphics.Color`.
 
 <br />
 
@@ -96,21 +78,20 @@ background instead.
 ## Views
 
 The library's features are applied to individual `View`s through extension
-properties, the main two being:
+properties, with the main two as direct controls for the clip and color compat
+features.
 
-- [`var View.clipOutlineShadow: Boolean`][clipOutlineShadow]
+- The [`var View.clipOutlineShadow`][clipOutlineShadow] extension is basically a
+  switch that toggles the clip fix on the receiver `View`. When `true`, the
+  intrinsic shadow is disabled and replaced with a clipped copy.
 
-  Basically a switch that toggles the clip fix on the receiver `View`. When
-  `true`, the intrinsic shadow is disabled and replaced with a clipped copy.
-
-- [`var View.outlineShadowColorCompat: Int`][outlineShadowColorCompat]
-
-  Takes a `@ColorInt` with which to tint replacement shadows on versions before
+- The [`var View.outlineShadowColorCompat`][outlineShadowColorCompat] property
+  takes a `@ColorInt` with which to tint replacement shadows on versions before
   Pie. A separate extension is available to force it on newer versions, and it
   can be used with or without the clip feature. The particulars can be found on
   [its wiki page][ViewColorCompatWiki].
 
-Usage is as easy as it seems:
+Usage for each is as easy as it seems:
 
 ```kotlin
 view.clipOutlineShadow = true
@@ -136,9 +117,9 @@ properties as possible fixes.
 - #### Overlapping sibling Views
 
   To accomplish its effect, the library disables a target's intrinsic shadow and
-  draws a clipped replacement in its parent `ViewGroup`'s overlay by default, in
-  front of all of the parent's children. This can cause a problem when a sibling
-  with a higher elevation overlaps the target.
+  draws a modified replacement in its parent `ViewGroup`'s overlay by default,
+  in front of all of the parent's children. This can cause a problem when a
+  sibling with a higher elevation overlaps the target.
 
   <p align="center">
   <img src="images/plane_foreground_broken.png"
@@ -146,9 +127,10 @@ properties as possible fixes.
   width="20%" />
   </p>
 
-  The [`ShadowPlane`][ShadowPlane] enum defines other options for different points in
-  the hierarchy's draw routine where the library shadow can be inserted.
-  Specifics and requirements are given on [its wiki page][ShadowPlaneWiki].
+  The [`ShadowPlane`][ShadowPlane] enum defines other options for different
+  points in the hierarchy's draw routine where the library shadow can be
+  inserted. Specifics and requirements are given on [its wiki
+  page][ShadowPlaneWiki].
 
 - #### Irregular shapes on Android R+
 
@@ -179,7 +161,7 @@ properties as possible fixes.
   width="20%" />
   </p>
 
-  If observed, the [`View.forceShadowLayer`][forceShadowLayer] property can be
+  If observed, the [`View.forceShadowLayer`][forceShadowLayer] extension can be
   used to mitigate, as explained on [its wiki page][forceShadowLayerWiki].
 
 ### ViewGroups
@@ -326,10 +308,6 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-  [ComposeComposite]: https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color#(androidx.compose.ui.graphics.Color).compositeOver(androidx.compose.ui.graphics.Color)
-
-  [ViewsComposite]: https://github.com/androidx/androidx/blob/fcb9a89959e0bbbdd1ec63ac82e279feb8336daa/graphics/graphics-core/src/androidTest/java/androidx/graphics/surface/SurfaceControlCompatTest.kt#L1783
 
   [notes]: https://github.com/zed-alpha/shadow-gadgets/wiki/Notes
 

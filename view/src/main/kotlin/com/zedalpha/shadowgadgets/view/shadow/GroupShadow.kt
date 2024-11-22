@@ -81,23 +81,22 @@ internal class GroupShadow(
         val shadow = coreShadow
         val target = targetView
 
+        if (shadow.translationZ != target.translationZ) return true
+        if (shadow.translationY != target.translationY) return true
+        if (shadow.translationX != target.translationX) return true
+        if (shadow.elevation != target.elevation) return true
+        if (shadow.scaleY != target.scaleY) return true
+        if (shadow.scaleX != target.scaleX) return true
+        if (shadow.rotationZ != target.rotation) return true
+        if (shadow.rotationY != target.rotationY) return true
+        if (shadow.rotationX != target.rotationX) return true
+        if (shadow.pivotY != target.pivotY) return true
+        if (shadow.pivotX != target.pivotX) return true
+        if (shadow.alpha != target.alpha) return true
         if (shadow.left != target.left) return true
         if (shadow.top != target.top) return true
         if (shadow.right != target.right) return true
         if (shadow.bottom != target.bottom) return true
-        if (shadow.alpha != target.alpha) return true
-        if (shadow.cameraDistance != target.cameraDistance) return true
-        if (shadow.elevation != target.elevation) return true
-        if (shadow.pivotX != target.pivotX) return true
-        if (shadow.pivotY != target.pivotY) return true
-        if (shadow.rotationX != target.rotationX) return true
-        if (shadow.rotationY != target.rotationY) return true
-        if (shadow.rotationZ != target.rotation) return true
-        if (shadow.scaleX != target.scaleX) return true
-        if (shadow.scaleY != target.scaleY) return true
-        if (shadow.translationX != target.translationX) return true
-        if (shadow.translationY != target.translationY) return true
-        if (shadow.translationZ != target.translationZ) return true
         if (Build.VERSION.SDK_INT >= 28) {
             if (shadow.ambientColor !=
                 ViewShadowColorsHelper.getAmbientColor(target)
@@ -106,6 +105,7 @@ internal class GroupShadow(
                 ViewShadowColorsHelper.getSpotColor(target)
             ) return true
         }
+        if (shadow.cameraDistance != target.cameraDistance) return true
         return false
     }
 }

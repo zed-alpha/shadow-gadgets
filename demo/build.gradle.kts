@@ -57,4 +57,6 @@ dependencies {
     implementation(libs.compose.material)
     implementation(libs.compose.runtime)
     implementation(libs.compose.ui)
+    debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.tooling.preview)
 }

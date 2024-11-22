@@ -5,15 +5,16 @@ import android.graphics.Color
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.view.View
+import androidx.annotation.CallSuper
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.fastForEach
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
-class Layer(
+sealed class Layer(
     ownerView: View,
     color: Int,
     private var width: Int,
-    private var height: Int,
+    private var height: Int
 ) {
     private val layer: ManagedLayer =
         if (RenderNodeFactory.isOpen) {
@@ -21,6 +22,8 @@ class Layer(
         } else {
             ViewLayer(ownerView, ::contentDraw)
         }
+
+    abstract fun contentDraw(canvas: Canvas)
 
     private val paint = Paint()
 
@@ -37,39 +40,11 @@ class Layer(
         this.color = color
     }
 
-    fun recreate() {
-        layer.apply {
-            recreate()
-            setLayerPaint(paint)
-            setSize(width, height)
-        }
-    }
-
-    fun dispose() {
-        layerDraws.clear()
-        layer.dispose()
-    }
-
     fun setSize(width: Int, height: Int) {
         if (this.width == width && this.height == height) return
         this.width = width; this.height = height
         layer.setSize(width, height)
     }
-
-    private val layerDraws = mutableListOf<LayerDraw>()
-
-    private fun contentDraw(canvas: Canvas) =
-        layerDraws.fastForEach { it.draw(canvas) }
-
-    fun addDraw(draw: LayerDraw) {
-        layerDraws.add(draw)
-    }
-
-    fun removeDraw(draw: LayerDraw) {
-        layerDraws.remove(draw)
-    }
-
-    fun isEmpty() = layerDraws.isEmpty()
 
     fun draw(canvas: Canvas) {
         if (canvas.isHardwareAccelerated) layer.draw(canvas)
@@ -78,6 +53,56 @@ class Layer(
     fun invalidate() = layer.invalidate()
 
     fun refresh() = layer.refresh()
+
+    fun recreate() {
+        layer.apply {
+            recreate()
+            setLayerPaint(paint)
+            setSize(width, height)
+        }
+    }
+
+    @CallSuper
+    open fun dispose() = layer.dispose()
+}
+
+class SingleDrawLayer(
+    ownerView: View,
+    color: Int,
+    width: Int,
+    height: Int,
+    private val layerDraw: LayerDraw
+) : Layer(ownerView, color, width, height) {
+
+    override fun contentDraw(canvas: Canvas) = layerDraw.draw(canvas)
+}
+
+class MultiDrawLayer(
+    ownerView: View,
+    color: Int,
+    width: Int,
+    height: Int
+) : Layer(ownerView, color, width, height) {
+
+    private val layerDraws = mutableListOf<LayerDraw>()
+
+    fun addDraw(layerDraw: LayerDraw) {
+        layerDraws.add(layerDraw)
+    }
+
+    fun removeDraw(layerDraw: LayerDraw) {
+        layerDraws.remove(layerDraw)
+    }
+
+    fun isEmpty(): Boolean = layerDraws.isEmpty()
+
+    override fun contentDraw(canvas: Canvas) =
+        layerDraws.fastForEach { it.draw(canvas) }
+
+    override fun dispose() {
+        super.dispose()
+        layerDraws.clear()
+    }
 }
 
 private fun Paint.setLayerFilter(color: Int) {

@@ -71,8 +71,6 @@ interface Shadow {
 
     fun setPosition(left: Int, top: Int, right: Int, bottom: Int)
 
-    val outline: Outline
-
     fun setOutline(outline: Outline)
 
     fun hasIdentityMatrix(): Boolean

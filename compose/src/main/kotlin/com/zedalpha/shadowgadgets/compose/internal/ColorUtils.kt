@@ -5,14 +5,12 @@ import android.view.ViewTreeObserver
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import com.zedalpha.shadowgadgets.compose.R
 import com.zedalpha.shadowgadgets.core.blendShadowColors
-import com.zedalpha.shadowgadgets.core.layer.DefaultInlineLayerRequired
 import com.zedalpha.shadowgadgets.core.layer.LocationTracker
 import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
 import kotlinx.coroutines.CoroutineScope
@@ -42,9 +40,6 @@ internal fun blend(
         Color(blendShadowColors(ambient, ambientAlpha, spot, spotAlpha))
     }
 }
-
-internal fun requiresLayer(colorCompat: Color) =
-    colorCompat != DefaultShadowColor || DefaultInlineLayerRequired
 
 internal val View.screenLocation: SharedFlow<IntOffset>
     get() = (locationDispatcher ?: LocationDispatcher(this)).screenLocation

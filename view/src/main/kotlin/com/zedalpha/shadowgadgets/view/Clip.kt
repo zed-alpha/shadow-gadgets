@@ -126,7 +126,8 @@ class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
             }
 
         /**
-         * Returns the [MaterialShapeDrawable] if [root] is or contains one.
+         * Returns the first [MaterialShapeDrawable] found if [root] is or
+         * contains one.
          *
          * This is provided as a convenience to help ensure that
          * [MaterialShapeDrawableViewPathProvider] will work correctly with a

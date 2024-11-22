@@ -3,20 +3,19 @@ package com.zedalpha.shadowgadgets.view.shadow
 import android.graphics.Canvas
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
-import com.zedalpha.shadowgadgets.core.layer.Layer
-import com.zedalpha.shadowgadgets.core.layer.LayerDraw
+import com.zedalpha.shadowgadgets.core.layer.MultiDrawLayer
 
 internal class OverlayLayerSet(private val ownerView: ViewGroup) {
 
-    private val activeLayers = mutableMapOf<Int, Layer>()
+    private val layersByColor = mutableMapOf<Int, MultiDrawLayer>()
 
-    private val drawLayers = mutableMapOf<LayerDraw, Layer?>()
+    private val layersByShadow = mutableMapOf<GroupShadow, MultiDrawLayer?>()
 
-    fun requiresTracking() = activeLayers.isNotEmpty()
+    fun requiresTracking() = layersByColor.isNotEmpty()
 
     fun addShadow(shadow: GroupShadow, color: Int) {
         val needsLayer = color != DefaultShadowColorInt || shadow.forceLayer
-        drawLayers[shadow] = if (needsLayer) {
+        layersByShadow[shadow] = if (needsLayer) {
             obtainLayer(shadow, color, null)
         } else {
             null
@@ -24,17 +23,17 @@ internal class OverlayLayerSet(private val ownerView: ViewGroup) {
     }
 
     fun updateColor(shadow: GroupShadow, color: Int) {
-        val current = drawLayers.remove(shadow)?.also { it.removeDraw(shadow) }
-        val recycled = current?.let { layer ->
+        val recycled = layersByShadow.remove(shadow)?.let { layer ->
+            layer.removeDraw(shadow)
             if (layer.isEmpty()) {
-                activeLayers.remove(layer.color)
+                layersByColor.remove(layer.color)
                 layer
             } else {
                 null
             }
         }
         val needsLayer = color != DefaultShadowColorInt || shadow.forceLayer
-        drawLayers[shadow] = if (needsLayer) {
+        layersByShadow[shadow] = if (needsLayer) {
             obtainLayer(shadow, color, recycled)
         } else {
             recycled?.dispose()
@@ -43,10 +42,10 @@ internal class OverlayLayerSet(private val ownerView: ViewGroup) {
     }
 
     fun removeShadow(shadow: GroupShadow) {
-        drawLayers.remove(shadow)?.run {
+        layersByShadow.remove(shadow)?.run {
             removeDraw(shadow)
             if (isEmpty()) {
-                activeLayers.remove(color)
+                layersByColor.remove(color)
                 dispose()
             }
         }
@@ -55,32 +54,30 @@ internal class OverlayLayerSet(private val ownerView: ViewGroup) {
     private fun obtainLayer(
         shadow: GroupShadow,
         color: Int,
-        recycled: Layer?
-    ): Layer {
-        val layer = activeLayers[color]?.also { recycled?.dispose() }
-            ?: recycled?.also { it.color = color; activeLayers[color] = it }
-            ?: with(ownerView) { Layer(this, color, width, height) }
-                .also { activeLayers[color] = it }
+        recycled: MultiDrawLayer?
+    ): MultiDrawLayer {
+        val layer = layersByColor[color]?.also { recycled?.dispose() }
+            ?: recycled?.also { it.color = color; layersByColor[color] = it }
+            ?: with(ownerView) { MultiDrawLayer(this, color, width, height) }
+                .also { layersByColor[color] = it }
         return layer.apply { addDraw(shadow) }
     }
 
     fun draw(canvas: Canvas) {
-        activeLayers.values.run {
-            if (isNotEmpty()) forEach { it.draw(canvas) }
+        layersByShadow.entries.forEach { (layerDraw, layer) ->
+            if (layer == null) layerDraw.draw(canvas)
         }
-        drawLayers.entries.forEach { (shadow, layer) ->
-            if (layer == null) shadow.draw(canvas)
-        }
+        layersByColor.values.forEach { layer -> layer.draw(canvas) }
     }
 
     fun setSize(width: Int, height: Int) =
-        activeLayers.values.forEach { it.setSize(width, height) }
+        layersByColor.values.forEach { it.setSize(width, height) }
 
-    fun invalidate() = activeLayers.values.forEach { it.invalidate() }
+    fun invalidate() = layersByColor.values.forEach { it.invalidate() }
 
-    fun refresh() = activeLayers.values.forEach { it.refresh() }
+    fun refresh() = layersByColor.values.forEach { it.refresh() }
 
-    fun recreate() = activeLayers.values.forEach { it.recreate() }
+    fun recreate() = layersByColor.values.forEach { it.recreate() }
 
-    fun dispose() = activeLayers.values.forEach { it.dispose() }
+    fun dispose() = layersByColor.values.forEach { it.dispose() }
 }

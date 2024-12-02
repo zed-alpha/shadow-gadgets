@@ -2,17 +2,9 @@ package com.zedalpha.shadowgadgets.compose.internal
 
 import android.view.View
 import android.view.ViewTreeObserver
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import com.zedalpha.shadowgadgets.compose.R
-import com.zedalpha.shadowgadgets.core.blendShadowColors
 import com.zedalpha.shadowgadgets.core.layer.LocationTracker
-import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -23,23 +15,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-
-@Composable
-internal fun blend(
-    ambientColor: Color,
-    spotColor: Color
-): Color {
-    val context = LocalContext.current
-    val (ambientAlpha, spotAlpha) =
-        remember(LocalConfiguration.current) {
-            context.resolveThemeShadowAlphas()
-        }
-    return remember(ambientColor, ambientAlpha, spotColor, spotAlpha) {
-        val ambient = ambientColor.toArgb()
-        val spot = spotColor.toArgb()
-        Color(blendShadowColors(ambient, ambientAlpha, spot, spotAlpha))
-    }
-}
 
 internal val View.screenLocation: SharedFlow<IntOffset>
     get() = (locationDispatcher ?: LocationDispatcher(this)).screenLocation

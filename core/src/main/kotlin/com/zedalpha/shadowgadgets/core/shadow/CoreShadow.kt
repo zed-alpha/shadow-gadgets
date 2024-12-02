@@ -17,6 +17,7 @@ internal abstract class CoreShadow : Shadow {
 
     override fun draw(canvas: Canvas) {
         if (!canvas.isHardwareAccelerated) return
+
         enableZ(canvas)
         onDraw(canvas)
         disableZ(canvas)

@@ -3,17 +3,17 @@ package com.zedalpha.shadowgadgets.compose
 import android.os.Build
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.takeOrElse
-import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.zedalpha.shadowgadgets.compose.internal.baseShadow
-import com.zedalpha.shadowgadgets.compose.internal.blend
+import com.zedalpha.shadowgadgets.compose.internal.BaseShadowElement
+import com.zedalpha.shadowgadgets.compose.internal.BaseShadowNode
 
 /**
  * Creates a clipped replacement for the regular `shadow` Modifier.
@@ -28,15 +28,16 @@ fun Modifier.clippedShadow(
     clip: Boolean = elevation > 0.dp,
     ambientColor: Color = DefaultShadowColor,
     spotColor: Color = DefaultShadowColor
-): Modifier = clippedShadow(
-    elevation = elevation,
-    shape = shape,
-    clip = clip,
-    ambientColor = ambientColor,
-    spotColor = spotColor,
-    colorCompat = DefaultShadowColor,
-    forceColorCompat = false
-)
+): Modifier =
+    clippedShadow(
+        elevation = elevation,
+        shape = shape,
+        clip = clip,
+        ambientColor = ambientColor,
+        spotColor = spotColor,
+        colorCompat = DefaultShadowColor,
+        forceColorCompat = false
+    )
 
 /**
  * A [clippedShadow] overload that can be tinted with the library's color compat
@@ -72,33 +73,102 @@ fun Modifier.clippedShadow(
     forceColorCompat: Boolean = false
 ): Modifier =
     if (elevation > 0.dp || clip) {
-        composed(
-            inspectorInfo = debugInspectorInfo {
-                name = "clippedShadow"
-                properties["elevation"] = elevation
-                properties["shape"] = shape
-                properties["clip"] = clip
-                properties["ambientColor"] = ambientColor
-                properties["spotColor"] = spotColor
-                properties["colorCompat"] = colorCompat
-                properties["forceColorCompat"] = forceColorCompat
-            }
-        ) {
-            val compat = if (Build.VERSION.SDK_INT < 28 || forceColorCompat) {
-                colorCompat.takeOrElse { blend(ambientColor, spotColor) }
-            } else {
-                DefaultShadowColor
-            }
-            baseShadow(
-                clipped = true,
-                elevation = elevation,
-                shape = shape,
-                clip = clip,
-                ambientColor = ambientColor,
-                spotColor = spotColor,
-                colorCompat = compat
-            )
-        }
+        val shadow = this then ClippedShadowElement(
+            elevation = elevation,
+            shape = shape,
+            clip = clip,
+            ambientColor = ambientColor,
+            spotColor = spotColor,
+            colorCompat = colorCompat,
+            forceColorCompat = forceColorCompat
+        )
+        if (clip) shadow.clip(shape) else shadow
     } else {
         this
     }
+
+private class ClippedShadowElement(
+    elevation: Dp,
+    shape: Shape,
+    private val clip: Boolean,
+    ambientColor: Color,
+    spotColor: Color,
+    colorCompat: Color,
+    forceColorCompat: Boolean
+) : BaseShadowElement(
+    elevation,
+    shape,
+    ambientColor,
+    spotColor,
+    colorCompat,
+    forceColorCompat
+) {
+    override fun create() =
+        ClippedShadowNode(
+            elevation,
+            shape,
+            ambientColor,
+            spotColor,
+            colorCompat,
+            forceColorCompat
+        )
+
+    override fun InspectorInfo.inspectableProperties() {
+        name = "clippedShadow"
+        properties["elevation"] = elevation
+        properties["shape"] = shape
+        properties["clip"] = clip
+        properties["ambientColor"] = ambientColor
+        properties["spotColor"] = spotColor
+        properties["colorCompat"] = colorCompat
+        properties["forceColorCompat"] = forceColorCompat
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ClippedShadowElement) return false
+        if (elevation != other.elevation) return false
+        if (shape != other.shape) return false
+        if (clip != other.clip) return false
+        if (ambientColor != other.ambientColor) return false
+        if (spotColor != other.spotColor) return false
+        if (colorCompat != other.colorCompat) return false
+        if (forceColorCompat != other.forceColorCompat) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = elevation.hashCode()
+        result = 31 * result + shape.hashCode()
+        result = 31 * result + clip.hashCode()
+        result = 31 * result + ambientColor.hashCode()
+        result = 31 * result + spotColor.hashCode()
+        result = 31 * result + colorCompat.hashCode()
+        result = 31 * result + forceColorCompat.hashCode()
+        return result
+    }
+}
+
+private class ClippedShadowNode(
+    elevation: Dp,
+    shape: Shape,
+    ambientColor: Color,
+    spotColor: Color,
+    colorCompat: Color,
+    forceColorCompat: Boolean
+) : BaseShadowNode(
+    true,
+    elevation,
+    shape,
+    ambientColor,
+    spotColor,
+    colorCompat,
+    forceColorCompat
+) {
+    override fun calculateColorCompat(colorCompat: Color): Color =
+        if (Build.VERSION.SDK_INT < 28 || forceColorCompat) {
+            colorCompat.takeOrElse { blendNativeColors() }
+        } else {
+            DefaultShadowColor
+        }
+}

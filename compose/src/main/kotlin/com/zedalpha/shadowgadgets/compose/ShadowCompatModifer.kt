@@ -1,9 +1,10 @@
 package com.zedalpha.shadowgadgets.compose
 
 import android.os.Build
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
@@ -11,11 +12,11 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.graphics.takeOrElse
-import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.zedalpha.shadowgadgets.compose.internal.baseShadow
-import com.zedalpha.shadowgadgets.compose.internal.blend
+import com.zedalpha.shadowgadgets.compose.internal.BaseShadowElement
+import com.zedalpha.shadowgadgets.compose.internal.BaseShadowNode
 
 /**
  * Creates a [shadow] replacement that can be tinted with the library's color
@@ -38,6 +39,7 @@ import com.zedalpha.shadowgadgets.compose.internal.blend
  * if the ambient and spot colors are both fully opaque; i.e., only if both
  * have maximum alpha values.
  */
+@Composable
 @Stable
 fun Modifier.shadowCompat(
     elevation: Dp,
@@ -49,9 +51,7 @@ fun Modifier.shadowCompat(
     forceColorCompat: Boolean = false
 ): Modifier =
     if (elevation > 0.dp || clip) {
-
         val useNative = Build.VERSION.SDK_INT >= 28 && !forceColorCompat
-
         if (useNative ||
             colorCompat.isDefault ||
             colorCompat.isUnspecified &&
@@ -61,34 +61,101 @@ fun Modifier.shadowCompat(
             val spot = if (useNative) spotColor else DefaultShadowColor
             shadow(elevation, shape, clip, ambient, spot)
         } else {
-            composed(
-                inspectorInfo = debugInspectorInfo {
-                    name = "shadowCompat"
-                    properties["elevation"] = elevation
-                    properties["shape"] = shape
-                    properties["clip"] = clip
-                    properties["ambientColor"] = ambientColor
-                    properties["spotColor"] = spotColor
-                    properties["colorCompat"] = colorCompat
-                    properties["forceColorCompat"] = forceColorCompat
-                }
-            ) {
-                val compat = colorCompat.takeOrElse {
-                    blend(ambientColor, spotColor)
-                }
-                baseShadow(
-                    clipped = false,
-                    elevation = elevation,
-                    shape = shape,
-                    clip = clip,
-                    ambientColor = ambientColor,
-                    spotColor = spotColor,
-                    colorCompat = compat
-                )
-            }
+            val shadow = this then ShadowCompatElement(
+                elevation = elevation,
+                shape = shape,
+                clip = clip,
+                ambientColor = ambientColor,
+                spotColor = spotColor,
+                colorCompat = colorCompat,
+                forceColorCompat = forceColorCompat
+            )
+            if (clip) shadow.clip(shape) else shadow
         }
     } else {
         this
     }
 
 private inline val Color.isDefault: Boolean get() = this == DefaultShadowColor
+
+private class ShadowCompatElement(
+    elevation: Dp,
+    shape: Shape,
+    private val clip: Boolean,
+    ambientColor: Color,
+    spotColor: Color,
+    colorCompat: Color,
+    forceColorCompat: Boolean
+) : BaseShadowElement(
+    elevation,
+    shape,
+    ambientColor,
+    spotColor,
+    colorCompat,
+    forceColorCompat
+) {
+    override fun create() =
+        ShadowCompatNode(
+            elevation,
+            shape,
+            ambientColor,
+            spotColor,
+            colorCompat,
+            forceColorCompat
+        )
+
+    override fun InspectorInfo.inspectableProperties() {
+        name = "shadowCompat"
+        properties["elevation"] = elevation
+        properties["shape"] = shape
+        properties["clip"] = clip
+        properties["ambientColor"] = ambientColor
+        properties["spotColor"] = spotColor
+        properties["colorCompat"] = colorCompat
+        properties["forceColorCompat"] = forceColorCompat
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ShadowCompatElement) return false
+        if (elevation != other.elevation) return false
+        if (shape != other.shape) return false
+        if (clip != other.clip) return false
+        if (ambientColor != other.ambientColor) return false
+        if (spotColor != other.spotColor) return false
+        if (colorCompat != other.colorCompat) return false
+        if (forceColorCompat != other.forceColorCompat) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = elevation.hashCode()
+        result = 31 * result + shape.hashCode()
+        result = 31 * result + clip.hashCode()
+        result = 31 * result + ambientColor.hashCode()
+        result = 31 * result + spotColor.hashCode()
+        result = 31 * result + colorCompat.hashCode()
+        result = 31 * result + forceColorCompat.hashCode()
+        return result
+    }
+}
+
+private class ShadowCompatNode(
+    elevation: Dp,
+    shape: Shape,
+    ambientColor: Color,
+    spotColor: Color,
+    colorCompat: Color,
+    forceColorCompat: Boolean
+) : BaseShadowNode(
+    false,
+    elevation,
+    shape,
+    ambientColor,
+    spotColor,
+    colorCompat,
+    forceColorCompat
+) {
+    override fun calculateColorCompat(colorCompat: Color): Color =
+        colorCompat.takeOrElse { blendNativeColors() }
+}

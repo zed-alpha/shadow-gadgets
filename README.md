@@ -81,11 +81,11 @@ The library's features are applied to individual `View`s through extension
 properties, with the main two as direct controls for the clip and color compat
 features.
 
-- The [`var View.clipOutlineShadow`][clipOutlineShadow] extension is basically a
-  switch that toggles the clip fix on the receiver `View`. When `true`, the
-  intrinsic shadow is disabled and replaced with a clipped copy.
+- The [`View.clipOutlineShadow: Boolean`][clipOutlineShadow] extension is
+  basically a switch that toggles the clip fix on the receiver `View`. When
+  `true`, the intrinsic shadow is disabled and replaced with a clipped copy.
 
-- The [`var View.outlineShadowColorCompat`][outlineShadowColorCompat] property
+- The [`View.outlineShadowColorCompat: Int`][outlineShadowColorCompat] property
   takes a `@ColorInt` with which to tint replacement shadows on versions before
   Pie. A separate extension is available to force it on newer versions, and it
   can be used with or without the clip feature. The particulars can be found on

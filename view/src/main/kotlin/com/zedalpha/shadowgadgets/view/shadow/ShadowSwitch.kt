@@ -38,11 +38,14 @@ private object ShadowSwitch : View.OnAttachStateChangeListener {
     override fun onViewAttachedToWindow(view: View) {
         val shadow = view.shadow
         val scope = view.parent as? ViewGroup
+
         if (shadow == null || view.shadowScope !== scope) {
             shadow?.detachFromTarget()
             view.shadowScope = scope
+
             val isRecyclingViewGroup = scope?.isRecyclingViewGroup == true
             view.isRecyclingViewGroupChild = isRecyclingViewGroup
+
             if (!(scope is ShadowsViewGroup && isRecyclingViewGroup) ||
                 view.isInitialized
             ) {
@@ -55,6 +58,7 @@ private object ShadowSwitch : View.OnAttachStateChangeListener {
 
     override fun onViewDetachedFromWindow(view: View) {
         val shadow = view.shadow ?: return
+
         if (view.isRecyclingViewGroupChild) {
             shadow.isShown = false
         } else {

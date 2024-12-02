@@ -20,6 +20,7 @@ dependencies {
 
 dokka {
     dokkaPublicationDirectory = rootDir.resolve("docs")
+
     pluginsConfiguration {
         html {
             customAssets.from(file("images/logo-icon.svg"))
@@ -36,6 +37,11 @@ dokka {
 
 configure(documentedProjects) {
     apply(plugin = rootProject.libs.plugins.dokka.get().pluginId)
+
+    dependencies {
+        dokkaHtmlPlugin(rootProject.libs.dokka.versioning.plugin)
+    }
+
     dokka {
         dokkaPublicationDirectory = layout.buildDirectory.dir("docs")
         dokkaPublications.html { suppressInheritedMembers = true }

@@ -14,11 +14,12 @@ import com.zedalpha.shadowgadgets.core.shadow.ViewShadow
 fun Shadow(
     ownerView: View,
     forceViewType: Boolean = false
-): Shadow = if (RenderNodeFactory.isOpen && !forceViewType) {
-    RenderNodeShadow()
-} else {
-    ViewShadow(ownerView)
-}
+): Shadow =
+    if (RenderNodeFactory.isOpen && !forceViewType) {
+        RenderNodeShadow()
+    } else {
+        ViewShadow(ownerView)
+    }
 
 @RequiresApi(29)
 fun Shadow(): Shadow = RenderNodeShadow()

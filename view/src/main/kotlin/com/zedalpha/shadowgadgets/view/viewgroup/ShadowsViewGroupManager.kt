@@ -71,7 +71,11 @@ internal abstract class ShadowsViewGroupManager(
             attributeSet,
             R.styleable.ShadowsViewGroup
         )
-        parentView.saveDebugData(attributeSet, array)
+        parentView.saveDebugData(
+            R.styleable.ShadowsViewGroup,
+            attributeSet,
+            array
+        )
 
         if (array.hasValue(R.styleable.ShadowsViewGroup_childShadowsPlane)) {
             childShadowsPlane = ShadowPlane.forValue(
@@ -212,9 +216,11 @@ private fun nextSize(childCount: Int) =
 private val UnsafeZComparator =
     Comparator<View?> { v1, v2 -> v1!!.z.compareTo(v2!!.z) }
 
-private fun View.saveDebugData(attrs: AttributeSet?, array: TypedArray) {
+private fun View.saveDebugData(
+    styleable: IntArray,
+    attrs: AttributeSet?,
+    array: TypedArray
+) {
     if (Build.VERSION.SDK_INT < 29) return
-    saveAttributeDataForStyleable(
-        context, R.styleable.ShadowsViewGroup, attrs, array, 0, 0
-    )
+    saveAttributeDataForStyleable(context, styleable, attrs, array, 0, 0)
 }

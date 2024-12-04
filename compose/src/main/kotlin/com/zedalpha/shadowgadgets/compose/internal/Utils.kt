@@ -6,11 +6,16 @@ import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.util.fastRoundToInt
 import android.graphics.Outline as AndroidOutline
 import android.graphics.Path as AndroidPath
+
+internal inline val Color.isDefault: Boolean
+    get() = this == DefaultShadowColor
 
 internal fun setRectangle(
     rect: Rect,

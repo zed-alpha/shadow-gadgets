@@ -1,6 +1,5 @@
 package com.zedalpha.shadowgadgets.compose
 
-import android.os.Build
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -8,12 +7,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.zedalpha.shadowgadgets.compose.internal.BaseShadowElement
-import com.zedalpha.shadowgadgets.compose.internal.BaseShadowNode
+import com.zedalpha.shadowgadgets.compose.internal.ShadowElement
+import com.zedalpha.shadowgadgets.compose.internal.ShadowNode
 
 /**
  * Creates a clipped replacement for the regular `shadow` Modifier.
@@ -95,7 +93,7 @@ private class ClippedShadowElement(
     spotColor: Color,
     colorCompat: Color,
     forceColorCompat: Boolean
-) : BaseShadowElement(
+) : ShadowElement(
     elevation,
     shape,
     ambientColor,
@@ -104,7 +102,8 @@ private class ClippedShadowElement(
     forceColorCompat
 ) {
     override fun create() =
-        ClippedShadowNode(
+        ShadowNode(
+            true,
             elevation,
             shape,
             ambientColor,
@@ -147,28 +146,4 @@ private class ClippedShadowElement(
         result = 31 * result + forceColorCompat.hashCode()
         return result
     }
-}
-
-private class ClippedShadowNode(
-    elevation: Dp,
-    shape: Shape,
-    ambientColor: Color,
-    spotColor: Color,
-    colorCompat: Color,
-    forceColorCompat: Boolean
-) : BaseShadowNode(
-    true,
-    elevation,
-    shape,
-    ambientColor,
-    spotColor,
-    colorCompat,
-    forceColorCompat
-) {
-    override fun calculateColorCompat(colorCompat: Color): Color =
-        if (Build.VERSION.SDK_INT < 28 || forceColorCompat) {
-            colorCompat.takeOrElse { blendNativeColors() }
-        } else {
-            DefaultShadowColor
-        }
 }

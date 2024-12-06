@@ -1,7 +1,6 @@
 package com.zedalpha.shadowgadgets.compose
 
 import android.os.Build
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +38,6 @@ import com.zedalpha.shadowgadgets.compose.internal.isDefault
  * if the ambient and spot colors are both fully opaque; i.e., only if both
  * have maximum alpha values.
  */
-@Composable
 @Stable
 fun Modifier.shadowCompat(
     elevation: Dp,

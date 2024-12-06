@@ -6,11 +6,8 @@ import androidx.compose.ui.draw.CacheDrawScope
 import androidx.compose.ui.draw.DrawResult
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.isSimple
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.isSpecified
@@ -48,8 +45,6 @@ import com.zedalpha.shadowgadgets.core.blendShadowColors
 import com.zedalpha.shadowgadgets.core.layer.DefaultInlineLayerRequired
 import com.zedalpha.shadowgadgets.core.layer.SingleDrawLayer
 import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
-import android.graphics.Outline as AndroidOutline
-import android.graphics.Path as AndroidPath
 
 internal abstract class ShadowElement(
     val elevation: Dp,
@@ -84,11 +79,9 @@ internal class ShadowNode(
     GlobalPositionAwareModifierNode,
     ObserverModifierNode {
 
-    private val androidPath = AndroidPath()
-
-    private val androidOutline = AndroidOutline().apply { alpha = 1.0F }
-
     private var coreShadow: Shadow? = null
+
+    private lateinit var shadowOutline: ShadowOutline
 
     private lateinit var currentState: StateHolder
 
@@ -97,9 +90,11 @@ internal class ShadowNode(
     override fun onAttach() {
         val view = currentValueOf(LocalView)
         coreShadow = if (clipped) {
-            val provider = PathProvider { it.set(androidPath) }
+            val outline = ClippedOutline().also { shadowOutline = it }
+            val provider = PathProvider { it.set(outline.androidPath) }
             ClippedShadow(view).apply { pathProvider = provider }
         } else {
+            shadowOutline = CompatOutline()
             Shadow(view)
         }
         currentState = StateHolder()
@@ -213,9 +208,9 @@ internal class ShadowNode(
         if (current.shape != shape || current.size != size ||
             current.layoutDirection != layoutDirection
         ) {
-            val outline = shape.createOutline(size, layoutDirection, this)
-            outline.applyTo(androidOutline, androidPath)
-            shadow.setOutline(androidOutline)
+            shadowOutline.setShape(shape, size, layoutDirection, this)
+            shadow.setOutline(shadowOutline.androidOutline)
+
             current.shape = shape
             current.size = size
             current.layoutDirection = layoutDirection
@@ -279,29 +274,6 @@ internal class ShadowNode(
         coreShadow?.run { dispose(); coreShadow = null }
         coreLayer?.run { dispose(); coreLayer = null }
     }
-
-    private fun Outline.applyTo(
-        androidOutline: AndroidOutline,
-        androidPath: AndroidPath
-    ) {
-        androidPath.reset()
-        when (this) {
-            is Outline.Rectangle -> {
-                setRectangle(rect, androidOutline, androidPath)
-            }
-            is Outline.Rounded -> if (roundRect.isSimple) {
-                setRoundedSimple(roundRect, androidOutline, androidPath)
-            } else {
-                val tmp = tmpPath ?: Path().also { tmpPath = it }
-                setRoundedComplex(roundRect, androidOutline, androidPath, tmp)
-            }
-            is Outline.Generic -> {
-                setGeneric(path, androidOutline, androidPath)
-            }
-        }
-    }
-
-    private var tmpPath: Path? = null
 }
 
 private class StateHolder(
@@ -316,3 +288,6 @@ private class StateHolder(
     var size: Size = Size.Unspecified,
     var layoutDirection: LayoutDirection? = null
 )
+
+internal inline val Color.isDefault: Boolean
+    get() = this == DefaultShadowColor

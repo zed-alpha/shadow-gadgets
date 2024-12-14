@@ -1,5 +1,6 @@
 package com.zedalpha.shadowgadgets.compose.internal
 
+import android.graphics.Color.TRANSPARENT
 import android.os.Build
 import androidx.compose.ui.draw.CacheDrawModifierNode
 import androidx.compose.ui.draw.CacheDrawScope
@@ -94,7 +95,7 @@ internal class ShadowNode(
             val provider = PathProvider { it.set(outline.androidPath) }
             ClippedShadow(view).apply { pathProvider = provider }
         } else {
-            shadowOutline = CompatOutline()
+            shadowOutline = ShadowOutline()
             Shadow(view)
         }
         currentState = StateHolder()
@@ -150,9 +151,9 @@ internal class ShadowNode(
         }
 
         if (invalidateCache) {
-            cacheDrawModifier.invalidateDrawCache()
+            cacheDrawNode.invalidateDrawCache()
         } else if (invalidateDraw) {
-            cacheDrawModifier.invalidateDraw()
+            cacheDrawNode.invalidateDraw()
         }
     }
 
@@ -163,7 +164,7 @@ internal class ShadowNode(
         return Color(blendShadowColors(ambient, ambientAlpha, spot, spotAlpha))
     }
 
-    private val cacheDrawModifier = delegate(CacheDrawModifierNode(::cacheDraw))
+    private val cacheDrawNode = delegate(CacheDrawModifierNode(::cacheDraw))
 
     private var rootSize: IntSize = IntSize.Zero
     private var positionInRoot: Offset = Offset.Unspecified
@@ -192,9 +193,9 @@ internal class ShadowNode(
         this.positionOnScreen = positionOnScreen
 
         if (invalidateCache) {
-            cacheDrawModifier.invalidateDrawCache()
+            cacheDrawNode.invalidateDrawCache()
         } else if (invalidateDraw) {
-            cacheDrawModifier.invalidateDraw()
+            cacheDrawNode.invalidateDraw()
         }
     }
 
@@ -267,8 +268,10 @@ internal class ShadowNode(
         }
     }
 
-    private fun createLayer(shadow: Shadow) =
-        SingleDrawLayer(currentValueOf(LocalView), 0, 0, 0, shadow::draw)
+    private fun createLayer(shadow: Shadow): SingleDrawLayer {
+        val view = currentValueOf(LocalView)
+        return SingleDrawLayer(view, TRANSPARENT, 0, 0, shadow::draw)
+    }
 
     override fun onDetach() {
         coreShadow?.run { dispose(); coreShadow = null }

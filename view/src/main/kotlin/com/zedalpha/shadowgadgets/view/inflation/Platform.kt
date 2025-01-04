@@ -12,6 +12,8 @@ import android.view.LayoutInflater
  *
  * Must be called before `setContentView()`.
  */
+@Suppress("DeprecatedCallableAddReplaceWith")
+@Deprecated("The inflation subpackage is being removed entirely.")
 fun Activity.attachShadowHelper() {
     layoutInflater.factory = PlatformShadowHelper(this)
 }
@@ -32,11 +34,13 @@ private class PlatformShadowHelper(context: Context) : LayoutInflater.Factory {
  * inflater helper on every [Activity] instance that is created. Included mainly
  * for illustrative purposes.
  */
+@Deprecated("The inflation subpackage is being removed entirely.")
 class PlatformShadowHelperApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
+        @Suppress("DEPRECATION")
         registerActivityLifecycleCallbacks(
             ActivityCreatedCallback { activity, _ ->
                 activity.attachShadowHelper()
@@ -49,6 +53,7 @@ class PlatformShadowHelperApplication : Application() {
  * This is an adapter interface with empty defaults for all of
  * [Application.ActivityLifecycleCallbacks]' functions except the one.
  */
+@Deprecated("The inflation subpackage is being removed entirely.")
 fun interface ActivityCreatedCallback : Application.ActivityLifecycleCallbacks {
 
     // Overridden for dokka

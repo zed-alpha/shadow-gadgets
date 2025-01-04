@@ -27,9 +27,9 @@ import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.observeReads
+import androidx.compose.ui.node.requireView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.roundToIntSize
 import androidx.core.graphics.withTranslation
 import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.DefaultAmbientShadowAlpha
-import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.DefaultSpotShadowAlpha
 import com.zedalpha.shadowgadgets.core.PathProvider
 import com.zedalpha.shadowgadgets.core.Shadow
@@ -84,21 +83,19 @@ internal class ShadowNode(
 
     private lateinit var shadowOutline: ShadowOutline
 
-    private lateinit var currentState: StateHolder
-
     override val shouldAutoInvalidate: Boolean = false
 
     override fun onAttach() {
-        val view = currentValueOf(LocalView)
         coreShadow = if (clipped) {
             val outline = ClippedOutline().also { shadowOutline = it }
             val provider = PathProvider { it.set(outline.androidPath) }
-            ClippedShadow(view).apply { pathProvider = provider }
+            ClippedShadow(requireView()).apply { pathProvider = provider }
         } else {
             shadowOutline = ShadowOutline()
-            Shadow(view)
+            Shadow(requireView())
         }
-        currentState = StateHolder()
+        appliedSize = Size.Unspecified
+        drawNode.invalidateDrawCache()
         onObservedReadsChanged()
     }
 
@@ -114,127 +111,129 @@ internal class ShadowNode(
         }
     }
 
-    private var layerColor = DefaultShadowColor
+    private val drawNode = delegate(CacheDrawModifierNode(::cacheDraw))
+
+    private var actualAmbientColor = Color.Unspecified
+    private var actualSpotColor = Color.Unspecified
+    private var layerColor = Color.Unspecified
+    private var blendAmbientColor = Color.Unspecified
+    private var blendSpotColor = Color.Unspecified
+
+    private var appliedElevation: Dp = Dp.Unspecified
+    private var appliedAmbientColor = Color.Unspecified
+    private var appliedSpotColor = Color.Unspecified
+    private var appliedLayerColor = Color.Unspecified
+    private var appliedShape = RectangleShape
+    private var appliedSize = Size.Unspecified
+    private var appliedLayoutDirection = LayoutDirection.Ltr
 
     fun update() {
-        val current = currentState
-        var invalidateDraw = false
-        var invalidateCache = false
-
-        if (current.elevation != elevation) invalidateDraw = true
-        if (current.shape != shape) invalidateCache = true
-
-        if (Build.VERSION.SDK_INT >= 28 && !forceColorCompat) {
-            if (current.ambientColor != ambientColor) invalidateDraw = true
-            if (current.spotColor != spotColor) invalidateDraw = true
-        } else {
-            val layerColor = when {
-                colorCompat.isDefault || colorCompat.isUnspecified &&
-                        ambientColor.isDefault && spotColor.isDefault -> {
-                    DefaultShadowColor
-                }
-
-                colorCompat.isSpecified -> colorCompat
-
-                current.ambientColor != ambientColor ||
-                        current.spotColor != spotColor -> blendNativeColors()
-
-                else -> layerColor
+        val useNative = Build.VERSION.SDK_INT >= 28 && !forceColorCompat
+        actualAmbientColor = if (useNative) ambientColor else DefaultShadowColor
+        actualSpotColor = if (useNative) spotColor else DefaultShadowColor
+        layerColor = when {
+            useNative || colorCompat.isDefault ||
+                    (colorCompat.isUnspecified &&
+                            ambientColor.isDefault && spotColor.isDefault) -> {
+                if (clipped && DefaultInlineLayerRequired) DefaultShadowColor
+                else Color.Unspecified
             }
-            this.layerColor = layerColor
 
-            if (current.layerColor.isDefault != layerColor.isDefault) {
-                invalidateCache = true
-            } else if (current.layerColor != layerColor) {
-                invalidateDraw = true
+            colorCompat.isSpecified -> colorCompat
+
+            blendAmbientColor != ambientColor || blendSpotColor != spotColor -> {
+                blendAmbientColor = ambientColor; blendSpotColor = spotColor
+                val ambient = ambientColor.toArgb()
+                val spot = spotColor.toArgb()
+                val (ambientAlpha, spotAlpha) = shadowAlphas
+                Color(blendShadowColors(ambient, ambientAlpha, spot, spotAlpha))
             }
+
+            else -> appliedLayerColor
         }
 
-        if (invalidateCache) {
-            cacheDrawNode.invalidateDrawCache()
-        } else if (invalidateDraw) {
-            cacheDrawNode.invalidateDraw()
+        when {
+            appliedShape != shape ||
+                    appliedLayerColor.isSpecified != layerColor.isSpecified -> {
+                drawNode.invalidateDrawCache()
+            }
+            appliedElevation != elevation ||
+                    appliedAmbientColor != actualAmbientColor ||
+                    appliedSpotColor != actualSpotColor ||
+                    appliedLayerColor != layerColor -> {
+                drawNode.invalidateDraw()
+            }
         }
     }
 
-    private fun blendNativeColors(): Color {
-        val (ambientAlpha, spotAlpha) = shadowAlphas
-        val ambient = ambientColor.toArgb()
-        val spot = spotColor.toArgb()
-        return Color(blendShadowColors(ambient, ambientAlpha, spot, spotAlpha))
-    }
+    private var rootSize = IntSize.Zero
+    private var positionInRoot = Offset.Unspecified
+    private var positionOnScreen = Offset.Unspecified
 
-    private val cacheDrawNode = delegate(CacheDrawModifierNode(::cacheDraw))
-
-    private var rootSize: IntSize = IntSize.Zero
-    private var positionInRoot: Offset = Offset.Unspecified
-    private var positionOnScreen: Offset = Offset.Unspecified
-    private var recreateLayer = false
+    private var appliedRootSize = IntSize.Zero
+    private var appliedPositionInRoot = Offset.Unspecified
+    private var appliedPositionOnScreen = Offset.Unspecified
 
     override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
-        val current = currentState
-        var invalidateCache = false
-        var invalidateDraw = false
+        rootSize = coordinates.findRootCoordinates().size
+        positionInRoot = coordinates.positionInRoot()
+        positionOnScreen = coordinates.findRootCoordinates().positionOnScreen()
 
-        val rootSize = coordinates.findRootCoordinates().size
-        if (current.rootSize != rootSize) invalidateDraw = true
-        this.rootSize = rootSize
-
-        val positionInRoot = coordinates.positionInRoot()
-        if (current.positionInRoot != positionInRoot) invalidateDraw = true
-        this.positionInRoot = positionInRoot
-
-        val positionOnScreen =
-            coordinates.findRootCoordinates().positionOnScreen()
-        if (current.positionOnScreen != positionOnScreen) {
-            invalidateCache = true
-            recreateLayer = true
-        }
-        this.positionOnScreen = positionOnScreen
-
-        if (invalidateCache) {
-            cacheDrawNode.invalidateDrawCache()
-        } else if (invalidateDraw) {
-            cacheDrawNode.invalidateDraw()
+        when {
+            appliedPositionOnScreen != positionOnScreen -> {
+                drawNode.invalidateDrawCache()
+            }
+            appliedRootSize != rootSize ||
+                    appliedPositionInRoot != positionInRoot -> {
+                drawNode.invalidateDraw()
+            }
         }
     }
 
     private var coreLayer: SingleDrawLayer? = null
 
     private fun cacheDraw(scope: CacheDrawScope): DrawResult = with(scope) {
-        val shadow = coreShadow ?: return@with onDrawBehind { }
-
-        val current = currentState
-
-        if (current.shape != shape || current.size != size ||
-            current.layoutDirection != layoutDirection
+        if (appliedShape != shape || appliedSize != size ||
+            appliedLayoutDirection != layoutDirection
         ) {
-            shadowOutline.setShape(shape, size, layoutDirection, this)
-            shadow.setOutline(shadowOutline.androidOutline)
+            val outline = shadowOutline
+            outline.setShape(shape, size, layoutDirection, this)
+            coreShadow?.setOutline(outline.androidOutline)
 
-            current.shape = shape
-            current.size = size
-            current.layoutDirection = layoutDirection
+            appliedShape = shape
+            appliedSize = size
+            appliedLayoutDirection = layoutDirection
         }
 
-        val layer =
-            if (layerColor.isDefault && !DefaultInlineLayerRequired) {
-                coreLayer?.run { dispose(); coreLayer = null }
-                null
-            } else {
-                coreLayer?.apply { if (recreateLayer) recreate() }
-                    ?: createLayer(shadow).also { coreLayer = it }
+        val current = coreLayer
+        coreLayer = when {
+            layerColor.isUnspecified -> null.also { current?.dispose() }
+
+            current == null -> coreShadow?.let { shadow ->
+                SingleDrawLayer(requireView(), TRANSPARENT, 0, 0, shadow::draw)
             }
-        recreateLayer = false
+
+            else -> current.apply {
+                if (appliedPositionOnScreen != positionOnScreen) recreate()
+            }
+        }
+        appliedPositionOnScreen = positionOnScreen
 
         onDrawBehind {
+            val shadow = coreShadow ?: return@onDrawBehind
+
             shadow.elevation = elevation.toPx()
+            shadow.ambientColor = actualAmbientColor.toArgb()
+            shadow.spotColor = actualSpotColor.toArgb()
 
             val intSize = size.roundToIntSize()
             val canvas = drawContext.canvas.nativeCanvas
 
+            val layer = coreLayer
             if (layer != null) {
                 layer.setSize(rootSize.width, rootSize.height)
+                layer.color = layerColor.toArgb()
+                layer.refresh()
 
                 val rootPosition = positionInRoot.round()
                 shadow.setPosition(
@@ -244,33 +243,20 @@ internal class ShadowNode(
                     rootPosition.y + intSize.height
                 )
 
-                shadow.ambientColor = DefaultShadowColorInt
-                shadow.spotColor = DefaultShadowColorInt
-                layer.color = layerColor.toArgb()
-
-                layer.refresh()
                 val offset = positionInRoot
                 canvas.withTranslation(-offset.x, -offset.y, layer::draw)
             } else {
                 shadow.setPosition(0, 0, intSize.width, intSize.height)
-                shadow.ambientColor = ambientColor.toArgb()
-                shadow.spotColor = spotColor.toArgb()
                 shadow.draw(canvas)
             }
 
-            current.elevation = elevation
-            current.ambientColor = ambientColor
-            current.spotColor = spotColor
-            current.layerColor = layerColor
-            current.rootSize = rootSize
-            current.positionInRoot = positionInRoot
-            current.positionOnScreen = positionOnScreen
+            appliedElevation = elevation
+            appliedAmbientColor = actualAmbientColor
+            appliedSpotColor = actualSpotColor
+            appliedLayerColor = layerColor
+            appliedRootSize = rootSize
+            appliedPositionInRoot = positionInRoot
         }
-    }
-
-    private fun createLayer(shadow: Shadow): SingleDrawLayer {
-        val view = currentValueOf(LocalView)
-        return SingleDrawLayer(view, TRANSPARENT, 0, 0, shadow::draw)
     }
 
     override fun onDetach() {
@@ -279,18 +265,4 @@ internal class ShadowNode(
     }
 }
 
-private class StateHolder(
-    var elevation: Dp = Dp.Unspecified,
-    var ambientColor: Color = DefaultShadowColor,
-    var spotColor: Color = DefaultShadowColor,
-    var layerColor: Color = DefaultShadowColor,
-    var rootSize: IntSize = IntSize.Zero,
-    var positionInRoot: Offset = Offset.Unspecified,
-    var positionOnScreen: Offset = Offset.Unspecified,
-    var shape: Shape = RectangleShape,
-    var size: Size = Size.Unspecified,
-    var layoutDirection: LayoutDirection? = null
-)
-
-internal inline val Color.isDefault: Boolean
-    get() = this == DefaultShadowColor
+internal inline val Color.isDefault: Boolean get() = this == DefaultShadowColor

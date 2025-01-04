@@ -78,8 +78,8 @@ results are likely sufficient for many cases.
 ## Views
 
 The library's features are applied to individual `View`s through extension
-properties, with the main two as direct controls for the clip and color compat
-features.
+properties, with the main two acting as direct controls for the clip and color
+compat features.
 
 - The [`View.clipOutlineShadow: Boolean`][clipOutlineShadow] extension is
   basically a switch that toggles the clip fix on the receiver `View`. When
@@ -95,6 +95,7 @@ Usage for each is as easy as it seems:
 
 ```kotlin
 view.clipOutlineShadow = true
+
 view.outlineShadowColorCompat = Color.BLUE
 ```
 
@@ -103,7 +104,7 @@ the fix, or it involves a target with an irregular shape on Android R and above,
 that's possibly all you need.
 
 Though the library's shadow is actually being handled and drawn in the parent
-`ViewGroup`, these properties can be set on the target `View` at any time, even
+`ViewGroup`, these properties can be set on the target `View` at any point, even
 while it's unattached, so there's no need to worry about timing. Additionally,
 the shadow automatically animates and transforms along with its target, and it
 will handle moving itself to any new parents, should the target be moved.
@@ -289,7 +290,7 @@ notice.
 
 MIT License
 
-Copyright (c) 2024 zed-alpha
+Copyright (c) 2025 zed-alpha
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

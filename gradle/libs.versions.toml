@@ -1,13 +1,14 @@
 [versions]
 agp = "8.7.3"
+kotlin = "2.1.0"
+dokka = "2.0.0-Beta"
+
 androidxAnnotation = "1.9.1"
 androidxAppcompat = "1.7.0"
 androidxConstraintLayout = "2.2.0"
 androidxCoreKtx = "1.15.0"
 composeBom = "2024.12.01"
-dokka = "2.0.0-Beta"
 junit4 = "4.13.2"
-kotlin = "2.0.21"
 lint = "31.7.3"
 materialComponents = "1.12.0"
 

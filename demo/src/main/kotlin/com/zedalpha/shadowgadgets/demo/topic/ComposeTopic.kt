@@ -112,7 +112,7 @@ private fun ComposeContent() {
                 shape = GenericShape(CardShapeBuilder),
                 modifier = Modifier
                     .padding(
-                        // So the puzzle piece looks centered on >= 30.
+                        // So the puzzle piece on API >= 30 looks centered.
                         start = if (Build.VERSION.SDK_INT >= 30) 8.dp else 0.dp
                     )
                     .size(80.dp)

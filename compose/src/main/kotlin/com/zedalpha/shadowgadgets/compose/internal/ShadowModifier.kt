@@ -1,19 +1,28 @@
 package com.zedalpha.shadowgadgets.compose.internal
 
-import android.graphics.Color.TRANSPARENT
 import android.os.Build
 import androidx.compose.ui.draw.CacheDrawModifierNode
 import androidx.compose.ui.draw.CacheDrawScope
 import androidx.compose.ui.draw.DrawResult
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ColorMatrixColorFilter
 import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.addOutline
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.isUnspecified
-import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.layer.setOutline
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.findRootCoordinates
@@ -27,23 +36,16 @@ import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.observeReads
-import androidx.compose.ui.node.requireView
+import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.round
-import androidx.compose.ui.unit.roundToIntSize
-import androidx.core.graphics.withTranslation
-import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.DefaultAmbientShadowAlpha
 import com.zedalpha.shadowgadgets.core.DefaultSpotShadowAlpha
-import com.zedalpha.shadowgadgets.core.PathProvider
-import com.zedalpha.shadowgadgets.core.Shadow
 import com.zedalpha.shadowgadgets.core.blendShadowColors
 import com.zedalpha.shadowgadgets.core.layer.DefaultInlineLayerRequired
-import com.zedalpha.shadowgadgets.core.layer.SingleDrawLayer
 import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
 
 internal abstract class ShadowElement(
@@ -79,21 +81,17 @@ internal class ShadowNode(
     GlobalPositionAwareModifierNode,
     ObserverModifierNode {
 
-    private var coreShadow: Shadow? = null
-
-    private lateinit var shadowOutline: ShadowOutline
+    private var shadowLayer: GraphicsLayer? = null
 
     override val shouldAutoInvalidate: Boolean = false
 
     override fun onAttach() {
-        coreShadow = if (clipped) {
-            val outline = ClippedOutline().also { shadowOutline = it }
-            val provider = PathProvider { it.set(outline.androidPath) }
-            ClippedShadow(requireView()).apply { pathProvider = provider }
-        } else {
-            shadowOutline = ShadowOutline()
-            Shadow(requireView())
-        }
+        val graphics = requireGraphicsContext()
+
+        shadowLayer?.let { graphics.releaseGraphicsLayer(it) }
+        colorLayer?.let { graphics.releaseGraphicsLayer(it) }
+
+        shadowLayer = graphics.createGraphicsLayer()
         appliedSize = Size.Unspecified
         drawNode.invalidateDrawCache()
         onObservedReadsChanged()
@@ -119,7 +117,7 @@ internal class ShadowNode(
     private var blendAmbientColor = Color.Unspecified
     private var blendSpotColor = Color.Unspecified
 
-    private var appliedElevation: Dp = Dp.Unspecified
+    private var appliedElevation = Dp.Unspecified
     private var appliedAmbientColor = Color.Unspecified
     private var appliedSpotColor = Color.Unspecified
     private var appliedLayerColor = Color.Unspecified
@@ -179,89 +177,123 @@ internal class ShadowNode(
         positionInRoot = coordinates.positionInRoot()
         positionOnScreen = coordinates.findRootCoordinates().positionOnScreen()
 
-        when {
-            appliedPositionOnScreen != positionOnScreen -> {
-                drawNode.invalidateDrawCache()
-            }
-            appliedRootSize != rootSize ||
-                    appliedPositionInRoot != positionInRoot -> {
-                drawNode.invalidateDraw()
-            }
+        if (appliedPositionOnScreen != positionOnScreen ||
+            appliedLayerColor.isSpecified &&
+            (appliedRootSize != rootSize ||
+                    appliedPositionInRoot != positionInRoot)
+        ) {
+            drawNode.invalidateDrawCache()
         }
     }
 
-    private var coreLayer: SingleDrawLayer? = null
+    private val clipPath = if (clipped) Path() else null
+
+    private var colorLayer: GraphicsLayer? = null
 
     private fun cacheDraw(scope: CacheDrawScope): DrawResult = with(scope) {
         if (appliedShape != shape || appliedSize != size ||
             appliedLayoutDirection != layoutDirection
         ) {
-            val outline = shadowOutline
-            outline.setShape(shape, size, layoutDirection, this)
-            coreShadow?.setOutline(outline.androidOutline)
+            val outline = shape.createOutline(size, layoutDirection, this)
+            shadowLayer?.run { setOutline(outline); record { } }
+            clipPath?.run { rewind(); addOutline(outline) }
 
             appliedShape = shape
             appliedSize = size
             appliedLayoutDirection = layoutDirection
         }
 
-        val current = coreLayer
-        coreLayer = when {
-            layerColor.isUnspecified -> null.also { current?.dispose() }
-
-            current == null -> coreShadow?.let { shadow ->
-                SingleDrawLayer(requireView(), TRANSPARENT, 0, 0, shadow::draw)
+        val currentLayer = colorLayer
+        val graphics = requireGraphicsContext()
+        val nextLayer = when {
+            layerColor.isUnspecified -> null.also {
+                currentLayer?.let { graphics.releaseGraphicsLayer(it) }
             }
 
-            else -> current.apply {
-                if (appliedPositionOnScreen != positionOnScreen) recreate()
+            currentLayer == null -> graphics.createGraphicsLayer()
+
+            else -> if (appliedPositionOnScreen != positionOnScreen) {
+                graphics.releaseGraphicsLayer(currentLayer)
+                graphics.createGraphicsLayer()
+            } else {
+                currentLayer
             }
         }
-        appliedPositionOnScreen = positionOnScreen
-
-        onDrawBehind {
-            val shadow = coreShadow ?: return@onDrawBehind
-
-            shadow.elevation = elevation.toPx()
-            shadow.ambientColor = actualAmbientColor.toArgb()
-            shadow.spotColor = actualSpotColor.toArgb()
-
-            val intSize = size.roundToIntSize()
-            val canvas = drawContext.canvas.nativeCanvas
-
-            val layer = coreLayer
-            if (layer != null) {
-                layer.setSize(rootSize.width, rootSize.height)
-                layer.color = layerColor.toArgb()
-                layer.refresh()
-
-                val rootPosition = positionInRoot.round()
-                shadow.setPosition(
-                    rootPosition.x,
-                    rootPosition.y,
-                    rootPosition.x + intSize.width,
-                    rootPosition.y + intSize.height
-                )
+        nextLayer?.let { layer ->
+            layer.record(size = rootSize) {
+                val shadow = shadowLayer ?: return@record
 
                 val offset = positionInRoot
-                canvas.withTranslation(-offset.x, -offset.y, layer::draw)
-            } else {
-                shadow.setPosition(0, 0, intSize.width, intSize.height)
-                shadow.draw(canvas)
+                translate(offset.x, offset.y) { drawShadow(shadow) }
             }
+        }
+        colorLayer = nextLayer
 
-            appliedElevation = elevation
-            appliedAmbientColor = actualAmbientColor
-            appliedSpotColor = actualSpotColor
-            appliedLayerColor = layerColor
-            appliedRootSize = rootSize
-            appliedPositionInRoot = positionInRoot
+        appliedAmbientColor = actualAmbientColor
+        appliedSpotColor = actualSpotColor
+        appliedLayerColor = layerColor
+        appliedRootSize = rootSize
+        appliedPositionInRoot = positionInRoot
+        appliedPositionOnScreen = positionOnScreen
+        appliedElevation = elevation
+
+        onDrawBehind {
+            val shadow = shadowLayer ?: return@onDrawBehind
+
+            shadow.ambientShadowColor = actualAmbientColor
+            shadow.spotShadowColor = actualSpotColor
+
+            val layer = colorLayer
+            if (layer != null) {
+                layer.setLayerFilter(layerColor)
+
+                val offset = positionInRoot
+                translate(-offset.x, -offset.y) { drawLayer(layer) }
+            } else {
+                drawShadow(shadow)
+            }
+        }
+    }
+
+    private fun DrawScope.drawShadow(shadow: GraphicsLayer) {
+        shadow.shadowElevation = elevation.toPx()
+
+        val path = clipPath
+        if (path != null) {
+            clipPath(path, ClipOp.Difference) { drawLayer(shadow) }
+        } else {
+            drawLayer(shadow)
         }
     }
 
     override fun onDetach() {
-        coreShadow?.run { dispose(); coreShadow = null }
-        coreLayer?.run { dispose(); coreLayer = null }
+        shadowLayer?.run {
+            requireGraphicsContext().releaseGraphicsLayer(this)
+            shadowLayer = null
+        }
+        colorLayer?.run {
+            requireGraphicsContext().releaseGraphicsLayer(this)
+            colorLayer = null
+        }
+    }
+}
+
+private fun GraphicsLayer.setLayerFilter(color: Color) {
+    if (color == DefaultShadowColor) {
+        alpha = 1F
+        colorFilter = null
+    } else {
+        alpha = color.alpha
+        colorFilter = ColorMatrixColorFilter(
+            ColorMatrix(
+                floatArrayOf(
+                    0F, 0F, 0F, 0F, 255 * color.red,
+                    0F, 0F, 0F, 0F, 255 * color.green,
+                    0F, 0F, 0F, 0F, 255 * color.blue,
+                    0F, 0F, 0F, 1F, 0F
+                )
+            )
+        )
     }
 }
 

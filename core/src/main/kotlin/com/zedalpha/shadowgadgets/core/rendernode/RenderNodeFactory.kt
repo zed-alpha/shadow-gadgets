@@ -6,11 +6,11 @@ import android.os.Build
 
 object RenderNodeFactory {
 
-    val isOpen = Build.VERSION.SDK_INT >= 29 ||
+    val isOpen: Boolean = Build.VERSION.SDK_INT >= 29 ||
             (Build.VERSION.SDK_INT != 28 && testRenderNode())
 
     fun newInstance(name: String? = null): RenderNodeWrapper {
-        if (!isOpen) throw IllegalStateException("Unavailable")
+        check(isOpen) { "Unavailable" }
         return innerNewInstance(name)
     }
 
@@ -18,11 +18,11 @@ object RenderNodeFactory {
         when (Build.VERSION.SDK_INT) {
             21, 22 -> RenderNodeApi21(name)
             in 23..27 -> RenderNodeApi23(name)
-            28 -> throw IllegalStateException("That's unpossible!")
+            28 -> error("That's unpossible!")
             else -> RenderNodeApi29(name)
         }
 
-    private fun testRenderNode() = try {
+    private fun testRenderNode(): Boolean = try {
         with(innerNewInstance("TestInstance")) {
             alpha = alpha
             cameraDistance = cameraDistance

@@ -109,9 +109,9 @@ while it's unattached, so there's no need to worry about timing. Additionally,
 the shadow automatically animates and transforms along with its target, and it
 will handle moving itself to any new parents, should the target be moved.
 
-It is hoped that that simple usage should cover most cases. For those setups
-that might be problematic, the library offers a few other configuration
-properties as possible fixes.
+It is hoped that the base features will cover most cases. For those setups that
+might be problematic, the library offers a few other configuration properties as
+possible remedies.
 
 ### Limitations and recourses
 

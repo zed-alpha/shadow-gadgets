@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
+import android.os.Build
 import android.view.View
 import androidx.annotation.CallSuper
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
@@ -105,11 +106,14 @@ class MultiDrawLayer(
     }
 }
 
+fun interface LayerDraw {
+    fun draw(canvas: Canvas)
+}
+
+val DefaultInlineLayerRequired = Build.VERSION.SDK_INT in 24..28
+
 private fun Paint.setLayerFilter(color: Int) {
-    if (color == DefaultShadowColorInt) {
-        alpha = 255
-        colorFilter = null
-    } else {
+    if (color != DefaultShadowColorInt) {
         alpha = Color.alpha(color)
         colorFilter = ColorMatrixColorFilter(
             floatArrayOf(
@@ -119,5 +123,8 @@ private fun Paint.setLayerFilter(color: Int) {
                 0F, 0F, 0F, 1F, 0F
             )
         )
+    } else {
+        alpha = 255
+        colorFilter = null
     }
 }

@@ -10,8 +10,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.zedalpha.shadowgadgets.compose.internal.ShadowElement
-import com.zedalpha.shadowgadgets.compose.internal.ShadowNode
 
 /**
  * Creates a clipped replacement for the regular `shadow` Modifier.
@@ -93,7 +91,7 @@ private class ClippedShadowElement(
     spotColor: Color,
     colorCompat: Color,
     forceColorCompat: Boolean
-) : ShadowElement(
+) : BaseShadowElement(
     elevation,
     shape,
     ambientColor,
@@ -102,7 +100,7 @@ private class ClippedShadowElement(
     forceColorCompat
 ) {
     override fun create() =
-        ShadowNode(
+        BaseShadowNode(
             true,
             elevation,
             shape,

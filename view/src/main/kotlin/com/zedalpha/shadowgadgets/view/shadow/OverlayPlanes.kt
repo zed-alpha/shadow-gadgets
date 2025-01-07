@@ -42,6 +42,8 @@ internal open class OverlayPlane(
     final override fun addShadow(shadow: GroupShadow, color: Int) {
         shadows.add(shadow)
         layers.addShadow(shadow, color)
+
+        if (RequiresSwitchInvalidation) parentView.invalidate()
     }
 
     final override fun removeShadow(shadow: GroupShadow) {
@@ -53,6 +55,8 @@ internal open class OverlayPlane(
             controller.disposePlane(this)
             dispose()
         }
+
+        if (RequiresSwitchInvalidation) parentView.invalidate()
     }
 
     final override fun updateColor(shadow: GroupShadow, color: Int) =

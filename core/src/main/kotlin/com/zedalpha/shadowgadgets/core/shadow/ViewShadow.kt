@@ -13,12 +13,15 @@ import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
 
 internal class ViewShadow(ownerView: View) : CoreShadow() {
 
-    private val shadowView = View(ownerView.context).apply {
-        // Ensures draw when target is partially/fully out of bounds
-        layout(0, 0, Int.MAX_VALUE, Int.MAX_VALUE)
-        outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                outline.set(this@ViewShadow.outline)
+    private val shadowView = object : BaseView(ownerView.context) {
+
+        init {
+            // Ensures draw when target is partially/fully out of bounds
+            layout(0, 0, Int.MAX_VALUE, Int.MAX_VALUE)
+            outlineProvider = object : ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: Outline) {
+                    outline.set(this@ViewShadow.outline)
+                }
             }
         }
     }

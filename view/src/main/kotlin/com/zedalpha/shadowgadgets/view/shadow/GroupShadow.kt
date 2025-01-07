@@ -42,12 +42,16 @@ internal class GroupShadow(
             }
         )
         wrapOutlineProvider(coreShadow::setOutline)
+
+        if (RequiresSwitchInvalidation) targetView.invalidate()
     }
 
     override fun detachFromTarget() {
         super.detachFromTarget()
         plane.removeShadow(this)
         coreShadow.dispose()
+
+        if (RequiresSwitchInvalidation) targetView.invalidate()
     }
 
     override fun updateColorCompat(color: Int) {
@@ -109,3 +113,6 @@ internal class GroupShadow(
         return false
     }
 }
+
+internal val RequiresSwitchInvalidation =
+    Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP

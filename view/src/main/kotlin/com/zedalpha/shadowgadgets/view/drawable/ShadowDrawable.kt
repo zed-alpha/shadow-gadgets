@@ -394,8 +394,9 @@ open class ShadowDrawable private constructor(
         val owner = ownerView
         val shadow = coreShadow
         val compat = colorCompat
-        val needsLayer = compat != DefaultShadowColorInt || forceLayer ||
-                coreShadow is ClippedShadow && DefaultInlineLayerRequired
+        val needsLayer = compat != DefaultShadowColorInt ||
+                coreShadow is ClippedShadow && DefaultInlineLayerRequired ||
+                forceLayer
         if (needsLayer && owner != null) {
             shadow.ambientColor = DefaultShadowColorInt
             shadow.spotColor = DefaultShadowColorInt

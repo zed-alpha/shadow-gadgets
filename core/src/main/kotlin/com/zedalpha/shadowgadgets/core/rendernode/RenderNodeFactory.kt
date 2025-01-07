@@ -45,7 +45,11 @@ object RenderNodeFactory {
             setClipToBounds(false)
             setProjectBackwards(true)
             setProjectionReceiver(true)
-            endRecording(beginRecording(0, 0))
+            // SIGSEGV on 21 if too early, apparently before GLContext is valid.
+            if (Build.VERSION.SDK_INT != Build.VERSION_CODES.LOLLIPOP) {
+                val canvas = beginRecording(0, 0)
+                endRecording(canvas)
+            }
             hasDisplayList()
             discardDisplayList()
             setUseCompositingLayer(false, null)

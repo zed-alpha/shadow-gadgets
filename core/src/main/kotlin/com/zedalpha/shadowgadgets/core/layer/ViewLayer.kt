@@ -3,7 +3,9 @@ package com.zedalpha.shadowgadgets.core.layer
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.View
+import android.view.View.LAYER_TYPE_HARDWARE
 import androidx.core.view.isVisible
+import com.zedalpha.shadowgadgets.core.shadow.BaseView
 import com.zedalpha.shadowgadgets.core.shadow.ViewPainterProxy
 
 internal class ViewLayer(
@@ -11,17 +13,14 @@ internal class ViewLayer(
     override val drawContent: (Canvas) -> Unit
 ) : ManagedLayer {
 
-    private fun createLayerView() = object : View(ownerView.context) {
+    private fun createLayerView() = object : BaseView(ownerView.context) {
 
         init {
             isVisible = false
-            setLayerType(LAYER_TYPE_HARDWARE, null)
             layout(0, 0, ownerView.width, ownerView.height)
         }
 
-        override fun onDraw(canvas: Canvas) {
-            drawContent(canvas)
-        }
+        override fun onDraw(canvas: Canvas) = drawContent(canvas)
     }
 
     private var layerView = createLayerView()
@@ -39,7 +38,8 @@ internal class ViewLayer(
     override fun setSize(width: Int, height: Int) =
         layerView.layout(0, 0, width, height)
 
-    override fun setLayerPaint(paint: Paint) = layerView.setLayerPaint(paint)
+    override fun setLayerPaint(paint: Paint) =
+        layerView.setLayerType(LAYER_TYPE_HARDWARE, paint)
 
     override fun draw(canvas: Canvas) =
         painter.drawLayerView(canvas, layerView)

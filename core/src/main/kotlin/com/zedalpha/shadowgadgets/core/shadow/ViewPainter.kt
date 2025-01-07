@@ -123,13 +123,17 @@ internal class ViewPainter(private val ownerView: ViewGroup) :
     fun refreshLayerView(layerView: View) {
         if (indexOfChild(layerView) < 0) return
         detachViewFromParent(layerView)
-        attachViewToParent(layerView, 0, EmptyLayoutParams)
+        attachViewToParent(layerView, -1, EmptyLayoutParams)
     }
 
     fun invalidateLayerView(layerView: View) {
         layerView.invalidate()
         invalidate()
     }
+
+    override fun forceLayout() {}
+
+    @SuppressLint("MissingSuperCall") override fun requestLayout() {}
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 }

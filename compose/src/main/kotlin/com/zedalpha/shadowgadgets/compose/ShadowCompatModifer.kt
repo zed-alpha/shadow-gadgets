@@ -13,9 +13,6 @@ import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.zedalpha.shadowgadgets.compose.internal.ShadowElement
-import com.zedalpha.shadowgadgets.compose.internal.ShadowNode
-import com.zedalpha.shadowgadgets.compose.internal.isDefault
 
 /**
  * Creates a [shadow] replacement that can be tinted with the library's color
@@ -79,7 +76,7 @@ private class ShadowCompatElement(
     spotColor: Color,
     colorCompat: Color,
     forceColorCompat: Boolean
-) : ShadowElement(
+) : BaseShadowElement(
     elevation,
     shape,
     ambientColor,
@@ -88,7 +85,7 @@ private class ShadowCompatElement(
     forceColorCompat
 ) {
     override fun create() =
-        ShadowNode(
+        BaseShadowNode(
             false,
             elevation,
             shape,

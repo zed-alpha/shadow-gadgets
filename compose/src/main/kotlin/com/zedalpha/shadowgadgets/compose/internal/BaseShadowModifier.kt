@@ -140,6 +140,7 @@ internal class BaseShadowNode(
     private val clipPath = if (clipped) Path() else null
 
     private fun cacheDraw(scope: CacheDrawScope): DrawResult = with(scope) {
+
         val outline = shape.createOutline(size, layoutDirection, this)
         shadowLayer?.run { setOutline(outline); record { } }
         clipPath?.run { rewind(); addOutline(outline) }

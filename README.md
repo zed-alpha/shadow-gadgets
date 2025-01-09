@@ -196,6 +196,16 @@ be found on the [Drawable wiki page][DrawableWiki].
 
 ## Compose
 
+> [!IMPORTANT]
+> If you only need the clip fix here, don't even bother with this library at
+> all. Recent improvements to Compose have made it possible to create a
+> `Modifier` purely within the framework, and you'd do much better to simply
+> copy the `kt` file given in
+> <a href="https://stackoverflow.com/a/71868521">this Stack Overflow post</a>
+> (or the one in
+> <a href="https://gist.github.com/zed-alpha/50acf298881ebd112e6bfb934a30d0ba">the
+> linked gist</a>, if supporting API levels 24..28).
+
 Since Compose already allows shadows to be handled and manipulated as discrete
 UI elements, employing the library's features here is straightforward and
 routine.

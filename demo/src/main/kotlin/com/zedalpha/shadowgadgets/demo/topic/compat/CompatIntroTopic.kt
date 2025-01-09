@@ -1,7 +1,6 @@
 package com.zedalpha.shadowgadgets.demo.topic.compat
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
 import android.graphics.drawable.PaintDrawable
 import android.os.Build
 import android.os.Bundle
@@ -81,11 +80,6 @@ class CompatIntroFragment : TopicFragment<FragmentCompatIntroBinding>(
         spotIndicator.setTint(controller.outlineSpotShadowColor)
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        controller.onConfigurationChanged()
-    }
-
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         updateFramework()
@@ -156,8 +150,6 @@ internal class PanelController(
         currentPanel =
             if (selection == R.id.view_selection) viewPanel else composePanel
     }
-
-    fun onConfigurationChanged() = viewPanel.onConfigurationChanged()
 }
 
 internal interface IntroPanel {

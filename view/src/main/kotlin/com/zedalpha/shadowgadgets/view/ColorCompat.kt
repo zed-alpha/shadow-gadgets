@@ -84,7 +84,7 @@ class ShadowColorsBlender(private val context: Context) {
     private var spotAlpha = DefaultSpotShadowAlpha
 
     init {
-        onConfigurationChanged()
+        setAlphas()
     }
 
     /**
@@ -107,7 +107,13 @@ class ShadowColorsBlender(private val context: Context) {
      * This is necessary only if configuration changes are already being handled
      * manually, and different app themes have different shadow alpha values.
      */
-    fun onConfigurationChanged() {
+    @Deprecated(
+        "Pointless, as it's not possible to change " +
+                "alphas without creating a new Activity instance."
+    )
+    fun onConfigurationChanged() = setAlphas()
+
+    private fun setAlphas() {
         val (ambient, spot) = context.resolveThemeShadowAlphas()
         ambientAlpha = ambient
         spotAlpha = spot

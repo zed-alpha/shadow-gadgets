@@ -134,6 +134,7 @@ internal class ProjectorOverlayPlane(
     override fun invalidatePlane() {
         super.invalidatePlane()
         projector.invalidateProjection()
+        parentView.invalidate()
     }
 
     override fun dispose() {

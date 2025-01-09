@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.zedalpha.shadowgadgets.compose.internal.BaseShadowElement
+import com.zedalpha.shadowgadgets.compose.internal.BaseShadowNode
 
 /**
  * Creates a clipped replacement for the regular `shadow` Modifier.

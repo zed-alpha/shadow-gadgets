@@ -63,13 +63,6 @@ internal class ViewIntroPanel(
             updateColorCompat()
         }
 
-    // This demo only has one theme, so this will never actually
-    // change anything. It's here simply to illustrate the usage.
-    fun onConfigurationChanged() {
-        blender.onConfigurationChanged()
-        updateColorCompat()
-    }
-
     private fun updateColorCompat() {
         ui.compat.outlineShadowColorCompat =
             blender.blend(outlineAmbientShadowColor, outlineSpotShadowColor)

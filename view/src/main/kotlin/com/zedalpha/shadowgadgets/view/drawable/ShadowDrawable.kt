@@ -16,7 +16,7 @@ import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.PathProvider
 import com.zedalpha.shadowgadgets.core.Shadow
-import com.zedalpha.shadowgadgets.core.layer.DefaultInlineLayerRequired
+import com.zedalpha.shadowgadgets.core.layer.RequiresDefaultClipLayer
 import kotlin.math.roundToInt
 
 /**
@@ -394,9 +394,8 @@ open class ShadowDrawable private constructor(
         val owner = ownerView
         val shadow = coreShadow
         val compat = colorCompat
-        val needsLayer = compat != DefaultShadowColorInt ||
-                coreShadow is ClippedShadow && DefaultInlineLayerRequired ||
-                forceLayer
+        val needsLayer = compat != DefaultShadowColorInt || forceLayer ||
+                coreShadow is ClippedShadow && RequiresDefaultClipLayer
         if (needsLayer && owner != null) {
             shadow.ambientColor = DefaultShadowColorInt
             shadow.spotColor = DefaultShadowColorInt

@@ -110,7 +110,7 @@ fun interface LayerDraw {
     fun draw(canvas: Canvas)
 }
 
-val DefaultInlineLayerRequired = Build.VERSION.SDK_INT in 24..28
+val RequiresDefaultClipLayer = Build.VERSION.SDK_INT in 24..28
 
 private fun Paint.setLayerFilter(color: Int) {
     if (color != DefaultShadowColorInt) {

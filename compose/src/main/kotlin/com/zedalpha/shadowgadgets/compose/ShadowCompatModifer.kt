@@ -13,6 +13,9 @@ import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.zedalpha.shadowgadgets.compose.internal.BaseShadowElement
+import com.zedalpha.shadowgadgets.compose.internal.BaseShadowNode
+import com.zedalpha.shadowgadgets.compose.internal.isDefault
 
 /**
  * Creates a [shadow] replacement that can be tinted with the library's color

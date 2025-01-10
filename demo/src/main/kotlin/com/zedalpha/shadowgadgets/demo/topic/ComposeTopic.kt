@@ -106,6 +106,15 @@ private fun ComposeContent() {
                 shadowSpotColor = Color(0xFFFF4444)
             ) {}
 
+            ClippedShadowButton(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(Color(0x357FCC7F)),
+                elevation = ButtonDefaults
+                    .elevation(12.dp, 18.dp, 0.dp, 14.dp, 14.dp),
+                shadowAmbientColor = Color(0xFF448866),
+                shadowSpotColor = Color(0xFF448866)
+            ) {}
+
             Card(
                 backgroundColor = Color(0x22007FFF),
                 elevation = 0.dp,
@@ -122,15 +131,6 @@ private fun ComposeContent() {
                         ambientColor = Color(0xFF007FFF),
                         spotColor = Color(0xFF007FFF)
                     )
-            ) {}
-
-            ClippedShadowButton(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(Color(0x357FCC7F)),
-                elevation = ButtonDefaults
-                    .elevation(12.dp, 18.dp, 0.dp, 14.dp, 14.dp),
-                shadowAmbientColor = Color(0xFF448866),
-                shadowSpotColor = Color(0xFF448866)
             ) {}
         }
     }

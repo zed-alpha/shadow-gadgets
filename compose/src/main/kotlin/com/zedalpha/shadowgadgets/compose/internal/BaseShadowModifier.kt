@@ -22,7 +22,6 @@ import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
-import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.node.requireView
 import androidx.compose.ui.unit.Dp
 import com.zedalpha.shadowgadgets.core.blendShadowColors
@@ -59,28 +58,17 @@ internal class BaseShadowNode(
     var forceColorCompat: Boolean
 ) : DelegatingNode() {
 
-    private var shadowLayer: GraphicsLayer? = null
+    private val drawNode = delegate(CacheDrawModifierNode(::cacheDraw))
+
+    private var layerNode: CompositingLayerModifierNode? = null
 
     override val shouldAutoInvalidate: Boolean = false
 
     override fun onAttach() {
-        shadowLayer?.let { requireGraphicsContext().releaseGraphicsLayer(it) }
-        shadowLayer = requireGraphicsContext().createGraphicsLayer()
         layerNode?.resetColor()
         currentShape = null
         update()
     }
-
-    override fun onDetach() {
-        shadowLayer?.let {
-            requireGraphicsContext().releaseGraphicsLayer(it)
-            shadowLayer = null
-        }
-    }
-
-    private val drawNode = delegate(CacheDrawModifierNode(::cacheDraw))
-
-    private var layerNode: CompositingLayerModifierNode? = null
 
     private var actualAmbientColor = Color.Unspecified
     private var actualSpotColor = Color.Unspecified
@@ -88,12 +76,13 @@ internal class BaseShadowNode(
 
     private var colorBlender: ColorBlender? = null
 
-    private var currentElevation = Dp.Unspecified
     private var currentShape: Shape? = null
+    private var currentElevation = Dp.Unspecified
+    private var currentAmbientColor = Color.Unspecified
+    private var currentSpotColor = Color.Unspecified
+    private var currentLayerColor = Color.Unspecified
 
     fun update() {
-        val shadow = shadowLayer ?: return
-
         val useNative = Build.VERSION.SDK_INT >= 28 && !forceColorCompat
         actualAmbientColor = if (useNative) ambientColor else DefaultShadowColor
         actualSpotColor = if (useNative) spotColor else DefaultShadowColor
@@ -114,7 +103,7 @@ internal class BaseShadowNode(
             }
         }
 
-        val layer = when {
+        when {
             layerColor.isUnspecified -> {
                 layerNode?.also { undelegate(it); layerNode = null }
             }
@@ -122,18 +111,15 @@ internal class BaseShadowNode(
                 CompositingLayerModifierNode(drawNode)
                     .also { delegate(it); layerNode = it }
             }
-            else -> layerNode
         }
 
         when {
             currentShape != shape -> drawNode.invalidateDrawCache()
 
             currentElevation != elevation ||
-                    shadow.ambientShadowColor != actualAmbientColor ||
-                    shadow.spotShadowColor != actualSpotColor ||
-                    layer != null && layer.color != layerColor -> {
-                drawNode.invalidateDraw()
-            }
+                    currentAmbientColor != actualAmbientColor ||
+                    currentSpotColor != actualSpotColor ||
+                    currentLayerColor != layerColor -> drawNode.invalidateDraw()
         }
     }
 
@@ -141,14 +127,15 @@ internal class BaseShadowNode(
 
     private fun cacheDraw(scope: CacheDrawScope): DrawResult = with(scope) {
 
+        val shadow = obtainGraphicsLayer()
+
         val outline = shape.createOutline(size, layoutDirection, this)
-        shadowLayer?.run { setOutline(outline); record { } }
+        shadow.run { setOutline(outline); record { } }
         clipPath?.run { rewind(); addOutline(outline) }
 
         currentShape = shape
 
         onDrawBehind {
-            val shadow = shadowLayer ?: return@onDrawBehind
 
             shadow.shadowElevation = elevation.toPx()
             shadow.ambientShadowColor = actualAmbientColor
@@ -163,6 +150,9 @@ internal class BaseShadowNode(
             }
 
             currentElevation = elevation
+            currentAmbientColor = actualAmbientColor
+            currentSpotColor = actualSpotColor
+            currentLayerColor = layerColor
         }
     }
 

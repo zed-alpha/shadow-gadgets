@@ -48,15 +48,15 @@ fun Modifier.shadowCompat(
     colorCompat: Color = Color.Unspecified,
     forceColorCompat: Boolean = false
 ): Modifier =
-    if (elevation > 0.dp || clip) {
-        if (Build.VERSION.SDK_INT >= 28 && !forceColorCompat ||
-            colorCompat.isDefault ||
-            colorCompat.isUnspecified &&
-            ambientColor.isDefault && spotColor.isDefault
-        ) {
-            shadow(elevation, shape, clip, ambientColor, spotColor)
-        } else {
-            val shadow = this then ShadowCompatElement(
+    if (Build.VERSION.SDK_INT >= 28 && !forceColorCompat ||
+        colorCompat.isDefault ||
+        (colorCompat.isUnspecified &&
+                ambientColor.isDefault && spotColor.isDefault)
+    ) {
+        shadow(elevation, shape, clip, ambientColor, spotColor)
+    } else {
+        val first = if (elevation > 0.dp) {
+            this then ShadowCompatElement(
                 elevation = elevation,
                 shape = shape,
                 clip = clip,
@@ -65,10 +65,10 @@ fun Modifier.shadowCompat(
                 colorCompat = colorCompat,
                 forceColorCompat = forceColorCompat
             )
-            if (clip) shadow.clip(shape) else shadow
+        } else {
+            this
         }
-    } else {
-        this
+        if (clip) first.clip(shape) else first
     }
 
 private class ShadowCompatElement(

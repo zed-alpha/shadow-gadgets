@@ -69,9 +69,9 @@ fun Modifier.clippedShadow(
     spotColor: Color = DefaultShadowColor,
     colorCompat: Color = DefaultShadowColor,
     forceColorCompat: Boolean = false
-): Modifier =
-    if (elevation > 0.dp || clip) {
-        val shadow = this then ClippedShadowElement(
+): Modifier {
+    val first = if (elevation > 0.dp) {
+        this then ClippedShadowElement(
             elevation = elevation,
             shape = shape,
             clip = clip,
@@ -80,10 +80,11 @@ fun Modifier.clippedShadow(
             colorCompat = colorCompat,
             forceColorCompat = forceColorCompat
         )
-        if (clip) shadow.clip(shape) else shadow
     } else {
         this
     }
+    return if (clip) first.clip(shape) else first
+}
 
 private class ClippedShadowElement(
     elevation: Dp,

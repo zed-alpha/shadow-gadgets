@@ -8,33 +8,33 @@ import androidx.annotation.DoNotInline
 import androidx.annotation.FloatRange
 import androidx.annotation.RequiresApi
 
-const val DefaultShadowColorInt = Color.BLACK
+public const val DefaultShadowColorInt: Int = Color.BLACK
 
-const val DefaultAmbientShadowAlpha = 0.039F
+public const val DefaultAmbientShadowAlpha: Float = 0.039F
 
-const val DefaultSpotShadowAlpha = 0.19F
+public const val DefaultSpotShadowAlpha: Float = 0.19F
 
 @RequiresApi(28)
-object ViewShadowColorsHelper {
+public object ViewShadowColorsHelper {
 
     @DoNotInline
-    fun getAmbientColor(view: View) = view.outlineAmbientShadowColor
+    public fun getAmbientColor(view: View): Int = view.outlineAmbientShadowColor
 
     @DoNotInline
-    fun setAmbientColor(view: View, @ColorInt color: Int) {
+    public fun setAmbientColor(view: View, @ColorInt color: Int) {
         view.outlineAmbientShadowColor = color
     }
 
     @DoNotInline
-    fun getSpotColor(view: View) = view.outlineSpotShadowColor
+    public fun getSpotColor(view: View): Int = view.outlineSpotShadowColor
 
     @DoNotInline
-    fun setSpotColor(view: View, @ColorInt color: Int) {
+    public fun setSpotColor(view: View, @ColorInt color: Int) {
         view.outlineSpotShadowColor = color
     }
 }
 
-fun Context.resolveThemeShadowAlphas(): Pair<Float, Float> {
+public fun Context.resolveThemeShadowAlphas(): Pair<Float, Float> {
     val array = obtainStyledAttributes(R.styleable.Lighting)
     val ambientAlpha = array.getFloat(
         R.styleable.Lighting_android_ambientShadowAlpha,
@@ -48,7 +48,7 @@ fun Context.resolveThemeShadowAlphas(): Pair<Float, Float> {
     return ambientAlpha.coerceIn(0F..1F) to spotAlpha.coerceIn(0F..1F)
 }
 
-fun blendShadowColors(
+public fun blendShadowColors(
     @ColorInt
     ambientColor: Int,
     @FloatRange(from = 0.0, to = 1.0)

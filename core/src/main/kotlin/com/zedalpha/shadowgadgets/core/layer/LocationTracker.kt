@@ -2,17 +2,17 @@ package com.zedalpha.shadowgadgets.core.layer
 
 import android.view.View
 
-class LocationTracker(private val view: View) {
+public class LocationTracker(private val view: View) {
 
-    val current = IntArray(2)
+    private val current = IntArray(2)
 
-    fun initialize() {
+    public fun initialize() {
         view.getLocationOnScreen(current)
     }
 
     private val tmp = IntArray(2)
 
-    fun checkLocationChanged(): Boolean = tmp.let { location ->
+    public fun checkLocationChanged(): Boolean = tmp.let { location ->
         view.getLocationOnScreen(location)
         current.checkUpdate(location)
     }

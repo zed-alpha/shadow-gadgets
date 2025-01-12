@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.chip.ChipGroup
+import com.zedalpha.shadowgadgets.view.ShadowPlane
 
 /**
  * A custom [ChipGroup] that implements [ShadowsViewGroup].
@@ -13,7 +14,7 @@ import com.google.android.material.chip.ChipGroup
  * Apart from the additional handling of the library's shadow properties and
  * draw operations, this group behaves just like its base class.
  */
-class ShadowsChipGroup @JvmOverloads constructor(
+public class ShadowsChipGroup @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = com.google.android.material.R.attr.chipGroupStyle
@@ -28,17 +29,20 @@ class ShadowsChipGroup @JvmOverloads constructor(
         { c, v, t -> super.drawChild(c, v, t) }
     )
 
-    override var childShadowsPlane by manager::childShadowsPlane
+    override var childShadowsPlane: ShadowPlane
+            by manager::childShadowsPlane
 
-    override var clipAllChildShadows by manager::clipAllChildShadows
+    override var clipAllChildShadows: Boolean
+            by manager::clipAllChildShadows
 
-    override var childOutlineShadowsColorCompat
+    override var childOutlineShadowsColorCompat: Int
             by manager::childOutlineShadowsColorCompat
 
-    override var forceChildOutlineShadowsColorCompat
+    override var forceChildOutlineShadowsColorCompat: Boolean
             by manager::forceChildOutlineShadowsColorCompat
 
-    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+    override var ignoreInlineChildShadows: Boolean
+            by manager::ignoreInlineChildShadows
 
     override fun generateLayoutParams(attrs: AttributeSet?): ViewGroup.LayoutParams {
         manager.generateLayoutParams(attrs)

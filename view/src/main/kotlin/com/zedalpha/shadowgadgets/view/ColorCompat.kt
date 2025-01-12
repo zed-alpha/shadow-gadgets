@@ -37,7 +37,7 @@ import com.zedalpha.shadowgadgets.view.shadow.shadow
  */
 @get:ColorInt
 @setparam:ColorInt
-var View.outlineShadowColorCompat: Int
+public var View.outlineShadowColorCompat: Int
     get() = getTag(R.id.outline_shadow_color_compat) as? Int
         ?: DefaultShadowColorInt
     set(color) {
@@ -58,7 +58,7 @@ var View.outlineShadowColorCompat: Int
  * not be modified afterward. The native shadow must be pure black for the
  * tint to apply correctly.
  */
-var View.forceOutlineShadowColorCompat: Boolean
+public var View.forceOutlineShadowColorCompat: Boolean
     get() = getTag(R.id.force_outline_shadow_color_compat) == true
     set(force) {
         if (forceOutlineShadowColorCompat == force) return
@@ -77,7 +77,7 @@ var View.forceOutlineShadowColorCompat: Boolean
  * Use of this class is completely optional. Any valid color can be used with
  * the compat functionality.
  */
-class ShadowColorsBlender(private val context: Context) {
+public class ShadowColorsBlender(private val context: Context) {
 
     private var ambientAlpha = DefaultAmbientShadowAlpha
 
@@ -96,10 +96,10 @@ class ShadowColorsBlender(private val context: Context) {
      * maximum alpha values.
      */
     @ColorInt
-    fun blend(
+    public fun blend(
         @ColorInt ambientColor: Int,
         @ColorInt spotColor: Int
-    ) = blendShadowColors(ambientColor, ambientAlpha, spotColor, spotAlpha)
+    ): Int = blendShadowColors(ambientColor, ambientAlpha, spotColor, spotAlpha)
 
     /**
      * To be called from the corresponding function in the relevant UI component.
@@ -111,7 +111,7 @@ class ShadowColorsBlender(private val context: Context) {
         "Pointless, as it's not possible to change " +
                 "alphas without creating a new Activity instance."
     )
-    fun onConfigurationChanged() = setAlphas()
+    public fun onConfigurationChanged(): Unit = setAlphas()
 
     private fun setAlphas() {
         val (ambient, spot) = context.resolveThemeShadowAlphas()

@@ -12,21 +12,21 @@ import androidx.annotation.RequiresApi
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
-fun getOutlineRect(outline: Outline, outRect: Rect) =
+public fun getOutlineRect(outline: Outline, outRect: Rect): Boolean =
     if (Build.VERSION.SDK_INT >= 24) {
         OutlineRectHelper.getRect(outline, outRect)
     } else {
         OutlineRectReflector.getRect(outline, outRect)
     }
 
-fun getOutlineRadius(outline: Outline): Float =
+public fun getOutlineRadius(outline: Outline): Float =
     if (Build.VERSION.SDK_INT >= 24) {
         OutlineRectHelper.getRadius(outline)
     } else {
         OutlineRectReflector.getRadius(outline)
     }
 
-fun clipOutPath(canvas: Canvas, path: Path) {
+public fun clipOutPath(canvas: Canvas, path: Path) {
     if (Build.VERSION.SDK_INT >= 26) {
         CanvasClipHelper.clipOutPath(canvas, path)
     } else {
@@ -35,7 +35,7 @@ fun clipOutPath(canvas: Canvas, path: Path) {
     }
 }
 
-fun enableZ(canvas: Canvas) {
+public fun enableZ(canvas: Canvas) {
     if (Build.VERSION.SDK_INT >= 29) {
         CanvasZHelper.enableZ(canvas)
     } else {
@@ -43,7 +43,7 @@ fun enableZ(canvas: Canvas) {
     }
 }
 
-fun disableZ(canvas: Canvas) {
+public fun disableZ(canvas: Canvas) {
     if (Build.VERSION.SDK_INT >= 29) {
         CanvasZHelper.disableZ(canvas)
     } else {

@@ -20,7 +20,7 @@ import com.zedalpha.shadowgadgets.compose.internal.BaseShadowNode
  * details.
  */
 @Stable
-fun Modifier.clippedShadow(
+public fun Modifier.clippedShadow(
     elevation: Dp,
     shape: Shape = RectangleShape,
     clip: Boolean = elevation > 0.dp,
@@ -61,7 +61,7 @@ fun Modifier.clippedShadow(
  * on API levels 28 and above.
  */
 @Stable
-fun Modifier.clippedShadow(
+public fun Modifier.clippedShadow(
     elevation: Dp,
     shape: Shape = RectangleShape,
     clip: Boolean = elevation > 0.dp,

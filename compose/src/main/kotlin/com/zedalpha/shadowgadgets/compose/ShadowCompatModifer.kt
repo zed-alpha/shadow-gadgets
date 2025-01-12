@@ -39,7 +39,7 @@ import com.zedalpha.shadowgadgets.compose.internal.isDefault
  * have maximum alpha values.
  */
 @Stable
-fun Modifier.shadowCompat(
+public fun Modifier.shadowCompat(
     elevation: Dp,
     shape: Shape = RectangleShape,
     clip: Boolean = elevation > 0.dp,

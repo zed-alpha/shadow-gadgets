@@ -9,21 +9,21 @@ import android.graphics.RectF
 import android.view.View
 import androidx.annotation.RequiresApi
 
-class ClippedShadow private constructor(
+public class ClippedShadow private constructor(
     private val shadow: Shadow
 ) : Shadow by shadow {
 
-    constructor(
+    public constructor(
         ownerView: View,
         forceViewType: Boolean = false
     ) : this(Shadow(ownerView, forceViewType))
 
     @RequiresApi(29)
-    constructor() : this(Shadow())
+    public constructor() : this(Shadow())
 
     private val clipPath = Path()
 
-    var pathProvider: PathProvider? = null
+    public var pathProvider: PathProvider? = null
 
     override fun setOutline(outline: Outline) {
         shadow.setOutline(outline)
@@ -69,6 +69,6 @@ class ClippedShadow private constructor(
     private val tmpPath = Path()
 }
 
-fun interface PathProvider {
-    fun getPath(path: Path)
+public fun interface PathProvider {
+    public fun getPath(path: Path)
 }

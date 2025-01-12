@@ -7,75 +7,83 @@ import android.graphics.Paint
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 
-sealed interface RenderNodeWrapper {
+public sealed interface RenderNodeWrapper {
 
     @get:FloatRange(from = 0.0, to = 1.0)
     @setparam:FloatRange(from = 0.0, to = 1.0)
-    var alpha: Float
+    public var alpha: Float
 
-    var cameraDistance: Float
+    public var cameraDistance: Float
 
-    var elevation: Float
+    public var elevation: Float
 
-    var pivotX: Float
+    public var pivotX: Float
 
-    var pivotY: Float
+    public var pivotY: Float
 
-    var rotationX: Float
+    public var rotationX: Float
 
-    var rotationY: Float
+    public var rotationY: Float
 
-    var rotationZ: Float
+    public var rotationZ: Float
 
-    var scaleX: Float
+    public var scaleX: Float
 
-    var scaleY: Float
+    public var scaleY: Float
 
-    var translationX: Float
+    public var translationX: Float
 
-    var translationY: Float
+    public var translationY: Float
 
-    var translationZ: Float
-
-    @get:ColorInt
-    @setparam:ColorInt
-    var ambientColor: Int
+    public var translationZ: Float
 
     @get:ColorInt
     @setparam:ColorInt
-    var spotColor: Int
+    public var ambientColor: Int
 
-    val left: Int
+    @get:ColorInt
+    @setparam:ColorInt
+    public var spotColor: Int
 
-    val top: Int
+    public val left: Int
 
-    val right: Int
+    public val top: Int
 
-    val bottom: Int
+    public val right: Int
 
-    fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Boolean
+    public val bottom: Int
 
-    fun setOutline(outline: Outline?)
+    public fun setPosition(
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int
+    ): Boolean
 
-    fun hasIdentityMatrix(): Boolean
+    public fun setOutline(outline: Outline?)
 
-    fun getMatrix(outMatrix: Matrix)
+    public fun hasIdentityMatrix(): Boolean
 
-    fun draw(canvas: Canvas)
+    public fun getMatrix(outMatrix: Matrix)
 
-    fun setClipToBounds(clipToBounds: Boolean): Boolean
+    public fun draw(canvas: Canvas)
 
-    fun setProjectBackwards(shouldProject: Boolean): Boolean
+    public fun setClipToBounds(clipToBounds: Boolean): Boolean
 
-    fun setProjectionReceiver(shouldReceive: Boolean): Boolean
+    public fun setProjectBackwards(shouldProject: Boolean): Boolean
 
-    fun beginRecording(width: Int, height: Int): Canvas
+    public fun setProjectionReceiver(shouldReceive: Boolean): Boolean
 
-    fun endRecording(canvas: Canvas)
+    public fun beginRecording(width: Int, height: Int): Canvas
 
-    fun hasDisplayList(): Boolean
+    public fun endRecording(canvas: Canvas)
 
-    fun discardDisplayList()
+    public fun hasDisplayList(): Boolean
 
-    fun setUseCompositingLayer(forceToLayer: Boolean, paint: Paint?): Boolean
+    public fun discardDisplayList()
+
+    public fun setUseCompositingLayer(
+        forceToLayer: Boolean,
+        paint: Paint?
+    ): Boolean
 }

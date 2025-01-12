@@ -4,12 +4,12 @@ import android.graphics.Matrix
 import android.graphics.Outline
 import android.os.Build
 
-object RenderNodeFactory {
+public object RenderNodeFactory {
 
-    val isOpen: Boolean = Build.VERSION.SDK_INT >= 29 ||
+    public val isOpen: Boolean = Build.VERSION.SDK_INT >= 29 ||
             (Build.VERSION.SDK_INT != 28 && testRenderNode())
 
-    fun newInstance(name: String? = null): RenderNodeWrapper {
+    public fun newInstance(name: String? = null): RenderNodeWrapper {
         check(isOpen) { "Unavailable" }
         return innerNewInstance(name)
     }

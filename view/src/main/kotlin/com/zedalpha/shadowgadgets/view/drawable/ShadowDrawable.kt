@@ -66,7 +66,7 @@ import kotlin.math.roundToInt
  * Also, due to differences in the native framework, all shadows on API levels
  * 24..28 are clipped to the drawable's bounds.
  */
-open class ShadowDrawable private constructor(
+public open class ShadowDrawable private constructor(
     internal val coreShadow: Shadow,
     private val ownerView: View?
 ) : Drawable() {
@@ -86,7 +86,7 @@ open class ShadowDrawable private constructor(
      *
      * It is rather important to [dispose] of these instances when appropriate.
      */
-    constructor(ownerView: View, isClipped: Boolean) : this(
+    public constructor(ownerView: View, isClipped: Boolean) : this(
         if (isClipped) ClippedShadow(ownerView) else Shadow(ownerView),
         ownerView
     )
@@ -105,7 +105,7 @@ open class ShadowDrawable private constructor(
      * to do so.
      */
     @RequiresApi(29)
-    constructor(isClipped: Boolean) :
+    public constructor(isClipped: Boolean) :
             this(if (isClipped) ClippedShadow() else Shadow(), null)
 
     /**
@@ -118,7 +118,7 @@ open class ShadowDrawable private constructor(
      * Analogous to setting a target View's
      * [ViewPathProvider][com.zedalpha.shadowgadgets.view.ViewPathProvider].
      */
-    fun setClipPathProvider(provider: ((Path) -> Unit)?) {
+    public fun setClipPathProvider(provider: ((Path) -> Unit)?) {
         val clippedShadow = coreShadow as? ClippedShadow ?: return
         clippedShadow.pathProvider = provider?.let { PathProvider(it) }
     }
@@ -129,7 +129,7 @@ open class ShadowDrawable private constructor(
      * Use after disposal is not an automatic Exception, but it is not advised,
      * and there is no guaranteed behavior.
      */
-    fun dispose() {
+    public fun dispose() {
         coreShadow.dispose()
         layer?.dispose()
     }
@@ -158,7 +158,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setCameraDistance()][android.graphics.RenderNode.setCameraDistance].
      */
-    var cameraDistance: Float
+    public var cameraDistance: Float
         get() = coreShadow.cameraDistance
         set(value) {
             coreShadow.cameraDistance = value
@@ -170,7 +170,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setElevation()][android.graphics.RenderNode.setElevation].
      */
-    var elevation: Float
+    public var elevation: Float
         get() = coreShadow.elevation
         set(value) {
             coreShadow.elevation = value
@@ -182,7 +182,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setPivotX()][android.graphics.RenderNode.setPivotX].
      */
-    var pivotX: Float
+    public var pivotX: Float
         get() = coreShadow.pivotX
         set(value) {
             coreShadow.pivotX = value
@@ -194,7 +194,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setPivotY()][android.graphics.RenderNode.setPivotY].
      */
-    var pivotY: Float
+    public var pivotY: Float
         get() = coreShadow.pivotY
         set(value) {
             coreShadow.pivotY = value
@@ -206,7 +206,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setRotationX()][android.graphics.RenderNode.setRotationX].
      */
-    var rotationX: Float
+    public var rotationX: Float
         get() = coreShadow.rotationX
         set(value) {
             coreShadow.rotationX = value
@@ -218,7 +218,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setRotationY()][android.graphics.RenderNode.setRotationY].
      */
-    var rotationY: Float
+    public var rotationY: Float
         get() = coreShadow.rotationY
         set(value) {
             coreShadow.rotationY = value
@@ -230,7 +230,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setRotationZ()][android.graphics.RenderNode.setRotationZ].
      */
-    var rotationZ: Float
+    public var rotationZ: Float
         get() = coreShadow.rotationZ
         set(value) {
             coreShadow.rotationZ = value
@@ -242,7 +242,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setScaleX()][android.graphics.RenderNode.setScaleX].
      */
-    var scaleX: Float
+    public var scaleX: Float
         get() = coreShadow.scaleX
         set(value) {
             coreShadow.scaleX = value
@@ -254,7 +254,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setScaleY()][android.graphics.RenderNode.setScaleY].
      */
-    var scaleY: Float
+    public var scaleY: Float
         get() = coreShadow.scaleY
         set(value) {
             coreShadow.scaleY = value
@@ -266,7 +266,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setTranslationX()][android.graphics.RenderNode.setTranslationX].
      */
-    var translationX: Float
+    public var translationX: Float
         get() = coreShadow.translationX
         set(value) {
             coreShadow.translationX = value
@@ -278,7 +278,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setTranslationY()][android.graphics.RenderNode.setTranslationY].
      */
-    var translationY: Float
+    public var translationY: Float
         get() = coreShadow.translationY
         set(value) {
             coreShadow.translationY = value
@@ -290,7 +290,7 @@ open class ShadowDrawable private constructor(
      * and
      * [RenderNode#setTranslationZ()][android.graphics.RenderNode.setTranslationZ].
      */
-    var translationZ: Float
+    private var translationZ: Float
         get() = coreShadow.translationZ
         set(value) {
             coreShadow.translationZ = value
@@ -304,7 +304,7 @@ open class ShadowDrawable private constructor(
      */
     @get:ColorInt
     @setparam:ColorInt
-    var ambientColor: Int = DefaultShadowColorInt
+    public var ambientColor: Int = DefaultShadowColorInt
         set(value) {
             if (field == value) return
             field = value
@@ -319,7 +319,7 @@ open class ShadowDrawable private constructor(
      */
     @get:ColorInt
     @setparam:ColorInt
-    var spotColor: Int = DefaultShadowColorInt
+    public var spotColor: Int = DefaultShadowColorInt
         set(value) {
             if (field == value) return
             field = value
@@ -341,7 +341,7 @@ open class ShadowDrawable private constructor(
      */
     @get:ColorInt
     @setparam:ColorInt
-    var colorCompat: Int = DefaultShadowColorInt
+    public var colorCompat: Int = DefaultShadowColorInt
         set(value) {
             if (field == value) return
             field = value
@@ -352,26 +352,28 @@ open class ShadowDrawable private constructor(
      * Analogous to
      * [RenderNode#setPosition()][android.graphics.RenderNode.setPosition].
      */
-    fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
+    public fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Unit =
         coreShadow.setPosition(left, top, right, bottom)
 
     /**
      * Analogous to
      * [RenderNode#setOutline()][android.graphics.RenderNode.setOutline].
      */
-    fun setOutline(outline: Outline) = coreShadow.setOutline(outline)
+    public fun setOutline(outline: Outline): Unit =
+        coreShadow.setOutline(outline)
 
     /**
      * Analogous to
      * [RenderNode#hasIdentityMatrix()][android.graphics.RenderNode.hasIdentityMatrix].
      */
-    fun hasIdentityMatrix(): Boolean = coreShadow.hasIdentityMatrix()
+    public fun hasIdentityMatrix(): Boolean = coreShadow.hasIdentityMatrix()
 
     /**
      * Analogous to
      * [RenderNode#getMatrix()][android.graphics.RenderNode.getMatrix].
      */
-    fun getMatrix(outMatrix: Matrix) = coreShadow.getMatrix(outMatrix)
+    public fun getMatrix(outMatrix: Matrix): Unit =
+        coreShadow.getMatrix(outMatrix)
 
     /**
      * Flag to indicate whether the library shadow should always be composited
@@ -382,7 +384,7 @@ open class ShadowDrawable private constructor(
      *
      * This is a passive flag that should be set at initialization.
      */
-    var forceLayer = false
+    public var forceLayer: Boolean = false
 
     private var layer: SoloLayer? = null
 
@@ -414,7 +416,7 @@ open class ShadowDrawable private constructor(
     }
 
     @CallSuper
-    override fun draw(canvas: Canvas) =
+    override fun draw(canvas: Canvas): Unit =
         layer?.draw(canvas) ?: coreShadow.draw(canvas)
 
     @CallSuper

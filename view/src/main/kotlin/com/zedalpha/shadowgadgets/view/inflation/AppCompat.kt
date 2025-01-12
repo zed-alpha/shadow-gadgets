@@ -28,7 +28,7 @@ import com.zedalpha.shadowgadgets.view.R
  */
 @Suppress("DeprecatedCallableAddReplaceWith")
 @Deprecated("The inflation subpackage is being removed entirely.")
-fun ComponentActivity.attachAppCompatShadowHelper() {
+public fun ComponentActivity.attachAppCompatShadowHelper() {
     theme.applyStyle(R.style.ThemeOverlay_ShadowGadgets_AppCompat, true)
 }
 
@@ -66,7 +66,7 @@ fun ComponentActivity.attachAppCompatShadowHelper() {
  */
 @Deprecated("The inflation subpackage is being removed entirely.")
 @Suppress("unused")
-class AppCompatShadowHelper : AppCompatViewInflater() {
+public class AppCompatShadowHelper : AppCompatViewInflater() {
 
     private var helper: InflationHelper? = null
 

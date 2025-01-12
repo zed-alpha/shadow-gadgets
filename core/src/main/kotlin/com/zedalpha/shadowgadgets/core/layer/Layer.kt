@@ -11,7 +11,7 @@ import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.fastForEach
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
-sealed class Layer(
+public sealed class Layer(
     ownerView: View,
     color: Int,
     private var width: Int,
@@ -24,11 +24,11 @@ sealed class Layer(
             ViewLayer(ownerView, ::contentDraw)
         }
 
-    abstract fun contentDraw(canvas: Canvas)
+    protected abstract fun contentDraw(canvas: Canvas)
 
     private val paint = Paint()
 
-    var color: Int = Color.TRANSPARENT
+    public var color: Int = Color.TRANSPARENT
         set(value) {
             if (field == value) return
             field = value
@@ -41,21 +41,21 @@ sealed class Layer(
         this.color = color
     }
 
-    fun setSize(width: Int, height: Int) {
+    public fun setSize(width: Int, height: Int) {
         if (this.width == width && this.height == height) return
         this.width = width; this.height = height
         layer.setSize(width, height)
     }
 
-    fun draw(canvas: Canvas) {
+    public fun draw(canvas: Canvas) {
         if (canvas.isHardwareAccelerated) layer.draw(canvas)
     }
 
-    fun invalidate() = layer.invalidate()
+    public fun invalidate(): Unit = layer.invalidate()
 
-    fun refresh() = layer.refresh()
+    public fun refresh(): Unit = layer.refresh()
 
-    fun recreate() {
+    public fun recreate() {
         layer.apply {
             recreate()
             setLayerPaint(paint)
@@ -64,10 +64,10 @@ sealed class Layer(
     }
 
     @CallSuper
-    open fun dispose() = layer.dispose()
+    public open fun dispose(): Unit = layer.dispose()
 }
 
-class SingleDrawLayer(
+public class SingleDrawLayer(
     ownerView: View,
     color: Int,
     width: Int,
@@ -75,10 +75,10 @@ class SingleDrawLayer(
     private val layerDraw: LayerDraw
 ) : Layer(ownerView, color, width, height) {
 
-    override fun contentDraw(canvas: Canvas) = layerDraw.draw(canvas)
+    override fun contentDraw(canvas: Canvas): Unit = layerDraw.draw(canvas)
 }
 
-class MultiDrawLayer(
+public class MultiDrawLayer(
     ownerView: View,
     color: Int,
     width: Int,
@@ -87,17 +87,17 @@ class MultiDrawLayer(
 
     private val layerDraws = mutableListOf<LayerDraw>()
 
-    fun addDraw(layerDraw: LayerDraw) {
+    public fun addDraw(layerDraw: LayerDraw) {
         layerDraws.add(layerDraw)
     }
 
-    fun removeDraw(layerDraw: LayerDraw) {
+    public fun removeDraw(layerDraw: LayerDraw) {
         layerDraws.remove(layerDraw)
     }
 
-    fun isEmpty(): Boolean = layerDraws.isEmpty()
+    public fun isEmpty(): Boolean = layerDraws.isEmpty()
 
-    override fun contentDraw(canvas: Canvas) =
+    override fun contentDraw(canvas: Canvas): Unit =
         layerDraws.fastForEach { it.draw(canvas) }
 
     override fun dispose() {
@@ -106,11 +106,11 @@ class MultiDrawLayer(
     }
 }
 
-fun interface LayerDraw {
-    fun draw(canvas: Canvas)
+public fun interface LayerDraw {
+    public fun draw(canvas: Canvas)
 }
 
-val RequiresDefaultClipLayer = Build.VERSION.SDK_INT in 24..28
+public val RequiresDefaultClipLayer: Boolean = Build.VERSION.SDK_INT in 24..28
 
 private fun Paint.setLayerFilter(color: Int) {
     if (color != DefaultShadowColorInt) {

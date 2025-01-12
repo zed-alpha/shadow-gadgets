@@ -88,20 +88,20 @@ import com.zedalpha.shadowgadgets.view.ShadowPlane
  * ViewGroup types, these attributes will work properly only on Views with IDs
  * that are unique within the ViewGroup.
  */
-sealed interface ShadowsViewGroup {
+public sealed interface ShadowsViewGroup {
 
     /**
      * The ShadowPlane to set on all child Views as they're added during
      * initialization.
      */
-    var childShadowsPlane: ShadowPlane
+    public var childShadowsPlane: ShadowPlane
 
     /**
      * If true, sets
      * [clipOutlineShadow][com.zedalpha.shadowgadgets.view.clipOutlineShadow]=true
      * on all child Views as they're added during initialization.
      */
-    var clipAllChildShadows: Boolean
+    public var clipAllChildShadows: Boolean
 
     /**
      * A single color value to set on all children during initialization as
@@ -109,14 +109,14 @@ sealed interface ShadowsViewGroup {
      */
     @get:ColorInt
     @setparam:ColorInt
-    var childOutlineShadowsColorCompat: Int
+    public var childOutlineShadowsColorCompat: Int
 
     /**
      * If true, sets
      * [forceOutlineShadowColorCompat][com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat]=true
      * on all child Views during initialization.
      */
-    var forceChildOutlineShadowsColorCompat: Boolean
+    public var forceChildOutlineShadowsColorCompat: Boolean
 
     /**
      * Determines whether the group will take over the draw operations for
@@ -137,5 +137,5 @@ sealed interface ShadowsViewGroup {
      * for groups that need to redraw rapidly, and that usually wouldn't need
      * this plane anyway.
      */
-    var ignoreInlineChildShadows: Boolean
+    public var ignoreInlineChildShadows: Boolean
 }

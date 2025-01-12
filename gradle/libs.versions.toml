@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.3"
+agp = "8.8.0"
 kotlin = "2.1.0"
 dokka = "2.0.0-Beta"
 
@@ -9,7 +9,7 @@ androidxConstraintLayout = "2.2.0"
 androidxCoreKtx = "1.15.0"
 composeBom = "2024.12.01"
 junit4 = "4.13.2"
-lint = "31.7.3"
+lint = "31.8.0"
 materialComponents = "1.12.0"
 
 [libraries]

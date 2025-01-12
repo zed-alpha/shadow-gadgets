@@ -22,7 +22,7 @@ import com.zedalpha.shadowgadgets.view.shadow.shadow
  * When `true`, the View's intrinsic shadow is always disabled, even if the
  * replacement cannot be drawn, for whatever reason.
  */
-var View.clipOutlineShadow: Boolean
+public var View.clipOutlineShadow: Boolean
     get() = getTag(R.id.clip_outline_shadow) == true
     set(value) {
         if (clipOutlineShadow == value) return
@@ -40,7 +40,7 @@ var View.clipOutlineShadow: Boolean
  * corresponding extension property – [pathProvider] – provide a fallback
  * mechanism through which it can be set manually.
  */
-fun interface ViewPathProvider {
+public fun interface ViewPathProvider {
 
     /**
      * Called whenever the target View's shape cannot be determined internally.
@@ -49,14 +49,14 @@ fun interface ViewPathProvider {
      * instance that should be set appropriately. If the Path is left empty, the
      * clipped shadow will not be drawn.
      */
-    fun getPath(view: View, path: Path)
+    public fun getPath(view: View, path: Path)
 }
 
 /**
  * The [ViewPathProvider] used by [clipOutlineShadow] for irregular shapes on
  * API levels 30+.
  */
-var View.pathProvider: ViewPathProvider?
+public var View.pathProvider: ViewPathProvider?
     get() = getTag(R.id.path_provider) as? ViewPathProvider
     set(value) {
         if (pathProvider == value) return
@@ -74,12 +74,13 @@ var View.pathProvider: ViewPathProvider?
     "Replaced with more performant MaterialShapeDrawableViewPathProvider",
     ReplaceWith("MaterialShapeDrawableViewPathProvider()")
 )
-val MaterialComponentsViewPathProvider = ViewPathProvider { view, path ->
-    val background = view.background ?: return@ViewPathProvider
-    background.findMaterialShapeDrawable()?.let { msd ->
-        MaterialShapeDrawableReflector.setPathFromDrawable(path, msd)
+public val MaterialComponentsViewPathProvider: ViewPathProvider =
+    ViewPathProvider { view, path ->
+        val background = view.background ?: return@ViewPathProvider
+        background.findMaterialShapeDrawable()?.let { msd ->
+            MaterialShapeDrawableReflector.setPathFromDrawable(path, msd)
+        }
     }
-}
 
 /**
  * An implementation of [ViewPathProvider] that tries to set the [Path] from a
@@ -87,7 +88,7 @@ val MaterialComponentsViewPathProvider = ViewPathProvider { view, path ->
  *
  * If a MaterialShapeDrawable cannot be found, the Path is left unchanged.
  */
-class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
+public class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
 
     private var background: Drawable? = null
 
@@ -106,7 +107,7 @@ class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
         MaterialShapeDrawableReflector.setPathFromDrawable(path, msd)
     }
 
-    companion object {
+    public companion object {
 
         private var _canGetPath: Boolean? = null
 
@@ -118,7 +119,7 @@ class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
          * class, it might still be preferable in some cases to check first at
          * runtime.
          */
-        val canGetPath: Boolean
+        public val canGetPath: Boolean
             get() = _canGetPath?.let { return it } ?: Path().run {
                 val d = MaterialShapeDrawable().apply { setBounds(0, 0, 1, 1) }
                 MaterialShapeDrawableReflector.setPathFromDrawable(this, d)
@@ -133,7 +134,7 @@ class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
          * [MaterialShapeDrawableViewPathProvider] will work correctly with a
          * given [Drawable] at runtime.
          */
-        fun findMaterialShapeDrawable(root: Drawable): MaterialShapeDrawable? =
+        public fun findMaterialShapeDrawable(root: Drawable): MaterialShapeDrawable? =
             root.findMaterialShapeDrawable()
     }
 }
@@ -149,6 +150,6 @@ class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
  * More information is available on
  * [this wiki page](https://github.com/zed-alpha/shadow-gadgets/wiki/View.forceShadowLayer).
  */
-var View.forceShadowLayer: Boolean
+public var View.forceShadowLayer: Boolean
     get() = getTag(R.id.force_shadow_layer) == true
     set(value) = setTag(R.id.force_shadow_layer, value)

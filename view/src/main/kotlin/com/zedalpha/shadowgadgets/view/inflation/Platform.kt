@@ -14,7 +14,7 @@ import android.view.LayoutInflater
  */
 @Suppress("DeprecatedCallableAddReplaceWith")
 @Deprecated("The inflation subpackage is being removed entirely.")
-fun Activity.attachShadowHelper() {
+public fun Activity.attachShadowHelper() {
     layoutInflater.factory = PlatformShadowHelper(this)
 }
 
@@ -35,7 +35,7 @@ private class PlatformShadowHelper(context: Context) : LayoutInflater.Factory {
  * for illustrative purposes.
  */
 @Deprecated("The inflation subpackage is being removed entirely.")
-class PlatformShadowHelperApplication : Application() {
+public class PlatformShadowHelperApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -54,7 +54,8 @@ class PlatformShadowHelperApplication : Application() {
  * [Application.ActivityLifecycleCallbacks]' functions except the one.
  */
 @Deprecated("The inflation subpackage is being removed entirely.")
-fun interface ActivityCreatedCallback : Application.ActivityLifecycleCallbacks {
+public fun interface ActivityCreatedCallback :
+    Application.ActivityLifecycleCallbacks {
 
     // Overridden for dokka
     override fun onActivityCreated(

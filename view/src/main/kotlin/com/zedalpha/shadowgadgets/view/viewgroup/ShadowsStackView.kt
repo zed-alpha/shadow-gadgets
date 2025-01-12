@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
 import android.widget.StackView
+import com.zedalpha.shadowgadgets.view.ShadowPlane
 
 /**
  * A custom [StackView] that implements [ShadowsViewGroup].
@@ -12,7 +13,7 @@ import android.widget.StackView
  * Apart from the additional handling of the library's shadow properties and
  * draw operations, this group behaves just like its base class.
  */
-class ShadowsStackView @JvmOverloads constructor(
+public class ShadowsStackView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = android.R.attr.stackViewStyle,
@@ -28,17 +29,20 @@ class ShadowsStackView @JvmOverloads constructor(
         { c, v, t -> super.drawChild(c, v, t) }
     )
 
-    override var childShadowsPlane by manager::childShadowsPlane
+    override var childShadowsPlane: ShadowPlane
+            by manager::childShadowsPlane
 
-    override var clipAllChildShadows by manager::clipAllChildShadows
+    override var clipAllChildShadows: Boolean
+            by manager::clipAllChildShadows
 
-    override var childOutlineShadowsColorCompat
+    override var childOutlineShadowsColorCompat: Int
             by manager::childOutlineShadowsColorCompat
 
-    override var forceChildOutlineShadowsColorCompat
+    override var forceChildOutlineShadowsColorCompat: Boolean
             by manager::forceChildOutlineShadowsColorCompat
 
-    override var ignoreInlineChildShadows by manager::ignoreInlineChildShadows
+    override var ignoreInlineChildShadows: Boolean
+            by manager::ignoreInlineChildShadows
 
     override fun onViewAdded(child: View) {
         super.onViewAdded(child)

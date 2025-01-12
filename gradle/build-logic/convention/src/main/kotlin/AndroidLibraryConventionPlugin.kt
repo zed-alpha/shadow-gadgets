@@ -27,6 +27,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
         configure<KotlinAndroidProjectExtension> {
             compilerOptions.jvmTarget = JvmTarget.JVM_17
+            explicitApi()
         }
     }
 }

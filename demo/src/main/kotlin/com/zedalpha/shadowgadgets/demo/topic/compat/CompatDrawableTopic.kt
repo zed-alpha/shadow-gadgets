@@ -54,9 +54,8 @@ class CompatDrawableFragment : TopicFragment<FragmentCompatDrawableBinding>(
     private fun setDrawable(clipped: Boolean) {
         if (::drawable.isInitialized) drawable.dispose()
         drawable =
-            DemoCompatShadowDrawable(ui.drawableView, clipped).apply {
-                ui.drawableView.background = this
-            }
+            DemoCompatShadowDrawable(ui.drawableView, clipped)
+                .also { ui.drawableView.background = it }
         ui.controls.syncColor()
         ui.controls.syncElevation()
         drawable.rotationZ = ui.seekRotation.progress.toFloat()

@@ -18,6 +18,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "shadow-gadgets"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 include(":stubs")
 include(":core")
 include(":view")

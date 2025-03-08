@@ -2,14 +2,16 @@ package com.zedalpha.shadowgadgets.demo.topic
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentMotionBinding
+import com.zedalpha.shadowgadgets.demo.topic.Action.Hide
+import com.zedalpha.shadowgadgets.demo.topic.Action.Show
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,12 +27,11 @@ internal val MotionTopic = Topic(
 class MotionFragment : TopicFragment<FragmentMotionBinding>(
     FragmentMotionBinding::inflate
 ) {
-    @SuppressLint("ShowToast")
     override fun loadUi(ui: FragmentMotionBinding) {
         val snackbar = Snackbar.make(
-            ui.fabStart,
+            ui.fabUp,
             "I'm translucent!",
-            Snackbar.LENGTH_SHORT
+            Snackbar.LENGTH_INDEFINITE
         )
         snackbar.setTextColor(Color.BLACK)
         snackbar.view.backgroundTintList =
@@ -38,83 +39,83 @@ class MotionFragment : TopicFragment<FragmentMotionBinding>(
 
         ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
             ui.motionView.clipOutlineShadow = isChecked
-            ui.fabStart.clipOutlineShadow = isChecked
-            ui.fabCenter.clipOutlineShadow = isChecked
-            ui.fabEnd.clipOutlineShadow = isChecked
+            ui.fabUp.clipOutlineShadow = isChecked
+            ui.fabBoth.clipOutlineShadow = isChecked
+            ui.fabHide.clipOutlineShadow = isChecked
             snackbar.view.clipOutlineShadow = isChecked
         }
 
-        // Race conditions still possible, but it's good enough for a
-        // simple demonstration. Just don't whack-a-mole the buttons.
-        var animating = false
+        ui.fabUp.setAnimations {
+            snackbar.await(Show)
+            delay(500)
+            snackbar.await(Hide)
+        }
+        ui.fabBoth.setAnimations {
+            snackbar.await(Show)
+            ui.fabUp.hide(); ui.fabBoth.hide(); ui.fabHide.await(Hide)
+            delay(500)
+            ui.fabUp.show(); ui.fabBoth.show(); ui.fabHide.await(Show)
+            snackbar.await(Hide)
+        }
+        ui.fabHide.setAnimations {
+            ui.fabUp.hide(); ui.fabBoth.hide(); ui.fabHide.await(Hide)
+            delay(500)
+            ui.fabUp.show(); ui.fabBoth.show(); ui.fabHide.await(Show)
+        }
+    }
 
-        ui.fabStart.setOnClickListener {
+    private var animating = false
+
+    private fun View.setAnimations(block: suspend () -> Unit) {
+        setOnClickListener {
             if (animating) return@setOnClickListener
+            animating = true
             viewLifecycleOwner.lifecycleScope.launch {
-                animating = true
-                snackbar.showAndAwait()
-                delay(1000)
-                snackbar.dismiss()
-                animating = false
-            }
-        }
-        ui.fabCenter.setOnClickListener {
-            if (animating) return@setOnClickListener
-            viewLifecycleOwner.lifecycleScope.launch {
-                animating = true
-                snackbar.showAndAwait()
-                delay(20)
-                ui.fabStart.hide(); ui.fabCenter.hide(); ui.fabEnd.hide()
-                delay(1000)
-                ui.fabStart.show(); ui.fabCenter.show()
-                ui.fabEnd.showAndAwait()
-                delay(20)
-                snackbar.dismiss()
-                animating = false
-            }
-        }
-        ui.fabEnd.setOnClickListener {
-            if (animating) return@setOnClickListener
-            viewLifecycleOwner.lifecycleScope.launch {
-                animating = true
-                ui.fabStart.hide(); ui.fabCenter.hide(); ui.fabEnd.hide()
-                delay(1000)
-                ui.fabStart.show(); ui.fabCenter.show(); ui.fabEnd.show()
+                block()
                 animating = false
             }
         }
     }
 }
 
-private suspend fun Snackbar.showAndAwait() =
+private enum class Action { Show, Hide }
+
+private suspend fun Snackbar.await(action: Action) =
     suspendCancellableCoroutine { continuation ->
         val callback = object : Snackbar.Callback() {
+
             override fun onShown(sb: Snackbar?) {
                 removeCallback(this)
-                continuation.resume(Unit)
+                if (continuation.isActive) continuation.resume(Unit)
             }
+
+            override fun onDismissed(sb: Snackbar?, event: Int) = onShown(sb)
         }
-        duration = Snackbar.LENGTH_INDEFINITE
+        continuation.invokeOnCancellation { removeCallback(callback) }
         addCallback(callback)
-        show()
+        if (action == Show) show() else dismiss()
     }
 
-private suspend fun FloatingActionButton.showAndAwait() =
+private suspend fun FloatingActionButton.await(action: Action) =
     suspendCancellableCoroutine { continuation ->
         val listener = object : AnimatorListenerAdapter() {
-
-            override fun onAnimationCancel(animation: Animator) {
-                if (continuation.isActive) continuation.cancel()
-            }
 
             override fun onAnimationEnd(animation: Animator) {
                 removeOnShowAnimationListener(this)
                 if (continuation.isActive) continuation.resume(Unit)
             }
+
+            override fun onAnimationCancel(animation: Animator) =
+                onAnimationEnd(animation)
         }
         continuation.invokeOnCancellation {
             removeOnShowAnimationListener(listener)
         }
-        addOnShowAnimationListener(listener)
-        show()
+        if (action == Show) {
+            addOnShowAnimationListener(listener)
+            show()
+        } else {
+            addOnHideAnimationListener(listener)
+            hide()
+        }
     }

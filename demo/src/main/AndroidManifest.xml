@@ -22,22 +22,6 @@
             </intent-filter>
         </activity>
 
-
-        <!-- Layout inflation helper examples. -->
-        <!-- This page in demo app is currently commented out in MainActivity. -->
-
-        <activity
-            android:name=".topic.PlatformActivity"
-            android:theme="@style/Theme.Platform" />
-
-        <activity
-            android:name=".topic.CompatActivity"
-            android:theme="@style/Theme.Compat" />
-
-        <activity
-            android:name=".topic.ComponentsActivity"
-            android:theme="@style/Theme.Components" />
-
     </application>
 
 </manifest>

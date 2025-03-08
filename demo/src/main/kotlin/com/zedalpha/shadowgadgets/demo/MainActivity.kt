@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.edit
+import androidx.core.view.get
 import androidx.core.view.isInvisible
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -69,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         ui.title.setOnClickListener { title ->
             PopupMenu(this, title).apply {
                 Topics.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
-                menu.getItem(current).isEnabled = false
+                menu[current].isEnabled = false
                 setOnMenuItemClickListener { setTopic(it.itemId); true }
             }.show()
         }
@@ -85,7 +87,6 @@ private val Topics = listOf(
     ApplyTopic,
     IrregularTopic,
     DrawableTopic,
-//    InflationTopic,  // Functional, but no longer advertised. See the wiki.
     ComposeTopic,
     CompatIntroTopic,
     CompatDrawableTopic,
@@ -142,9 +143,9 @@ private fun Activity.showWelcomeDialog() {
         .show()
         .findViewById<CheckBox>(R.id.hide_welcome)
         ?.setOnCheckedChangeListener { _, isChecked ->
-            getPreferences(AppCompatActivity.MODE_PRIVATE).edit()
-                .putBoolean(PREF_HIDE_WELCOME, isChecked)
-                .apply()
+            getPreferences(AppCompatActivity.MODE_PRIVATE).edit {
+                putBoolean(PREF_HIDE_WELCOME, isChecked)
+            }
         }
 }
 

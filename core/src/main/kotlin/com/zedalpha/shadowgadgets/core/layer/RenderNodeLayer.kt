@@ -4,9 +4,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
-internal class RenderNodeLayer(
-    override val drawContent: (Canvas) -> Unit
-) : ManagedLayer {
+internal class RenderNodeLayer(override val layerDraw: LayerDraw) :
+    ManagedLayer {
 
     private var layerNode = RenderNodeFactory.newInstance("ManagedLayer")
 
@@ -35,7 +34,7 @@ internal class RenderNodeLayer(
         val node = layerNode
         val nodeCanvas = node.beginRecording(width, height)
         try {
-            drawContent(nodeCanvas)
+            layerDraw.draw(nodeCanvas)
         } finally {
             node.endRecording(nodeCanvas)
         }

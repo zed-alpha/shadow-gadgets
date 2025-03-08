@@ -4,7 +4,7 @@ import android.graphics.Outline
 import android.view.View
 import android.view.ViewOutlineProvider
 
-internal class NullShadow(targetView: View) : ViewShadow(targetView) {
+internal class NullShadow(targetView: View) : ViewShadow(targetView, null) {
 
     init {
         targetView.outlineProvider = object : ViewOutlineProvider() {
@@ -15,6 +15,5 @@ internal class NullShadow(targetView: View) : ViewShadow(targetView) {
         }
     }
 
-    override fun updateColorCompat(color: Int) {}
     override fun invalidate() {}
 }

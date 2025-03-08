@@ -8,6 +8,7 @@ import com.zedalpha.shadowgadgets.core.DefaultAmbientShadowAlpha
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.DefaultSpotShadowAlpha
 import com.zedalpha.shadowgadgets.core.blendShadowColors
+import com.zedalpha.shadowgadgets.core.isNotDefault
 import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
 import com.zedalpha.shadowgadgets.view.shadow.checkShadow
 import com.zedalpha.shadowgadgets.view.shadow.shadow
@@ -121,11 +122,11 @@ public class ShadowColorsBlender(private val context: Context) {
 }
 
 private fun View.updateColorOutlineShadow() {
-    colorOutlineShadow = outlineShadowColorCompat != DefaultShadowColorInt &&
+    colorOutlineShadow = outlineShadowColorCompat.isNotDefault &&
             (Build.VERSION.SDK_INT < 28 || forceOutlineShadowColorCompat)
 }
 
-internal inline var View.colorOutlineShadow: Boolean
+internal var View.colorOutlineShadow: Boolean
     get() = getTag(R.id.color_outline_shadow) == true
     private set(value) {
         if (colorOutlineShadow == value) return

@@ -44,6 +44,7 @@ public class ShadowsChipGroup @JvmOverloads constructor(
     override var ignoreInlineChildShadows: Boolean
             by manager::ignoreInlineChildShadows
 
+    @Suppress("RemoveRedundantQualifierName")
     override fun generateLayoutParams(attrs: AttributeSet?): ViewGroup.LayoutParams {
         manager.generateLayoutParams(attrs)
         return super.generateLayoutParams(attrs)

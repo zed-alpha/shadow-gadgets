@@ -7,40 +7,39 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.os.Build
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.WindowManager
+import androidx.core.graphics.withSave
 import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
-import com.zedalpha.shadowgadgets.view.colorOutlineShadow
-import com.zedalpha.shadowgadgets.view.drawable.ShadowDrawable
-import com.zedalpha.shadowgadgets.view.forceShadowLayer
+import com.zedalpha.shadowgadgets.view.internal.BaseDrawable
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
-import com.zedalpha.shadowgadgets.view.pathProvider
 
 internal class SoloShadow(
     targetView: View,
-    private val shadowScope: ViewGroup?
-) : ViewShadow(targetView) {
+    controller: SoloController,
+    private val shadowScope: View?
+) : ViewShadow(targetView, controller) {
 
-    private val drawable = object : ShadowDrawable(targetView, isClipped) {
+    private val drawable = object : BaseDrawable() {
 
         override fun draw(canvas: Canvas) {
-            if (!targetView.updateAndCheckDraw(coreShadow) || !isShown) return
+            val shadow = coreShadow
+            if (!targetView.updateAndCheckDraw(shadow) || !isShown) return
 
             updateBounds()
 
-            canvas.save()
-            if (!hasIdentityMatrix()) {
-                val matrix = tmpMatrix ?: Matrix().also { tmpMatrix = it }
-                getMatrix(matrix)
-                matrix.invert(matrix)
-                canvas.concat(matrix)
+            canvas.withSave {
+                if (!shadow.hasIdentityMatrix()) {
+                    val matrix = tmpMatrix ?: Matrix().also { tmpMatrix = it }
+                    shadow.getMatrix(matrix)
+                    matrix.invert(matrix)
+                    concat(matrix)
+                }
+                if (shadowScope != null) {
+                    translate(bounds.left.toFloat(), bounds.top.toFloat())
+                }
+                coreLayer?.draw(canvas) ?: shadow.draw(this)
             }
-            if (shadowScope != null) {
-                canvas.translate(bounds.left.toFloat(), bounds.top.toFloat())
-            }
-            super.draw(canvas)
-            canvas.restore()
         }
 
         private var tmpMatrix: Matrix? = null
@@ -64,8 +63,9 @@ internal class SoloShadow(
                 targetView.getLocationOnScreen(ints)
                 newBounds.offset(-ints[0], -ints[1])
 
-                translationX = ints[0].toFloat()
-                translationY = ints[1].toFloat()
+                val shadow = coreShadow
+                shadow.translationX = ints[0].toFloat()
+                shadow.translationY = ints[1].toFloat()
             }
 
             bounds = newBounds
@@ -77,15 +77,15 @@ internal class SoloShadow(
     }
 
     private val preDrawListener = ViewTreeObserver.OnPreDrawListener {
-        if (isShown && checkInvalidate()) drawable.invalidateSelf()
+        if (isShown && shouldInvalidate()) drawable.invalidateSelf()
         true
     }
 
-    private fun checkInvalidate(): Boolean {
+    fun shouldInvalidate(): Boolean {
         if (!isShown) return false
 
         val target = targetView
-        val shadow = drawable.coreShadow
+        val shadow = coreShadow
 
         if (shadow.translationZ != target.translationZ) return true
         if (shadow.elevation != target.elevation) return true
@@ -108,22 +108,13 @@ internal class SoloShadow(
         drawable.updateBounds()
         targetView.overlay.add(drawable)
 
-        // Must set this before wrapping the OutlineProvider.
-        targetView.pathProvider?.let { pathProvider ->
-            drawable.setClipPathProvider { path ->
-                pathProvider.getPath(targetView, path)
-            }
-        }
-        wrapOutlineProvider(drawable::setOutline)
+        wrapOutlineProvider(coreShadow::setOutline)
+        updateColorCompat(targetView.outlineShadowColorCompat)
 
         viewTreeObserver = targetView.viewTreeObserver.apply {
             if (isAlive) addOnPreDrawListener(preDrawListener)
         }
 
-        if (targetView.colorOutlineShadow) {
-            drawable.colorCompat = targetView.outlineShadowColorCompat
-        }
-        drawable.forceLayer = targetView.forceShadowLayer
         drawable.invalidateSelf()
     }
 
@@ -136,17 +127,7 @@ internal class SoloShadow(
             if (isAlive) removeOnPreDrawListener(preDrawListener)
             viewTreeObserver = null
         }
-
-        drawable.setClipPathProvider(null)
-        drawable.dispose()
     }
-
-    override fun updateColorCompat(color: Int) =
-        drawable.run {
-            if (colorCompat == color) return
-            colorCompat = color
-            invalidateSelf()
-        }
 
     override fun invalidate() = drawable.invalidateSelf()
 }

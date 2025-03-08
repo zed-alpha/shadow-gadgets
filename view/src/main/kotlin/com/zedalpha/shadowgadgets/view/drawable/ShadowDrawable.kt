@@ -16,6 +16,8 @@ import com.zedalpha.shadowgadgets.core.ClippedShadow
 import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.core.PathProvider
 import com.zedalpha.shadowgadgets.core.Shadow
+import com.zedalpha.shadowgadgets.core.isNotDefault
+import com.zedalpha.shadowgadgets.core.layer.Layer
 import com.zedalpha.shadowgadgets.core.layer.RequiresDefaultClipLayer
 import kotlin.math.roundToInt
 
@@ -67,8 +69,9 @@ import kotlin.math.roundToInt
  * 24..28 are clipped to the drawable's bounds.
  */
 public open class ShadowDrawable private constructor(
-    internal val coreShadow: Shadow,
-    private val ownerView: View?
+    private val coreShadow: Shadow,
+    private val ownerView: View?,
+    public val isClipped: Boolean
 ) : Drawable() {
 
     /**
@@ -88,7 +91,8 @@ public open class ShadowDrawable private constructor(
      */
     public constructor(ownerView: View, isClipped: Boolean) : this(
         if (isClipped) ClippedShadow(ownerView) else Shadow(ownerView),
-        ownerView
+        ownerView,
+        isClipped
     )
 
     /**
@@ -106,7 +110,7 @@ public open class ShadowDrawable private constructor(
      */
     @RequiresApi(29)
     public constructor(isClipped: Boolean) :
-            this(if (isClipped) ClippedShadow() else Shadow(), null)
+            this(if (isClipped) ClippedShadow() else Shadow(), null, isClipped)
 
     /**
      * Sets the function through which to provide irregular Paths for clipping
@@ -131,7 +135,7 @@ public open class ShadowDrawable private constructor(
      */
     public fun dispose() {
         coreShadow.dispose()
-        layer?.dispose()
+        coreLayer?.dispose()
     }
 
     /**
@@ -308,7 +312,7 @@ public open class ShadowDrawable private constructor(
         set(value) {
             if (field == value) return
             field = value
-            if (layer == null) coreShadow.ambientColor = value
+            if (coreLayer == null) coreShadow.ambientColor = value
         }
 
     /**
@@ -323,7 +327,7 @@ public open class ShadowDrawable private constructor(
         set(value) {
             if (field == value) return
             field = value
-            if (layer == null) coreShadow.spotColor = value
+            if (coreLayer == null) coreShadow.spotColor = value
         }
 
     /**
@@ -345,8 +349,31 @@ public open class ShadowDrawable private constructor(
         set(value) {
             if (field == value) return
             field = value
-            configureLayer()
+
+            val shadow = coreShadow
+            val needsLayer = colorCompat.isNotDefault ||
+                    (isClipped && RequiresDefaultClipLayer) ||
+                    @Suppress("DEPRECATION") forceLayer
+            if (needsLayer) {
+                shadow.ambientColor = DefaultShadowColorInt
+                shadow.spotColor = DefaultShadowColorInt
+
+                val layer = coreLayer
+                    ?: controller.obtainLayer(coreShadow)
+                        .also { coreLayer = it }
+                layer?.color = value
+            } else {
+                coreLayer?.let {
+                    controller.disposeLayer(it)
+                    coreLayer = null
+                }
+            }
+            invalidateSelf()
         }
+
+    private val controller = DrawableController(this, ownerView)
+
+    private var coreLayer: Layer? = null
 
     /**
      * Analogous to
@@ -384,45 +411,22 @@ public open class ShadowDrawable private constructor(
      *
      * This is a passive flag that should be set at initialization.
      */
+    @Deprecated("This is now handled automatically on the affected versions.")
     public var forceLayer: Boolean = false
-
-    private var layer: SoloLayer? = null
-
-    init {
-        configureLayer()
-    }
-
-    private fun configureLayer() {
-        val owner = ownerView
-        val shadow = coreShadow
-        val compat = colorCompat
-        val needsLayer = compat != DefaultShadowColorInt || forceLayer ||
-                coreShadow is ClippedShadow && RequiresDefaultClipLayer
-        if (needsLayer && owner != null) {
-            shadow.ambientColor = DefaultShadowColorInt
-            shadow.spotColor = DefaultShadowColorInt
-            layer?.run { color = compat; return }
-            layer = SoloLayer(this, owner, shadow::draw, compat)
-        } else {
-            shadow.ambientColor = ambientColor
-            shadow.spotColor = spotColor
-            layer?.run { dispose(); layer = null }
-        }
-    }
 
     @CallSuper
     override fun onBoundsChange(bounds: Rect) {
-        layer?.setSize(bounds)
+        coreLayer?.setSize(bounds.width(), bounds.height())
     }
 
     @CallSuper
     override fun draw(canvas: Canvas): Unit =
-        layer?.draw(canvas) ?: coreShadow.draw(canvas)
+        coreLayer?.draw(canvas) ?: coreShadow.draw(canvas)
 
     @CallSuper
     override fun invalidateSelf() {
         super.invalidateSelf()
-        layer?.refresh()
+        coreLayer?.refresh()
     }
 
     @Suppress("OVERRIDE_DEPRECATION")

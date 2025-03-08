@@ -133,11 +133,11 @@ internal object ProjectorReflector {
         end.invoke(renderNode, canvas)
         try {
             discardDisplayList?.invoke(renderNode)
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
             discardDisplayList = null
         }
         true
-    } catch (e: Throwable) {
+    } catch (_: Throwable) {
         false
     }
 

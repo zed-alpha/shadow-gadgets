@@ -95,7 +95,7 @@ private fun View.childShadow(scope: ViewGroup) {
             }
             nullShadow(::message)
         }
-        else -> SoloShadow(this, scope)
+        else -> SoloController(this, scope).shadow
     }
 }
 
@@ -110,7 +110,7 @@ private fun View.rootShadow() {
         clipToOutline -> {
             nullShadow { "Inline shadow target has clipToOutline=true" }
         }
-        else -> SoloShadow(this, null)
+        else -> SoloController(this, null).shadow
     }
 }
 
@@ -119,32 +119,32 @@ private fun View.nullShadow(logMessage: () -> String) {
     NullShadow(this)
 }
 
-internal inline var View.isInitialized: Boolean
+internal var View.isInitialized: Boolean
     get() = getTag(R.id.is_initialized) == true
     set(value) = setTag(R.id.is_initialized, value)
 
-internal inline val ViewGroup.isRecyclingViewGroup: Boolean
+internal val ViewGroup.isRecyclingViewGroup: Boolean
     get() = this is RecyclerView || this is AdapterView<*>
 
-private inline var View.isWatched: Boolean
+private var View.isWatched: Boolean
     get() = getTag(R.id.is_watched) == true
     set(value) = setTag(R.id.is_watched, value)
 
 @get:Suppress("UNCHECKED_CAST")
-private inline var View.shadowScope: ViewGroup?
+private var View.shadowScope: ViewGroup?
     get() = (getTag(R.id.shadow_scope) as? WeakReference<ViewGroup>)?.get()
     set(value) = setTag(R.id.shadow_scope, value?.let { WeakReference(it) })
 
-private inline var View.isRecyclingViewGroupChild: Boolean
+private var View.isRecyclingViewGroupChild: Boolean
     get() = getTag(R.id.is_recycling_view_group_child) == true
     set(value) = setTag(R.id.is_recycling_view_group_child, value)
 
-private inline val View.debugName: String
+private val View.debugName: String
     get() = buildString {
         append(this@debugName.javaClass.simpleName)
         if (id != View.NO_ID) try {
             append(", R.id.${resources.getResourceEntryName(id)}")
-        } catch (e: Resources.NotFoundException) {
+        } catch (_: Resources.NotFoundException) {
             ", id=$id"
         }
     }

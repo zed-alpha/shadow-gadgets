@@ -10,8 +10,7 @@ plugins {
     alias(libs.plugins.dokka)
 }
 
-val documentedModules = listOf("view", "compose")
-val documentedProjects = documentedModules.map { project(":$it") }
+val documentedProjects = listOf(projects.view, projects.compose)
 
 dependencies {
     documentedProjects.forEach { dokka(it) }
@@ -19,7 +18,7 @@ dependencies {
 }
 
 dokka {
-    dokkaPublicationDirectory = rootDir.resolve("docs")
+    basePublicationsDirectory = rootDir.resolve("docs")
 
     pluginsConfiguration {
         html {
@@ -43,7 +42,7 @@ configure(documentedProjects) {
     }
 
     dokka {
-        dokkaPublicationDirectory = layout.buildDirectory.dir("docs")
+        basePublicationsDirectory = layout.buildDirectory.dir("docs")
         dokkaPublications.html { suppressInheritedMembers = true }
     }
 }

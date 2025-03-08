@@ -14,6 +14,12 @@ public const val DefaultAmbientShadowAlpha: Float = 0.039F
 
 public const val DefaultSpotShadowAlpha: Float = 0.19F
 
+@Suppress("KotlinConstantConditions")  // TODO
+public val Int.isDefault: Boolean get() = this == DefaultShadowColorInt
+
+@Suppress("KotlinConstantConditions")  // TODO
+public val Int.isNotDefault: Boolean get() = this != DefaultShadowColorInt
+
 @RequiresApi(28)
 public object ViewShadowColorsHelper {
 

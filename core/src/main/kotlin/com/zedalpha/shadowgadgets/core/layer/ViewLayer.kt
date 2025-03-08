@@ -10,7 +10,7 @@ import com.zedalpha.shadowgadgets.core.shadow.ViewPainterProxy
 
 internal class ViewLayer(
     private val ownerView: View,
-    override val drawContent: (Canvas) -> Unit
+    override val layerDraw: LayerDraw,
 ) : ManagedLayer {
 
     private fun createLayerView() = object : BaseView(ownerView.context) {
@@ -20,7 +20,7 @@ internal class ViewLayer(
             layout(0, 0, ownerView.width, ownerView.height)
         }
 
-        override fun onDraw(canvas: Canvas) = drawContent(canvas)
+        override fun onDraw(canvas: Canvas) = layerDraw.draw(canvas)
     }
 
     private var layerView = createLayerView()

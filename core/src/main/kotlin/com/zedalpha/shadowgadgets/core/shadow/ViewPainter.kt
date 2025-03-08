@@ -73,25 +73,15 @@ internal class ViewPainterProxy(
 internal class ViewPainter(private val ownerView: ViewGroup) :
     ViewGroup(ownerView.context) {
 
-    private val uiThread = ownerView.context.mainLooper.thread
-
-    private fun runOnUiThread(block: () -> Unit) {
-        if (Thread.currentThread() != uiThread) {
-            ownerView.post(block)
-        } else {
-            block.invoke()
-        }
-    }
-
     init {
         visibility = GONE
         ownerView.viewPainter = this
-        runOnUiThread { ownerView.overlay.add(this) }
+        ownerView.overlay.add(this)
     }
 
     private fun detachFromOwner() {
         ownerView.viewPainter = null
-        runOnUiThread { ownerView.overlay.remove(this) }
+        ownerView.overlay.remove(this)
     }
 
     private val activeProxies = WeakHashMap<ViewPainterProxy, Unit>()

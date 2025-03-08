@@ -14,8 +14,6 @@ internal open class OverlayPlane(
     private val controller: OverlayController,
 ) : DrawPlane {
 
-    private val layers = OverlayLayerSet(parentView)
-
     protected val shadows = mutableListOf<GroupShadow>()
 
     protected val drawable = object : BaseDrawable() {
@@ -26,29 +24,23 @@ internal open class OverlayPlane(
                     paddingLeft,
                     paddingTop,
                     width - paddingRight,
-                    height - paddingBottom,
-                    layers::draw
-                )
+                    height - paddingBottom
+                ) { shadows.fastForEach { it.draw(canvas) } }
             } else {
-                layers.draw(canvas)
+                shadows.fastForEach { it.draw(canvas) }
             }
         }
     }
 
-    fun requiresTracking() = layers.requiresTracking()
-
     fun attach() = attachToOverlay(parentView.overlay)
 
-    final override fun addShadow(shadow: GroupShadow, color: Int) {
+    final override fun addShadow(shadow: GroupShadow) {
         shadows.add(shadow)
-        layers.addShadow(shadow, color)
-
-        if (RequiresSwitchInvalidation) parentView.invalidate()
+        if (RequiresInvalidateOnToggle) parentView.invalidate()
     }
 
     final override fun removeShadow(shadow: GroupShadow) {
         shadows.remove(shadow)
-        layers.removeShadow(shadow)
         controller.disposeShadow(shadow)
         if (shadows.isEmpty()) {
             detachFromOverlay(parentView.overlay)
@@ -56,11 +48,8 @@ internal open class OverlayPlane(
             dispose()
         }
 
-        if (RequiresSwitchInvalidation) parentView.invalidate()
+        if (RequiresInvalidateOnToggle) parentView.invalidate()
     }
-
-    final override fun updateColor(shadow: GroupShadow, color: Int) =
-        layers.updateColor(shadow, color)
 
     protected open fun attachToOverlay(overlay: ViewGroupOverlay) =
         overlay.add(drawable)
@@ -71,32 +60,19 @@ internal open class OverlayPlane(
     @CallSuper
     open fun setSize(width: Int, height: Int) {
         drawable.setBounds(0, 0, width, height)
-        layers.setSize(width, height)
     }
 
     @CallSuper
     open fun checkInvalidate() =
         shadows.fastForEach { shadow ->
-            if (shadow.checkInvalidate()) {
+            if (shadow.shouldInvalidate()) {
                 invalidatePlane()
-                layers.refresh()
                 return
             }
         }
 
     @CallSuper
-    override fun invalidatePlane() {
-        layers.invalidate()
-        drawable.invalidateSelf()
-    }
-
-    fun recreateLayers() {
-        layers.recreate()
-        drawable.invalidateSelf()
-    }
-
-    @CallSuper
-    override fun dispose() = layers.dispose()
+    override fun invalidatePlane() = drawable.invalidateSelf()
 }
 
 internal class ProjectorOverlayPlane(
@@ -128,7 +104,7 @@ internal class ProjectorOverlayPlane(
 
     override fun checkInvalidate() {
         super.checkInvalidate()
-        if (shadows.isNotEmpty()) projector.refresh()
+        projector.refresh()
     }
 
     override fun invalidatePlane() {
@@ -137,10 +113,7 @@ internal class ProjectorOverlayPlane(
         parentView.invalidate()
     }
 
-    override fun dispose() {
-        super.dispose()
-        projector.dispose()
-    }
+    override fun dispose() = projector.dispose()
 }
 
 private object EmptyDrawable : BaseDrawable() {

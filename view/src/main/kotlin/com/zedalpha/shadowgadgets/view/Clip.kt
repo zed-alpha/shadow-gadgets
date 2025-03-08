@@ -120,7 +120,7 @@ public class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
          * runtime.
          */
         public val canGetPath: Boolean
-            get() = _canGetPath?.let { return it } ?: Path().run {
+            get() = _canGetPath ?: Path().run {
                 val d = MaterialShapeDrawable().apply { setBounds(0, 0, 1, 1) }
                 MaterialShapeDrawableReflector.setPathFromDrawable(this, d)
                 (!isEmpty).also { _canGetPath = it }
@@ -150,6 +150,7 @@ public class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
  * More information is available on
  * [this wiki page](https://github.com/zed-alpha/shadow-gadgets/wiki/View.forceShadowLayer).
  */
+@Deprecated("This is now handled automatically on the affected versions.")
 public var View.forceShadowLayer: Boolean
     get() = getTag(R.id.force_shadow_layer) == true
     set(value) = setTag(R.id.force_shadow_layer, value)

@@ -55,7 +55,7 @@ public object RenderNodeFactory {
             setUseCompositingLayer(false, null)
         }
         true
-    } catch (e: Throwable) {
+    } catch (_: Throwable) {
         false
     }
 }

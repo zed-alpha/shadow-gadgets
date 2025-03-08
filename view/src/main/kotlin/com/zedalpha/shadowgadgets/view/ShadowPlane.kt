@@ -56,7 +56,7 @@ public enum class ShadowPlane {
     public companion object {
 
         // Maps XML attribute values to enum values.
-        internal fun forValue(value: Int): ShadowPlane = entries[value]
+        internal fun forValue(value: Int) = ShadowPlane.entries[value]
     }
 }
 

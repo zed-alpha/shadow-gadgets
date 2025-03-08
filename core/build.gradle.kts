@@ -8,6 +8,8 @@ android {
 }
 
 dependencies {
-    compileOnly(project(":stubs"))
+
+    compileOnly(projects.stubs)
+
     implementation(libs.androidx.core.ktx)
 }

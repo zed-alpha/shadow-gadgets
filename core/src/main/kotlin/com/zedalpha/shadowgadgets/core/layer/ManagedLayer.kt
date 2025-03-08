@@ -5,7 +5,7 @@ import android.graphics.Paint
 
 internal interface ManagedLayer {
 
-    val drawContent: (Canvas) -> Unit
+    val layerDraw: LayerDraw
 
     fun setSize(width: Int, height: Int)
 

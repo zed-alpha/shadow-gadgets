@@ -43,7 +43,7 @@
         android:layout_weight="1">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_start"
+            android:id="@+id/fab_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
@@ -52,7 +52,7 @@
             app:backgroundTint="@color/see_through_red" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab_center"
+            android:id="@+id/fab_both"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
@@ -64,7 +64,7 @@
             app:backgroundTint="@color/see_through_green" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_end"
+            android:id="@+id/fab_hide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"

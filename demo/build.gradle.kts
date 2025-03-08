@@ -47,8 +47,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":view"))
-    implementation(project(":compose"))
+
+    implementation(projects.view)
+    implementation(projects.compose)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.material.components)
     implementation(libs.androidx.constraintlayout)

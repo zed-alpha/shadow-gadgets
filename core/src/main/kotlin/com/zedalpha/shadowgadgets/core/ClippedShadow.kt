@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.withSave
 
 public class ClippedShadow private constructor(
     private val shadow: Shadow
@@ -57,18 +58,18 @@ public class ClippedShadow private constructor(
         matrix.postTranslate(shadow.left.toFloat(), shadow.top.toFloat())
         clipPath.transform(matrix, path)
 
-        canvas.save()
-        clipOutPath(canvas, path)
-        shadow.draw(canvas)
-        canvas.restore()
+        canvas.withSave {
+            clipOutPath(this, path)
+            shadow.draw(this)
+        }
     }
-
-    private val tmpRect = Rect()
-    private val tmpRectF = RectF()
-    private val tmpMatrix = Matrix()
-    private val tmpPath = Path()
 }
 
 public fun interface PathProvider {
     public fun getPath(path: Path)
 }
+
+private val tmpRect = Rect()
+private val tmpRectF = RectF()
+private val tmpMatrix = Matrix()
+private val tmpPath = Path()

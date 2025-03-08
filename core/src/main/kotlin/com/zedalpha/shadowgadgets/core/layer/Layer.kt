@@ -6,104 +6,58 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.os.Build
 import android.view.View
-import androidx.annotation.CallSuper
-import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
-import com.zedalpha.shadowgadgets.core.fastForEach
+import com.zedalpha.shadowgadgets.core.isNotDefault
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
-public sealed class Layer(
-    ownerView: View,
-    color: Int,
-    private var width: Int,
-    private var height: Int
-) {
-    private val layer: ManagedLayer =
+public class Layer(layerDraw: LayerDraw, ownerView: View) {
+
+    private val managedLayer: ManagedLayer =
         if (RenderNodeFactory.isOpen) {
-            RenderNodeLayer(::contentDraw)
+            RenderNodeLayer(layerDraw)
         } else {
-            ViewLayer(ownerView, ::contentDraw)
+            ViewLayer(ownerView, layerDraw)
         }
 
-    protected abstract fun contentDraw(canvas: Canvas)
-
     private val paint = Paint()
+
+    private var width: Int = 0
+    private var height: Int = 0
 
     public var color: Int = Color.TRANSPARENT
         set(value) {
             if (field == value) return
             field = value
             paint.setLayerFilter(color)
-            layer.setLayerPaint(paint)
+            managedLayer.setLayerPaint(paint)
         }
 
     init {
-        layer.setSize(width, height)
-        this.color = color
+        setSize(ownerView.width, ownerView.height)
     }
 
     public fun setSize(width: Int, height: Int) {
         if (this.width == width && this.height == height) return
         this.width = width; this.height = height
-        layer.setSize(width, height)
+        managedLayer.setSize(width, height)
     }
 
     public fun draw(canvas: Canvas) {
-        if (canvas.isHardwareAccelerated) layer.draw(canvas)
+        if (canvas.isHardwareAccelerated) managedLayer.draw(canvas)
     }
 
-    public fun invalidate(): Unit = layer.invalidate()
+    public fun invalidate(): Unit = managedLayer.invalidate()
 
-    public fun refresh(): Unit = layer.refresh()
+    public fun refresh(): Unit = managedLayer.refresh()
 
     public fun recreate() {
-        layer.apply {
+        managedLayer.apply {
             recreate()
             setLayerPaint(paint)
             setSize(width, height)
         }
     }
 
-    @CallSuper
-    public open fun dispose(): Unit = layer.dispose()
-}
-
-public class SingleDrawLayer(
-    ownerView: View,
-    color: Int,
-    width: Int,
-    height: Int,
-    private val layerDraw: LayerDraw
-) : Layer(ownerView, color, width, height) {
-
-    override fun contentDraw(canvas: Canvas): Unit = layerDraw.draw(canvas)
-}
-
-public class MultiDrawLayer(
-    ownerView: View,
-    color: Int,
-    width: Int,
-    height: Int
-) : Layer(ownerView, color, width, height) {
-
-    private val layerDraws = mutableListOf<LayerDraw>()
-
-    public fun addDraw(layerDraw: LayerDraw) {
-        layerDraws.add(layerDraw)
-    }
-
-    public fun removeDraw(layerDraw: LayerDraw) {
-        layerDraws.remove(layerDraw)
-    }
-
-    public fun isEmpty(): Boolean = layerDraws.isEmpty()
-
-    override fun contentDraw(canvas: Canvas): Unit =
-        layerDraws.fastForEach { it.draw(canvas) }
-
-    override fun dispose() {
-        super.dispose()
-        layerDraws.clear()
-    }
+    public fun dispose(): Unit = managedLayer.dispose()
 }
 
 public fun interface LayerDraw {
@@ -113,7 +67,7 @@ public fun interface LayerDraw {
 public val RequiresDefaultClipLayer: Boolean = Build.VERSION.SDK_INT in 24..28
 
 private fun Paint.setLayerFilter(color: Int) {
-    if (color != DefaultShadowColorInt) {
+    if (color.isNotDefault) {
         alpha = Color.alpha(color)
         colorFilter = ColorMatrixColorFilter(
             floatArrayOf(

@@ -11,8 +11,8 @@ Unsightly draw defects are visible on `View`s and `Composable`s with see-through
 backgrounds.
 
 <p align="center">
-<img src="images/intro_clip_broken.png"
-alt="Examples of various translucent UI elements showing the artifacts."
+<img src="images/intro_clip_broken.png" 
+alt="Examples of various translucent UI elements showing the artifacts." 
 width="55%" />
 </p>
 
@@ -20,8 +20,8 @@ The clip tools use the same classes and methods that the native framework uses
 to render shadows, simply replacing the originals with clipped copies.
 
 <p align="center">
-<img src="images/intro_clip_fixed.png"
-alt="The above examples with the clip fix applied to each."
+<img src="images/intro_clip_fixed.png" 
+alt="The above examples with the clip fix applied to each." 
 width="55%" />
 </p>
 
@@ -36,8 +36,8 @@ this technique, however, as it's not possible to separate the ambient and spot
 shadows at this level.
 
 <p align="center">
-<img src="images/intro_color_compat.png"
-alt="Two shadows, one with native colors, the other tinted with color compat."
+<img src="images/intro_color_compat.png" 
+alt="Two shadows, one with native colors, the other tinted with color compat." 
 width="30%" />
 </p>
 
@@ -123,8 +123,8 @@ possible remedies.
   sibling with a higher elevation overlaps the target.
 
   <p align="center">
-  <img src="images/plane_foreground_broken.png"
-  alt="A View's clipped shadow incorrectly drawn on top of its higher sibling."
+  <img src="images/plane_foreground_broken.png" 
+  alt="A View's clipped shadow incorrectly drawn on top of its higher sibling." 
   width="20%" />
   </p>
 
@@ -140,8 +140,8 @@ possible remedies.
   the outline `Path` for the clip.
 
   <p align="center">
-  <img src="images/view_path_provider.png"
-  alt="A View in the shape of a puzzle piece with its shadow clipped."
+  <img src="images/view_path_provider.png" 
+  alt="A View in the shape of a puzzle piece with its shadow clipped." 
   width="20%" />
   </p>
 
@@ -157,8 +157,8 @@ possible remedies.
   running animation.
 
   <p align="center">
-  <img src="images/parent_matrix_defect.png"
-  alt="A misaligned clip region is shown in a parent scaled by an animation."
+  <img src="images/parent_matrix_defect.png" 
+  alt="A misaligned clip region is shown in a parent scaled by an animation." 
   width="20%" />
   </p>
 
@@ -176,8 +176,8 @@ even if you don't intend to use them at runtime, these groups may still be
 useful during design.
 
 <p align="center">
-<img src="images/layout_editor.png"
-alt="Screenshot of Android Studio showing library effects in the layout editor."
+<img src="images/layout_editor.png" 
+alt="Screenshot of Android Studio showing library effects in the layout editor." 
 width="40%" />
 </p>
 

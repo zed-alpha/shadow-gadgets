@@ -3,83 +3,40 @@ package com.zedalpha.shadowgadgets.view.shadow
 import android.graphics.Canvas
 import android.os.Build
 import android.view.View
-import com.zedalpha.shadowgadgets.core.ClippedShadow
-import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
-import com.zedalpha.shadowgadgets.core.PathProvider
-import com.zedalpha.shadowgadgets.core.Shadow
 import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
 import com.zedalpha.shadowgadgets.core.layer.LayerDraw
-import com.zedalpha.shadowgadgets.view.colorOutlineShadow
-import com.zedalpha.shadowgadgets.view.forceShadowLayer
+import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
-import com.zedalpha.shadowgadgets.view.pathProvider
 
 internal class GroupShadow(
     targetView: View,
-    private val plane: DrawPlane
-) : ViewShadow(targetView), LayerDraw {
-
-    private val coreShadow = if (isClipped) {
-        ClippedShadow(targetView).also { shadow ->
-            val pathProvider = targetView.pathProvider ?: return@also
-            shadow.pathProvider = PathProvider { path ->
-                pathProvider.getPath(targetView, path)
-            }
-        }
-    } else {
-        Shadow(targetView)
-    }
-
-    val forceLayer = targetView.forceShadowLayer
+    controller: GroupController,
+    val plane: DrawPlane
+) : ViewShadow(targetView, controller), LayerDraw {
 
     init {
-        plane.addShadow(
-            this,
-            if (targetView.colorOutlineShadow) {
-                targetView.outlineShadowColorCompat
-            } else {
-                DefaultShadowColorInt
-            }
-        )
+        plane.addShadow(this)
         wrapOutlineProvider(coreShadow::setOutline)
+        updateColorCompat(targetView.outlineShadowColorCompat)
 
-        if (RequiresSwitchInvalidation) targetView.invalidate()
+        if (RequiresInvalidateOnToggle) targetView.invalidate()
     }
 
     override fun detachFromTarget() {
         super.detachFromTarget()
         plane.removeShadow(this)
-        coreShadow.dispose()
 
-        if (RequiresSwitchInvalidation) targetView.invalidate()
-    }
-
-    override fun updateColorCompat(color: Int) {
-        if (Build.VERSION.SDK_INT >= 28 &&
-            targetView.colorOutlineShadow &&
-            color != DefaultShadowColorInt
-        ) {
-            ViewShadowColorsHelper.setAmbientColor(
-                targetView,
-                DefaultShadowColorInt
-            )
-            ViewShadowColorsHelper.setSpotColor(
-                targetView,
-                DefaultShadowColorInt
-            )
-        }
-        plane.updateColor(this, color)
-        invalidate()
+        if (RequiresInvalidateOnToggle) targetView.invalidate()
     }
 
     override fun invalidate() = plane.invalidatePlane()
 
     override fun draw(canvas: Canvas) {
         if (!targetView.updateAndCheckDraw(coreShadow) || !isShown) return
-        coreShadow.draw(canvas)
+        coreLayer?.draw(canvas) ?: coreShadow.draw(canvas)
     }
 
-    fun checkInvalidate(): Boolean {
+    fun shouldInvalidate(): Boolean {
         if (!isShown) return false
 
         val shadow = coreShadow
@@ -114,5 +71,8 @@ internal class GroupShadow(
     }
 }
 
-internal val RequiresSwitchInvalidation =
+internal val RequiresInvalidateOnToggle =
     Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP
+
+internal val View.groupShadow: GroupShadow?
+    get() = getTag(R.id.shadow) as? GroupShadow

@@ -9,7 +9,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":core"))
+
+    implementation(projects.core)
+
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

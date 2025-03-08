@@ -72,7 +72,7 @@ internal object OutlinePathReflector {
                 } else {
                     Outline::class.java.getDeclaredField("mPath")
                 }.also { mPath = it }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -81,9 +81,10 @@ internal object OutlinePathReflector {
         val pathField = getPathField() ?: return false
         val outlinePath = try {
             pathField.get(outline) as Path
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
+        @Suppress("NullableBooleanElvis")
         return outlinePath?.let { path.set(it); true } ?: false
     }
 }
@@ -113,7 +114,7 @@ internal object OutlineRectReflector {
             try {
                 Outline::class.java.getDeclaredField("mRect")
                     .also { mRect = it }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -122,13 +123,13 @@ internal object OutlineRectReflector {
         val rectField = getRectField() ?: return false
         val rect = try {
             rectField.get(outline) as Rect
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
+        @Suppress("NullableBooleanElvis")
         return rect?.let { outRect.set(rect); true } ?: false
     }
 
-    @SuppressLint("SoonBlockedPrivateApi")
     private var mRadius: Field? = null
 
     private var mRadiusInitialized = false
@@ -142,7 +143,7 @@ internal object OutlineRectReflector {
             try {
                 Outline::class.java.getDeclaredField("mRadius")
                     .also { mRadius = it }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -151,7 +152,7 @@ internal object OutlineRectReflector {
         val radiusField = getRadiusField() ?: return 0F
         return try {
             radiusField.getFloat(outline)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             0F
         }
     }
@@ -193,7 +194,7 @@ internal object CanvasZReflector {
                     String::class.java,
                     arrayOf<Class<*>>()::class.java
                 ).also { getDeclared = it }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -207,13 +208,13 @@ internal object CanvasZReflector {
                     "insertReorderBarrier",
                     emptyArray<Class<*>>()
                 ) as Method?
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         } else {
             try {
                 Canvas::class.java.getDeclaredMethod("insertReorderBarrier")
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -229,13 +230,13 @@ internal object CanvasZReflector {
                     "insertInorderBarrier",
                     emptyArray<Class<*>>()
                 ) as Method?
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         } else {
             try {
                 Canvas::class.java.getDeclaredMethod("insertInorderBarrier")
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -245,7 +246,7 @@ internal object CanvasZReflector {
     fun enableZ(canvas: Canvas) {
         try {
             reorderBarrierMethod?.invoke(canvas)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // ignore
         }
     }
@@ -253,7 +254,7 @@ internal object CanvasZReflector {
     fun disableZ(canvas: Canvas) {
         try {
             inorderBarrierMethod?.invoke(canvas)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // ignore
         }
     }

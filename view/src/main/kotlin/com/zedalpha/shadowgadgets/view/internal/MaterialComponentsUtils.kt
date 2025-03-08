@@ -44,7 +44,7 @@ internal object MaterialShapeDrawableReflector {
                 MaterialShapeDrawable::class.java
                     .getDeclaredMethod("getBoundsAsRectF")
                     .also { it.isAccessible = true; getBoundsAsRectF = it }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -66,7 +66,7 @@ internal object MaterialShapeDrawableReflector {
                         Path::class.java
                     )
                     .also { it.isAccessible = true; calculatePath = it }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -81,7 +81,7 @@ internal object MaterialShapeDrawableReflector {
             val calculateMethod = getCalculateMethod() ?: return false
             calculateMethod.invoke(drawable, rect, path)
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }

@@ -12,9 +12,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core"))
+
+    implementation(projects.core)
+    lintPublish(projects.view.lint)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material.components)
-    lintPublish(project(":view:lint"))
 }

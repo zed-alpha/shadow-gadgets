@@ -202,7 +202,7 @@ private class ViewProjector(
 
     private val projectedChild = View(context).apply {
         background = projectedDrawable
-        visibility = View.GONE
+        visibility = GONE
     }
 
     init {

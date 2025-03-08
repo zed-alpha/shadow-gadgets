@@ -19,8 +19,10 @@ internal class ConfigurationWrapper(
 
     override var baselineFile: File? by wrapped::baselineFile
 
-    override fun isEnabled(issue: Issue): Boolean =
-        issueMap[issue]?.let { super.isEnabled(it) } ?: false
+    override fun isEnabled(issue: Issue): Boolean {
+        val existing = issueMap[issue]
+        return if (existing != null) super.isEnabled(existing) else false
+    }
 
     override fun addConfiguredIssues(
         targetMap: MutableMap<String, Severity>,

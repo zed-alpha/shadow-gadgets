@@ -1,5 +1,6 @@
 package com.zedalpha.shadowgadgets.compose.internal
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.compose.ui.draw.CacheDrawModifierNode
 import androidx.compose.ui.draw.CacheDrawScope
@@ -28,6 +29,7 @@ import com.zedalpha.shadowgadgets.core.blendShadowColors
 import com.zedalpha.shadowgadgets.core.layer.RequiresDefaultClipLayer
 import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
 
+@SuppressLint("ModifierNodeInspectableProperties")
 internal abstract class BaseShadowElement(
     val elevation: Dp,
     val shape: Shape,
@@ -186,5 +188,5 @@ private class ColorBlender(private val node: DelegatableNode) {
         }
 }
 
-internal inline val Color.isDefault get() = this == DefaultShadowColor
-internal inline val Color.isNotDefault get() = this != DefaultShadowColor
+internal val Color.isDefault get() = this == DefaultShadowColor
+internal val Color.isNotDefault get() = this != DefaultShadowColor

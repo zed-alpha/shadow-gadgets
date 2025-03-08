@@ -2,7 +2,7 @@
 
     <string name="app_name">Shadow Gadgets Demo</string>
 
-    <string name="welcome_header">Welcome to the\n<big><b><u>Shadow Gadgets Demo</u></b></big></string>
+    <string name="welcome_header">Welcome to the\n<big><b>Shadow Gadgets Demo</b></big></string>
     <string name="welcome">• The main content comprises several different topics in a dual pager setup that can be navigated using the side arrows, or through the menu that pops up when clicking the page title between them. Please note that there is some bug in ViewPager2 that can cause things to go out of sync if using the menu in a debug build. Release build works fine, somehow.\n\n• The description at the bottom of each page is scrollable, and can also be long-pressed to open a dialog with the same text in a larger font.\n\n• The shadows throughout this demo have been darkened quite a bit beyond normal, simply to make it easier to see what\'s happening. This was done by increasing the light source alphas in the relevant theme attributes, so that\'s where to look, if you\'d like to adjust them.\n\n• Please note that on some of the earlier supported Android versions, certain things just don\'t work in general; e.g., you cannot have both rounded corners and transparency on Lollipop 21, so Intro\'s target isn\'t see-through on that version.\n\n• This demo was designed to fit comfortably on medium phone sizes only, so it might not look that great on other configurations. Apologies, if that\'s an inconvenience.</string>
     <string name="hide_welcome">Don\'t show this again.</string>
 
@@ -19,19 +19,5 @@
     <string name="description_compat_intro">The panel at the top here shows two identical <small><b><tt>View</tt></b></small>s side by side, the left one with native shadow colors, and the right one using color compat. You can switch the white backgrounds off in order to view the whole shadows to see how the colors are applied.\n\nThe color compat mechanism has to tint the shadow as a whole, so we we\'re not able to apply the ambient and spot colors separately. The library includes optional helpers to blend the ambient and spot colors you would use on newer versions, into a single value to use with color compat.\n\nAs noted in the README, messing with the ambient and spot colors\' alphas does not work well with the current blend calculation. I would imagine that most everyone uses full-alpha colors for these anyway, since a \"non-opaque\" light source doesn\'t really make sense, yeah?\n\nYou can switch between identical setups in both frameworks, View and Compose, to compare. When switching, the panels fade in and out in place, to show that the results are identical in both. It might be hard to spot.</string>
     <string name="description_compat_drawable">Color compat has also been added to the <small><b><tt>ShadowDrawable</tt></b></small> class.\n\nIt\'s also now possible to create an unclipped version so the clipping operation can be skipped if it\'s not needed for a particular setup; e.g., if you\'re going to draw an opaque region over it anyway.</string>
     <string name="description_compat_stress_test">These lists are set up to be far more intensive that what your average app would entail, as far as the expensive operations that these shadows can involve.\n\nThe left list is a <small><b><tt>ShadowsRecyclerView</tt></b></small> with an <small><b><tt>Adapter</tt></b></small> that sets a different translucent background on each item along with a clipped shadow using color compat, and evenly distributes the shadows across all three <small><b><tt>ShadowPlane</tt></b></small>s. The group itself takes over the <small><b><tt>Inline</tt></b></small> shadow draws, so it\'s also modifying the normal child draw routine, and there\'s a separate compositing layer for each item you can see, plus a few more off-screen.\n\nThe setup on the right is the Compose analog of the View version, and it consists of <small><b><tt>LazyColumn()</tt></b></small> that sets a <small><b><tt>clippedShadow()</tt></b></small> with an interpolated color compat, also with a separate compositing layer for each item.</string>
-
-    <string name="description_inflation">There\'s not much to see at runtime with these three examples of the layout inflation helpers; they\'re simply looking for and processing the library\'s shadow attributes.\n\nEach <tt>Activity</tt> demonstrates the particular helper class for its configuration.\n\nThe UIs themselves are non-functional mock-ups.</string>
-    <string name="info_material"><big><tt>AppCompatActivity</tt> with <tt>Theme.MaterialComponents</tt></big>\n\nThis <tt>AppCompatActivity</tt> setup attaches the inflater helper by programmatically overriding <tt>viewInflaterClass</tt> theme attribute before <tt>super.onCreate()</tt>.</string>
-    <string name="info_compat"><big><tt>AppCompatActivity</tt> with <tt>Theme.AppCompat</tt></big>\n\nThis library <tt>Activity</tt>\'s inflater helper is attached through the <tt>viewInflaterClass</tt> attribute in <tt>Activity</tt>\'s theme.</string>
-    <string name="info_platform"><big>Platform <tt>Activity</tt> with <tt>Theme.Material</tt></big>\n\nThis <tt>Activity</tt> uses only platform <tt>View</tt>s. It attaches a helper <tt>Factory</tt> to its <tt>LayoutInflater</tt> before <tt>setContentView()</tt>.</string>
-
-    <string name="material_title"><tt>AppCompatActivity</tt></string>
-    <string name="material_subtitle"><tt>Theme.MaterialComponents</tt></string>
-
-    <string name="compat_title"><tt>AppCompatActivity</tt></string>
-    <string name="compat_subtitle"><tt>Theme.AppCompat</tt></string>
-
-    <string name="platform_title"><tt>Activity</tt></string>
-    <string name="platform_subtitle"><tt>Theme.Material</tt></string>
 
 </resources>

@@ -4,7 +4,7 @@ import android.view.View
 
 public class LocationTracker(private val view: View) {
 
-    private val current = IntArray(2)
+    private val current = intArrayOf(Int.MAX_VALUE, Int.MAX_VALUE)
 
     public fun initialize() {
         view.getLocationOnScreen(current)

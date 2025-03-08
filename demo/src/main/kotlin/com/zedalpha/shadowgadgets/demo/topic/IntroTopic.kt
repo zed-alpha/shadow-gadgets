@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentIntroBinding
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
-import com.zedalpha.shadowgadgets.view.forceShadowLayer
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 
 internal val IntroTopic = Topic(
@@ -41,10 +40,6 @@ class IntroFragment : TopicFragment<FragmentIntroBinding>(
         }
 
     override fun loadUi(ui: FragmentIntroBinding) {
-        if (Build.VERSION.SDK_INT in 24..28) {
-            ui.target.forceShadowLayer = true
-        }
-
         ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
             ui.target.clipOutlineShadow = isChecked
         }

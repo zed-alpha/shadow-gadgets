@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentIntroBinding
+import com.zedalpha.shadowgadgets.demo.internal.DefaultTargetColor
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 

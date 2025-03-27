@@ -10,8 +10,8 @@ import androidx.annotation.ColorInt
 import androidx.core.graphics.withClip
 
 internal class SlantGridDrawable(
-    @ColorInt private val startColor: Int = 0xFFC0C0C0.toInt(),
-    @ColorInt private val endColor: Int = 0xFFCECECE.toInt(),
+    @ColorInt private val startColor: Int = 0xffc0c0c0.toInt(),
+    @ColorInt private val endColor: Int = 0xffcecece.toInt(),
     private val columns: Int = 19
 ) : PaintDrawable() {
 

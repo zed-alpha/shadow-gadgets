@@ -29,13 +29,10 @@ private class ColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
 
     private val evaluator = ArgbEvaluator()
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ) = ColorfulHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         LayoutInflater.from(parent.context)
             .inflate(R.layout.item_colorful, parent, false)
-    )
+            .let { ColorfulHolder(it) }
 
     override fun onBindViewHolder(holder: ColorfulHolder, position: Int) {
         val color = evaluator.evaluate(
@@ -57,6 +54,6 @@ internal class ColorfulHolder(view: View) : RecyclerView.ViewHolder(view) {
 
 internal const val ITEM_COUNT = 100
 internal const val HALF_ITEM_COUNT = ITEM_COUNT / 2
-internal const val ITEM_RED = 0x44FF0000
-internal const val ITEM_GREEN = 0x4400FF00
-internal const val ITEM_BLUE = 0x440000FF
+internal const val ITEM_RED = 0x44ff0000
+internal const val ITEM_GREEN = 0x4400ff00
+internal const val ITEM_BLUE = 0x440000ff

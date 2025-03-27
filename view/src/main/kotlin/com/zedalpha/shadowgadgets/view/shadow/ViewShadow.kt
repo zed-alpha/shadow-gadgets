@@ -17,6 +17,7 @@ import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.colorOutlineShadow
 import com.zedalpha.shadowgadgets.view.forceShadowLayer
+import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.pathProvider
 
 internal abstract class ViewShadow(
@@ -26,6 +27,8 @@ internal abstract class ViewShadow(
     var isShown: Boolean = true
 
     val isClipped: Boolean = targetView.clipOutlineShadow
+
+    protected val provider: ViewOutlineProvider = targetView.outlineProvider
 
     protected val coreShadow = if (isClipped) {
         ClippedShadow(targetView).also { shadow ->
@@ -45,16 +48,15 @@ internal abstract class ViewShadow(
         targetView.shadow = this
     }
 
-    protected val provider: ViewOutlineProvider = targetView.outlineProvider
-
-    protected fun wrapOutlineProvider(setOutline: (Outline) -> Unit) {
+    protected fun initialize() {
         targetView.outlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
                 provider.getOutline(view, outline)
-                setOutline.invoke(outline)
+                coreShadow.setOutline(outline)
                 outline.alpha = 0F
             }
         }
+        updateLayer(false)
     }
 
     @CallSuper
@@ -68,7 +70,7 @@ internal abstract class ViewShadow(
         targetView.shadow = null
     }
 
-    fun updateColorCompat(color: Int) {
+    fun updateLayer(invalidate: Boolean = true) {
         val view = targetView
         val needsLayer = view.colorOutlineShadow ||
                 (isClipped && RequiresDefaultClipLayer) ||
@@ -80,18 +82,17 @@ internal abstract class ViewShadow(
                     setAmbientColor(view, DefaultShadowColorInt)
                 }
             }
-
             val layer = coreLayer
                 ?: controller?.obtainLayer(coreShadow)
                     .also { coreLayer = it }
-            layer?.color = color
+            layer?.color = view.outlineShadowColorCompat
         } else {
             coreLayer?.let {
                 controller?.disposeLayer(it)
                 coreLayer = null
             }
         }
-        invalidate()
+        if (invalidate) invalidate()
     }
 
     abstract fun invalidate()

@@ -6,7 +6,6 @@ import android.view.View
 import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
 import com.zedalpha.shadowgadgets.core.layer.LayerDraw
 import com.zedalpha.shadowgadgets.view.R
-import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 
 internal class GroupShadow(
     targetView: View,
@@ -16,16 +15,13 @@ internal class GroupShadow(
 
     init {
         plane.addShadow(this)
-        wrapOutlineProvider(coreShadow::setOutline)
-        updateColorCompat(targetView.outlineShadowColorCompat)
-
+        initialize()
         if (RequiresInvalidateOnToggle) targetView.invalidate()
     }
 
     override fun detachFromTarget() {
         super.detachFromTarget()
         plane.removeShadow(this)
-
         if (RequiresInvalidateOnToggle) targetView.invalidate()
     }
 

@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.zedalpha.shadowgadgets.demo.internal.ContentCardView
@@ -39,21 +38,3 @@ abstract class TopicFragment<T : ViewBinding>(
 
     abstract fun loadUi(ui: T)
 }
-
-internal fun interface SeekChangeListener : SeekBar.OnSeekBarChangeListener {
-
-    fun onChange(progress: Int)
-
-    override fun onProgressChanged(
-        seekBar: SeekBar,
-        progress: Int,
-        fromUser: Boolean
-    ) {
-        if (fromUser) onChange(progress)
-    }
-
-    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-    override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-}
-
-const val DefaultTargetColor = 0x7F547FA8

@@ -12,6 +12,10 @@
         <item name="radioButtonStyle">@style/Widget.Demo.RadioButton</item>
     </style>
 
+    <style name="Theme.ShadowGadgets.Demo.Dialog">
+        <item name="android:windowBackground">@drawable/bg_root</item>
+    </style>
+
     <style name="Widget.Demo.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
         <item name="android:minHeight">44dp</item>
     </style>

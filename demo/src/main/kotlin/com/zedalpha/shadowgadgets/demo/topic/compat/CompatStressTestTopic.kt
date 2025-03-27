@@ -13,7 +13,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLif
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
-import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentCompatStressTestBinding
 import com.zedalpha.shadowgadgets.demo.topic.ColorfulHolder
@@ -52,15 +51,12 @@ private class VeryColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
 
     private val evaluator = ArgbEvaluator()
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ) = ColorfulHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_colorful, parent, false).apply {
-                forceOutlineShadowColorCompat = true
+            .inflate(R.layout.item_colorful, parent, false).let { view ->
+                view.forceOutlineShadowColorCompat = true
+                ColorfulHolder(view)
             }
-    )
 
     override fun onBindViewHolder(holder: ColorfulHolder, position: Int) {
         val color = evaluator.evaluate(
@@ -87,15 +83,9 @@ private class VeryColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
 @Composable
 private fun ComposeContent() {
     ColorfulLazyColumn(
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
-            .padding(start = 10.dp, end = 20.dp)
-    ) { elevation, shape, colorCompat ->
-        clippedShadow(
-            elevation = elevation,
-            shape = shape,
-            colorCompat = colorCompat,
-            forceColorCompat = true
-        )
-    }
+            .padding(start = 10.dp, end = 20.dp),
+        enableColorCompat = true
+    )
 }

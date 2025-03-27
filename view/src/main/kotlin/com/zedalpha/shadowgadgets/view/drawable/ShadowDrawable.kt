@@ -65,8 +65,8 @@ import kotlin.math.roundToInt
  * override is a no-op.
  *
  * When using color compat, the shadows are clipped to the drawable's bounds.
- * Also, due to differences in the native framework, all shadows on API levels
- * 24..28 are clipped to the drawable's bounds.
+ * Also, due to differences in the native framework, all clipped shadows on API
+ * levels 24..28 are clipped to the drawable's bounds too, whether color or not.
  */
 public open class ShadowDrawable private constructor(
     private val coreShadow: Shadow,
@@ -350,17 +350,16 @@ public open class ShadowDrawable private constructor(
             if (field == value) return
             field = value
 
-            val shadow = coreShadow
             val needsLayer = colorCompat.isNotDefault ||
                     (isClipped && RequiresDefaultClipLayer) ||
                     @Suppress("DEPRECATION") forceLayer
             if (needsLayer) {
+                val shadow = coreShadow
                 shadow.ambientColor = DefaultShadowColorInt
                 shadow.spotColor = DefaultShadowColorInt
 
                 val layer = coreLayer
-                    ?: controller.obtainLayer(coreShadow)
-                        .also { coreLayer = it }
+                    ?: controller.obtainLayer(shadow).also { coreLayer = it }
                 layer?.color = value
             } else {
                 coreLayer?.let {

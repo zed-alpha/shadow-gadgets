@@ -1,14 +1,21 @@
 package com.zedalpha.shadowgadgets.view.drawable
 
 import android.view.View
-import com.zedalpha.shadowgadgets.view.shadow.GenericController
+import com.zedalpha.shadowgadgets.core.layer.Layer
+import com.zedalpha.shadowgadgets.view.shadow.SingleController
 
 internal class DrawableController(
-    override val shadow: ShadowDrawable,
+    private val drawable: ShadowDrawable,
     ownerView: View?
-) : GenericController<ShadowDrawable>(ownerView) {
+) : SingleController(ownerView, null) {
 
     override fun shouldInvalidate(): Boolean = false
 
-    override fun invalidate() = shadow.invalidateSelf()
+    override fun invalidate() = drawable.invalidateSelf()
+
+    override fun onCreateLayer(layer: Layer) {
+        super.onCreateLayer(layer)
+        val bounds = drawable.bounds
+        layer.setSize(bounds.width(), bounds.height())
+    }
 }

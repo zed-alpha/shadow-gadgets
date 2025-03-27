@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.zedalpha.shadowgadgets.demo.databinding.InternalControlViewBinding
-import com.zedalpha.shadowgadgets.demo.topic.SeekChangeListener
 
 class ControlView @JvmOverloads constructor(
     context: Context,

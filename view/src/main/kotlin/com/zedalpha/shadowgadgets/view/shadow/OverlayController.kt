@@ -18,8 +18,8 @@ internal class OverlayController(parentView: ViewGroup) :
         parentView.overlayController = this
     }
 
-    override fun detachFromParent() {
-        super.detachFromParent()
+    override fun detachFromOwner() {
+        super.detachFromOwner()
         parentView.overlayController = null
         foregroundPlane?.dispose()
         backgroundPlane?.dispose()
@@ -53,8 +53,8 @@ internal class OverlayController(parentView: ViewGroup) :
             backgroundPlane = null
         }
 
-    override fun onSizeChanged(width: Int, height: Int) {
-        super.onSizeChanged(width, height)
+    override fun onLayerSizeChanged(width: Int, height: Int) {
+        super.onLayerSizeChanged(width, height)
         foregroundPlane?.setSize(width, height)
         backgroundPlane?.setSize(width, height)
     }
@@ -65,7 +65,7 @@ internal class OverlayController(parentView: ViewGroup) :
         backgroundPlane?.checkInvalidate()
     }
 
-    override fun onEmpty() = detachFromParent()
+    override fun onEmpty() = detachFromOwner()
 }
 
 internal fun ViewGroup.getOrCreateOverlayController() =

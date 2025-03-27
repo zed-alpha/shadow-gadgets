@@ -8,7 +8,7 @@ import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.shadow.createShadow
-import com.zedalpha.shadowgadgets.view.shadow.isInitialized
+import com.zedalpha.shadowgadgets.view.shadow.isInitializedForRecyclingSVG
 import com.zedalpha.shadowgadgets.view.shadowPlane
 
 internal class RecyclingManager(
@@ -27,7 +27,7 @@ internal class RecyclingManager(
     superDrawChild
 ) {
     override fun onViewAdded(child: View) {
-        if (child.isInitialized) return
+        if (child.isInitializedForRecyclingSVG) return
 
         if (child.planeNotSet && groupPlaneSet) {
             child.shadowPlane = childShadowsPlane
@@ -47,7 +47,7 @@ internal class RecyclingManager(
                 forceChildOutlineShadowsColorCompat
         }
 
-        child.isInitialized = true
+        child.isInitializedForRecyclingSVG = true
 
         child.createShadow()
     }

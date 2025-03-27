@@ -49,7 +49,6 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,16 +78,12 @@ private fun ComposeContent() {
     Row(Modifier.fillMaxSize()) {
 
         ColorfulLazyColumn(
-            Modifier
+            modifier = Modifier
                 .fillMaxHeight()
                 .weight(0.6F)
-                .padding(start = 20.dp, end = 10.dp)
-        ) { elevation, shape, _ ->
-            clippedShadow(
-                elevation = elevation,
-                shape = shape
-            )
-        }
+                .padding(start = 20.dp, end = 10.dp),
+            enableColorCompat = false
+        )
 
         Column(
             modifier = Modifier
@@ -99,24 +94,24 @@ private fun ComposeContent() {
         ) {
             ClippedShadowFloatingActionButton(
                 onClick = {},
-                backgroundColor = Color(0x22FF4444),
+                backgroundColor = Color(0x22ff4444),
                 elevation = FloatingActionButtonDefaults
                     .elevation(16.dp, 22.dp, 18.dp, 18.dp),
-                shadowAmbientColor = Color(0xFFFF4444),
-                shadowSpotColor = Color(0xFFFF4444)
+                shadowAmbientColor = Color(0xffff4444),
+                shadowSpotColor = Color(0xffff4444)
             ) {}
 
             ClippedShadowButton(
                 onClick = {},
-                colors = ButtonDefaults.buttonColors(Color(0x357FCC7F)),
+                colors = ButtonDefaults.buttonColors(Color(0x357fcc7f)),
                 elevation = ButtonDefaults
                     .elevation(12.dp, 18.dp, 0.dp, 14.dp, 14.dp),
-                shadowAmbientColor = Color(0xFF448866),
-                shadowSpotColor = Color(0xFF448866)
+                shadowAmbientColor = Color(0xff448866),
+                shadowSpotColor = Color(0xff448866)
             ) {}
 
             Card(
-                backgroundColor = Color(0x22007FFF),
+                backgroundColor = Color(0x22007fff),
                 elevation = 0.dp,
                 shape = GenericShape(CardShapeBuilder),
                 modifier = Modifier
@@ -128,8 +123,8 @@ private fun ComposeContent() {
                     .clippedShadow(
                         elevation = 10.dp,
                         shape = GenericShape(CardShapeBuilder),
-                        ambientColor = Color(0xFF007FFF),
-                        spotColor = Color(0xFF007FFF)
+                        ambientColor = Color(0xff007fff),
+                        spotColor = Color(0xff007fff)
                     )
             ) {}
         }
@@ -139,7 +134,7 @@ private fun ComposeContent() {
 @Composable
 internal fun ColorfulLazyColumn(
     modifier: Modifier,
-    shadowModifier: Modifier.(elevation: Dp, Shape, Color) -> Modifier
+    enableColorCompat: Boolean
 ) {
     val textStyle = LocalTextStyle.current.copy(
         platformStyle = PlatformTextStyle(includeFontPadding = true)
@@ -156,17 +151,20 @@ internal fun ColorfulLazyColumn(
                     if (position < HALF_ITEM_COUNT) ItemGreen else ItemBlue,
                     (position % HALF_ITEM_COUNT).toFloat() / HALF_ITEM_COUNT
                 )
-                val colorCompat = color.copy(alpha = 1F)
+                val colorCompat =
+                    if (enableColorCompat) color.copy(alpha = 1F)
+                    else DefaultShadowColor
                 Card(
                     backgroundColor = color,
                     elevation = 0.dp,
                     shape = RoundedCornerShape(6.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadowModifier(
-                            10.dp,
-                            RoundedCornerShape(6.dp),
-                            colorCompat
+                        .clippedShadow(
+                            elevation = 10.dp,
+                            shape = RoundedCornerShape(6.dp),
+                            colorCompat = colorCompat,
+                            forceColorCompat = enableColorCompat
                         )
                 ) {
                     Text(

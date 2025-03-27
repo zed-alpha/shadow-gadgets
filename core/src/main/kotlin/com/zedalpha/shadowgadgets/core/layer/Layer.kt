@@ -6,6 +6,7 @@ import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.os.Build
 import android.view.View
+import com.zedalpha.shadowgadgets.core.isDefault
 import com.zedalpha.shadowgadgets.core.isNotDefault
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
@@ -31,10 +32,6 @@ public class Layer(layerDraw: LayerDraw, ownerView: View) {
             managedLayer.setLayerPaint(paint)
         }
 
-    init {
-        setSize(ownerView.width, ownerView.height)
-    }
-
     public fun setSize(width: Int, height: Int) {
         if (this.width == width && this.height == height) return
         this.width = width; this.height = height
@@ -50,6 +47,8 @@ public class Layer(layerDraw: LayerDraw, ownerView: View) {
     public fun refresh(): Unit = managedLayer.refresh()
 
     public fun recreate() {
+        if (color.isDefault) return
+
         managedLayer.apply {
             recreate()
             setLayerPaint(paint)

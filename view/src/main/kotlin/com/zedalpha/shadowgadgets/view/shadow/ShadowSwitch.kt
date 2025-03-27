@@ -39,15 +39,15 @@ private object ShadowSwitch : View.OnAttachStateChangeListener {
         val shadow = view.shadow
         val scope = view.parent as? ViewGroup
 
-        if (shadow == null || view.shadowScope !== scope) {
+        if (shadow == null || view.scopeView !== scope) {
             shadow?.detachFromTarget()
-            view.shadowScope = scope
+            view.scopeView = scope
 
             val isRecyclingViewGroup = scope?.isRecyclingViewGroup == true
             view.isRecyclingViewGroupChild = isRecyclingViewGroup
 
             if (!(scope is ShadowsViewGroup && isRecyclingViewGroup) ||
-                view.isInitialized
+                view.isInitializedForRecyclingSVG
             ) {
                 view.createShadow()
             }
@@ -73,7 +73,7 @@ internal fun View.recreateShadow() {
 }
 
 internal fun View.createShadow() =
-    shadowScope?.let { childShadow(it) } ?: rootShadow()
+    scopeView?.let { childShadow(it) } ?: rootShadow()
 
 private fun View.childShadow(scope: ViewGroup) {
     when {
@@ -93,7 +93,7 @@ private fun View.childShadow(scope: ViewGroup) {
                 if (clipToOutline && scope.clipChildren) append(" and ")
                 if (scope.clipChildren) append("parent has clipChildren=true")
             }
-            nullShadow(::message)
+            nullShadow { message() }
         }
         else -> SoloController(this, scope).shadow
     }
@@ -119,21 +119,21 @@ private fun View.nullShadow(logMessage: () -> String) {
     NullShadow(this)
 }
 
-internal var View.isInitialized: Boolean
-    get() = getTag(R.id.is_initialized) == true
-    set(value) = setTag(R.id.is_initialized, value)
-
 internal val ViewGroup.isRecyclingViewGroup: Boolean
     get() = this is RecyclerView || this is AdapterView<*>
+
+internal var View.isInitializedForRecyclingSVG: Boolean
+    get() = getTag(R.id.is_initialized_for_recycling_svg) == true
+    set(value) = setTag(R.id.is_initialized_for_recycling_svg, value)
 
 private var View.isWatched: Boolean
     get() = getTag(R.id.is_watched) == true
     set(value) = setTag(R.id.is_watched, value)
 
 @get:Suppress("UNCHECKED_CAST")
-private var View.shadowScope: ViewGroup?
-    get() = (getTag(R.id.shadow_scope) as? WeakReference<ViewGroup>)?.get()
-    set(value) = setTag(R.id.shadow_scope, value?.let { WeakReference(it) })
+internal var View.scopeView: ViewGroup?
+    get() = (getTag(R.id.scope_view) as? WeakReference<ViewGroup>)?.get()
+    set(value) = setTag(R.id.scope_view, value?.let { WeakReference(it) })
 
 private var View.isRecyclingViewGroupChild: Boolean
     get() = getTag(R.id.is_recycling_view_group_child) == true
@@ -145,6 +145,6 @@ private val View.debugName: String
         if (id != View.NO_ID) try {
             append(", R.id.${resources.getResourceEntryName(id)}")
         } catch (_: Resources.NotFoundException) {
-            ", id=$id"
+            append(", id=$id")
         }
     }

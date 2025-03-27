@@ -10,6 +10,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentMotionBinding
+import com.zedalpha.shadowgadgets.demo.internal.DefaultTargetColor
 import com.zedalpha.shadowgadgets.demo.topic.Action.Hide
 import com.zedalpha.shadowgadgets.demo.topic.Action.Show
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow

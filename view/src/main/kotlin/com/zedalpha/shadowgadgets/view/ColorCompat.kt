@@ -45,7 +45,7 @@ public var View.outlineShadowColorCompat: Int
         if (outlineShadowColorCompat == color) return
         setTag(R.id.outline_shadow_color_compat, color)
         updateColorOutlineShadow()
-        shadow?.updateColorCompat(color)
+        shadow?.updateLayer()
     }
 
 /**
@@ -65,7 +65,7 @@ public var View.forceOutlineShadowColorCompat: Boolean
         if (forceOutlineShadowColorCompat == force) return
         setTag(R.id.force_outline_shadow_color_compat, force)
         updateColorOutlineShadow()
-        shadow?.invalidate()
+        shadow?.updateLayer()
     }
 
 /**
@@ -121,9 +121,12 @@ public class ShadowColorsBlender(private val context: Context) {
     }
 }
 
-private fun View.updateColorOutlineShadow() {
-    colorOutlineShadow = outlineShadowColorCompat.isNotDefault &&
+private fun View.updateColorOutlineShadow(): Boolean {
+    val newValue = outlineShadowColorCompat.isNotDefault &&
             (Build.VERSION.SDK_INT < 28 || forceOutlineShadowColorCompat)
+    val updated = colorOutlineShadow != newValue
+    colorOutlineShadow = newValue
+    return updated
 }
 
 internal var View.colorOutlineShadow: Boolean

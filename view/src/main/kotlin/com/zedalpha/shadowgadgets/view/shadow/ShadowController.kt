@@ -7,8 +7,10 @@ import com.zedalpha.shadowgadgets.core.Shadow
 import com.zedalpha.shadowgadgets.core.layer.Layer
 import com.zedalpha.shadowgadgets.core.layer.LocationTracker
 
-internal abstract class ShadowController(protected val ownerView: View?) {
-
+internal abstract class ShadowController(
+    protected val ownerView: View?,
+    protected val scopeView: View?
+) {
     private val attachListener = object : View.OnAttachStateChangeListener {
 
         override fun onViewAttachedToWindow(v: View) {
@@ -39,33 +41,37 @@ internal abstract class ShadowController(protected val ownerView: View?) {
 
     protected abstract fun hasColorLayer(): Boolean
     protected abstract fun recreateColorLayers()
-    protected abstract fun invalidate()
     protected abstract fun checkInvalidate()
+    protected abstract fun invalidate()
 
-    private val layoutListener =
-        View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
-            onSizeChanged(r - l, b - t)
+    private val scopeLayoutListener =
+        if (scopeView != null) {
+            View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
+                onLayerSizeChanged(r - l, b - t)
+            }
+        } else {
+            null
         }
 
-    protected abstract fun onSizeChanged(width: Int, height: Int)
+    protected open fun onLayerSizeChanged(width: Int, height: Int) {}
 
     init {
-        attachToParent()
+        attachToOwner()
     }
 
-    private fun attachToParent() {
+    private fun attachToOwner() {
         val owner = ownerView ?: return
         owner.addOnAttachStateChangeListener(attachListener)
         if (owner.isAttachedToWindow) addPreDrawListener()
-        owner.addOnLayoutChangeListener(layoutListener)
+        scopeView?.addOnLayoutChangeListener(scopeLayoutListener)
     }
 
     @CallSuper
-    protected open fun detachFromParent() {
+    protected open fun detachFromOwner() {
         val owner = ownerView ?: return
         owner.removeOnAttachStateChangeListener(attachListener)
-        owner.removeOnLayoutChangeListener(layoutListener)
         removePreDrawListener()
+        scopeView?.removeOnLayoutChangeListener(scopeLayoutListener)
     }
 
     private var viewTreeObserver: ViewTreeObserver? = null
@@ -87,7 +93,9 @@ internal abstract class ShadowController(protected val ownerView: View?) {
 
     fun obtainLayer(coreShadow: Shadow): Layer? {
         val owner = ownerView ?: return null
-        return Layer(coreShadow::draw, owner).also { onCreateLayer(it) }
+        val layer = Layer(coreShadow::draw, owner)
+        onCreateLayer(layer)
+        return layer
     }
 
     fun disposeLayer(layer: Layer) {

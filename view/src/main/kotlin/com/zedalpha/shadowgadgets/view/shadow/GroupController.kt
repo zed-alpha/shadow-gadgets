@@ -4,21 +4,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import com.zedalpha.shadowgadgets.core.fastForEach
-import com.zedalpha.shadowgadgets.core.isDefault
+import com.zedalpha.shadowgadgets.core.isNotDefault
 import com.zedalpha.shadowgadgets.core.layer.Layer
 import com.zedalpha.shadowgadgets.core.rendernode.RenderNodeFactory
 
 internal abstract class GroupController(protected val parentView: ViewGroup) :
-    ShadowController(parentView) {
+    ShadowController(parentView, parentView) {
 
     protected val shadows = mutableListOf<GroupShadow>()
 
     protected val isRecyclingViewGroup = parentView.isRecyclingViewGroup
 
-    override fun invalidate() = parentView.invalidate()
-
     final override fun onParentViewDetached() {
-        if (isRecyclingViewGroup) detachAllShadows()
+        if (isRecyclingViewGroup) {
+            // Must copy because detachFromTarget() modifies shadows.
+            shadows.toList().fastForEach { it.detachFromTarget() }
+        }
     }
 
     fun createShadow(target: View) {
@@ -34,38 +35,42 @@ internal abstract class GroupController(protected val parentView: ViewGroup) :
 
     protected open fun onEmpty() {}
 
-    // Must copy because detachFromTarget() modifies shadows.
-    fun detachAllShadows() =
-        shadows.toList().fastForEach { it.detachFromTarget() }
+    private var coreLayers: MutableList<Layer>? = null
 
-    private var colorLayers: MutableList<Layer>? = null
+    private var colorLayerCount = 0
 
     override fun onCreateLayer(layer: Layer) {
-        if (layer.color.isDefault) return
+        layer.setSize(parentView.width, parentView.height)
 
-        val layers = colorLayers
-            ?: mutableListOf<Layer>().also { colorLayers = it }
+        val layers = coreLayers
+            ?: mutableListOf<Layer>().also { coreLayers = it }
         layers += layer
+
+        if (layer.color.isNotDefault) colorLayerCount++
     }
 
     override fun onDisposeLayer(layer: Layer) {
-        colorLayers?.remove(layer)
-        if (colorLayers?.isEmpty() == true) colorLayers = null
+        coreLayers?.remove(layer)
+        if (coreLayers?.isEmpty() == true) coreLayers = null
+
+        if (layer.color.isNotDefault) colorLayerCount--
     }
 
-    override fun hasColorLayer(): Boolean = colorLayers?.isNotEmpty() == true
+    override fun hasColorLayer(): Boolean = colorLayerCount > 0
 
     override fun recreateColorLayers() {
-        colorLayers?.fastForEach { it.recreate() }
+        coreLayers?.fastForEach { it.recreate() }
     }
 
     @CallSuper
-    override fun onSizeChanged(width: Int, height: Int) {
-        colorLayers?.fastForEach { it.setSize(width, height) }
+    override fun onLayerSizeChanged(width: Int, height: Int) {
+        coreLayers?.fastForEach { it.setSize(width, height) }
     }
 
     @CallSuper
     override fun checkInvalidate() {
-        if (!RenderNodeFactory.isOpen) colorLayers?.fastForEach { it.refresh() }
+        if (!RenderNodeFactory.isOpen) coreLayers?.fastForEach { it.refresh() }
     }
+
+    override fun invalidate() = parentView.invalidate()
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/text"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_root"
+    android:elevation="15dp"
+    android:gravity="center"
+    android:lineSpacingMultiplier="1.2"
+    android:padding="20dp"
+    android:text="@string/root_view"
+    android:textColor="@color/white"
+    android:textSize="28sp"
+    android:textStyle="bold"
+    app:drawableTopCompat="@drawable/ic_launcher_foreground"
+    tools:ignore="UnusedAttribute" />

@@ -11,15 +11,16 @@ import com.zedalpha.shadowgadgets.view.ViewPathProvider
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.pathProvider
 
-internal val IrregularTopic = Topic(
-    "Irregular",
-    R.string.description_irregular,
-    IrregularFragment::class.java
-)
+internal val IrregularTopic =
+    Topic(
+        title = "Irregular",
+        descriptionResId = R.string.description_irregular,
+        fragmentClass = IrregularFragment::class.java
+    )
 
-class IrregularFragment : TopicFragment<FragmentIrregularBinding>(
-    FragmentIrregularBinding::inflate
-) {
+class IrregularFragment :
+    TopicFragment<FragmentIrregularBinding>(FragmentIrregularBinding::inflate) {
+
     override fun loadUi(ui: FragmentIrregularBinding) {
         if (Build.VERSION.SDK_INT < 30) {
             ui.caveat.text = getString(

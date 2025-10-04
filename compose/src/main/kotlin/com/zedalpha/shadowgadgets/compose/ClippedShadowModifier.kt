@@ -70,20 +70,21 @@ public fun Modifier.clippedShadow(
     colorCompat: Color = DefaultShadowColor,
     forceColorCompat: Boolean = false
 ): Modifier {
-    val first = if (elevation > 0.dp) {
-        this then ClippedShadowElement(
-            elevation = elevation,
-            shape = shape,
-            clip = clip,
-            ambientColor = ambientColor,
-            spotColor = spotColor,
-            colorCompat = colorCompat,
-            forceColorCompat = forceColorCompat
-        )
-    } else {
-        this
-    }
-    return if (clip) first.clip(shape) else first
+    val modifier =
+        if (elevation > 0.dp) {
+            this then ClippedShadowElement(
+                elevation = elevation,
+                shape = shape,
+                clip = clip,
+                ambientColor = ambientColor,
+                spotColor = spotColor,
+                colorCompat = colorCompat,
+                forceColorCompat = forceColorCompat
+            )
+        } else {
+            this
+        }
+    return if (clip) modifier.clip(shape) else modifier
 }
 
 private class ClippedShadowElement(
@@ -95,22 +96,22 @@ private class ClippedShadowElement(
     colorCompat: Color,
     forceColorCompat: Boolean
 ) : BaseShadowElement(
-    elevation,
-    shape,
-    ambientColor,
-    spotColor,
-    colorCompat,
-    forceColorCompat
+    elevation = elevation,
+    shape = shape,
+    ambientColor = ambientColor,
+    spotColor = spotColor,
+    colorCompat = colorCompat,
+    forceColorCompat = forceColorCompat
 ) {
     override fun create() =
         BaseShadowNode(
-            true,
-            elevation,
-            shape,
-            ambientColor,
-            spotColor,
-            colorCompat,
-            forceColorCompat
+            clipped = true,
+            elevation = elevation,
+            shape = shape,
+            ambientColor = ambientColor,
+            spotColor = spotColor,
+            colorCompat = colorCompat,
+            forceColorCompat = forceColorCompat
         )
 
     override fun InspectorInfo.inspectableProperties() {

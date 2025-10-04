@@ -172,6 +172,8 @@ public class RenderNode {
 
     public void getMatrix(@NonNull Matrix outMatrix) {}
 
+    public void getInverseMatrix(@NonNull Matrix outMatrix) {}
+
     public boolean setProjectBackwards(boolean shouldProject) {
         throw new UnsupportedOperationException();
     }
@@ -189,6 +191,10 @@ public class RenderNode {
     }
 
     public boolean setLayerPaint(Paint paint) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean setHasOverlappingRendering(boolean hasOverlappingRendering) {
         throw new UnsupportedOperationException();
     }
 }

@@ -1,22 +1,60 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.shadowgadgets.android.library)
-    alias(libs.plugins.shadowgadgets.publish)
+    alias(libs.plugins.android.library)
+    id("maven-publish")
 }
 
 android {
     namespace = "com.zedalpha.shadowgadgets.view"
 
-    buildFeatures {
-        buildConfig = true
+    defaultConfig.minSdk = 21
+    buildFeatures.buildConfig = true
+
+    compileSdk {
+        version = release(36)
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    buildTypes {
+        release { consumerProguardFiles("consumer-rules.pro") }
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+        explicitApi()
+    }
+}
+
+afterEvaluate {
+    publishing.publications {
+        create<MavenPublication>("release") {
+            from(components["release"])
+            groupId = findProperty("group.id")!!.toString()
+            artifactId = "view"
+            version = findProperty("library.version")!!.toString()
+        }
     }
 }
 
 dependencies {
-
-    implementation(projects.core)
-    lintPublish(projects.view.lint)
+    compileOnly(projects.stubs)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material.components)
+
+    testImplementation(libs.junit)
+
+    lintPublish(projects.view.lint)
 }

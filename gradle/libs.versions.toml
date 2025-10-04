@@ -1,16 +1,17 @@
 [versions]
-agp = "8.9.1"
-kotlin = "2.1.20"
-dokka = "2.0.0"
+agp = "9.0.0"
+kotlin = "2.3.0"
+dokka = "2.1.0"
 
 androidxAnnotation = "1.9.1"
-androidxAppcompat = "1.7.0"
+androidxAppcompat = "1.7.1"
 androidxConstraintLayout = "2.2.1"
-androidxCoreKtx = "1.15.0"
-composeBom = "2025.03.01"
+androidxCoreKtx = "1.17.0"
+materialComponents = "1.13.0"
+composeBom = "2026.01.00"
+
 junit4 = "4.13.2"
-lint = "31.9.1"
-materialComponents = "1.12.0"
+lint = "32.0.0"
 
 [libraries]
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidxAnnotation" }
@@ -35,10 +36,6 @@ lint-checks = { module = "com.android.tools.lint:lint-checks", version.ref = "li
 lint-cli = { module = "com.android.tools.lint:lint", version.ref = "lint" }
 lint-tests = { module = "com.android.tools.lint:lint-tests", version.ref = "lint" }
 
-# Build logic
-android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-compose-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
 
 [bundles]
@@ -49,11 +46,8 @@ lint-tests = ["junit", "lint-cli", "lint-tests"]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-lint = { id = "com.android.lint", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
-# Local plugins
-shadowgadgets-android-library = { id = "shadowgadgets.android.library" }
-shadowgadgets-publish = { id = "shadowgadgets.publish" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

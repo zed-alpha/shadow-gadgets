@@ -92,17 +92,17 @@
             android:textAlignment="center" />
 
         <RadioButton
-            android:id="@+id/view_selection"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="View" />
-
-        <RadioButton
             android:id="@+id/shadow_selection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="Shadow" />
+
+        <RadioButton
+            android:id="@+id/view_selection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View" />
 
     </RadioGroup>
 

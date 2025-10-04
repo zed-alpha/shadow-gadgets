@@ -14,39 +14,45 @@ import com.zedalpha.shadowgadgets.demo.topic.TopicFragment
 import kotlin.math.roundToInt
 import android.graphics.Color as AndroidColor
 
-internal val CompatIntroTopic = Topic(
-    "Compat - Intro",
-    R.string.description_compat_intro,
-    CompatIntroFragment::class.java
-)
+internal val CompatIntroTopic =
+    Topic(
+        title = "Compat - Intro",
+        descriptionResId = R.string.description_compat_intro,
+        fragmentClass = CompatIntroFragment::class.java
+    )
 
-class CompatIntroFragment : TopicFragment<FragmentCompatIntroBinding>(
-    FragmentCompatIntroBinding::inflate
-) {
+class CompatIntroFragment :
+    TopicFragment<FragmentCompatIntroBinding>(
+        FragmentCompatIntroBinding::inflate
+    ) {
+
     private lateinit var controller: PanelController
 
     override fun loadUi(ui: FragmentCompatIntroBinding) {
         @SuppressLint("SetTextI18n")
         if (Build.VERSION.SDK_INT < 28) ui.labelNative.text = "SDK < 28"
 
-        controller = PanelController(
-            ui.frame,
-            true,
-            AndroidColor.BLUE,
-            AndroidColor.RED,
-            50F
-        )
+        controller =
+            PanelController(
+                parent = ui.frame,
+                isShowingBackgrounds = true,
+                outlineAmbientShadowColor = AndroidColor.BLUE,
+                outlineSpotShadowColor = AndroidColor.RED,
+                elevation = 50F
+            )
 
-        val ambientIndicator = PaintDrawable(AndroidColor.BLACK).apply {
-            setBounds(0, 0, 50, 50)
-            setCornerRadius(10F)
-            ui.ambientSelection.setCompoundDrawables(null, null, this, null)
-        }
-        val spotIndicator = PaintDrawable(AndroidColor.BLACK).apply {
-            setBounds(0, 0, 50, 50)
-            setCornerRadius(10F)
-            ui.spotSelection.setCompoundDrawables(null, null, this, null)
-        }
+        val ambientIndicator =
+            PaintDrawable(AndroidColor.BLACK).apply {
+                setCornerRadius(10F)
+                setBounds(0, 0, 50, 50)
+                ui.ambientSelection.setCompoundDrawables(null, null, this, null)
+            }
+        val spotIndicator =
+            PaintDrawable(AndroidColor.BLACK).apply {
+                setCornerRadius(10F)
+                setBounds(0, 0, 50, 50)
+                ui.spotSelection.setCompoundDrawables(null, null, this, null)
+            }
 
         ui.frameworkSelect.setOnCheckedChangeListener { _, _ ->
             updateFramework()

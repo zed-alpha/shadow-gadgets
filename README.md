@@ -10,19 +10,25 @@ shortcomings in the native material shadows.
 Unsightly draw defects are visible on `View`s and `Composable`s with see-through
 backgrounds.
 
+<!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
-<img src="images/intro_clip_broken.png" 
-alt="Examples of various translucent UI elements showing the artifacts." 
-width="55%" />
+    <!--suppress CheckImageSize -->
+    <img
+        src="images/intro_clip_broken.png" 
+        alt="Examples of various translucent UI elements showing the artifacts." 
+        width="55%" />
 </p>
 
 The clip tools use the same classes and methods that the native framework uses
 to render shadows, simply replacing the originals with clipped copies.
 
+<!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
-<img src="images/intro_clip_fixed.png" 
-alt="The above examples with the clip fix applied to each." 
-width="55%" />
+    <!--suppress CheckImageSize -->
+    <img
+        src="images/intro_clip_fixed.png" 
+        alt="The above examples with the clip fix applied to each." 
+        width="55%" />
 </p>
 
 **Color support**
@@ -35,10 +41,13 @@ replacing the originals with tinted copies. Only one color can be applied with
 this technique, however, as it's not possible to separate the ambient and spot
 shadows at this level.
 
+<!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
-<img src="images/intro_color_compat.png" 
-alt="Two shadows, one with native colors, the other tinted with color compat." 
-width="30%" />
+    <!--suppress CheckImageSize -->
+    <img
+        src="images/intro_color_compat.png" 
+        alt="A shadow with native colors, and another tinted with color compat." 
+        width="30%" />
 </p>
 
 Though the differences are noticeable when compared side by side, the compat
@@ -60,7 +69,7 @@ results are likely sufficient for many cases.
   comprises just two functions (and one overload) as direct replacements for the
   inbuilt shadow.
 
-- [**Notes**][notes]
+- [**Notes**][Notes]
 
   Important information and caveats for each framework and the project overall.
 
@@ -73,9 +82,28 @@ results are likely sufficient for many cases.
   Note that inherited members are suppressed to prevent, for example, all of
   `ViewGroup`s visible members being listed for each `ShadowsViewGroup`.
 
+- [**Issues**][Issues]
+
+  Please report bugs and any other problems encountered while using the library.
+
 <br />
 
 ## Views
+
+<details>
+  <summary>Subsections</summary>
+
++ [Features](#features)
++ [Limitations and recourses](#limitations-and-recourses)
+    + [Overlapping sibling Views](#overlapping-sibling-views)
+    + [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
++ [ViewGroups](#viewgroups)
++ [Drawable](#drawable)
+</details>
+
+<br />
+
+### Features
 
 The library's features are applied to individual `View`s through extension
 properties, with the main two acting as direct controls for the clip and color
@@ -122,10 +150,13 @@ possible remedies.
   in front of all of the parent's children. This can cause a problem when a
   sibling with a higher elevation overlaps the target.
 
+  <!--suppress HtmlDeprecatedAttribute -->
   <p align="center">
-  <img src="images/plane_foreground_broken.png" 
-  alt="A View's clipped shadow incorrectly drawn on top of its higher sibling." 
-  width="20%" />
+      <!--suppress CheckImageSize -->
+      <img
+          src="images/plane_foreground_broken.png" 
+          alt="A View's clipped shadow incorrectly drawn atop a higher sibling." 
+          width="20%" />
   </p>
 
   The [`ShadowPlane`][ShadowPlane] enum defines other options for different
@@ -139,31 +170,18 @@ possible remedies.
   rectangles, or single-radius rounded rectangles require that the user provide
   the outline `Path` for the clip.
 
+  <!--suppress HtmlDeprecatedAttribute -->
   <p align="center">
-  <img src="images/view_path_provider.png" 
-  alt="A View in the shape of a puzzle piece with its shadow clipped." 
-  width="20%" />
+      <!--suppress CheckImageSize -->
+      <img
+          src="images/view_path_provider.png" 
+          alt="A View in the shape of a puzzle piece with its shadow clipped." 
+          width="20%" />
   </p>
 
   This is done with the [`ViewPathProvider`][ViewPathProvider] interface,
   details and examples for which are discussed on [its wiki
   page][ViewPathProviderWiki].
-
-- #### Parent matrix on Android N-P
-
-  On API levels 24 through 28 (Nougat, Oreo, and Pie), differences in some of
-  the low-level graphics operations can give rise to a misalignment in the clip
-  region if the parent `ViewGroup` has been transformed by, for example, a
-  running animation.
-
-  <p align="center">
-  <img src="images/parent_matrix_defect.png" 
-  alt="A misaligned clip region is shown in a parent scaled by an animation." 
-  width="20%" />
-  </p>
-
-  If observed, the [`View.forceShadowLayer`][forceShadowLayer] extension can be
-  used to mitigate, as explained on [its wiki page][forceShadowLayerWiki].
 
 ### ViewGroups
 
@@ -175,10 +193,13 @@ The library's features work rather well in Android Studio's layout preview, so
 even if you don't intend to use them at runtime, these groups may still be
 useful during design.
 
+<!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
-<img src="images/layout_editor.png" 
-alt="Screenshot of Android Studio showing library effects in the layout editor." 
-width="40%" />
+    <!--suppress CheckImageSize -->
+    <img
+        src="images/layout_editor.png" 
+        alt="Android Studio's layout editor showing library effects." 
+        width="40%" />
 </p>
 
 Information on the two general types of groups – Regular and Recycling – along
@@ -203,8 +224,8 @@ be found on the [Drawable wiki page][DrawableWiki].
 > preferable to simply copy the example given in
 > <a href="https://stackoverflow.com/a/71868521">this Stack Overflow post</a>
 > (or the one in
-> <a href="https://gist.github.com/zed-alpha/50acf298881ebd112e6bfb934a30d0ba">the
-> linked gist</a>, if supporting API levels 24..28).
+> <a href="https://gist.github.com/zed-alpha/50acf298881ebd112e6bfb934a30d0ba">
+> the linked gist</a>, if supporting API levels 24..28).
 
 Since Compose already allows shadows to be handled and manipulated as discrete
 UI elements, employing the library's features here is straightforward and
@@ -267,14 +288,14 @@ page][ComposeWiki].
 The library is available as a compiled dependency through the very handy service
 [JitPack][JitPack]. To enable download in a modern Gradle setup, add their Maven
 URL to the `repositories` block inside the `dependencyResolutionManagement` in
-the root project's `settings.gradle[.kts]` file; e.g.:
+the root project's `settings.gradle.kts` file; e.g.:
 
 ```kotlin
 dependencyResolutionManagement {
     …
     repositories {
         …
-        maven { url 'https://jitpack.io' }
+        maven { url = uri("https://jitpack.io") }
     }
 }
 ```
@@ -285,14 +306,10 @@ required, `view` or `compose`:
 ```kotlin
 dependencies {
     …
-    implementation 'com.github.zed-alpha.shadow-gadgets:view:[latest-release]'
-    implementation 'com.github.zed-alpha.shadow-gadgets:compose:[latest-release]'
+    implementation("com.github.zed-alpha.shadow-gadgets:view:[latest-release]")
+    implementation("com.github.zed-alpha.shadow-gadgets:compose:[latest-release]")
 }
 ```
-
-You can also get the `core` module directly, if you'd like, but there are no
-examples or docs for it, and its API is liable to change drastically without
-notice.
 
 <br />
 
@@ -300,7 +317,7 @@ notice.
 
 MIT License
 
-Copyright (c) 2025 zed-alpha
+Copyright (c) 2026 zed-alpha
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -320,42 +337,22 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-  [notes]: https://github.com/zed-alpha/shadow-gadgets/wiki/Notes
-
-  [Documentation]: https://zed-alpha.github.io/shadow-gadgets
-
-  [clipOutlineShadow]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/clip-outline-shadow.html
-
-  [outlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/outline-shadow-color-compat.html
-
-  [ViewColorCompatWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat
-
-  [ShadowPlane]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-plane/index.html
-
-  [ShadowPlaneWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowPlane
-
-  [ViewPathProvider]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-view-path-provider/index.html
-
-  [ViewPathProviderWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewPathProvider
-
-  [forceShadowLayer]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/force-shadow-layer.html
-
-  [forceShadowLayerWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/View.forceShadowLayer
-
-  [ViewGroupsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
-
-  [ShadowDrawable]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
-
-  [DrawableWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
-
-  [clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
-
-  [shadow]: https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color)
-
-  [shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
-
-  [ComposeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Compose
-
-  [JitPack]: https://jitpack.io/#zed-alpha/shadow-gadgets
-
-  [Releases]: https://github.com/zed-alpha/shadow-gadgets/releases
+[Notes]: https://github.com/zed-alpha/shadow-gadgets/wiki/Notes
+[Documentation]: https://zed-alpha.github.io/shadow-gadgets
+[Issues]: https://github.com/zed-alpha/shadow-gadgets/issues
+[clipOutlineShadow]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/clip-outline-shadow.html
+[outlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/outline-shadow-color-compat.html
+[ViewColorCompatWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat
+[ShadowPlane]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-plane/index.html
+[ShadowPlaneWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowPlane
+[ViewPathProvider]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-view-path-provider/index.html
+[ViewPathProviderWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewPathProvider
+[ViewGroupsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
+[ShadowDrawable]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
+[DrawableWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
+[clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
+[shadow]: https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color)
+[shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
+[ComposeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Compose
+[JitPack]: https://jitpack.io/#zed-alpha/shadow-gadgets
+[Releases]: https://github.com/zed-alpha/shadow-gadgets/releases

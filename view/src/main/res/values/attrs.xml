@@ -30,4 +30,9 @@
         <attr name="ignoreInlineChildShadows" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="Lighting">
+        <attr name="android:ambientShadowAlpha" />
+        <attr name="android:spotShadowAlpha" />
+    </declare-styleable>
+
 </resources>

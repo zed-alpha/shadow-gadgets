@@ -9,16 +9,25 @@
 
     <item name="outline_shadow_color_compat" type="id" />
     <item name="force_outline_shadow_color_compat" type="id" />
-    <item name="color_outline_shadow" type="id" />
+    <item name="tint_outline_shadow" type="id" />
 
-    <item name="shadow" type="id" />
-    <item name="scope_view" type="id" />
-
-    <item name="is_watched" type="id" />
+    <item name="is_switched" type="id" />
     <item name="is_initialized_for_recycling_svg" type="id" />
     <item name="is_recycling_view_group_child" type="id" />
 
-    <item name="overlay_controller" type="id" />
-    <item name="inline_controller" type="id" />
+    <item name="shadow_proxy" type="id" />
+
+    <item name="foreground_plane" type="id" />
+    <item name="background_plane" type="id" />
+    <item name="inline_plane" type="id" />
+
+    <item name="invalidator" type="id" />
+    <item name="move_dispatcher" type="id" />
+    <item name="view_painter" type="id" />
+
+    <!-- Experiments -->
+    <item name="on_shadow_attach" type="id" />
+    <item name="on_shadow_detach" type="id" />
+    <item name="pause_shadow_updates" type="id" />
 
 </resources>

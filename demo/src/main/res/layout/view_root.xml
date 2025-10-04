@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<androidx.appcompat.widget.AppCompatTextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,7 +13,7 @@
     android:padding="20dp"
     android:text="@string/root_view"
     android:textColor="@color/white"
-    android:textSize="28sp"
+    android:textSize="32sp"
     android:textStyle="bold"
-    app:drawableTopCompat="@drawable/ic_launcher_foreground"
+    app:drawableTopCompat="@drawable/ic_info"
     tools:ignore="UnusedAttribute" />

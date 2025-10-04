@@ -7,7 +7,8 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.zedalpha.shadowgadgets.demo.databinding.InternalControlViewBinding
 
-class ControlView @JvmOverloads constructor(
+class ControlView
+@JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {

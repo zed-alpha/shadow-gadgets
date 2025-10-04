@@ -4,14 +4,14 @@ import android.content.Context
 import android.os.Build
 import android.view.View
 import androidx.annotation.ColorInt
-import com.zedalpha.shadowgadgets.core.DefaultAmbientShadowAlpha
-import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
-import com.zedalpha.shadowgadgets.core.DefaultSpotShadowAlpha
-import com.zedalpha.shadowgadgets.core.blendShadowColors
-import com.zedalpha.shadowgadgets.core.isNotDefault
-import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
-import com.zedalpha.shadowgadgets.view.shadow.checkShadow
-import com.zedalpha.shadowgadgets.view.shadow.shadow
+import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
+import com.zedalpha.shadowgadgets.view.internal.blendShadowColors
+import com.zedalpha.shadowgadgets.view.internal.isNotDefault
+import com.zedalpha.shadowgadgets.view.internal.resolveThemeShadowAlphas
+import com.zedalpha.shadowgadgets.view.internal.updateShadow
+import com.zedalpha.shadowgadgets.view.internal.viewTag
+import com.zedalpha.shadowgadgets.view.plane.updatePlane
+import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
 
 /**
  * The current color compat value for the receiver View.
@@ -39,34 +39,39 @@ import com.zedalpha.shadowgadgets.view.shadow.shadow
 @get:ColorInt
 @setparam:ColorInt
 public var View.outlineShadowColorCompat: Int
-    get() = getTag(R.id.outline_shadow_color_compat) as? Int
-        ?: DefaultShadowColorInt
-    set(color) {
-        if (outlineShadowColorCompat == color) return
-        setTag(R.id.outline_shadow_color_compat, color)
-        updateColorOutlineShadow()
-        shadow?.updateLayer()
-    }
+        by viewTag(R.id.outline_shadow_color_compat, DefaultShadowColor) {
+            updateColorCompat(this)
+        }
 
 /**
  * Determines whether the color compat mechanism should be forced if the current
  * API level is 28 or above.
  *
  * When set to true, on the relevant versions, the receiver View's
- * [outlineAmbientShadowColor][android.view.View.setOutlineAmbientShadowColor]
+ * [outlineAmbientShadowColor][View.setOutlineAmbientShadowColor]
  * and
- * [outlineSpotShadowColor][android.view.View.setOutlineSpotShadowColor] should
+ * [outlineSpotShadowColor][View.setOutlineSpotShadowColor] should
  * not be modified afterward. The native shadow must be pure black for the
  * tint to apply correctly.
  */
 public var View.forceOutlineShadowColorCompat: Boolean
-    get() = getTag(R.id.force_outline_shadow_color_compat) == true
-    set(force) {
-        if (forceOutlineShadowColorCompat == force) return
-        setTag(R.id.force_outline_shadow_color_compat, force)
-        updateColorOutlineShadow()
-        shadow?.updateLayer()
+        by viewTag(R.id.force_outline_shadow_color_compat, false) {
+            updateColorCompat(this)
+        }
+
+private fun updateColorCompat(target: View) {
+    target.tintOutlineShadow =
+        (Build.VERSION.SDK_INT < 28 || target.forceOutlineShadowColorCompat) &&
+                target.outlineShadowColorCompat.isNotDefault
+    target.shadowProxy?.let { proxy ->
+        proxy.updateLayer()
+        updatePlane(proxy)
     }
+}
+
+internal var View.tintOutlineShadow: Boolean
+        by viewTag(R.id.tint_outline_shadow, false) { updateShadow(this) }
+    private set
 
 /**
  * Helper class that blends the two native shadow colors into a single value
@@ -80,12 +85,17 @@ public var View.forceOutlineShadowColorCompat: Boolean
  */
 public class ShadowColorsBlender(private val context: Context) {
 
-    private var ambientAlpha = DefaultAmbientShadowAlpha
-
-    private var spotAlpha = DefaultSpotShadowAlpha
+    private var ambientAlpha = 0F
+    private var spotAlpha = 0F
 
     init {
         setAlphas()
+    }
+
+    private fun setAlphas() {
+        val (ambient, spot) = context.resolveThemeShadowAlphas()
+        ambientAlpha = ambient
+        spotAlpha = spot
     }
 
     /**
@@ -100,7 +110,8 @@ public class ShadowColorsBlender(private val context: Context) {
     public fun blend(
         @ColorInt ambientColor: Int,
         @ColorInt spotColor: Int
-    ): Int = blendShadowColors(ambientColor, ambientAlpha, spotColor, spotAlpha)
+    ): Int =
+        blendShadowColors(ambientColor, ambientAlpha, spotColor, spotAlpha)
 
     /**
      * To be called from the corresponding function in the relevant UI component.
@@ -113,26 +124,4 @@ public class ShadowColorsBlender(private val context: Context) {
                 "alphas without creating a new Activity instance."
     )
     public fun onConfigurationChanged(): Unit = setAlphas()
-
-    private fun setAlphas() {
-        val (ambient, spot) = context.resolveThemeShadowAlphas()
-        ambientAlpha = ambient
-        spotAlpha = spot
-    }
 }
-
-private fun View.updateColorOutlineShadow(): Boolean {
-    val newValue = outlineShadowColorCompat.isNotDefault &&
-            (Build.VERSION.SDK_INT < 28 || forceOutlineShadowColorCompat)
-    val updated = colorOutlineShadow != newValue
-    colorOutlineShadow = newValue
-    return updated
-}
-
-internal var View.colorOutlineShadow: Boolean
-    get() = getTag(R.id.color_outline_shadow) == true
-    private set(value) {
-        if (colorOutlineShadow == value) return
-        setTag(R.id.color_outline_shadow, value)
-        checkShadow()
-    }

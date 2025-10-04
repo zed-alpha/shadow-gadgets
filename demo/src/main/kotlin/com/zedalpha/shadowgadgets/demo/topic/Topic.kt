@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.zedalpha.shadowgadgets.demo.internal.ContentCardView
@@ -27,14 +26,12 @@ abstract class TopicFragment<T : ViewBinding>(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = ContentCardView(requireContext()).apply {
-        layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-        ui = inflate(inflater, this, true)
-    }
+    ) =
+        ContentCardView(requireContext())
+            .apply { ui = inflate(inflater, this, true) }
 
-    final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    final override fun onViewCreated(view: View, savedInstanceState: Bundle?) =
         loadUi(ui)
-    }
 
     abstract fun loadUi(ui: T)
 }

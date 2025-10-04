@@ -53,22 +53,23 @@ public fun Modifier.shadowCompat(
         (colorCompat.isUnspecified &&
                 ambientColor.isDefault && spotColor.isDefault)
     ) {
-        shadow(elevation, shape, clip, ambientColor, spotColor)
+        this.shadow(elevation, shape, clip, ambientColor, spotColor)
     } else {
-        val first = if (elevation > 0.dp) {
-            this then ShadowCompatElement(
-                elevation = elevation,
-                shape = shape,
-                clip = clip,
-                ambientColor = ambientColor,
-                spotColor = spotColor,
-                colorCompat = colorCompat,
-                forceColorCompat = forceColorCompat
-            )
-        } else {
-            this
-        }
-        if (clip) first.clip(shape) else first
+        val modifier =
+            if (elevation > 0.dp) {
+                this then ShadowCompatElement(
+                    elevation = elevation,
+                    shape = shape,
+                    clip = clip,
+                    ambientColor = ambientColor,
+                    spotColor = spotColor,
+                    colorCompat = colorCompat,
+                    forceColorCompat = forceColorCompat
+                )
+            } else {
+                this
+            }
+        if (clip) modifier.clip(shape) else modifier
     }
 
 private class ShadowCompatElement(
@@ -80,22 +81,22 @@ private class ShadowCompatElement(
     colorCompat: Color,
     forceColorCompat: Boolean
 ) : BaseShadowElement(
-    elevation,
-    shape,
-    ambientColor,
-    spotColor,
-    colorCompat,
-    forceColorCompat
+    elevation = elevation,
+    shape = shape,
+    ambientColor = ambientColor,
+    spotColor = spotColor,
+    colorCompat = colorCompat,
+    forceColorCompat = forceColorCompat
 ) {
     override fun create() =
         BaseShadowNode(
-            false,
-            elevation,
-            shape,
-            ambientColor,
-            spotColor,
-            colorCompat,
-            forceColorCompat
+            clipped = false,
+            elevation = elevation,
+            shape = shape,
+            ambientColor = ambientColor,
+            spotColor = spotColor,
+            colorCompat = colorCompat,
+            forceColorCompat = forceColorCompat
         )
 
     override fun InspectorInfo.inspectableProperties() {

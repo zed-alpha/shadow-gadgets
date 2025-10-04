@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/off_white"
-    android:fadeScrollbars="false"
-    android:paddingVertical="10dp"
-    android:paddingStart="10dp"
-    android:paddingEnd="10dp"
-    android:scrollbarStyle="outsideInset"
-    android:scrollbars="vertical"
-    tools:ignore="Overdraw"
-    tools:viewBindingIgnore="true">
+    android:foreground="@drawable/fg_frame">
 
-    <TextView
-        android:id="@+id/text"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        tools:ignore="RtlSymmetry" />
+        android:layout_height="match_parent"
+        android:background="@color/off_white"
+        android:fadeScrollbars="false"
+        android:paddingVertical="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:scrollbarStyle="outsideInset"
+        android:scrollbars="vertical"
+        tools:ignore="Overdraw,UselessParent"
+        tools:viewBindingIgnore="true">
 
-</ScrollView>
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            tools:ignore="RtlSymmetry" />
+
+    </ScrollView>
+
+</FrameLayout>

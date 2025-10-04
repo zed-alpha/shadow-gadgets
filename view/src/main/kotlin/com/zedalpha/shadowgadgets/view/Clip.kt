@@ -4,11 +4,12 @@ import android.graphics.Path
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.zedalpha.shadowgadgets.view.internal.MaterialShapeDrawableReflector
 import com.zedalpha.shadowgadgets.view.internal.findMaterialShapeDrawable
-import com.zedalpha.shadowgadgets.view.shadow.checkShadow
-import com.zedalpha.shadowgadgets.view.shadow.recreateShadow
-import com.zedalpha.shadowgadgets.view.shadow.shadow
+import com.zedalpha.shadowgadgets.view.internal.setFromMaterialShapeDrawable
+import com.zedalpha.shadowgadgets.view.internal.updateShadow
+import com.zedalpha.shadowgadgets.view.internal.viewTag
+import com.zedalpha.shadowgadgets.view.plane.updatePlane
+import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
 
 /**
  * The current state of the clipped shadow fix for the receiver View.
@@ -23,12 +24,13 @@ import com.zedalpha.shadowgadgets.view.shadow.shadow
  * replacement cannot be drawn, for whatever reason.
  */
 public var View.clipOutlineShadow: Boolean
-    get() = getTag(R.id.clip_outline_shadow) == true
-    set(value) {
-        if (clipOutlineShadow == value) return
-        setTag(R.id.clip_outline_shadow, value)
-        checkShadow()
-    }
+        by viewTag(R.id.clip_outline_shadow, false) {
+            updateShadow(this)
+            this.shadowProxy?.let { proxy ->
+                proxy.updateClip()
+                updatePlane(proxy)
+            }
+        }
 
 /**
  * An interface through which to set the clip [Path] for irregularly shaped
@@ -38,16 +40,16 @@ public var View.clipOutlineShadow: Boolean
  * rectangles have their shapes defined by a Path field that became inaccessible
  * starting with Android R. For those cases, this interface and its
  * corresponding extension property – [pathProvider] – provide a fallback
- * mechanism through which it can be set manually.
+ * through which to set it manually.
  */
 public fun interface ViewPathProvider {
 
     /**
-     * Called whenever the target View's shape cannot be determined internally.
+     * Called for non-rectangular shapes on API levels 30 and above.
      *
-     * The [view] is the target itself, and the [path] is an empty
-     * instance that should be set appropriately. If the Path is left empty, the
-     * clipped shadow will not be drawn.
+     * The [view] is the target itself, and the [path] is an empty instance that
+     * should be set appropriately. If the Path is left empty, no shadow will be
+     * drawn.
      */
     public fun getPath(view: View, path: Path)
 }
@@ -57,12 +59,9 @@ public fun interface ViewPathProvider {
  * API levels 30+.
  */
 public var View.pathProvider: ViewPathProvider?
-    get() = getTag(R.id.path_provider) as? ViewPathProvider
-    set(value) {
-        if (pathProvider == value) return
-        setTag(R.id.path_provider, value)
-        recreateShadow()
-    }
+        by viewTag(R.id.path_provider, null) {
+            if (this.clipOutlineShadow) this.shadowProxy?.updatePathProvider()
+        }
 
 /**
  * An implementation of [ViewPathProvider] that tries to set the [Path] from a
@@ -76,9 +75,8 @@ public var View.pathProvider: ViewPathProvider?
 )
 public val MaterialComponentsViewPathProvider: ViewPathProvider =
     ViewPathProvider { view, path ->
-        val background = view.background ?: return@ViewPathProvider
-        background.findMaterialShapeDrawable()?.let { msd ->
-            MaterialShapeDrawableReflector.setPathFromDrawable(path, msd)
+        view.background?.findMaterialShapeDrawable()?.let { msd ->
+            path.setFromMaterialShapeDrawable(msd)
         }
     }
 
@@ -96,35 +94,29 @@ public class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
 
     override fun getPath(view: View, path: Path) {
         val current: Drawable? = view.background
-        val msd = if (background !== current) {
-            background = current
-            view.shadow?.invalidate()
-            current?.findMaterialShapeDrawable().also { msd = it }
-        } else {
-            msd
-        }
+        val msd =
+            if (background !== current) {
+                background = current
+                view.shadowProxy?.invalidate()
+                current?.findMaterialShapeDrawable().also { msd = it }
+            } else {
+                msd
+            }
         msd ?: return
-        MaterialShapeDrawableReflector.setPathFromDrawable(path, msd)
+        path.setFromMaterialShapeDrawable(msd)
     }
 
     public companion object {
 
-        private var _canGetPath: Boolean? = null
-
         /**
          * Indicates whether [MaterialShapeDrawableViewPathProvider] is able
          * to read and copy a [MaterialShapeDrawable]'s private outline [Path].
-         *
-         * That procedure involves reflection, and though it's on a non-system
-         * class, it might still be preferable in some cases to check first at
-         * runtime.
          */
-        public val canGetPath: Boolean
-            get() = _canGetPath ?: Path().run {
-                val d = MaterialShapeDrawable().apply { setBounds(0, 0, 1, 1) }
-                MaterialShapeDrawableReflector.setPathFromDrawable(this, d)
-                (!isEmpty).also { _canGetPath = it }
-            }
+        @Deprecated(
+            "The method used to obtain the Path no longer involves " +
+                    "reflection. From now on, this will always true."
+        )
+        public val canGetPath: Boolean = true
 
         /**
          * Returns the first [MaterialShapeDrawable] found if [root] is or
@@ -150,7 +142,9 @@ public class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
  * More information is available on
  * [this wiki page](https://github.com/zed-alpha/shadow-gadgets/wiki/View.forceShadowLayer).
  */
-@Deprecated("This is now handled automatically on the affected versions.")
+@Deprecated(
+    "Forced layers are now handled automatically on the affected " +
+            "versions. This property's value no longer has any effect."
+)
 public var View.forceShadowLayer: Boolean
-    get() = getTag(R.id.force_shadow_layer) == true
-    set(value) = setTag(R.id.force_shadow_layer, value)
+        by viewTag(R.id.force_shadow_layer, false)

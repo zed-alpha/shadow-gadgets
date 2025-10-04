@@ -10,5 +10,6 @@
     <color name="off_white">#fffafafa</color>
     <color name="control_gray">#ffdfdfdf</color>
     <color name="light_gray">#ffe2e2e2</color>
+    <color name="darkish_gray">#ffa0a0a0</color>
 
 </resources>

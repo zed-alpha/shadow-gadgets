@@ -3,7 +3,6 @@ package com.zedalpha.shadowgadgets.view.internal
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
 import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.ShadowPlane.Foreground
@@ -16,43 +15,48 @@ internal data class ShadowAttributes(
     val forceOutlineShadowColorCompat: Boolean?
 )
 
-internal fun AttributeSet?.extractShadowAttributes(
-    context: Context
-): ShadowAttributes {
-    val array = context.obtainStyledAttributes(
-        this,
-        R.styleable.ShadowAttributes
-    )
+internal fun AttributeSet?.extractShadowAttributes(context: Context): ShadowAttributes {
+    val array =
+        context.obtainStyledAttributes(this, R.styleable.ShadowAttributes)
     return ShadowAttributes(
         array.getResourceId(
-            R.styleable.ShadowAttributes_android_id,
-            View.NO_ID
+            /* index = */ R.styleable.ShadowAttributes_android_id,
+            /* defValue = */ View.NO_ID
         ),
         if (array.hasValue(R.styleable.ShadowAttributes_shadowPlane)) {
             ShadowPlane.forValue(
                 array.getInt(
-                    R.styleable.ShadowAttributes_shadowPlane,
-                    Foreground.ordinal
+                    /* index = */ R.styleable.ShadowAttributes_shadowPlane,
+                    /* defValue = */ Foreground.ordinal
                 )
             )
-        } else null,
+        } else {
+            null
+        },
         if (array.hasValue(R.styleable.ShadowAttributes_clipOutlineShadow)) {
             array.getBoolean(
-                R.styleable.ShadowAttributes_clipOutlineShadow,
-                false
+                /* index = */ R.styleable.ShadowAttributes_clipOutlineShadow,
+                /* defValue = */ false
             )
-        } else null,
+        } else {
+            null
+        },
         if (array.hasValue(R.styleable.ShadowAttributes_outlineShadowColorCompat)) {
             array.getColor(
-                R.styleable.ShadowAttributes_outlineShadowColorCompat,
-                DefaultShadowColorInt
+                /* index = */ R.styleable.ShadowAttributes_outlineShadowColorCompat,
+                /* defValue = */ DefaultShadowColor
             )
-        } else null,
+        } else {
+            null
+        },
         if (array.hasValue(R.styleable.ShadowAttributes_forceOutlineShadowColorCompat)) {
             array.getBoolean(
-                R.styleable.ShadowAttributes_forceOutlineShadowColorCompat,
-                false
+                /* index = */ R.styleable.ShadowAttributes_forceOutlineShadowColorCompat,
+                /* defValue = */ false
             )
-        } else null
-    ).also { array.recycle() }
+        } else {
+            null
+        }
+    )
+        .also { array.recycle() }
 }

@@ -56,11 +56,12 @@ import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.ComposeViewBinding
 
-internal val ComposeTopic = Topic(
-    "Compose",
-    R.string.description_compose,
-    ComposeFragment::class.java
-)
+internal val ComposeTopic =
+    Topic(
+        title = "Compose",
+        descriptionResId = R.string.description_compose,
+        fragmentClass = ComposeFragment::class.java
+    )
 
 class ComposeFragment : TopicFragment<ComposeViewBinding>(
     ComposeViewBinding::inflate
@@ -145,11 +146,11 @@ internal fun ColorfulLazyColumn(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = modifier
         ) {
-            items(ITEM_COUNT) { position ->
+            items(ItemCount) { position ->
                 val color = lerp(
-                    if (position < HALF_ITEM_COUNT) ItemRed else ItemGreen,
-                    if (position < HALF_ITEM_COUNT) ItemGreen else ItemBlue,
-                    (position % HALF_ITEM_COUNT).toFloat() / HALF_ITEM_COUNT
+                    if (position < HalfItemCount) ClearRed else ClearGreen,
+                    if (position < HalfItemCount) ClearGreen else ClearBlue,
+                    (position % HalfItemCount).toFloat() / HalfItemCount
                 )
                 val colorCompat =
                     if (enableColorCompat) color.copy(alpha = 1F)
@@ -259,6 +260,8 @@ private val CardShapeBuilder: Path.(Size, LayoutDirection) -> Unit =
 
 private fun puzzlePieceBuilder(): Path.(Size, LayoutDirection) -> Unit =
     { size, _ ->
+        rewind()
+
         val side = minOf(size.width, size.height)
         val q = side / 4
 
@@ -294,7 +297,7 @@ private fun puzzlePieceBuilder(): Path.(Size, LayoutDirection) -> Unit =
 
 private fun compassPointerBuilder(): Path.(Size, LayoutDirection) -> Unit =
     { size, _ ->
-        reset()
+        rewind()
 
         val side = minOf(size.width, size.height)
 
@@ -310,6 +313,6 @@ private fun compassPointerBuilder(): Path.(Size, LayoutDirection) -> Unit =
         translate(Offset((size.width - side) / 2, (size.height - side) / 2))
     }
 
-internal val ItemRed = Color(ITEM_RED)
-internal val ItemGreen = Color(ITEM_GREEN)
-internal val ItemBlue = Color(ITEM_BLUE)
+internal val ClearRed = Color(ClearRedInt)
+internal val ClearGreen = Color(ClearGreenInt)
+internal val ClearBlue = Color(ClearBlueInt)

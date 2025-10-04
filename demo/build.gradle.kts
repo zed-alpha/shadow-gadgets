@@ -1,22 +1,24 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "com.zedalpha.shadowgadgets.demo"
-    compileSdk = 35
 
+    compileSdk {
+        version = release(36)
+    }
     defaultConfig {
         applicationId = "com.zedalpha.shadowgadgets.demo"
-        minSdk = 21
-        targetSdk = 35
+        minSdk = 23
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+
+        vectorDrawables.useSupportLibrary = true
     }
     buildFeatures {
         viewBinding = true
@@ -26,18 +28,13 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt")
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
             signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     packaging {
         resources {
@@ -46,14 +43,18 @@ android {
     }
 }
 
-dependencies {
+kotlin {
+    compilerOptions.jvmTarget = JvmTarget.JVM_17
+}
 
+dependencies {
     implementation(projects.view)
     implementation(projects.compose)
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.material.components)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.material.components)
+
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.foundation)
     implementation(libs.compose.material)

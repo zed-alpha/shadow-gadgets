@@ -7,6 +7,7 @@ import androidx.compose.ui.draw.CacheDrawScope
 import androidx.compose.ui.draw.DrawResult
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
@@ -25,9 +26,6 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.requireView
 import androidx.compose.ui.unit.Dp
-import com.zedalpha.shadowgadgets.core.blendShadowColors
-import com.zedalpha.shadowgadgets.core.layer.RequiresDefaultClipLayer
-import com.zedalpha.shadowgadgets.core.resolveThemeShadowAlphas
 
 @SuppressLint("ModifierNodeInspectableProperties")
 internal abstract class BaseShadowElement(
@@ -125,20 +123,18 @@ internal class BaseShadowNode(
         }
     }
 
-    private val clipPath = if (clipped) Path() else null
+    private val clip = if (clipped) Path() else null
 
     private fun cacheDraw(scope: CacheDrawScope): DrawResult = with(scope) {
-
         val shadow = obtainGraphicsLayer()
 
         val outline = shape.createOutline(size, layoutDirection, this)
         shadow.run { setOutline(outline); record { } }
-        clipPath?.run { rewind(); addOutline(outline) }
+        clip?.run { rewind(); addOutline(outline) }
 
         currentShape = shape
 
         onDrawBehind {
-
             shadow.shadowElevation = elevation.toPx()
             shadow.ambientShadowColor = actualAmbientColor
             shadow.spotShadowColor = actualSpotColor
@@ -158,14 +154,9 @@ internal class BaseShadowNode(
         }
     }
 
-    private fun DrawScope.drawShadow(shadow: GraphicsLayer) {
-        val path = clipPath
-        if (path != null) {
-            clipPath(path, ClipOp.Difference) { drawLayer(shadow) }
-        } else {
-            drawLayer(shadow)
-        }
-    }
+    private fun DrawScope.drawShadow(shadow: GraphicsLayer) =
+        clip?.let { clipPath(it, ClipOp.Difference) { drawLayer(shadow) } }
+            ?: drawLayer(shadow)
 }
 
 private class ColorBlender(private val node: DelegatableNode) {
@@ -188,5 +179,9 @@ private class ColorBlender(private val node: DelegatableNode) {
         }
 }
 
-internal val Color.isDefault get() = this == DefaultShadowColor
-internal val Color.isNotDefault get() = this != DefaultShadowColor
+internal inline val Color.isDefault get() = this == DefaultShadowColor
+
+internal inline val Color.isTint: Boolean
+    get() = this != DefaultShadowColor && this != Transparent
+
+private val RequiresDefaultClipLayer = Build.VERSION.SDK_INT in 24..28

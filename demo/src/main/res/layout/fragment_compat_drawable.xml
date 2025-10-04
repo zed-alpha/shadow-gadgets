@@ -12,17 +12,10 @@
         android:id="@+id/drawable_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/horizontal"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.55"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.55" />
 
     <SeekBar
         android:id="@+id/seek_rotation"
@@ -34,7 +27,7 @@
         app:layout_constraintBottom_toTopOf="@id/clip_switch"
         app:layout_constraintEnd_toStartOf="@id/label_rotation"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/horizontal" />
+        app:layout_constraintTop_toBottomOf="@id/drawable_view" />
 
     <TextView
         android:id="@+id/label_rotation"
@@ -77,6 +70,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/vertical"
-        app:layout_constraintTop_toBottomOf="@id/horizontal" />
+        app:layout_constraintTop_toBottomOf="@id/drawable_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

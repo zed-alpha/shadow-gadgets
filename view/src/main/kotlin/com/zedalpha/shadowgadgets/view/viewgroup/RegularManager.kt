@@ -11,78 +11,78 @@ import com.zedalpha.shadowgadgets.view.internal.extractShadowAttributes
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.shadowPlane
 
-internal class RegularManager(
-    parentView: ViewGroup,
+internal class RegularManager<T>(
+    viewGroup: T,
     attributeSet: AttributeSet?,
     attachViewToParent: (View, Int, ViewGroup.LayoutParams) -> Unit,
     detachAllViewsFromParent: () -> Unit,
     superDispatchDraw: (Canvas) -> Unit,
     superDrawChild: (Canvas, View, Long) -> Boolean
-) : ShadowsViewGroupManager(
-    parentView,
+) : ShadowsViewGroupManager<T>(
+    viewGroup,
     attributeSet,
     attachViewToParent,
     detachAllViewsFromParent,
     superDispatchDraw,
     superDrawChild
-) {
+) where T : ViewGroup, T : ShadowsViewGroup {
+
     private var xmlAttributes: MutableMap<Int, ShadowAttributes>? =
         mutableMapOf()
 
-    fun generateLayoutParams(attributeSet: AttributeSet?) {
-        if (attached) return
-        val attributes =
-            attributeSet.extractShadowAttributes(parentView.context)
-        if (attributes.id != View.NO_ID) {
-            xmlAttributes?.put(attributes.id, attributes)
-        }
-    }
-
-    override fun onParentViewAttached() {
-        super.onParentViewAttached()
+    override fun onAttach() {
+        super.onAttach()
         xmlAttributes = null
     }
 
+    fun generateLayoutParams(attributeSet: AttributeSet?) {
+        if (isAttached) return
+
+        val context = viewGroup.context
+        val attributes = attributeSet.extractShadowAttributes(context)
+        if (attributes.id == View.NO_ID) return
+
+        xmlAttributes?.put(attributes.id, attributes)
+    }
+
     override fun onViewAdded(child: View) {
-        if (attached) return
+        if (isAttached) return
 
         val attributes = xmlAttributes?.remove(child.id)
         if (attributes == null) {
-            if (child.planeNotSet && groupPlaneSet) {
+            if (child.isPlaneNotSet && isGroupPlaneSet) {
                 child.shadowPlane = childShadowsPlane
             }
 
-            if (child.clipNotSet && groupClipSet) {
+            if (child.isClipNotSet && isGroupClipSet) {
                 child.clipOutlineShadow = clipAllChildShadows
             }
 
-            if (child.colorNotSet && groupColorSet) {
+            if (child.isColorNotSet && isGroupColorSet) {
                 child.outlineShadowColorCompat =
                     childOutlineShadowsColorCompat
             }
 
-            if (child.forceNotSet && groupForceSet) {
+            if (child.isForceNotSet && isGroupForceSet) {
                 child.forceOutlineShadowColorCompat =
                     forceChildOutlineShadowsColorCompat
             }
         } else {
-            with(attributes) {
-                val plane = shadowPlane
-                    ?: childShadowsPlane.takeIf { groupPlaneSet }
-                plane?.let { child.shadowPlane = it }
+            val plane = attributes.shadowPlane
+                ?: childShadowsPlane.takeIf { isGroupPlaneSet }
+            plane?.let { child.shadowPlane = it }
 
-                val clip = clipOutlineShadow
-                    ?: clipAllChildShadows.takeIf { groupClipSet }
-                clip?.let { child.clipOutlineShadow = it }
+            val clip = attributes.clipOutlineShadow
+                ?: clipAllChildShadows.takeIf { isGroupClipSet }
+            clip?.let { child.clipOutlineShadow = it }
 
-                val color = outlineShadowColorCompat
-                    ?: childOutlineShadowsColorCompat.takeIf { groupColorSet }
-                color?.let { child.outlineShadowColorCompat = it }
+            val color = attributes.outlineShadowColorCompat
+                ?: childOutlineShadowsColorCompat.takeIf { isGroupColorSet }
+            color?.let { child.outlineShadowColorCompat = it }
 
-                val force = forceOutlineShadowColorCompat
-                    ?: forceChildOutlineShadowsColorCompat.takeIf { groupForceSet }
-                force?.let { child.forceOutlineShadowColorCompat = it }
-            }
+            val force = attributes.forceOutlineShadowColorCompat
+                ?: forceChildOutlineShadowsColorCompat.takeIf { isGroupForceSet }
+            force?.let { child.forceOutlineShadowColorCompat = it }
         }
     }
 }

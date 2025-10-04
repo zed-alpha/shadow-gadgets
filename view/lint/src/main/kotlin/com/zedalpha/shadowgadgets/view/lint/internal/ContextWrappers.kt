@@ -10,7 +10,8 @@ import org.w3c.dom.Document
 import java.io.File
 import java.lang.reflect.Field
 
-class ContextWrapper private constructor(
+class ContextWrapper
+private constructor(
     driver: LintDriver,
     project: Project,
     file: File,
@@ -25,7 +26,8 @@ class ContextWrapper private constructor(
     )
 }
 
-class XmlContextWrapper private constructor(
+class XmlContextWrapper
+private constructor(
     driver: LintDriver,
     project: Project,
     file: File,

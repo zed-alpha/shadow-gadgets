@@ -1,125 +1,176 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.Outline
 import android.os.Build
 import android.view.View
 import android.view.ViewOutlineProvider
-import androidx.annotation.CallSuper
-import androidx.core.view.isVisible
-import com.zedalpha.shadowgadgets.core.ClippedShadow
-import com.zedalpha.shadowgadgets.core.DefaultShadowColorInt
-import com.zedalpha.shadowgadgets.core.PathProvider
-import com.zedalpha.shadowgadgets.core.Shadow
-import com.zedalpha.shadowgadgets.core.ViewShadowColorsHelper
-import com.zedalpha.shadowgadgets.core.layer.Layer
-import com.zedalpha.shadowgadgets.core.layer.RequiresDefaultClipLayer
-import com.zedalpha.shadowgadgets.view.R
-import com.zedalpha.shadowgadgets.view.clipOutlineShadow
-import com.zedalpha.shadowgadgets.view.colorOutlineShadow
-import com.zedalpha.shadowgadgets.view.forceShadowLayer
-import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
-import com.zedalpha.shadowgadgets.view.pathProvider
+import com.zedalpha.shadowgadgets.view.internal.BaseView
+import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
+import com.zedalpha.shadowgadgets.view.internal.ViewShadowColorsHelper
+import com.zedalpha.shadowgadgets.view.internal.fastLayout
+import com.zedalpha.shadowgadgets.view.internal.viewPainter
 
-internal abstract class ViewShadow(
-    internal val targetView: View,
-    private val controller: ShadowController?
-) {
-    var isShown: Boolean = true
+internal class ViewShadow(link: View) : CoreShadow() {
 
-    val isClipped: Boolean = targetView.clipOutlineShadow
+    private val shadow = ShadowView(link.context)
 
-    protected val provider: ViewOutlineProvider = targetView.outlineProvider
-
-    protected val coreShadow = if (isClipped) {
-        ClippedShadow(targetView).also { shadow ->
-            val pathProvider = targetView.pathProvider ?: return@also
-            shadow.pathProvider = PathProvider { path ->
-                pathProvider.getPath(targetView, path)
-            }
-        }
-    } else {
-        Shadow(targetView)
-    }
-
-    protected var coreLayer: Layer? = null
+    private val painter = link.viewPainter
 
     init {
-        @Suppress("LeakingThis")
-        targetView.shadow = this
+        painter?.add(shadow)
     }
 
-    protected fun initialize() {
-        targetView.outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                provider.getOutline(view, outline)
-                coreShadow.setOutline(outline)
-                outline.alpha = 0F
-            }
+    override fun dispose() {
+        painter?.remove(shadow)
+    }
+
+    override var alpha: Float
+        get() = shadow.alpha
+        set(value) {
+            shadow.alpha = value
         }
-        updateLayer(false)
-    }
 
-    @CallSuper
-    open fun detachFromTarget() {
-        (coreShadow as? ClippedShadow)?.pathProvider = null
-        coreShadow.dispose()
+    override var cameraDistance: Float
+        get() = shadow.cameraDistance
+        set(value) {
+            shadow.cameraDistance = value
+        }
 
-        coreLayer?.let { controller?.disposeLayer(it) }
+    override var elevation: Float
+        get() = shadow.elevation
+        set(value) {
+            shadow.elevation = value
+        }
 
-        targetView.outlineProvider = provider
-        targetView.shadow = null
-    }
+    override var pivotX: Float
+        get() = shadow.pivotX
+        set(value) {
+            shadow.pivotX = value
+        }
 
-    fun updateLayer(invalidate: Boolean = true) {
-        val view = targetView
-        val needsLayer = view.colorOutlineShadow ||
-                (isClipped && RequiresDefaultClipLayer) ||
-                @Suppress("DEPRECATION") view.forceShadowLayer
-        if (needsLayer) {
+    override var pivotY: Float
+        get() = shadow.pivotY
+        set(value) {
+            shadow.pivotY = value
+        }
+
+    override var rotationX: Float
+        get() = shadow.rotationX
+        set(value) {
+            shadow.rotationX = value
+        }
+
+    override var rotationY: Float
+        get() = shadow.rotationY
+        set(value) {
+            shadow.rotationY = value
+        }
+
+    override var rotationZ: Float
+        get() = shadow.rotation
+        set(value) {
+            shadow.rotation = value
+        }
+
+    override var scaleX: Float
+        get() = shadow.scaleX
+        set(value) {
+            shadow.scaleX = value
+        }
+
+    override var scaleY: Float
+        get() = shadow.scaleY
+        set(value) {
+            shadow.scaleY = value
+        }
+
+    override var translationX: Float
+        get() = shadow.translationX
+        set(value) {
+            shadow.translationX = value
+        }
+
+    override var translationY: Float
+        get() = shadow.translationY
+        set(value) {
+            shadow.translationY = value
+        }
+
+    override var translationZ: Float
+        get() = shadow.translationZ
+        set(value) {
+            shadow.translationZ = value
+        }
+
+    override var ambientColor: Int
+        get() =
             if (Build.VERSION.SDK_INT >= 28) {
-                with(ViewShadowColorsHelper) {
-                    setSpotColor(view, DefaultShadowColorInt)
-                    setAmbientColor(view, DefaultShadowColorInt)
-                }
+                ViewShadowColorsHelper.getAmbientColor(shadow)
+            } else {
+                DefaultShadowColor
             }
-            val layer = coreLayer
-                ?: controller?.obtainLayer(coreShadow)
-                    .also { coreLayer = it }
-            layer?.color = view.outlineShadowColorCompat
-        } else {
-            coreLayer?.let {
-                controller?.disposeLayer(it)
-                coreLayer = null
+        set(value) {
+            if (Build.VERSION.SDK_INT >= 28) {
+                ViewShadowColorsHelper.setAmbientColor(shadow, value)
             }
         }
-        if (invalidate) invalidate()
+
+    override var spotColor: Int
+        get() =
+            if (Build.VERSION.SDK_INT >= 28) {
+                ViewShadowColorsHelper.getSpotColor(shadow)
+            } else {
+                DefaultShadowColor
+            }
+        set(value) {
+            if (Build.VERSION.SDK_INT >= 28) {
+                ViewShadowColorsHelper.setSpotColor(shadow, value)
+            }
+        }
+
+    override val left: Int get() = shadow.left
+
+    override val top: Int get() = shadow.top
+
+    override val right: Int get() = shadow.right
+
+    override val bottom: Int get() = shadow.bottom
+
+    override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
+        shadow.fastLayout(left, top, right, bottom)
+
+    override fun setOutline(outline: Outline) = shadow.outline.set(outline)
+
+    override fun hasIdentityMatrix(): Boolean = shadow.matrix.isIdentity
+
+    override fun getMatrix(outMatrix: Matrix) = outMatrix.set(shadow.matrix)
+
+    override fun getInverseMatrix(outMatrix: Matrix) {
+        shadow.matrix.invert(outMatrix)
     }
 
-    abstract fun invalidate()
-
-    protected fun View.updateAndCheckDraw(shadow: Shadow): Boolean {
-        shadow.setPosition(left, top, right, bottom)
-        shadow.alpha = alpha
-        shadow.cameraDistance = cameraDistance
-        shadow.elevation = elevation
-        shadow.pivotX = pivotX
-        shadow.pivotY = pivotY
-        shadow.rotationX = rotationX
-        shadow.rotationY = rotationY
-        shadow.rotationZ = rotation
-        shadow.scaleX = scaleX
-        shadow.scaleY = scaleY
-        shadow.translationX = translationX
-        shadow.translationY = translationY
-        shadow.translationZ = translationZ
-        if (Build.VERSION.SDK_INT >= 28) {
-            shadow.ambientColor = ViewShadowColorsHelper.getAmbientColor(this)
-            shadow.spotColor = ViewShadowColorsHelper.getSpotColor(this)
-        }
-        return isVisible && elevation > 0F
+    override fun onDraw(canvas: Canvas) {
+        shadow.run { superInvalidateOutline(); painter?.drawView(canvas, this) }
     }
 }
 
-internal var View.shadow: ViewShadow?
-    get() = getTag(R.id.shadow) as? ViewShadow
-    private set(value) = setTag(R.id.shadow, value)
+private class ShadowView(context: Context) : BaseView(context) {
+
+    val outline = Outline()
+
+    init {
+        visibility = GONE
+        outlineProvider =
+            object : ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: Outline) =
+                    outline.set(this@ShadowView.outline)
+            }
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun draw(canvas: Canvas) = Unit
+}

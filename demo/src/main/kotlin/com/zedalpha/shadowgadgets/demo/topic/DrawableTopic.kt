@@ -1,5 +1,6 @@
 package com.zedalpha.shadowgadgets.demo.topic
 
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Outline
 import android.graphics.Path
@@ -10,17 +11,19 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentDrawableBinding
+import com.zedalpha.shadowgadgets.demo.internal.SeekChangeListener
 import com.zedalpha.shadowgadgets.view.drawable.ShadowDrawable
 
-internal val DrawableTopic = Topic(
-    "Drawable",
-    R.string.description_drawable,
-    DrawableFragment::class.java
-)
+internal val DrawableTopic =
+    Topic(
+        title = "Drawable",
+        descriptionResId = R.string.description_drawable,
+        fragmentClass = DrawableFragment::class.java
+    )
 
-class DrawableFragment : TopicFragment<FragmentDrawableBinding>(
-    FragmentDrawableBinding::inflate
-) {
+class DrawableFragment :
+    TopicFragment<FragmentDrawableBinding>(FragmentDrawableBinding::inflate) {
+
     private lateinit var syncedDrawable: DemoClippedShadowDrawable
     private lateinit var unsyncedDrawable: DemoClippedShadowDrawable
 
@@ -90,6 +93,13 @@ private class DemoClippedShadowDrawable(
         }
         outline.alpha = 1.0F
         setOutline(outline)
+
+        invalidateSelf()
+    }
+
+    override fun draw(canvas: Canvas) {
+
+        super.draw(canvas)
     }
 }
 

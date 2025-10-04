@@ -1,10 +1,10 @@
 package com.zedalpha.shadowgadgets.demo.topic.compat
 
-import android.content.res.ColorStateList
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.demo.databinding.ViewPanelBinding
+import com.zedalpha.shadowgadgets.demo.internal.toColorStateList
 import com.zedalpha.shadowgadgets.view.ShadowColorsBlender
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat
@@ -29,9 +29,9 @@ internal class ViewIntroPanel(
     override var isShowingBackgrounds: Boolean
         get() = ui.normal.backgroundTintList == null
         set(isShown) {
-            val csl = ColorStateList.valueOf(
-                if (isShown) AndroidColor.WHITE else AndroidColor.TRANSPARENT
-            )
+            val csl =
+                (if (isShown) AndroidColor.WHITE else AndroidColor.TRANSPARENT)
+                    .toColorStateList()
             ui.normal.backgroundTintList = csl
             ui.compat.backgroundTintList = csl
         }

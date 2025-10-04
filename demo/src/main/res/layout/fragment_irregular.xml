@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
     tools:ignore="HardcodedText">
 
     <TextView
@@ -36,7 +35,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+    <TextView
         android:id="@+id/view_broken"
         android:layout_width="80dp"
         android:layout_height="80dp"
@@ -44,6 +43,8 @@
         android:background="@drawable/bg_roundish_square"
         android:backgroundTint="@color/see_through_blue"
         android:elevation="10dp"
+        android:gravity="center"
+        android:text="View"
         app:layout_constraintBottom_toTopOf="@id/button_broken"
         app:layout_constraintEnd_toStartOf="@id/divider"
         app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +90,7 @@
         app:layout_constraintStart_toEndOf="@id/divider"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+    <TextView
         android:id="@+id/view_fixed"
         android:layout_width="80dp"
         android:layout_height="80dp"
@@ -97,6 +98,8 @@
         android:background="@drawable/bg_roundish_square"
         android:backgroundTint="@color/see_through_blue"
         android:elevation="10dp"
+        android:gravity="center"
+        android:text="View"
         app:layout_constraintBottom_toTopOf="@id/button_fixed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/divider"

@@ -1,3 +1,7 @@
+-dontwarn android.view.DisplayListCanvas
+-dontwarn android.view.HardwareCanvas
+-dontwarn android.view.RenderNode
+
 -if class androidx.constraintlayout.motion.widget.KeyFrames
 -keep class androidx.constraintlayout.motion.widget.KeyAttributes
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.zedalpha.shadowgadgets.demo.databinding.ActivityMainBinding
+import com.zedalpha.shadowgadgets.demo.internal.RoundedCornerViewOutlineProvider
 import com.zedalpha.shadowgadgets.demo.internal.applyInsetsListener
 import com.zedalpha.shadowgadgets.demo.internal.showWelcomeDialog
 import com.zedalpha.shadowgadgets.demo.topic.ApplyTopic
@@ -33,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         val ui = ActivityMainBinding.inflate(layoutInflater)
         ui.root.applyInsetsListener()
@@ -47,11 +50,12 @@ class MainActivity : AppCompatActivity() {
             isUserInputEnabled = false
         }
 
-        var current = 0
-        ui.title.setText(Topics[0].title)
+        var current = -1
 
-        fun setTopic(index: Int) {
+        fun setTopic(request: Int) {
+            val index = request.coerceIn(Topics.indices)
             if (current == index) return
+
             ui.infoPager.currentItem = index
             ui.contentPager.currentItem = index
             ui.title.apply {
@@ -59,16 +63,14 @@ class MainActivity : AppCompatActivity() {
                 setText(Topics[index].title)
             }
             ui.backward.isInvisible = index == 0
-            ui.forward.isInvisible = index == Topics.size - 1
+            ui.forward.isInvisible = index == Topics.lastIndex
+
             current = index
         }
 
-        ui.backward.setOnClickListener {
-            if (current > 0) setTopic(current - 1)
-        }
-        ui.forward.setOnClickListener {
-            if (current < Topics.size - 1) setTopic(current + 1)
-        }
+        ui.backward.setOnClickListener { setTopic(current - 1) }
+        ui.forward.setOnClickListener { setTopic(current + 1) }
+
         ui.title.setOnClickListener { title ->
             PopupMenu(this, title).apply {
                 Topics.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
@@ -77,23 +79,26 @@ class MainActivity : AppCompatActivity() {
             }.show()
         }
 
+        setTopic(0)
+
         if (savedInstanceState == null) showWelcomeDialog()
     }
 }
 
-private val Topics = listOf(
-    IntroTopic,
-    MotionTopic,
-    PlaneTopic,
-    ApplyTopic,
-    IrregularTopic,
-    RootTopic,
-    DrawableTopic,
-    ComposeTopic,
-    CompatIntroTopic,
-    CompatDrawableTopic,
-    CompatStressTestTopic
-)
+private val Topics =
+    listOf(
+        IntroTopic,
+        MotionTopic,
+        PlaneTopic,
+        ApplyTopic,
+        IrregularTopic,
+        DrawableTopic,
+        RootTopic,
+        ComposeTopic,
+        CompatIntroTopic,
+        CompatDrawableTopic,
+        CompatStressTestTopic,
+    )
 
 private class ContentAdapter(activity: FragmentActivity) :
     FragmentStateAdapter(activity) {
@@ -106,12 +111,15 @@ private class ContentAdapter(activity: FragmentActivity) :
 
 private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
 
+    override fun getItemCount() = Topics.size
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_description, parent, false)
-            .let { InfoHolder(it) }
-
-    override fun getItemCount() = Topics.size
+            .inflate(R.layout.item_description, parent, false).run {
+                outlineProvider = RoundedCornerViewOutlineProvider()
+                clipToOutline = true
+                InfoHolder(this)
+            }
 
     override fun onBindViewHolder(holder: InfoHolder, position: Int) {
         holder.text.setText(Topics[position].descriptionResId)

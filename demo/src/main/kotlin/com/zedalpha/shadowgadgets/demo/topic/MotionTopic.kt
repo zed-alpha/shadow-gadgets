@@ -2,15 +2,16 @@ package com.zedalpha.shadowgadgets.demo.topic
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentMotionBinding
 import com.zedalpha.shadowgadgets.demo.internal.DefaultTargetColor
+import com.zedalpha.shadowgadgets.demo.internal.toColorStateList
 import com.zedalpha.shadowgadgets.demo.topic.Action.Hide
 import com.zedalpha.shadowgadgets.demo.topic.Action.Show
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
@@ -19,24 +20,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-internal val MotionTopic = Topic(
-    "Motion",
-    R.string.description_motion,
-    MotionFragment::class.java
-)
+internal val MotionTopic =
+    Topic(
+        title = "Motion",
+        descriptionResId = R.string.description_motion,
+        fragmentClass = MotionFragment::class.java
+    )
 
-class MotionFragment : TopicFragment<FragmentMotionBinding>(
-    FragmentMotionBinding::inflate
-) {
+class MotionFragment :
+    TopicFragment<FragmentMotionBinding>(FragmentMotionBinding::inflate) {
+
     override fun loadUi(ui: FragmentMotionBinding) {
-        val snackbar = Snackbar.make(
-            ui.fabUp,
-            "I'm translucent!",
-            Snackbar.LENGTH_INDEFINITE
-        )
+        val snackbar =
+            Snackbar.make(ui.fabUp, "I'm translucent!", LENGTH_INDEFINITE)
+        snackbar.view.backgroundTintList = DefaultTargetColor.toColorStateList()
         snackbar.setTextColor(Color.BLACK)
-        snackbar.view.backgroundTintList =
-            ColorStateList.valueOf(DefaultTargetColor)
 
         ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
             ui.motionView.clipOutlineShadow = isChecked
@@ -70,6 +68,7 @@ class MotionFragment : TopicFragment<FragmentMotionBinding>(
     private fun View.setAnimations(block: suspend () -> Unit) {
         setOnClickListener {
             if (animating) return@setOnClickListener
+
             animating = true
             viewLifecycleOwner.lifecycleScope.launch {
                 block()
@@ -83,15 +82,17 @@ private enum class Action { Show, Hide }
 
 private suspend fun Snackbar.await(action: Action) =
     suspendCancellableCoroutine { continuation ->
-        val callback = object : Snackbar.Callback() {
+        val callback =
+            object : Snackbar.Callback() {
 
-            override fun onShown(sb: Snackbar?) {
-                removeCallback(this)
-                if (continuation.isActive) continuation.resume(Unit)
+                override fun onShown(sb: Snackbar?) {
+                    removeCallback(this)
+                    if (continuation.isActive) continuation.resume(Unit)
+                }
+
+                override fun onDismissed(sb: Snackbar?, event: Int) =
+                    onShown(sb)
             }
-
-            override fun onDismissed(sb: Snackbar?, event: Int) = onShown(sb)
-        }
         continuation.invokeOnCancellation { removeCallback(callback) }
         addCallback(callback)
         if (action == Show) show() else dismiss()
@@ -99,16 +100,17 @@ private suspend fun Snackbar.await(action: Action) =
 
 private suspend fun FloatingActionButton.await(action: Action) =
     suspendCancellableCoroutine { continuation ->
-        val listener = object : AnimatorListenerAdapter() {
+        val listener =
+            object : AnimatorListenerAdapter() {
 
-            override fun onAnimationEnd(animation: Animator) {
-                removeOnShowAnimationListener(this)
-                if (continuation.isActive) continuation.resume(Unit)
+                override fun onAnimationEnd(animation: Animator) {
+                    removeOnShowAnimationListener(this)
+                    if (continuation.isActive) continuation.resume(Unit)
+                }
+
+                override fun onAnimationCancel(animation: Animator) =
+                    onAnimationEnd(animation)
             }
-
-            override fun onAnimationCancel(animation: Animator) =
-                onAnimationEnd(animation)
-        }
         continuation.invokeOnCancellation {
             removeOnShowAnimationListener(listener)
         }

@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.view.View
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentCompatDrawableBinding
-import com.zedalpha.shadowgadgets.demo.topic.SeekChangeListener
+import com.zedalpha.shadowgadgets.demo.internal.SeekChangeListener
 import com.zedalpha.shadowgadgets.demo.topic.Topic
 import com.zedalpha.shadowgadgets.demo.topic.TopicFragment
 import com.zedalpha.shadowgadgets.demo.topic.setToCompassPointer
@@ -16,15 +16,18 @@ import com.zedalpha.shadowgadgets.demo.topic.setToPuzzlePiece
 import com.zedalpha.shadowgadgets.view.drawable.ShadowDrawable
 import android.graphics.Color as AndroidColor
 
-internal val CompatDrawableTopic = Topic(
-    "Compat - Drawable",
-    R.string.description_compat_drawable,
-    CompatDrawableFragment::class.java
-)
+internal val CompatDrawableTopic =
+    Topic(
+        title = "Compat - Drawable",
+        descriptionResId = R.string.description_compat_drawable,
+        fragmentClass = CompatDrawableFragment::class.java
+    )
 
-class CompatDrawableFragment : TopicFragment<FragmentCompatDrawableBinding>(
-    FragmentCompatDrawableBinding::inflate
-) {
+class CompatDrawableFragment :
+    TopicFragment<FragmentCompatDrawableBinding>(
+        FragmentCompatDrawableBinding::inflate
+    ) {
+
     private lateinit var drawable: DemoCompatShadowDrawable
 
     override fun loadUi(ui: FragmentCompatDrawableBinding) {

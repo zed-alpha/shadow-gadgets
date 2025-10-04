@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.View
+import com.google.android.material.R
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 
@@ -13,20 +14,22 @@ import com.zedalpha.shadowgadgets.view.ShadowPlane
  * Apart from the additional handling of the library's shadow properties and
  * draw operations, this group behaves just like its base class.
  */
-public class ShadowsMaterialButtonToggleGroup @JvmOverloads constructor(
+public class ShadowsMaterialButtonToggleGroup
+@JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = com.google.android.material.R.attr.materialButtonToggleGroupStyle
+    defStyleAttr: Int = R.attr.materialButtonToggleGroupStyle
 ) : MaterialButtonToggleGroup(context, attrs, defStyleAttr), ShadowsViewGroup {
 
-    internal val manager = RegularManager(
-        this,
-        attrs,
-        this::attachViewToParent,
-        this::detachAllViewsFromParent,
-        { c -> super.dispatchDraw(c) },
-        { c, v, t -> super.drawChild(c, v, t) }
-    )
+    internal val manager =
+        RegularManager(
+            viewGroup = this,
+            attributeSet = attrs,
+            attachViewToParent = this::attachViewToParent,
+            detachAllViewsFromParent = this::detachAllViewsFromParent,
+            superDispatchDraw = { c -> super.dispatchDraw(c) },
+            superDrawChild = { c, v, t -> super.drawChild(c, v, t) }
+        )
 
     override var childShadowsPlane: ShadowPlane
             by manager::childShadowsPlane
@@ -53,13 +56,13 @@ public class ShadowsMaterialButtonToggleGroup @JvmOverloads constructor(
         manager.onViewAdded(child)
     }
 
-    override fun dispatchDraw(canvas: Canvas) {
+    override fun dispatchDraw(canvas: Canvas): Unit =
         manager.dispatchDraw(canvas)
-    }
 
     override fun drawChild(
         canvas: Canvas,
         child: View,
         drawingTime: Long
-    ): Boolean = manager.drawChild(canvas, child, drawingTime)
+    ): Boolean =
+        manager.drawChild(canvas, child, drawingTime)
 }

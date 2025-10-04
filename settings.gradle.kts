@@ -1,5 +1,4 @@
 pluginManagement {
-    includeBuild("gradle/build-logic")
     repositories {
         google()
         mavenCentral()
@@ -7,21 +6,23 @@ pluginManagement {
     }
 }
 
-@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
+
+    @Suppress("UnstableApiUsage")
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+    @Suppress("UnstableApiUsage")
     repositories {
         google()
         mavenCentral()
     }
 }
 
-rootProject.name = "shadow-gadgets"
-
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+rootProject.name = "shadow-gadgets"
+
 include(":stubs")
-include(":core")
 include(":view")
 include(":view:lint")
 include(":compose")

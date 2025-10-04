@@ -14,20 +14,15 @@ import com.zedalpha.shadowgadgets.demo.internal.DefaultTargetColor
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 
-internal val IntroTopic = Topic(
-    "Intro",
-    R.string.description_intro,
-    IntroFragment::class.java
-)
+internal val IntroTopic =
+    Topic(
+        title = "Intro",
+        descriptionResId = R.string.description_intro,
+        fragmentClass = IntroFragment::class.java
+    )
 
-class IntroFragment : TopicFragment<FragmentIntroBinding>(
-    FragmentIntroBinding::inflate
-) {
-    private var viewColor: Int = DefaultTargetColor
-        set(color) {
-            field = color
-            ui.target.background.setTint(color)
-        }
+class IntroFragment :
+    TopicFragment<FragmentIntroBinding>(FragmentIntroBinding::inflate) {
 
     private var shadowColor: Int = Color.BLACK
         set(color) {
@@ -38,6 +33,12 @@ class IntroFragment : TopicFragment<FragmentIntroBinding>(
             } else {
                 ui.target.outlineShadowColorCompat = color
             }
+        }
+
+    private var viewColor: Int = DefaultTargetColor
+        set(color) {
+            field = color
+            ui.target.background.setTint(color)
         }
 
     override fun loadUi(ui: FragmentIntroBinding) {
@@ -61,16 +62,14 @@ class IntroFragment : TopicFragment<FragmentIntroBinding>(
         }
         ui.controls.apply {
             onColorChanged { color ->
-                if (ui.colorSelect.checkedRadioButtonId == R.id.view_selection) {
-                    viewColor = color
-                } else {
+                if (ui.colorSelect.checkedRadioButtonId == R.id.shadow_selection) {
                     shadowColor = color
+                } else {
+                    viewColor = color
                 }
             }
-            onElevationChanged { elevation ->
-                ui.target.elevation = elevation.toFloat()
-            }
-            color = viewColor
+            onElevationChanged { ui.target.elevation = it.toFloat() }
+            color = shadowColor
             elevation = 50
         }
     }
@@ -78,8 +77,8 @@ class IntroFragment : TopicFragment<FragmentIntroBinding>(
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("reparent", ui.target.parent == ui.frameTwo)
-        outState.putInt("view_color", viewColor)
         outState.putInt("shadow_color", shadowColor)
+        outState.putInt("view_color", viewColor)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -115,16 +114,11 @@ private class GrayShadow(private val target: View) :
 
     val radius = target.resources.getDimension(R.dimen.target_corner_radius)
 
-    override fun onDrawShadow(canvas: Canvas) =
-        canvas.drawRoundRect(
-            0F,
-            0F,
-            target.width.toFloat(),
-            target.height.toFloat(),
-            radius,
-            radius,
-            paint
-        )
+    override fun onDrawShadow(canvas: Canvas) {
+        val right = target.width.toFloat()
+        val bottom = target.height.toFloat()
+        canvas.drawRoundRect(0F, 0F, right, bottom, radius, radius, paint)
+    }
 }
 
 private class SimpleDragListener(private val target: View) :

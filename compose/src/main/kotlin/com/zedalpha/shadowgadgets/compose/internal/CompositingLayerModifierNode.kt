@@ -67,7 +67,7 @@ internal class CompositingLayerModifierNode(
         val positionOnScreen = rootCoordinates.positionOnScreen()
 
         when {
-            color.isNotDefault && this.positionOnScreen != positionOnScreen -> {
+            color.isTint && this.positionOnScreen != positionOnScreen -> {
                 val graphics = requireGraphicsContext()
                 graphics.releaseGraphicsLayer(layer)
                 colorLayer = graphics.createGraphicsLayer()
@@ -94,7 +94,7 @@ internal class CompositingLayerModifierNode(
 }
 
 private fun GraphicsLayer.setColorFilter(color: Color) {
-    if (color.isNotDefault) {
+    if (color.isTint) {
         alpha = color.alpha
         colorFilter = ColorMatrixColorFilter(
             ColorMatrix(
@@ -108,7 +108,7 @@ private fun GraphicsLayer.setColorFilter(color: Color) {
         )
         compositingStrategy = CompositingStrategy.Offscreen
     } else {
-        alpha = 1F
+        alpha = if (color.isDefault) 1F else 0F
         colorFilter = null
         compositingStrategy = CompositingStrategy.ModulateAlpha
     }

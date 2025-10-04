@@ -7,7 +7,8 @@ import android.view.animation.AnimationUtils
 import android.widget.TextSwitcher
 import com.zedalpha.shadowgadgets.demo.R
 
-class TitleSwitcher @JvmOverloads constructor(
+class TitleSwitcher
+@JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null
 ) : TextSwitcher(context, attributeSet) {

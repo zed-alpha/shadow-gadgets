@@ -13,7 +13,8 @@ import com.zedalpha.shadowgadgets.view.ShadowPlane
  * Apart from the additional handling of the library's shadow properties and
  * draw operations, this group behaves just like its base class.
  */
-public class ShadowsRelativeLayout @JvmOverloads constructor(
+public class ShadowsRelativeLayout
+@JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -21,14 +22,15 @@ public class ShadowsRelativeLayout @JvmOverloads constructor(
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes),
     ShadowsViewGroup {
 
-    internal val manager = RegularManager(
-        this,
-        attrs,
-        this::attachViewToParent,
-        this::detachAllViewsFromParent,
-        { c -> super.dispatchDraw(c) },
-        { c, v, t -> super.drawChild(c, v, t) }
-    )
+    internal val manager =
+        RegularManager(
+            viewGroup = this,
+            attributeSet = attrs,
+            attachViewToParent = this::attachViewToParent,
+            detachAllViewsFromParent = this::detachAllViewsFromParent,
+            superDispatchDraw = { c -> super.dispatchDraw(c) },
+            superDrawChild = { c, v, t -> super.drawChild(c, v, t) }
+        )
 
     override var childShadowsPlane: ShadowPlane
             by manager::childShadowsPlane
@@ -55,13 +57,13 @@ public class ShadowsRelativeLayout @JvmOverloads constructor(
         manager.onViewAdded(child)
     }
 
-    override fun dispatchDraw(canvas: Canvas) {
+    override fun dispatchDraw(canvas: Canvas): Unit =
         manager.dispatchDraw(canvas)
-    }
 
     override fun drawChild(
         canvas: Canvas,
         child: View,
         drawingTime: Long
-    ): Boolean = manager.drawChild(canvas, child, drawingTime)
+    ): Boolean =
+        manager.drawChild(canvas, child, drawingTime)
 }

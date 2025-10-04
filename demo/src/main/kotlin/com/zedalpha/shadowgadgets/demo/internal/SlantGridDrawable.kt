@@ -6,12 +6,11 @@ import android.graphics.LinearGradient
 import android.graphics.Rect
 import android.graphics.Shader
 import android.graphics.drawable.PaintDrawable
-import androidx.annotation.ColorInt
 import androidx.core.graphics.withClip
 
 internal class SlantGridDrawable(
-    @ColorInt private val startColor: Int = 0xffc0c0c0.toInt(),
-    @ColorInt private val endColor: Int = 0xffcecece.toInt(),
+    private val startColor: Int = 0xffc0c0c0.toInt(),
+    private val endColor: Int = 0xffcecece.toInt(),
     private val columns: Int = 19
 ) : PaintDrawable() {
 

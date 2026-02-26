@@ -40,6 +40,7 @@ internal class ClippedShadow(val shadow: Shadow) : Shadow by shadow {
 
         if (outline.isEmpty) return
 
+        val temps = this.temps
         val bounds = temps.rect
         when {
             getOutlineRect(outline, bounds) && !bounds.isEmpty -> {
@@ -58,9 +59,11 @@ internal class ClippedShadow(val shadow: Shadow) : Shadow by shadow {
     }
 
     override fun draw(canvas: Canvas) {
+        val clip = this.clip
         if (!canvas.isHardwareAccelerated || clip.isEmpty) return
 
         val shadow = this.shadow
+        val temps = this.temps
         val matrix = temps.matrix
         val path = temps.path
 

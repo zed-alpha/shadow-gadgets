@@ -1,6 +1,6 @@
 [versions]
-agp = "9.0.0"
-kotlin = "2.3.0"
+agp = "9.0.1"
+kotlin = "2.3.10"
 dokka = "2.1.0"
 
 androidxAnnotation = "1.9.1"
@@ -8,10 +8,10 @@ androidxAppcompat = "1.7.1"
 androidxConstraintLayout = "2.2.1"
 androidxCoreKtx = "1.17.0"
 materialComponents = "1.13.0"
-composeBom = "2026.01.00"
+composeBom = "2026.02.00"
 
 junit4 = "4.13.2"
-lint = "32.0.0"
+lint = "32.0.1"
 
 [libraries]
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidxAnnotation" }

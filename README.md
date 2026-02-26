@@ -93,7 +93,7 @@ results are likely sufficient for many cases.
 <details>
   <summary>Subsections</summary>
 
-+ [Features](#features)
++ [Overview](#overview)
 + [Limitations and recourses](#limitations-and-recourses)
     + [Overlapping sibling Views](#overlapping-sibling-views)
     + [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
@@ -101,35 +101,30 @@ results are likely sufficient for many cases.
 + [Drawable](#drawable)
 </details>
 
-<br />
+### Overview
 
-### Features
-
-The library's features are applied to individual `View`s through extension
-properties, with the main two acting as direct controls for the clip and color
-compat features.
-
-- The [`View.clipOutlineShadow: Boolean`][clipOutlineShadow] extension is
-  basically a switch that toggles the clip fix on the receiver `View`. When
-  `true`, the intrinsic shadow is disabled and replaced with a clipped copy.
-
-- The [`View.outlineShadowColorCompat: Int`][outlineShadowColorCompat] property
-  takes a `@ColorInt` with which to tint replacement shadows on versions before
-  Pie. A separate extension is available to force it on newer versions, and it
-  can be used with or without the clip feature. The particulars can be found on
-  [its wiki page][ViewColorCompatWiki].
-
-Usage for each is as easy as it seems:
+Nobody wants to mess with a whole library for such small issues that should've
+been handled already in the native framework and support packages, so these
+tools have been designed to be as simple and familiar as possible.
 
 ```kotlin
 view.clipOutlineShadow = true
-
 view.outlineShadowColorCompat = Color.BLUE
 ```
 
 That's it. Unless your setup requires that a sibling `View` overlap a target of
 the fix, or it involves a target with an irregular shape on Android R and above,
 that's possibly all you need.
+
+- The [`View.clipOutlineShadow: Boolean`][clipOutlineShadow] extension is
+  simply a switch that toggles the clip fix on the receiver `View`. When `true`,
+  the intrinsic shadow is disabled and replaced with a clipped copy.
+
+- The [`View.outlineShadowColorCompat: Int`][outlineShadowColorCompat] property
+  takes a `@ColorInt` with which to tint replacement shadows on versions before
+  Pie. A separate extension is available to force it on newer versions, and it
+  can be used with or without the clip feature. The particulars can be found on
+  [its wiki page][ViewColorCompatWiki].
 
 Though the library's shadow is actually being handled and drawn in the parent
 `ViewGroup`, these properties can be set on the target `View` at any point, even
@@ -138,8 +133,8 @@ the shadow automatically animates and transforms along with its target, and it
 will handle moving itself to any new parents, should the target be moved.
 
 It is hoped that the base features will cover most cases. For those setups that
-might be problematic, the library offers a few other configuration properties as
-possible remedies.
+might be problematic, the library offers a couple of other configuration
+properties as possible remedies.
 
 ### Limitations and recourses
 
@@ -147,8 +142,8 @@ possible remedies.
 
   To accomplish its effect, the library disables a target's intrinsic shadow and
   draws a modified replacement in its parent `ViewGroup`'s overlay by default,
-  in front of all of the parent's children. This can cause a problem when a
-  sibling with a higher elevation overlaps the target.
+  in front of all the children. This can cause a problem when a sibling with a
+  higher elevation overlaps the target.
 
   <!--suppress HtmlDeprecatedAttribute -->
   <p align="center">
@@ -310,6 +305,9 @@ dependencies {
     implementation("com.github.zed-alpha.shadow-gadgets:compose:[latest-release]")
 }
 ```
+
+There is no longer a shared `:core` module. Compose updates have obviated the
+need for it in that module, so it's all been moved into `:view`.
 
 <br />
 

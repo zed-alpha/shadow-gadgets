@@ -15,7 +15,7 @@ import com.zedalpha.shadowgadgets.view.ShadowPlane
  * Apart from the additional handling of the library's shadow properties and
  * draw operations, this group behaves just like its base class.
  */
-public class ShadowsChipGroup
+public open class ShadowsChipGroup
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -44,6 +44,13 @@ public class ShadowsChipGroup
     override var forceChildOutlineShadowsColorCompat: Boolean
             by manager::forceChildOutlineShadowsColorCompat
 
+    override var takeOverDrawForInlineChildShadows: Boolean
+            by manager::takeOverDrawForInlineChildShadows
+
+    @Deprecated(
+        "Use takeOverDrawForInlineChildShadows " +
+                "instead. It has opposite but clearer semantics."
+    )
     override var ignoreInlineChildShadows: Boolean
             by manager::ignoreInlineChildShadows
 

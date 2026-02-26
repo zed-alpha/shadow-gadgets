@@ -25,23 +25,31 @@
         android:layout_weight="1"
         app:layoutDescription="@xml/motions">
 
-        <View
+        <TextView
             android:id="@+id/left_view_top"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/control_gray"
+            android:foreground="@drawable/fg_plane_border"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="z=0dp"
             app:layout_constraintHeight_percent="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_percent="0.33" />
 
-        <View
+        <TextView
             android:id="@+id/right_view_top"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/control_gray"
             android:elevation="30dp"
+            android:foreground="@drawable/fg_plane_border"
+            android:gravity="center"
             android:outlineProvider="none"
+            android:padding="10dp"
+            android:text="z=30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.5"

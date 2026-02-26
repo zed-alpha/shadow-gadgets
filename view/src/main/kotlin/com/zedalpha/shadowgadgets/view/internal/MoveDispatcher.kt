@@ -4,11 +4,11 @@ import android.view.View
 import com.zedalpha.shadowgadgets.view.R
 
 internal fun interface OnMove {
-    operator fun invoke()
+    fun onMove()
 }
 
 internal fun View.addOnMove(action: OnMove) =
-    (moveDispatcher ?: MoveDispatcher(this)).add(action)
+    (this.moveDispatcher ?: MoveDispatcher(this)).add(action)
 
 internal fun View.removeOnMove(action: OnMove) =
     this.moveDispatcher?.remove(action)
@@ -20,7 +20,7 @@ private class MoveDispatcher(private val view: View) :
     AutoDisposeSwitchGroup<OnMove>() {
 
     private val checkLocationChange =
-        OnPreDraw { if (hasMoved()) iterate { it.invoke() } }
+        OnPreDraw { if (hasMoved()) iterate { it.onMove() } }
 
     init {
         view.moveDispatcher = this

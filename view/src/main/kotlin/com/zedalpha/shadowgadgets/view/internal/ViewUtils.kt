@@ -13,12 +13,6 @@ internal val EmptyLayoutParams = ViewGroup.LayoutParams(0, 0)
 internal inline val View.parentViewGroup: ViewGroup?
     get() = this.parent as? ViewGroup
 
-internal interface OnAttachStateChangeAdapter :
-    View.OnAttachStateChangeListener {
-    override fun onViewAttachedToWindow(view: View) {}
-    override fun onViewDetachedFromWindow(view: View) {}
-}
-
 internal fun interface OnLayoutChangeSizeAdapter : View.OnLayoutChangeListener {
 
     fun onSizeChange(width: Int, height: Int)

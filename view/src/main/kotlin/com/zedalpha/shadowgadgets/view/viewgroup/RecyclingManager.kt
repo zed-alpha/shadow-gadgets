@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat
-import com.zedalpha.shadowgadgets.view.internal.createProxy
 import com.zedalpha.shadowgadgets.view.internal.viewTag
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
+import com.zedalpha.shadowgadgets.view.proxy.createProxy
 import com.zedalpha.shadowgadgets.view.shadowPlane
 import com.zedalpha.shadowgadgets.view.tintOutlineShadow
 
@@ -21,12 +21,12 @@ internal class RecyclingManager<T>(
     superDispatchDraw: (Canvas) -> Unit,
     superDrawChild: (Canvas, View, Long) -> Boolean
 ) : ShadowsViewGroupManager<T>(
-    viewGroup,
-    attributeSet,
-    attachViewToParent,
-    detachAllViewsFromParent,
-    superDispatchDraw,
-    superDrawChild
+    viewGroup = viewGroup,
+    attributeSet = attributeSet,
+    attachViewToParent = attachViewToParent,
+    detachAllViewsFromParent = detachAllViewsFromParent,
+    superDispatchDraw = superDispatchDraw,
+    superDrawChild = superDrawChild
 ) where T : ViewGroup, T : ShadowsViewGroup {
 
     override fun onViewAdded(child: View) {
@@ -36,7 +36,7 @@ internal class RecyclingManager<T>(
             child.shadowPlane = childShadowsPlane
         }
 
-        // Recycling SVGs clip all of their children's shadows by default.
+        // Recycling SVGs clip all their children's shadows by default.
         if (child.isClipNotSet) {
             child.clipOutlineShadow =
                 if (isGroupClipSet) clipAllChildShadows else true

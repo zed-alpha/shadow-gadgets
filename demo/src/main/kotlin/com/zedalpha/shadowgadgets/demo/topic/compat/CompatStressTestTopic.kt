@@ -17,16 +17,18 @@ import com.zedalpha.shadowgadgets.demo.internal.toColorStateList
 import com.zedalpha.shadowgadgets.demo.topic.ClearBlueInt
 import com.zedalpha.shadowgadgets.demo.topic.ClearGreenInt
 import com.zedalpha.shadowgadgets.demo.topic.ClearRedInt
-import com.zedalpha.shadowgadgets.demo.topic.ColorfulHolder
 import com.zedalpha.shadowgadgets.demo.topic.ColorfulLazyColumn
 import com.zedalpha.shadowgadgets.demo.topic.HalfItemCount
 import com.zedalpha.shadowgadgets.demo.topic.ItemCount
+import com.zedalpha.shadowgadgets.demo.topic.ItemHolder
 import com.zedalpha.shadowgadgets.demo.topic.Topic
 import com.zedalpha.shadowgadgets.demo.topic.TopicFragment
+import com.zedalpha.shadowgadgets.view.ExperimentalShadowGadgets
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.forceOutlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.shadowPlane
+import com.zedalpha.shadowgadgets.view.updateShadow
 
 internal val CompatStressTestTopic =
     Topic(
@@ -35,9 +37,11 @@ internal val CompatStressTestTopic =
         fragmentClass = CompatStressTestFragment::class.java
     )
 
-class CompatStressTestFragment : TopicFragment<FragmentCompatStressTestBinding>(
-    FragmentCompatStressTestBinding::inflate
-) {
+class CompatStressTestFragment :
+    TopicFragment<FragmentCompatStressTestBinding>(
+        inflate = FragmentCompatStressTestBinding::inflate
+    ) {
+
     override fun loadUi(ui: FragmentCompatStressTestBinding) {
         ui.recycler.adapter = VeryColorfulAdapter()
         ui.composeView.apply {
@@ -47,35 +51,32 @@ class CompatStressTestFragment : TopicFragment<FragmentCompatStressTestBinding>(
     }
 }
 
-private class VeryColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
+private class VeryColorfulAdapter : RecyclerView.Adapter<ItemHolder>() {
 
     private val evaluator = ArgbEvaluator()
 
     override fun getItemCount() = ItemCount
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ColorfulHolder(parent).also { holder ->
+        ItemHolder(parent).also { holder ->
             holder.itemView.forceOutlineShadowColorCompat = true
         }
 
-    override fun onBindViewHolder(holder: ColorfulHolder, position: Int) {
-        val plane =
-            when (position % 3) {
-                0 -> ShadowPlane.Foreground
-                1 -> ShadowPlane.Background
-                else -> ShadowPlane.Inline
-            }
+    @OptIn(ExperimentalShadowGadgets::class)
+    override fun onBindViewHolder(holder: ItemHolder, position: Int) {
         val color =
             evaluator.evaluate(
                 (position % HalfItemCount).toFloat() / HalfItemCount,
                 if (position < HalfItemCount) ClearRedInt else ClearGreenInt,
                 if (position < HalfItemCount) ClearGreenInt else ClearBlueInt
             ) as Int
-        holder.itemView.apply {
-            shadowPlane = plane
+
+        holder.itemView.updateShadow {
             backgroundTintList = color.toColorStateList()
             outlineShadowColorCompat = ColorUtils.setAlphaComponent(color, 255)
+            shadowPlane = ShadowPlane.entries[position % 3]
         }
+
         @SuppressLint("SetTextI18n")
         holder.text.text = "Item $position"
     }

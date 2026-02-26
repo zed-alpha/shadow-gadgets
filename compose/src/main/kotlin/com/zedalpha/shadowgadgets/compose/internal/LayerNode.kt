@@ -1,7 +1,7 @@
 package com.zedalpha.shadowgadgets.compose.internal
 
+import android.os.Build
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.CacheDrawModifierNode
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorMatrix
@@ -16,79 +16,64 @@ import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.layout.positionOnScreen
 import androidx.compose.ui.node.GlobalPositionAwareModifierNode
-import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.unit.IntSize
 
-internal class CompositingLayerModifierNode(
-    private val drawNode: CacheDrawModifierNode
+internal class LayerNode(
+    private val shadowDraw: DrawScope.() -> Unit,
+    private val invalidate: () -> Unit,
 ) : Modifier.Node(), GlobalPositionAwareModifierNode {
-
-    private var colorLayer: GraphicsLayer? = null
-
-    private var _color = Color.Unspecified
-
-    var color: Color
-        get() = _color
-        set(value) {
-            if (_color == value) return
-            _color = value
-            colorLayer?.setColorFilter(value)
-        }
-
-    fun resetColor() {
-        _color = Color.Unspecified
-    }
 
     override val shouldAutoInvalidate: Boolean = false
 
-    override fun onAttach() {
-        colorLayer?.let { requireGraphicsContext().releaseGraphicsLayer(it) }
-        colorLayer = requireGraphicsContext().createGraphicsLayer()
-    }
+    private lateinit var layer: GraphicsLayer
 
-    override fun onDetach() {
-        colorLayer?.let {
-            requireGraphicsContext().releaseGraphicsLayer(it)
-            colorLayer = null
+    var color: Color = Color.Unspecified
+        set(value) {
+            if (field == value) return
+            field = value
+            layer.setColorFilter(value)
         }
+
+    override fun onAttach() {
+        layer = requireGraphicsContext().createGraphicsLayer()
     }
 
-    private var rootSize = IntSize.Zero
-    private var positionInRoot = Offset.Unspecified
+    override fun onDetach() =
+        requireGraphicsContext().releaseGraphicsLayer(layer)
+
     private var positionOnScreen = Offset.Unspecified
+    private var positionInLayer = Offset.Unspecified
+    private var layerSize = IntSize.Zero
 
     override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
-        val layer = colorLayer ?: return
-
         val rootCoordinates = coordinates.findRootCoordinates()
-        val rootSize = rootCoordinates.size
-        val positionInRoot = coordinates.positionInRoot()
         val positionOnScreen = rootCoordinates.positionOnScreen()
+        val positionInLayer = coordinates.positionInRoot()
+        val layerSize = rootCoordinates.size
 
         when {
             color.isTint && this.positionOnScreen != positionOnScreen -> {
                 val graphics = requireGraphicsContext()
                 graphics.releaseGraphicsLayer(layer)
-                colorLayer = graphics.createGraphicsLayer()
-                resetColor()
-                drawNode.invalidateDraw()
+                layer = graphics.createGraphicsLayer()
+                color = Color.Unspecified
+                invalidate()
             }
-            this.rootSize != rootSize ||
-                    this.positionInRoot != positionInRoot -> {
-                drawNode.invalidateDraw()
-            }
+
+            this.positionInLayer != positionInLayer ||
+                    this.layerSize != layerSize -> invalidate()
         }
 
-        this.rootSize = rootSize
-        this.positionInRoot = positionInRoot
         this.positionOnScreen = positionOnScreen
+        this.positionInLayer = positionInLayer
+        this.layerSize = layerSize
     }
 
-    fun draw(scope: DrawScope, drawShadow: DrawScope.() -> Unit) = with(scope) {
-        val layer = colorLayer ?: return
-        val offset = positionInRoot
-        layer.record(rootSize) { translate(offset.x, offset.y, drawShadow) }
+    fun draw(scope: DrawScope) = with(scope) {
+        val layer = this@LayerNode.layer
+        val offset = positionInLayer
+        layer.record(layerSize) { translate(offset.x, offset.y, shadowDraw) }
         translate(-offset.x, -offset.y) { drawLayer(layer) }
     }
 }
@@ -113,3 +98,5 @@ private fun GraphicsLayer.setColorFilter(color: Color) {
         compositingStrategy = CompositingStrategy.ModulateAlpha
     }
 }
+
+internal val RequiresDefaultClipLayer = Build.VERSION.SDK_INT in 24..28

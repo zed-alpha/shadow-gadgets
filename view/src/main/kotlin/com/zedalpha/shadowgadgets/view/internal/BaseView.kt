@@ -8,22 +8,21 @@ import android.view.View
 
 internal abstract class BaseView(context: Context) : View(context) {
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun onMeasure(
         widthMeasureSpec: Int,
         heightMeasureSpec: Int
     ) =
         setMeasuredDimension(0, 0)
 
-
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun forceLayout() = Unit
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     @SuppressLint("MissingSuperCall")
     final override fun requestLayout() = Unit
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun onLayout(
         changed: Boolean,
         l: Int,
@@ -33,36 +32,35 @@ internal abstract class BaseView(context: Context) : View(context) {
     ) =
         Unit
 
-
     fun superInvalidate() = super.invalidate()
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun invalidate() = Unit
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun invalidate(dirty: Rect?) = Unit
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun invalidate(l: Int, t: Int, r: Int, b: Int) = Unit
 
     @Suppress("unused")
-    private fun damageInParent() = Unit
+    @Deprecated("Library stop")
+    fun damageInParent() = Unit
 
     fun superInvalidateOutline() = super.invalidateOutline()
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun invalidateOutline() = Unit
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun invalidateDrawable(drawable: Drawable) = Unit
 
-
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun hasFocus(): Boolean = false
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun hasFocusable(): Boolean = false
 
-    @Deprecated("DO NOT USE!")
+    @Deprecated("Library stop")
     final override fun hasExplicitFocusable(): Boolean = false
 }

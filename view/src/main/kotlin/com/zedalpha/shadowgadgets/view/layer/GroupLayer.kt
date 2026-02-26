@@ -15,7 +15,10 @@ internal fun GroupLayer(owner: View): GroupLayer = GroupLayerImpl(owner)
 private class GroupLayerImpl
 private constructor(owner: View, proxies: Group<ShadowProxy>) :
     GroupLayer,
-    AutomaticLayer(owner, { canvas -> proxies.iterate { it.draw(canvas) } }),
+    AutoPositionLayer(
+        owner = owner,
+        content = { canvas -> proxies.iterate { it.updateAndDraw(canvas) } }
+    ),
     Group<ShadowProxy> by proxies {
 
     constructor(owner: View) : this(owner, SwitchGroup())
@@ -23,13 +26,15 @@ private constructor(owner: View, proxies: Group<ShadowProxy>) :
 
 internal class InertGroupLayer : GroupLayer, SwitchGroup<ShadowProxy>() {
 
+    @Suppress("SetterBackingFieldAssignment")
     override var color: Int = DefaultShadowColor
         set(_) {}
 
+    @Suppress("SetterBackingFieldAssignment")
     override var bounds: Rect = ZeroBounds
         set(_) {}
 
-    override fun draw(canvas: Canvas) = iterate { it.draw(canvas) }
+    override fun draw(canvas: Canvas) = iterate { it.updateAndDraw(canvas) }
     override fun recreate(): Boolean = false
     override fun dispose() {}
 }

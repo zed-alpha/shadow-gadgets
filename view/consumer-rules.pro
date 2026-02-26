@@ -2,6 +2,14 @@
 -dontwarn android.view.HardwareCanvas
 -dontwarn android.view.RenderNode
 
+-keepclassmembers class com.zedalpha.shadowgadgets.view.internal.BaseView {
+    public void damageInParent();
+}
+
+-keepclassmembers class com.zedalpha.shadowgadgets.view.internal.Painter {
+    public void damageInParent();
+}
+
 -if class androidx.constraintlayout.motion.widget.KeyFrames
 -keep class androidx.constraintlayout.motion.widget.KeyAttributes
 

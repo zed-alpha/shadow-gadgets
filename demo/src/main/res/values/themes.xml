@@ -14,6 +14,7 @@
 
     <style name="Theme.ShadowGadgets.Demo.Dialog">
         <item name="android:windowBackground">@drawable/bg_root</item>
+        <item name="android:windowElevation">15dp</item>
     </style>
 
     <style name="Widget.Demo.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">

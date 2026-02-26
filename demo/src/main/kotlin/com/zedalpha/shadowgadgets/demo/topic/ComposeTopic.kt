@@ -63,9 +63,9 @@ internal val ComposeTopic =
         fragmentClass = ComposeFragment::class.java
     )
 
-class ComposeFragment : TopicFragment<ComposeViewBinding>(
-    ComposeViewBinding::inflate
-) {
+class ComposeFragment :
+    TopicFragment<ComposeViewBinding>(ComposeViewBinding::inflate) {
+
     override fun loadUi(ui: ComposeViewBinding) {
         ui.composeView.apply {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)

@@ -9,13 +9,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.zedalpha.shadowgadgets.compose.internal.BaseShadowElement
-import com.zedalpha.shadowgadgets.compose.internal.BaseShadowNode
+import com.zedalpha.shadowgadgets.compose.internal.AbstractShadowElement
+import com.zedalpha.shadowgadgets.compose.internal.ShadowNode
 import com.zedalpha.shadowgadgets.compose.internal.isDefault
+import com.zedalpha.shadowgadgets.compose.internal.blendsToDefault
 
 /**
  * Creates a [shadow] replacement that can be tinted with the library's color
@@ -50,10 +50,15 @@ public fun Modifier.shadowCompat(
 ): Modifier =
     if (Build.VERSION.SDK_INT >= 28 && !forceColorCompat ||
         colorCompat.isDefault ||
-        (colorCompat.isUnspecified &&
-                ambientColor.isDefault && spotColor.isDefault)
+        blendsToDefault(colorCompat, ambientColor, spotColor)
     ) {
-        this.shadow(elevation, shape, clip, ambientColor, spotColor)
+        this.shadow(
+            elevation = elevation,
+            shape = shape,
+            clip = clip,
+            ambientColor = ambientColor,
+            spotColor = spotColor
+        )
     } else {
         val modifier =
             if (elevation > 0.dp) {
@@ -80,7 +85,7 @@ private class ShadowCompatElement(
     spotColor: Color,
     colorCompat: Color,
     forceColorCompat: Boolean
-) : BaseShadowElement(
+) : AbstractShadowElement(
     elevation = elevation,
     shape = shape,
     ambientColor = ambientColor,
@@ -89,7 +94,7 @@ private class ShadowCompatElement(
     forceColorCompat = forceColorCompat
 ) {
     override fun create() =
-        BaseShadowNode(
+        ShadowNode(
             clipped = false,
             elevation = elevation,
             shape = shape,

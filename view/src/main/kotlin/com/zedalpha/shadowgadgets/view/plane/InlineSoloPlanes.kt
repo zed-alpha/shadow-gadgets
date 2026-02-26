@@ -114,10 +114,7 @@ internal abstract class InlineSoloPlane(protected val proxy: ShadowProxy) :
     protected open fun dispose() {
         (viewGroup ?: proxy.target).removeOnPreDraw(checkInvalidate)
         proxy.target.overlay.remove(drawable)
-        proxy.layer?.let { layer ->
-            proxy.layer = null
-            layer.dispose()
-        }
+        proxy.layer?.let { proxy.layer = null; it.dispose() }
     }
 
     override fun addProxy(proxy: ShadowProxy) = updateLayer(proxy)
@@ -132,24 +129,25 @@ internal abstract class InlineSoloPlane(protected val proxy: ShadowProxy) :
             val layer = proxy.layer ?: createLayer().also { proxy.layer = it }
             layer.color = color
         }
-        invalidate()
     }
 
     protected abstract fun createLayer(): Layer
 
-    override fun removeProxy(proxy: ShadowProxy) = dispose()
+    override fun removeProxy(proxy: ShadowProxy) {
+        if (this.proxy == proxy) dispose()
+    }
 
-    final override fun doNotMatch(shadow: Shadow, target: View): Boolean {
-        if (shadow.translationZ != target.translationZ) return true
-        if (shadow.alpha != target.alpha) return true
-        if (shadow.elevation != target.elevation) return true
+    final override fun Shadow.doesNotMatch(target: View): Boolean {
+        if (this.translationZ != target.translationZ) return true
+        if (this.alpha != target.alpha) return true
+        if (this.elevation != target.elevation) return true
         if (Build.VERSION.SDK_INT >= 28) {
             val ambient = ViewShadowColorsHelper.getAmbientColor(target)
-            if (shadow.ambientColor != ambient) return true
+            if (this.ambientColor != ambient) return true
             val spot = ViewShadowColorsHelper.getSpotColor(target)
-            if (shadow.spotColor != spot) return true
+            if (this.spotColor != spot) return true
         }
-        if (shadow.cameraDistance != target.cameraDistance) return true
+        if (this.cameraDistance != target.cameraDistance) return true
         return false
     }
 }

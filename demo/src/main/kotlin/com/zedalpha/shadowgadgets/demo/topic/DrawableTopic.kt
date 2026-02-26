@@ -1,6 +1,5 @@
 package com.zedalpha.shadowgadgets.demo.topic
 
-import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Outline
 import android.graphics.Path
@@ -93,13 +92,6 @@ private class DemoClippedShadowDrawable(
         }
         outline.alpha = 1.0F
         setOutline(outline)
-
-        invalidateSelf()
-    }
-
-    override fun draw(canvas: Canvas) {
-
-        super.draw(canvas)
     }
 }
 

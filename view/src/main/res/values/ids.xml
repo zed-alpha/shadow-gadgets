@@ -5,15 +5,16 @@
 
     <item name="clip_outline_shadow" type="id" />
     <item name="path_provider" type="id" />
-    <item name="force_shadow_layer" type="id" />
 
     <item name="outline_shadow_color_compat" type="id" />
     <item name="force_outline_shadow_color_compat" type="id" />
     <item name="tint_outline_shadow" type="id" />
 
+    <!-- @deprecated -->
+    <item name="force_shadow_layer" type="id" />
+
     <item name="is_switched" type="id" />
     <item name="is_initialized_for_recycling_svg" type="id" />
-    <item name="is_recycling_view_group_child" type="id" />
 
     <item name="shadow_proxy" type="id" />
 
@@ -26,8 +27,7 @@
     <item name="view_painter" type="id" />
 
     <!-- Experiments -->
-    <item name="on_shadow_attach" type="id" />
-    <item name="on_shadow_detach" type="id" />
-    <item name="pause_shadow_updates" type="id" />
+    <item name="on_shadow_mode_change" type="id" />
+    <item name="is_in_shadow_update" type="id" />
 
 </resources>

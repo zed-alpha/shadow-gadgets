@@ -1,62 +1,47 @@
 package com.zedalpha.shadowgadgets.compose.internal
 
 import android.content.Context
-import android.graphics.Color
-import androidx.annotation.ColorInt
-import androidx.annotation.FloatRange
-import com.zedalpha.shadowgadgets.compose.R
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.graphics.isSpecified
+import androidx.compose.ui.graphics.isUnspecified
+import androidx.compose.ui.graphics.toArgb
 
-// These are duplicated in :view rather than involving another separate module.
+internal inline val Color.isDefault get() = this == DefaultShadowColor
 
-private const val DefaultAmbientShadowAlpha = 0.039F
-private const val DefaultSpotShadowAlpha = 0.19F
+internal inline val Color.isTint: Boolean
+    get() = this.isSpecified && this != DefaultShadowColor && this != Transparent
 
-internal fun Context.resolveThemeShadowAlphas(): Pair<Float, Float> {
-    val array = obtainStyledAttributes(R.styleable.Lighting)
-    val ambientAlpha =
-        array.getFloat(
-            /* index = */ R.styleable.Lighting_android_ambientShadowAlpha,
-            /* defValue = */ DefaultAmbientShadowAlpha
-        )
-    val spotAlpha =
-        array.getFloat(
-            /* index = */ R.styleable.Lighting_android_spotShadowAlpha,
-            /* defValue = */ DefaultSpotShadowAlpha
-        )
-    array.recycle()
-    return ambientAlpha.coerceIn(0F..1F) to spotAlpha.coerceIn(0F..1F)
-}
+internal fun blendsToDefault(compat: Color, ambient: Color, spot: Color) =
+    compat.isUnspecified && ambient.isDefault && spot.isDefault
 
-internal fun blendShadowColors(
-    @ColorInt
-    ambientColor: Int,
-    @FloatRange(from = 0.0, to = 1.0)
-    ambientAlpha: Float,
-    @ColorInt
-    spotColor: Int,
-    @FloatRange(from = 0.0, to = 1.0)
-    spotAlpha: Float
-): Int {
-    val colorOne = multiplyAlpha(ambientColor, ambientAlpha)
-    val colorTwo = multiplyAlpha(spotColor, spotAlpha)
-    val alphaOne = Color.alpha(colorOne)
-    val alphaTwo = Color.alpha(colorTwo)
-    val alphaSum = alphaOne + alphaTwo
-    val ratioOne = if (alphaSum != 0) alphaOne.toFloat() / alphaSum else 0F
-    val ratioTwo = if (alphaSum != 0) alphaTwo.toFloat() / alphaSum else 0F
+// Technically, we should account for configuration changes here,
+// but since it's not really possible to modify these alphas without
+// creating a new Activity instance, I think it's mostly safe to ignore.
+internal class ColorBlender(context: Context) {
 
-    fun blend(one: Int, two: Int) =
-        (one * ratioOne + two * ratioTwo + 0.5F).toInt()
+    private val ambientAlpha: Float
+    private val spotAlpha: Float
 
-    return Color.argb(
-        blend(Color.alpha(ambientColor), Color.alpha(spotColor)),
-        blend(Color.red(colorOne), Color.red(colorTwo)),
-        blend(Color.green(colorOne), Color.green(colorTwo)),
-        blend(Color.blue(colorOne), Color.blue(colorTwo))
-    )
-}
+    init {
+        val (ambient, spot) = context.resolveThemeShadowAlphas()
+        this.ambientAlpha = ambient
+        this.spotAlpha = spot
+    }
 
-private fun multiplyAlpha(color: Int, alphaF: Float): Int {
-    val newAlpha = (Color.alpha(color) * alphaF.coerceIn(0F..1F)).toInt()
-    return (newAlpha shl 24) or (color and 0x00ffffff)
+    private var ambientColor = Color.Unspecified
+    private var spotColor = Color.Unspecified
+    private var blendedColor = Color.Unspecified
+
+    fun blend(ambientColor: Color, spotColor: Color): Color =
+        if (this.ambientColor != ambientColor || this.spotColor != spotColor) {
+            this.ambientColor = ambientColor; this.spotColor = spotColor
+            val ambient = ambientColor.toArgb()
+            val spot = spotColor.toArgb()
+            val argb = blendShadowColors(ambient, ambientAlpha, spot, spotAlpha)
+            Color(argb).also { blendedColor = it }
+        } else {
+            blendedColor
+        }
 }

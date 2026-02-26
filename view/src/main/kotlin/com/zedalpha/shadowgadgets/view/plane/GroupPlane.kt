@@ -8,35 +8,36 @@ import com.zedalpha.shadowgadgets.view.internal.ViewShadowColorsHelper
 import com.zedalpha.shadowgadgets.view.proxy.ShadowProxy
 import com.zedalpha.shadowgadgets.view.shadow.Shadow
 
-internal abstract class GroupPlane(override val viewGroup: ViewGroup) : Plane {
+internal abstract class GroupPlane(override val viewGroup: ViewGroup) :
+    Plane {
 
     protected fun Group<ShadowProxy>.isInvalid(): Boolean =
         this.has { proxy -> isInvalid(proxy) }
 
-    final override fun doNotMatch(shadow: Shadow, target: View): Boolean {
-        if (shadow.top != target.top) return true
-        if (shadow.left != target.left) return true
-        if (shadow.right != target.right) return true
-        if (shadow.bottom != target.bottom) return true
-        if (shadow.translationZ != target.translationZ) return true
-        if (shadow.translationX != target.translationX) return true
-        if (shadow.translationY != target.translationY) return true
-        if (shadow.alpha != target.alpha) return true
-        if (shadow.scaleX != target.scaleX) return true
-        if (shadow.scaleY != target.scaleY) return true
-        if (shadow.rotationX != target.rotationX) return true
-        if (shadow.rotationY != target.rotationY) return true
-        if (shadow.rotationZ != target.rotation) return true
-        if (shadow.elevation != target.elevation) return true
-        if (shadow.pivotX != target.pivotX) return true
-        if (shadow.pivotY != target.pivotY) return true
+    final override fun Shadow.doesNotMatch(target: View): Boolean {
+        if (this.top != target.top) return true
+        if (this.left != target.left) return true
+        if (this.right != target.right) return true
+        if (this.bottom != target.bottom) return true
+        if (this.translationZ != target.translationZ) return true
+        if (this.translationX != target.translationX) return true
+        if (this.translationY != target.translationY) return true
+        if (this.alpha != target.alpha) return true
+        if (this.scaleX != target.scaleX) return true
+        if (this.scaleY != target.scaleY) return true
+        if (this.rotationX != target.rotationX) return true
+        if (this.rotationY != target.rotationY) return true
+        if (this.rotationZ != target.rotation) return true
+        if (this.elevation != target.elevation) return true
+        if (this.pivotX != target.pivotX) return true
+        if (this.pivotY != target.pivotY) return true
         if (Build.VERSION.SDK_INT >= 28) {
             val ambient = ViewShadowColorsHelper.getAmbientColor(target)
-            if (shadow.ambientColor != ambient) return true
+            if (this.ambientColor != ambient) return true
             val spot = ViewShadowColorsHelper.getSpotColor(target)
-            if (shadow.spotColor != spot) return true
+            if (this.spotColor != spot) return true
         }
-        if (shadow.cameraDistance != target.cameraDistance) return true
+        if (this.cameraDistance != target.cameraDistance) return true
         return false
     }
 }

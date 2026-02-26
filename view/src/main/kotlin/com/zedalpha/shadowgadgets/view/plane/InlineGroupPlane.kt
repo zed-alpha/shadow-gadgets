@@ -9,7 +9,7 @@ import com.zedalpha.shadowgadgets.view.internal.addOnPreDraw
 import com.zedalpha.shadowgadgets.view.internal.invalidator
 import com.zedalpha.shadowgadgets.view.internal.removeOnPreDraw
 import com.zedalpha.shadowgadgets.view.internal.viewTag
-import com.zedalpha.shadowgadgets.view.layer.AutomaticLayer
+import com.zedalpha.shadowgadgets.view.layer.AutoPositionLayer
 import com.zedalpha.shadowgadgets.view.layer.Layer
 import com.zedalpha.shadowgadgets.view.layer.LayerGroup
 import com.zedalpha.shadowgadgets.view.layer.desiredLayerColor
@@ -20,7 +20,8 @@ internal fun <T> T.getOrCreateInlinePlane(): Plane
         where T : ViewGroup, T : ShadowsViewGroup =
     this.inlinePlane ?: InlineGroupPlane(this)
 
-internal var <T> T.inlinePlane: Plane? where T : ViewGroup, T : ShadowsViewGroup
+internal var <T> T.inlinePlane: Plane?
+        where T : ViewGroup, T : ShadowsViewGroup
         by viewTag(R.id.inline_plane, null)
     private set
 
@@ -45,7 +46,7 @@ internal class InlineGroupPlane<T>(override val viewGroup: T) :
         invalidator.add(this)
     }
 
-    fun dispose() {
+    private fun dispose() {
         viewGroup.inlinePlane = null
         viewGroup.removeOnPreDraw(checkInvalidate)
         invalidator.remove(this)
@@ -71,7 +72,6 @@ internal class InlineGroupPlane<T>(override val viewGroup: T) :
         }
 
         layers?.updateRecreateCount()
-        invalidate()
     }
 
     private fun createLayer(proxy: ShadowProxy): Layer {
@@ -79,13 +79,13 @@ internal class InlineGroupPlane<T>(override val viewGroup: T) :
             ?: LayerGroup<Layer>(viewGroup, this)
                 .also { this.layers = it }
 
-        val layer = AutomaticLayer(viewGroup, proxy::draw)
+        val layer = AutoPositionLayer(viewGroup, proxy::updateAndDraw)
         layers.add(layer)
         return layer
     }
 
     override fun removeProxy(proxy: ShadowProxy) {
-        val proxies = this.proxies ?: return
+        val proxies = checkNotNull(this.proxies) { "GroupPlane is empty" }
 
         disposeLayer(proxy)
         layers?.updateRecreateCount()
@@ -96,7 +96,8 @@ internal class InlineGroupPlane<T>(override val viewGroup: T) :
 
     private fun disposeLayer(proxy: ShadowProxy) {
         val layer = proxy.layer ?: return
-        val layers = this.layers ?: return
+        val layers = checkNotNull(this.layers) { "LayerGroup is empty" }
+
         proxy.layer = null
         layer.dispose()
         layers.remove(layer)

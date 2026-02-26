@@ -6,10 +6,10 @@ import android.view.View
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.zedalpha.shadowgadgets.view.internal.findMaterialShapeDrawable
 import com.zedalpha.shadowgadgets.view.internal.setFromMaterialShapeDrawable
-import com.zedalpha.shadowgadgets.view.internal.updateShadow
 import com.zedalpha.shadowgadgets.view.internal.viewTag
-import com.zedalpha.shadowgadgets.view.plane.updatePlane
 import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
+import com.zedalpha.shadowgadgets.view.proxy.updatePlane
+import com.zedalpha.shadowgadgets.view.proxy.updateProxy
 
 /**
  * The current state of the clipped shadow fix for the receiver View.
@@ -25,11 +25,11 @@ import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
  */
 public var View.clipOutlineShadow: Boolean
         by viewTag(R.id.clip_outline_shadow, false) {
-            updateShadow(this)
-            this.shadowProxy?.let { proxy ->
-                proxy.updateClip()
-                updatePlane(proxy)
-            }
+            this.updateProxy()
+            val proxy = this.shadowProxy ?: return@viewTag
+
+            proxy.updatePlane()
+            proxy.updateClip()
         }
 
 /**
@@ -60,7 +60,7 @@ public fun interface ViewPathProvider {
  */
 public var View.pathProvider: ViewPathProvider?
         by viewTag(R.id.path_provider, null) {
-            if (this.clipOutlineShadow) this.shadowProxy?.updatePathProvider()
+            this.shadowProxy?.updatePathProvider()
         }
 
 /**
@@ -103,6 +103,7 @@ public class MaterialShapeDrawableViewPathProvider : ViewPathProvider {
                 msd
             }
         msd ?: return
+
         path.setFromMaterialShapeDrawable(msd)
     }
 

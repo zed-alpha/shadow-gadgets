@@ -25,7 +25,7 @@ internal val CompatDrawableTopic =
 
 class CompatDrawableFragment :
     TopicFragment<FragmentCompatDrawableBinding>(
-        FragmentCompatDrawableBinding::inflate
+        inflate = FragmentCompatDrawableBinding::inflate
     ) {
 
     private lateinit var drawable: DemoCompatShadowDrawable

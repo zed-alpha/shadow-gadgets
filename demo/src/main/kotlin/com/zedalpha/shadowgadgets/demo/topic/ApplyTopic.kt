@@ -25,16 +25,16 @@ class ApplyFragment :
     }
 }
 
-private class ColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
+private class ColorfulAdapter : RecyclerView.Adapter<ItemHolder>() {
 
     private val evaluator = ArgbEvaluator()
 
     override fun getItemCount() = ItemCount
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ColorfulHolder(parent)
+        ItemHolder(parent)
 
-    override fun onBindViewHolder(holder: ColorfulHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemHolder, position: Int) {
         val color =
             evaluator.evaluate(
                 (position % HalfItemCount).toFloat() / HalfItemCount,
@@ -47,10 +47,10 @@ private class ColorfulAdapter : RecyclerView.Adapter<ColorfulHolder>() {
     }
 }
 
-internal class ColorfulHolder(parent: ViewGroup) :
+internal class ItemHolder(parent: ViewGroup) :
     RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_colorful, parent, false)
+            .inflate(R.layout.item_example, parent, false)
     ) {
 
     val text: TextView = itemView.findViewById(R.id.text)

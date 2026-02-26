@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -9,7 +7,7 @@ android {
     namespace = "com.zedalpha.shadowgadgets.demo"
 
     compileSdk {
-        version = release(36)
+        version = release(36) { minorApiLevel = 1 }
     }
     defaultConfig {
         applicationId = "com.zedalpha.shadowgadgets.demo"
@@ -41,10 +39,6 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-}
-
-kotlin {
-    compilerOptions.jvmTarget = JvmTarget.JVM_17
 }
 
 dependencies {

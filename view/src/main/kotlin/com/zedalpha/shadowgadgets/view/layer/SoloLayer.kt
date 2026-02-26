@@ -12,5 +12,5 @@ internal class SoloLayer(
 ) : IndividualLayer(
     owner = owner,
     invalidate = invalidate,
-    layer = AutomaticLayer(owner, content, adjustBounds)
+    layer = AutoPositionLayer(owner, content, adjustBounds)
 )

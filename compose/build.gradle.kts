@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
@@ -11,7 +9,7 @@ android {
     defaultConfig.minSdk = 23
 
     compileSdk {
-        version = release(36)
+        version = release(36) { minorApiLevel = 1 }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -26,10 +24,7 @@ android {
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_17
-        explicitApi()
-    }
+    explicitApi()
 }
 
 afterEvaluate {

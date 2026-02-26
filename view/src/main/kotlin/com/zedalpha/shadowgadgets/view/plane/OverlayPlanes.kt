@@ -53,7 +53,7 @@ internal class OverlayPlane(
 
     private val drawable =
         createDrawable(viewGroup) { canvas ->
-            inertLayer?.iterate { it.draw(canvas) }
+            inertLayer?.iterate { it.updateAndDraw(canvas) }
             activeLayers?.iterate { it.draw(canvas) }
         }
 
@@ -76,10 +76,7 @@ internal class OverlayPlane(
         invalidator.invalidate()
     }
 
-    override fun addProxy(proxy: ShadowProxy) {
-        updateLayer(proxy)
-        invalidate()
-    }
+    override fun addProxy(proxy: ShadowProxy) = updateLayer(proxy)
 
     override fun updateLayer(proxy: ShadowProxy) {
         val current = proxy.layer as GroupLayer?
@@ -128,11 +125,13 @@ internal class OverlayPlane(
         proxy.layer = next
 
         activeLayers?.updateRecreateCount()
-        invalidate()
     }
 
     override fun removeProxy(proxy: ShadowProxy) {
-        val layer = proxy.layer as GroupLayer? ?: return
+        val layer =
+            checkNotNull(proxy.layer as? GroupLayer) {
+                "Overlay Proxy missing Layer"
+            }
 
         proxy.layer = null
         layer.remove(proxy)
@@ -149,12 +148,12 @@ internal class OverlayPlane(
     }
 
     private fun disposeInertLayer(layer: GroupLayer) {
-        layer.dispose()
         inertLayer = null
+        layer.dispose()
     }
 
     private fun disposeActiveLayer(layer: GroupLayer) {
-        val layers = activeLayers ?: return
+        val layers = checkNotNull(activeLayers) { "LayerGroup is empty" }
         layers.remove(layer)
         layer.dispose()
         if (layers.isEmpty) activeLayers = null

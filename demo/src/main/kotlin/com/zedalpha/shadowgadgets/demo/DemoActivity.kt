@@ -1,5 +1,6 @@
 package com.zedalpha.shadowgadgets.demo
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.zedalpha.shadowgadgets.demo.databinding.ActivityMainBinding
+import com.zedalpha.shadowgadgets.demo.databinding.ActivityDemoBinding
 import com.zedalpha.shadowgadgets.demo.internal.RoundedCornerViewOutlineProvider
 import com.zedalpha.shadowgadgets.demo.internal.applyInsetsListener
 import com.zedalpha.shadowgadgets.demo.internal.showWelcomeDialog
@@ -31,22 +32,22 @@ import com.zedalpha.shadowgadgets.demo.topic.compat.CompatDrawableTopic
 import com.zedalpha.shadowgadgets.demo.topic.compat.CompatIntroTopic
 import com.zedalpha.shadowgadgets.demo.topic.compat.CompatStressTestTopic
 
-class MainActivity : AppCompatActivity() {
+class DemoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val ui = ActivityMainBinding.inflate(layoutInflater)
+        val ui = ActivityDemoBinding.inflate(layoutInflater)
         ui.root.applyInsetsListener()
         setContentView(ui.root)
 
         ui.contentPager.apply {
-            adapter = ContentAdapter(this@MainActivity)
+            adapter = ContentAdapter(this@DemoActivity)
             isUserInputEnabled = false
         }
         ui.infoPager.apply {
-            adapter = InfoAdapter()
+            adapter = InfoAdapter(this@DemoActivity)
             isUserInputEnabled = false
         }
 
@@ -109,7 +110,8 @@ private class ContentAdapter(activity: FragmentActivity) :
         Topics[position].createFragment()
 }
 
-private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
+private class InfoAdapter(private val context: Context) :
+    RecyclerView.Adapter<InfoHolder>() {
 
     override fun getItemCount() = Topics.size
 
@@ -122,7 +124,7 @@ private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
             }
 
     override fun onBindViewHolder(holder: InfoHolder, position: Int) {
-        holder.text.setText(Topics[position].descriptionResId)
+        holder.text.text = Topics[position].description(context)
     }
 }
 

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.library)
     id("maven-publish")
@@ -12,7 +10,7 @@ android {
     buildFeatures.buildConfig = true
 
     compileSdk {
-        version = release(36)
+        version = release(36) { minorApiLevel = 1 }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -30,10 +28,7 @@ android {
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_17
-        explicitApi()
-    }
+    explicitApi()
 }
 
 afterEvaluate {

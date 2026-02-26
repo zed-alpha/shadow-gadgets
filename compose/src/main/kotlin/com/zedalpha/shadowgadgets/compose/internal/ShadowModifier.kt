@@ -7,7 +7,6 @@ import androidx.compose.ui.draw.CacheDrawScope
 import androidx.compose.ui.draw.DrawResult
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
@@ -19,25 +18,24 @@ import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.layer.setOutline
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
+import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.node.requireView
 import androidx.compose.ui.unit.Dp
 
 @SuppressLint("ModifierNodeInspectableProperties")
-internal abstract class BaseShadowElement(
+internal abstract class AbstractShadowElement(
     val elevation: Dp,
     val shape: Shape,
     val ambientColor: Color,
     val spotColor: Color,
     val colorCompat: Color,
     val forceColorCompat: Boolean
-) : ModifierNodeElement<BaseShadowNode>() {
+) : ModifierNodeElement<ShadowNode>() {
 
-    override fun update(node: BaseShadowNode) {
+    override fun update(node: ShadowNode) {
         node.elevation = elevation
         node.shape = shape
         node.ambientColor = ambientColor
@@ -48,7 +46,7 @@ internal abstract class BaseShadowElement(
     }
 }
 
-internal class BaseShadowNode(
+internal class ShadowNode(
     private val clipped: Boolean,
     var elevation: Dp,
     var shape: Shape,
@@ -58,17 +56,23 @@ internal class BaseShadowNode(
     var forceColorCompat: Boolean
 ) : DelegatingNode() {
 
-    private val drawNode = delegate(CacheDrawModifierNode(::cacheDraw))
-
-    private var layerNode: CompositingLayerModifierNode? = null
-
     override val shouldAutoInvalidate: Boolean = false
 
+    private lateinit var shadow: GraphicsLayer
+
+    private var layerNode: LayerNode? = null
+
     override fun onAttach() {
-        layerNode?.resetColor()
+        shadow = requireGraphicsContext().createGraphicsLayer()
+        layerNode?.color = Color.Unspecified
         currentShape = null
         update()
     }
+
+    override fun onDetach() =
+        requireGraphicsContext().releaseGraphicsLayer(shadow)
+
+    private val drawNode = delegate(CacheDrawModifierNode(::cacheDraw))
 
     private var actualAmbientColor = Color.Unspecified
     private var actualSpotColor = Color.Unspecified
@@ -88,8 +92,7 @@ internal class BaseShadowNode(
         actualSpotColor = if (useNative) spotColor else DefaultShadowColor
         layerColor = when {
             useNative || colorCompat.isDefault ||
-                    (colorCompat.isUnspecified && // Will blend to default
-                            ambientColor.isDefault && spotColor.isDefault) -> {
+                    blendsToDefault(colorCompat, ambientColor, spotColor) -> {
                 if (clipped && RequiresDefaultClipLayer) DefaultShadowColor
                 else Color.Unspecified
             }
@@ -98,18 +101,20 @@ internal class BaseShadowNode(
 
             else -> {
                 val blender = colorBlender
-                    ?: ColorBlender(this).also { colorBlender = it }
+                    ?: ColorBlender(requireView().context)
+                        .also { colorBlender = it }
                 blender.blend(ambientColor, spotColor)
             }
         }
 
         when {
             layerColor.isUnspecified -> {
-                layerNode?.also { undelegate(it); layerNode = null }
+                layerNode?.let { undelegate(it); layerNode = null }
             }
+
             layerNode == null -> {
-                CompositingLayerModifierNode(drawNode)
-                    .also { delegate(it); layerNode = it }
+                LayerNode(this::drawShadow, drawNode::invalidateDraw)
+                    .let { delegate(it); layerNode = it }
             }
         }
 
@@ -126,25 +131,26 @@ internal class BaseShadowNode(
     private val clip = if (clipped) Path() else null
 
     private fun cacheDraw(scope: CacheDrawScope): DrawResult = with(scope) {
-        val shadow = obtainGraphicsLayer()
+        val outline = shape.createOutline(size, layoutDirection, scope)
 
-        val outline = shape.createOutline(size, layoutDirection, this)
-        shadow.run { setOutline(outline); record { } }
-        clip?.run { rewind(); addOutline(outline) }
+        shadow.apply { setOutline(outline); record { } }
+        clip?.apply { rewind(); addOutline(outline) }
 
         currentShape = shape
 
         onDrawBehind {
-            shadow.shadowElevation = elevation.toPx()
-            shadow.ambientShadowColor = actualAmbientColor
-            shadow.spotShadowColor = actualSpotColor
+            shadow.apply {
+                shadowElevation = elevation.toPx()
+                ambientShadowColor = actualAmbientColor
+                spotShadowColor = actualSpotColor
+            }
 
             val layer = layerNode
             if (layer != null) {
                 layer.color = layerColor
-                layer.draw(this) { drawShadow(shadow) }
+                layer.draw(this)
             } else {
-                drawShadow(shadow)
+                drawShadow(this)
             }
 
             currentElevation = elevation
@@ -154,34 +160,12 @@ internal class BaseShadowNode(
         }
     }
 
-    private fun DrawScope.drawShadow(shadow: GraphicsLayer) =
-        clip?.let { clipPath(it, ClipOp.Difference) { drawLayer(shadow) } }
-            ?: drawLayer(shadow)
-}
-
-private class ColorBlender(private val node: DelegatableNode) {
-
-    private var ambientColor = Color.Unspecified
-    private var spotColor = Color.Unspecified
-    private var blendedColor = Color.Unspecified
-
-    fun blend(ambientColor: Color, spotColor: Color): Color =
-        if (this.ambientColor != ambientColor || this.spotColor != spotColor) {
-            this.ambientColor = ambientColor; this.spotColor = spotColor
-            val ambient = ambientColor.toArgb()
-            val spot = spotColor.toArgb()
-            val context = node.requireView().context
-            val (ambientAlpha, spotAlpha) = context.resolveThemeShadowAlphas()
-            val argb = blendShadowColors(ambient, ambientAlpha, spot, spotAlpha)
-            Color(argb).also { blendedColor = it }
+    private fun drawShadow(scope: DrawScope) = with(scope) {
+        val clip = this@ShadowNode.clip
+        if (clip != null) {
+            clipPath(clip, ClipOp.Difference) { drawLayer(shadow) }
         } else {
-            blendedColor
+            drawLayer(shadow)
         }
+    }
 }
-
-internal inline val Color.isDefault get() = this == DefaultShadowColor
-
-internal inline val Color.isTint: Boolean
-    get() = this != DefaultShadowColor && this != Transparent
-
-private val RequiresDefaultClipLayer = Build.VERSION.SDK_INT in 24..28

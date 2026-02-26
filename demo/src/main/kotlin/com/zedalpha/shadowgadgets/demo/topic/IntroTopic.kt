@@ -112,7 +112,7 @@ private class GrayShadow(private val target: View) :
 
     val paint = Paint().apply { color = Color.LTGRAY }
 
-    val radius = target.resources.getDimension(R.dimen.target_corner_radius)
+    val radius = 15 * target.resources.displayMetrics.density
 
     override fun onDrawShadow(canvas: Canvas) {
         val right = target.width.toFloat()

@@ -19,12 +19,12 @@ internal class RegularManager<T>(
     superDispatchDraw: (Canvas) -> Unit,
     superDrawChild: (Canvas, View, Long) -> Boolean
 ) : ShadowsViewGroupManager<T>(
-    viewGroup,
-    attributeSet,
-    attachViewToParent,
-    detachAllViewsFromParent,
-    superDispatchDraw,
-    superDrawChild
+    viewGroup = viewGroup,
+    attributeSet = attributeSet,
+    attachViewToParent = attachViewToParent,
+    detachAllViewsFromParent = detachAllViewsFromParent,
+    superDispatchDraw = superDispatchDraw,
+    superDrawChild = superDrawChild
 ) where T : ViewGroup, T : ShadowsViewGroup {
 
     private var xmlAttributes: MutableMap<Int, ShadowAttributes>? =

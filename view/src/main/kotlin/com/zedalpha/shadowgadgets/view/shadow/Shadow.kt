@@ -9,7 +9,10 @@ import androidx.annotation.FloatRange
 import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
 
-internal fun Shadow(link: View, forceViewType: Boolean = false): Shadow =
+internal fun Shadow(
+    link: View,
+    forceViewType: Boolean = false
+): Shadow =
     if (RenderNodeFactory.isOpen && !forceViewType) {
         RenderNodeShadow()
     } else {

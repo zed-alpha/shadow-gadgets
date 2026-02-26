@@ -32,7 +32,7 @@ internal open class SwitchGroup<E> : Group<E> {
     @CallSuper
     override fun add(member: E) {
         check(!members.has { it === member }) {
-            "${javaClass.simpleName}: Element is already present"
+            "${javaClass.simpleName}: Member is already present"
         }
         members = members.add(member)
     }
@@ -40,7 +40,7 @@ internal open class SwitchGroup<E> : Group<E> {
     @CallSuper
     override fun remove(member: E) {
         check(members.has { it === member }) {
-            "${javaClass.simpleName}: Element is not present"
+            "${javaClass.simpleName}: Member is not present"
         }
         members = members.remove(member)
     }

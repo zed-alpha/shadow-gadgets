@@ -8,10 +8,10 @@ import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
 import com.zedalpha.shadowgadgets.view.internal.blendShadowColors
 import com.zedalpha.shadowgadgets.view.internal.isNotDefault
 import com.zedalpha.shadowgadgets.view.internal.resolveThemeShadowAlphas
-import com.zedalpha.shadowgadgets.view.internal.updateShadow
 import com.zedalpha.shadowgadgets.view.internal.viewTag
-import com.zedalpha.shadowgadgets.view.plane.updatePlane
 import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
+import com.zedalpha.shadowgadgets.view.proxy.updatePlane
+import com.zedalpha.shadowgadgets.view.proxy.updateProxy
 
 /**
  * The current color compat value for the receiver View.
@@ -22,10 +22,8 @@ import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
  * property.
  *
  * The compat mechanism works by tinting a regular black shadow with the given
- * color. If this property's value is set to black, the compat mechanism is
- * disabled, and the shadow is left to be drawn normally.
- *
- * The default value is black, so color compat is initially disabled.
+ * color. While this property's value is set to black, the compat mechanism is
+ * disabled, and the native shadow is left to draw normally.
  *
  * While this feature is active, the receiver's
  * [ViewOutlineProvider][android.view.ViewOutlineProvider] is wrapped
@@ -40,14 +38,14 @@ import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
 @setparam:ColorInt
 public var View.outlineShadowColorCompat: Int
         by viewTag(R.id.outline_shadow_color_compat, DefaultShadowColor) {
-            updateColorCompat(this)
+            this.updateTint()
         }
 
 /**
  * Determines whether the color compat mechanism should be forced if the current
  * API level is 28 or above.
  *
- * When set to true, on the relevant versions, the receiver View's
+ * When set to `true`, on the relevant versions, the receiver View's
  * [outlineAmbientShadowColor][View.setOutlineAmbientShadowColor]
  * and
  * [outlineSpotShadowColor][View.setOutlineSpotShadowColor] should
@@ -56,21 +54,24 @@ public var View.outlineShadowColorCompat: Int
  */
 public var View.forceOutlineShadowColorCompat: Boolean
         by viewTag(R.id.force_outline_shadow_color_compat, false) {
-            updateColorCompat(this)
+            this.updateTint()
         }
 
-private fun updateColorCompat(target: View) {
-    target.tintOutlineShadow =
-        (Build.VERSION.SDK_INT < 28 || target.forceOutlineShadowColorCompat) &&
-                target.outlineShadowColorCompat.isNotDefault
-    target.shadowProxy?.let { proxy ->
-        proxy.updateLayer()
-        updatePlane(proxy)
-    }
+private fun View.updateTint() {
+    this.tintOutlineShadow =
+        (Build.VERSION.SDK_INT < 28 || this.forceOutlineShadowColorCompat) &&
+                this.outlineShadowColorCompat.isNotDefault
+
+    val proxy = this.shadowProxy ?: return
+
+    // If the Plane changes, the Layer has been handled.
+    if (proxy.updatePlane()) return
+
+    proxy.updateLayer()
 }
 
 internal var View.tintOutlineShadow: Boolean
-        by viewTag(R.id.tint_outline_shadow, false) { updateShadow(this) }
+        by viewTag(R.id.tint_outline_shadow, false) { this.updateProxy() }
     private set
 
 /**

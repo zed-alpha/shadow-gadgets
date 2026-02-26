@@ -26,8 +26,9 @@ internal class RenderNodeApi23(name: String?) : RenderNodeApi21(name) {
         renderNode.start(width, height).also { canvas = it }
 
     override fun endRecording() {
-        check(canvas != null) { "No recording in progress" }
-        renderNode.end(canvas as DisplayListCanvas).also { canvas = null }
+        val canvas = checkNotNull(canvas) { "No recording in progress" }
+        renderNode.end(canvas as DisplayListCanvas)
+        this.canvas = null
     }
 
     override fun discardDisplayList() =

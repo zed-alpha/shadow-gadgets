@@ -1,8 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-    <dimen name="target_corner_radius">15dp</dimen>
-
-    <dimen name="mtrl_btn_pressed_z" tools:override="true">12dp</dimen>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
     <dimen name="mtrl_btn_elevation" tools:override="true">6dp</dimen>
-
+    <dimen name="mtrl_btn_pressed_z" tools:override="true">12dp</dimen>
 </resources>

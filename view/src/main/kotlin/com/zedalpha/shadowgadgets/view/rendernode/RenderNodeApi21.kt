@@ -159,9 +159,9 @@ internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
             .also { canvas = it }
 
     override fun endRecording() {
-        check(canvas != null) { "No recording in progress" }
+        val canvas = checkNotNull(canvas) { "No recording in progress" }
         RenderNodeApi21Reflector.end(renderNode, canvas as HardwareCanvas)
-            .also { canvas = null }
+        this.canvas = null
     }
 
     override fun hasDisplayList(): Boolean = renderNode.isValid

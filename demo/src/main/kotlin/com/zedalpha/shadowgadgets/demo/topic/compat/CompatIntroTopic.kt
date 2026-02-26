@@ -23,7 +23,7 @@ internal val CompatIntroTopic =
 
 class CompatIntroFragment :
     TopicFragment<FragmentCompatIntroBinding>(
-        FragmentCompatIntroBinding::inflate
+        inflate = FragmentCompatIntroBinding::inflate
     ) {
 
     private lateinit var controller: PanelController

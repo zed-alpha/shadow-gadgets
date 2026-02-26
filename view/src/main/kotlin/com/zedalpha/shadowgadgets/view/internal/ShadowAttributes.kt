@@ -24,12 +24,12 @@ internal fun AttributeSet?.extractShadowAttributes(context: Context): ShadowAttr
             /* defValue = */ View.NO_ID
         ),
         if (array.hasValue(R.styleable.ShadowAttributes_shadowPlane)) {
-            ShadowPlane.forValue(
+            val value =
                 array.getInt(
                     /* index = */ R.styleable.ShadowAttributes_shadowPlane,
                     /* defValue = */ Foreground.ordinal
                 )
-            )
+            ShadowPlane.entries[value]
         } else {
             null
         },

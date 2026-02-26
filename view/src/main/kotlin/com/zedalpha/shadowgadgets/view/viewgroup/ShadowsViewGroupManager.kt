@@ -8,16 +8,16 @@ import android.view.ViewGroup.LayoutParams
 import androidx.annotation.CallSuper
 import androidx.core.content.withStyledAttributes
 import androidx.core.view.ViewCompat
+import androidx.core.view.doOnAttach
 import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.ShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
-import com.zedalpha.shadowgadgets.view.internal.OnAttachStateChangeAdapter
 import com.zedalpha.shadowgadgets.view.internal.disableZ
 import com.zedalpha.shadowgadgets.view.internal.enableZ
-import com.zedalpha.shadowgadgets.view.internal.isRecyclingViewGroup
 import com.zedalpha.shadowgadgets.view.plane.Plane
 import com.zedalpha.shadowgadgets.view.plane.inlinePlane
+import com.zedalpha.shadowgadgets.view.proxy.isRecycling
 import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
 import kotlin.properties.Delegates
 
@@ -54,8 +54,14 @@ internal abstract class ShadowsViewGroupManager<T>(
     var forceChildOutlineShadowsColorCompat: Boolean
             by initOnly(false) { isGroupForceSet = true }
 
+    var takeOverDrawForInlineChildShadows: Boolean
+            by initOnly(!viewGroup.isRecycling) {}
+
     var ignoreInlineChildShadows: Boolean
-            by initOnly(viewGroup.isRecyclingViewGroup) {}
+        get() = !takeOverDrawForInlineChildShadows
+        set(value) {
+            takeOverDrawForInlineChildShadows = !value
+        }
 
     private fun <T> initOnly(initial: T, onSet: () -> Unit) =
         Delegates.vetoable(initial) { _, _, _ ->
@@ -84,34 +90,34 @@ internal abstract class ShadowsViewGroupManager<T>(
                 val value =
                     getInt(
                         /* index = */ R.styleable.ShadowsViewGroup_childShadowsPlane,
-                        /* defValue = */ Foreground.ordinal
+                        /* defValue = */ childShadowsPlane.ordinal
                     )
-                childShadowsPlane = ShadowPlane.forValue(value)
+                childShadowsPlane = ShadowPlane.entries[value]
             }
             if (hasValue(R.styleable.ShadowsViewGroup_clipAllChildShadows)) {
                 clipAllChildShadows =
                     getBoolean(
                         /* index = */ R.styleable.ShadowsViewGroup_clipAllChildShadows,
-                        /* defValue = */ false
+                        /* defValue = */ clipAllChildShadows
                     )
             }
             if (hasValue(R.styleable.ShadowsViewGroup_ignoreInlineChildShadows)) {
                 ignoreInlineChildShadows =
                     getBoolean(
                         /* index = */ R.styleable.ShadowsViewGroup_ignoreInlineChildShadows,
-                        /* defValue = */ false
+                        /* defValue = */ ignoreInlineChildShadows
+                    )
+            }
+            if (hasValue(R.styleable.ShadowsViewGroup_takeOverDrawForInlineChildShadows)) {
+                takeOverDrawForInlineChildShadows =
+                    getBoolean(
+                        /* index = */ R.styleable.ShadowsViewGroup_takeOverDrawForInlineChildShadows,
+                        /* defValue = */ takeOverDrawForInlineChildShadows
                     )
             }
         }
 
-        viewGroup.addOnAttachStateChangeListener(
-            object : OnAttachStateChangeAdapter {
-                override fun onViewAttachedToWindow(view: View) {
-                    viewGroup.removeOnAttachStateChangeListener(this)
-                    onAttach()
-                }
-            }
-        )
+        viewGroup.doOnAttach { onAttach() }
     }
 
     @CallSuper
@@ -127,8 +133,10 @@ internal abstract class ShadowsViewGroupManager<T>(
     private var inlinePlane: Plane? = null
 
     fun dispatchDraw(canvas: Canvas) {
-        val inlinePlane = viewGroup.inlinePlane
-        this.inlinePlane = inlinePlane
+        val inlinePlane =
+            viewGroup.inlinePlane
+                .takeIf { canvas.isHardwareAccelerated }
+                .also { this.inlinePlane = it }
 
         if (inlinePlane == null) {
             superDispatchDraw(canvas)
@@ -165,25 +173,13 @@ internal abstract class ShadowsViewGroupManager<T>(
     }
 
     fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
-        val shadow =
-            child.shadowProxy?.takeIf { proxy ->
-                proxy.plane.let { it != null && it === inlinePlane }
-            }
-
+        val proxy = child.shadowProxy?.takeIf { it.plane === inlinePlane }
         val result: Boolean
 
-        if (shadow != null &&
-            shadow.updateAndConfirmDraw() &&
-            canvas.isHardwareAccelerated
-        ) {
+        if (proxy != null && proxy.updateAndConfirmDraw()) {
             disableZ(canvas)
-            if (shadow.isClipped) {
-                result = superDrawChild(canvas, child, drawingTime)
-                shadow.layer?.draw(canvas) ?: shadow.draw(canvas)
-            } else {
-                shadow.layer?.draw(canvas) ?: shadow.draw(canvas)
-                result = superDrawChild(canvas, child, drawingTime)
-            }
+            proxy.layer?.draw(canvas) ?: proxy.shadow.draw(canvas)
+            result = superDrawChild(canvas, child, drawingTime)
             enableZ(canvas)
         } else {
             result = superDrawChild(canvas, child, drawingTime)

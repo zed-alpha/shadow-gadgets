@@ -30,10 +30,8 @@ internal open class OverlayDrawable(
     override fun draw(canvas: Canvas) =
         with(viewGroup) {
             if (clipToPadding &&
-                paddingLeft != 0 &&
-                paddingTop != 0 &&
-                paddingRight != 0 &&
-                paddingBottom != 0
+                (paddingLeft != 0 || paddingTop != 0 ||
+                        paddingRight != 0 || paddingBottom != 0)
             ) {
                 canvas.withClip(
                     left = paddingLeft,

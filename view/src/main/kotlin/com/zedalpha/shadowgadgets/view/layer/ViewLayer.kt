@@ -11,7 +11,7 @@ import com.zedalpha.shadowgadgets.view.internal.viewPainter
 internal class ViewLayer(link: View, content: (Canvas) -> Unit) :
     AbstractLayer(link, content) {
 
-    private inner class LayerView() : BaseView(link.context) {
+    private inner class LayerView : BaseView(link.context) {
         var overlappingRendering: Boolean = false
         override fun hasOverlappingRendering(): Boolean = overlappingRendering
         override fun onDraw(canvas: Canvas) = content(canvas)

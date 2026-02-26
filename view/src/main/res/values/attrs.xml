@@ -27,7 +27,9 @@
         <attr name="clipAllChildShadows" format="boolean" />
         <attr name="childOutlineShadowsColorCompat" format="color" />
         <attr name="forceChildOutlineShadowsColorCompat" format="boolean" />
+        <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" format="boolean" />
+        <attr name="takeOverDrawForInlineChildShadows" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="Lighting">

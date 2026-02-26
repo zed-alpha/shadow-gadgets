@@ -18,8 +18,8 @@
         app:layout_constraintEnd_toStartOf="@id/compose_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:ignoreInlineChildShadows="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:takeOverDrawForInlineChildShadows="true"
         tools:ignore="RtlSymmetry" />
 
     <androidx.compose.ui.platform.ComposeView

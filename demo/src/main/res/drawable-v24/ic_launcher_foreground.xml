@@ -6,10 +6,10 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <group
-        android:scaleX="0.6"
-        android:scaleY="0.6"
-        android:translateX="4.8"
-        android:translateY="4.8">
+        android:scaleX="0.55"
+        android:scaleY="0.55"
+        android:translateX="5.4"
+        android:translateY="5.4">
         <path android:pathData="M0,0h24v24h-24z">
             <aapt:attr name="android:fillColor">
                 <gradient
@@ -21,7 +21,7 @@
                         android:color="#00E3E3E3"
                         android:offset="0" />
                     <item
-                        android:color="#FFA0A0A0"
+                        android:color="#AAA0A0A0"
                         android:offset="0.54" />
                     <item
                         android:color="#00E3E3E3"

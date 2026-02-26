@@ -4,58 +4,56 @@ import android.graphics.Canvas
 import android.graphics.Outline
 import android.os.Build
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.core.view.isVisible
+import com.zedalpha.shadowgadgets.view.ExperimentalShadowGadgets
 import com.zedalpha.shadowgadgets.view.R
+import com.zedalpha.shadowgadgets.view.ShadowMode
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
-import com.zedalpha.shadowgadgets.view.internal.OnAttachStateChangeAdapter
-import com.zedalpha.shadowgadgets.view.internal.RequiresInvalidateOnToggle
 import com.zedalpha.shadowgadgets.view.internal.ViewShadowColorsHelper
-import com.zedalpha.shadowgadgets.view.internal.isRecyclingViewGroup
 import com.zedalpha.shadowgadgets.view.internal.viewTag
 import com.zedalpha.shadowgadgets.view.layer.Layer
+import com.zedalpha.shadowgadgets.view.onShadowModeChange
 import com.zedalpha.shadowgadgets.view.pathProvider
 import com.zedalpha.shadowgadgets.view.plane.Plane
 import com.zedalpha.shadowgadgets.view.shadow.ClippedShadow
 import com.zedalpha.shadowgadgets.view.shadow.PathProvider
 import com.zedalpha.shadowgadgets.view.shadow.Shadow
+import com.zedalpha.shadowgadgets.view.shadowMode
 
 internal var View.shadowProxy: ShadowProxy? by viewTag(R.id.shadow_proxy, null)
     private set
 
 internal class ShadowProxy(val target: View) {
 
-    var isClipped: Boolean = false
-        private set
-
     var shadow: Shadow = obtainShadow(null)
         private set
+
+    val isClipped: Boolean get() = shadow is ClippedShadow
 
     fun updateClip() {
         shadow = obtainShadow(shadow)
         if (isClipped) target.invalidateOutline()
-        invalidate()
+        plane.invalidate()
     }
 
     private fun obtainShadow(current: Shadow?): Shadow {
         val clipped = target.clipOutlineShadow
-        isClipped = clipped
-        return when {
-            current != null ->
-                when {
-                    clipped == current is ClippedShadow -> current
-                    current is ClippedShadow -> current.shadow
-                    else -> ClippedShadow(current).also { setPathProvider(it) }
-                }
-            clipped -> ClippedShadow(target).also { setPathProvider(it) }
-            else -> Shadow(target)
+        return if (current != null) {
+            if (current is ClippedShadow == clipped) current
+            else if (current is ClippedShadow) current.shadow
+            else ClippedShadow(current).also { setPathProvider(it) }
+        } else {
+            if (clipped) ClippedShadow(target).also { setPathProvider(it) }
+            else Shadow(target)
         }
     }
 
     fun updatePathProvider() {
         val shadow = shadow as? ClippedShadow ?: return
         setPathProvider(shadow)
-        invalidate()
+        plane.invalidate()
     }
 
     private fun setPathProvider(shadow: ClippedShadow) {
@@ -63,39 +61,44 @@ internal class ShadowProxy(val target: View) {
         shadow.pathProvider = PathProvider { provider.getPath(target, it) }
     }
 
-    var plane: Plane? = null
+    private var recyclingParent: RecyclingParent? = null
+
+    val isChildOfRecyclingViewGroup: Boolean get() = recyclingParent != null
+
+    fun requireParentRecyclingViewGroup(): ViewGroup =
+        checkNotNull(recyclingParent) { "Missing RecyclingParent" }.viewGroup
+
+    var plane: Plane = Plane.Initial
         set(next) {
-            removeFromPlane(field)
-            addToPlane(next)
+            if (field === next) return
+
+            if (field.viewGroup !== next.viewGroup) {
+                recyclingParent?.dispose()
+                recyclingParent =
+                    next.viewGroup
+                        ?.takeIf { it.isRecycling }
+                        ?.let { RecyclingParent(it, this) }
+                isShown = true
+            }
+
+            field.removeProxy(this)
+            field.invalidate()
+
+            next.addProxy(this)
+            next.invalidate()
+
+            notifyModeChange(field, next)
+
             field = next
-            invalidate()
         }
 
-    private val recyclerParentDetach =
-        object : OnAttachStateChangeAdapter {
-            override fun onViewDetachedFromWindow(view: View) = dispose()
-        }
+    @OptIn(ExperimentalShadowGadgets::class)
+    private fun notifyModeChange(current: Plane, next: Plane) {
+        val target = this.target
+        val onModeChange = target.onShadowModeChange ?: return
 
-    private fun addToPlane(plane: Plane?) {
-        if (plane == null) return
-
-        plane.viewGroup?.run {
-            if (isRecyclingViewGroup) {
-                addOnAttachStateChangeListener(recyclerParentDetach)
-            }
-        }
-        plane.addProxy(this)
-    }
-
-    private fun removeFromPlane(plane: Plane?) {
-        if (plane == null) return
-
-        plane.viewGroup?.run {
-            if (isRecyclingViewGroup) {
-                removeOnAttachStateChangeListener(recyclerParentDetach)
-            }
-        }
-        plane.removeProxy(this)
+        val nextMode = next.shadowMode
+        if (current.shadowMode != nextMode) target.onModeChange(nextMode)
     }
 
     private val originalProvider: ViewOutlineProvider = target.outlineProvider
@@ -113,23 +116,24 @@ internal class ShadowProxy(val target: View) {
     init {
         target.shadowProxy = this
         target.outlineProvider = ShadowOutlineProvider()
-        if (RequiresInvalidateOnToggle) invalidate()
     }
 
     fun dispose() {
         target.shadowProxy = null
         target.outlineProvider = originalProvider
-        if (RequiresInvalidateOnToggle) invalidate()
 
-        removeFromPlane(plane)
+        plane = Plane.Null
         shadow.dispose()
+
+        @OptIn(ExperimentalShadowGadgets::class)
+        target.onShadowModeChange?.invoke(target, ShadowMode.Native)
     }
 
-    fun draw(canvas: Canvas) {
+    fun updateAndDraw(canvas: Canvas) {
         if (updateAndConfirmDraw()) shadow.draw(canvas)
     }
 
-    fun invalidate() = plane?.invalidate()
+    fun invalidate() = plane.invalidate()
 
     fun updateAndConfirmDraw(): Boolean =
         shadow.run {
@@ -152,10 +156,27 @@ internal class ShadowProxy(val target: View) {
                 ambientColor = ViewShadowColorsHelper.getAmbientColor(view)
                 spotColor = ViewShadowColorsHelper.getSpotColor(view)
             }
-            isShown && view.isVisible
+            isShown && view.isVisible && view.z > 0F
         }
 
     var layer: Layer? = null
 
-    fun updateLayer() = plane?.updateLayer(this)
+    fun updateLayer() = plane.let { it.updateLayer(this); it.invalidate() }
+}
+
+private class RecyclingParent(
+    val viewGroup: ViewGroup,
+    private val proxy: ShadowProxy
+) {
+    private val disposeOnDetach =
+        object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(view: View) {}
+            override fun onViewDetachedFromWindow(view: View) = proxy.dispose()
+        }
+
+    init {
+        viewGroup.addOnAttachStateChangeListener(disposeOnDetach)
+    }
+
+    fun dispose() = viewGroup.removeOnAttachStateChangeListener(disposeOnDetach)
 }

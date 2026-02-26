@@ -12,10 +12,10 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.withClip
 import androidx.core.graphics.withTranslation
 import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
 import com.zedalpha.shadowgadgets.view.internal.isNotDefault
-import com.zedalpha.shadowgadgets.view.layer.DrawableLayer
 import com.zedalpha.shadowgadgets.view.layer.Layer
 import com.zedalpha.shadowgadgets.view.layer.RequiresDefaultClipLayer
 import com.zedalpha.shadowgadgets.view.shadow.ClippedShadow
@@ -47,7 +47,7 @@ import kotlin.math.roundToInt
  * Color compat requires an [owner] View in order to be able to hook into the
  * hardware-accelerated draw routine, and that View must be attached to the
  * onscreen hierarchy. Instances created with the @RequiresApi(29) constructor
- * simply ignore [colorCompat].
+ * will throw an [IllegalStateException] upon attempts to modify [colorCompat].
  *
  * Color compat shadows are always clipped to the drawable's bounds.
  *
@@ -99,9 +99,10 @@ private constructor(
      *
      * [isClipped] determines whether the drawable will draw a clipped or a
      * regular shadow, the latter being useful when color compat is needed
-     * without the clip. Clipped instances with irregular shapes on API levels
-     * 30+ require that the outline Path be set manually through
-     * [setClipPathProvider].
+     * without the clip.
+     *
+     * Clipped instances with irregular shapes on API levels 30+ require that
+     * the outline Path be set manually through [setClipPathProvider].
      *
      * It is not necessary to call [dispose] on these instances, but it is safe
      * to do so.
@@ -339,7 +340,8 @@ private constructor(
      * Color compat requires that the drawable instance be created with a View
      * object that's attached to the onscreen hierarchy. If the View is not
      * attached to the hierarchy, there is no guaranteed behavior. If the
-     * @RequiresApi(29) constructor is used, color compat is ignored.
+     * @RequiresApi(29) constructor is used, attempting to set color compat
+     * will throw an [IllegalStateException].
      *
      * Color compat shadows are always clipped to the drawable's bounds.
      */
@@ -347,10 +349,12 @@ private constructor(
     @setparam:ColorInt
     public var colorCompat: Int = DefaultShadowColor
         set(value) {
+            val owner =
+                checkNotNull(owner) { "Color compat requires an owner View" }
+
             if (field == value) return
             field = value
 
-            val owner = owner ?: return
             val shadow = shadow
 
             if (value.isNotDefault || isClipped && RequiresDefaultClipLayer) {
@@ -369,6 +373,16 @@ private constructor(
                 layer?.let { layer = null; it.dispose() }
             }
 
+            invalidateSelf()
+        }
+
+    /**
+     * Determines whether the shadow will be clipped to the drawable's [bounds].
+     */
+    public var clipToBounds: Boolean = false
+        set(value) {
+            if (field == value) return
+            field = value
             invalidateSelf()
         }
 
@@ -401,7 +415,7 @@ private constructor(
 
     /**
      * Flag to indicate whether the library shadow should always be composited
-     * through a layer, whether or not color compat is in use.
+     * through a layer, regardless of the color compat state.
      *
      * Addresses the issue described for
      * [View.forceShadowLayer][com.zedalpha.shadowgadgets.view.forceShadowLayer].
@@ -422,11 +436,18 @@ private constructor(
 
     @CallSuper
     override fun draw(canvas: Canvas): Unit =
+        if (clipToBounds) {
+            canvas.withClip(bounds) { drawContent(this) }
+        } else {
+            drawContent(canvas)
+        }
+
+    private fun drawContent(canvas: Canvas) =
         layer?.draw(canvas)
             ?: canvas.withTranslation(
                 x = bounds.left.toFloat(),
                 y = bounds.top.toFloat(),
-                block = { shadow.draw(canvas) }
+                block = { shadow.draw(this) }
             )
 
     @Suppress("OVERRIDE_DEPRECATION")

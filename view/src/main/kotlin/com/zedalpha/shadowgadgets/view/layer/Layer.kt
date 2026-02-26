@@ -24,7 +24,10 @@ internal interface Layer {
     fun dispose()
 }
 
-internal fun Layer(link: View, content: (Canvas) -> Unit): Layer =
+internal fun Layer(
+    link: View,
+    content: (Canvas) -> Unit
+): Layer =
     if (RenderNodeFactory.isOpen) {
         RenderNodeLayer(link, content)
     } else {
@@ -97,9 +100,8 @@ private fun Paint.setLayerFilter(color: Int) =
 internal val RequiresDefaultClipLayer = Build.VERSION.SDK_INT in 24..28
 
 internal val ShadowProxy.desiredLayerColor: Int?
-    get() =
-        when {
-            this.target.tintOutlineShadow -> this.target.outlineShadowColorCompat
-            RequiresDefaultClipLayer -> DefaultShadowColor
-            else -> null
-        }
+    get() = when {
+        this.target.tintOutlineShadow -> this.target.outlineShadowColorCompat
+        RequiresDefaultClipLayer -> DefaultShadowColor
+        else -> null
+    }

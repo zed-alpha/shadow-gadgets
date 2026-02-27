@@ -94,14 +94,15 @@ private object OutlinePathReflector {
             null
         }
 
-    fun getPath(outline: Outline, path: Path): Boolean {
+    fun getPath(outline: Outline, outPath: Path): Boolean {
         val pathField = mPath ?: return false
-        val outlinePath =
-            try {
-                pathField.get(outline) as Path
-            } catch (_: Exception) {
-                null
-            }
-        return outlinePath?.let { path.set(it); true } ?: false
+
+        return try {
+            val path = pathField.get(outline) as Path
+            outPath.set(path)
+            true
+        } catch (_: Exception) {
+            false
+        }
     }
 }

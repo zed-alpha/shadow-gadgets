@@ -99,12 +99,13 @@ results are likely sufficient for many cases.
     + [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
 + [ViewGroups](#viewgroups)
 + [Drawable](#drawable)
++ [Experimental <sup>New!</sup>](#experimental-new)
 </details>
 
 ### Overview
 
 Nobody wants to mess with a whole library for such small issues that should've
-been handled already in the native framework and support packages, so these
+been handled already in the native framework and its support packages, so these
 tools have been designed to be as simple and familiar as possible.
 
 ```kotlin
@@ -205,22 +206,33 @@ with descriptions of their behaviors and usage in layout XML can be found on the
 
 [`ShadowDrawable`][ShadowDrawable] is a thin wrapper around the core classes
 that allows these shadows to be drawn manually without having to mess with the
-`core` module. Information on requirements and usage, and links to examples can
-be found on the [Drawable wiki page][DrawableWiki].
+`core` module. Information on requirements and usage, and links to examples are
+available on the [Drawable wiki page][DrawableWiki].
+
+### Experimental <sup>New!</sup>
+
+A new `ExperimentalShadowGadgets` annotation has been added along with a few
+helpers that are mainly concerned with logging and `Exception` behavior, and
+providing a fallback mechanism for error states. Details can be found on the
+[Experimental wiki page][ExperimentalWiki].
+
+These will likely be promoted to stable rather quickly, after just a short time
+to allow users an opportunity to [report any issues][Issues] before they're made
+permanent.
 
 <br />
 
 ## Compose
 
 > [!IMPORTANT]
-> If you need only the clip fix in this one framework, you may not need to
-> bother with this library at all. Recent improvements to Compose have made it
-> possible to create a `Modifier` purely within the framework, and it might be
-> preferable to simply copy the example given in
-> <a href="https://stackoverflow.com/a/71868521">this Stack Overflow post</a>
-> (or the one in
+> If you need only the clip fix in this one framework, you might be able to
+> avoid the library overhead. Recent improvements to Compose have made it
+> possible to create a `Modifier` purely within the framework, and it may be
+> preferable to simply copy the short example given in
+> <a href="https://stackoverflow.com/a/71868521">this Stack Overflow post</a>,
+> or the longer one in
 > <a href="https://gist.github.com/zed-alpha/50acf298881ebd112e6bfb934a30d0ba">
-> the linked gist</a>, if supporting API levels 24..28).
+> the linked gist</a> if supporting API levels 24..28.
 
 Since Compose already allows shadows to be handled and manipulated as discrete
 UI elements, employing the library's features here is straightforward and
@@ -307,7 +319,7 @@ dependencies {
 ```
 
 There is no longer a shared `:core` module. Compose updates have obviated the
-need for it in that module, so it's all been moved into `:view`.
+need for it in that framework, so it's all been moved into `:view`.
 
 <br />
 
@@ -348,6 +360,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [ViewGroupsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
 [ShadowDrawable]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
 [DrawableWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
+[ExperimentalWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Experimental
 [clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
 [shadow]: https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color)
 [shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html

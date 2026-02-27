@@ -73,13 +73,14 @@ private object OutlineRectReflector {
 
     fun getRect(outline: Outline, outRect: Rect): Boolean {
         val rectField = mRect ?: return false
-        val rect =
-            try {
-                rectField.get(outline) as Rect
-            } catch (_: Exception) {
-                null
-            }
-        return rect?.let { outRect.set(rect); true } ?: false
+
+        return try {
+            val rect = rectField.get(outline) as Rect
+            outRect.set(rect)
+            true
+        } catch (_: Exception) {
+            false
+        }
     }
 
     private val mRadius: Field? =
@@ -92,6 +93,7 @@ private object OutlineRectReflector {
 
     fun getRadius(outline: Outline): Float {
         val radiusField = mRadius ?: return 0F
+
         return try {
             radiusField.getFloat(outline)
         } catch (_: Exception) {

@@ -53,12 +53,12 @@ public fun Modifier.clippedShadow(
  * proportion to their current theme alphas. Setting any other value disables
  * this behavior.
  *
+ * [forceColorCompat] is available to enable the effect on API levels 28 and
+ * above.
+ *
  * NB: The color blending formula that's currently used gives good results only
  * if the ambient and spot colors are both fully opaque; i.e., only if both
  * have maximum alpha values.
- *
- * [forceColorCompat] is available to force the color compat tinting to be used
- * on API levels 28 and above.
  */
 @Stable
 public fun Modifier.clippedShadow(

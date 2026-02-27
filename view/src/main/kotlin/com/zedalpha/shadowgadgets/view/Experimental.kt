@@ -66,10 +66,6 @@ public object ShadowGadgets {
 @ExperimentalShadowGadgets
 public class ShadowException(message: String) : RuntimeException(message)
 
-@ExperimentalShadowGadgets
-internal fun shadowError(message: String): Nothing =
-    throw ShadowException(message)
-
 //endregion
 
 //region ShadowMode

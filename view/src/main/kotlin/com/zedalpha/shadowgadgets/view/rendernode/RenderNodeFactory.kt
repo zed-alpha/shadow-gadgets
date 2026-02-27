@@ -15,10 +15,10 @@ internal object RenderNodeFactory {
 
     fun create(name: String? = null): RenderNodeWrapper {
         check(isOpen) { "Unavailable" }
-        return createInner(name).apply { setClipToBounds(false) }
+        return createWrapper(name).apply { setClipToBounds(false) }
     }
 
-    private fun createInner(name: String?): RenderNodeWrapper =
+    private fun createWrapper(name: String?): RenderNodeWrapper =
         when (Build.VERSION.SDK_INT) {
             21, 22 -> RenderNodeApi21(name)
             in 23..27 -> RenderNodeApi23(name)
@@ -28,7 +28,7 @@ internal object RenderNodeFactory {
 
     private fun testInstance(): Boolean =
         try {
-            with(createInner("Tester")) {
+            with(createWrapper("Tester")) {
                 alpha = alpha
                 cameraDistance = cameraDistance
                 elevation = elevation

@@ -171,6 +171,7 @@ private class ShadowView(context: Context) : BaseView(context) {
             }
     }
 
+    @Deprecated("Library stop")
     @SuppressLint("MissingSuperCall")
     override fun draw(canvas: Canvas) = Unit
 }

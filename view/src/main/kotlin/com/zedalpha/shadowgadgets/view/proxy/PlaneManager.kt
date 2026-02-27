@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.view.BuildConfig
 import com.zedalpha.shadowgadgets.view.ExperimentalShadowGadgets
+import com.zedalpha.shadowgadgets.view.ShadowException
 import com.zedalpha.shadowgadgets.view.ShadowGadgets
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
@@ -24,7 +25,6 @@ import com.zedalpha.shadowgadgets.view.plane.getOrCreateForegroundPlane
 import com.zedalpha.shadowgadgets.view.plane.getOrCreateInlinePlane
 import com.zedalpha.shadowgadgets.view.plane.inlinePlane
 import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
-import com.zedalpha.shadowgadgets.view.shadowError
 import com.zedalpha.shadowgadgets.view.shadowPlane
 import com.zedalpha.shadowgadgets.view.tintOutlineShadow
 import com.zedalpha.shadowgadgets.view.viewgroup.ShadowsViewGroup
@@ -167,7 +167,7 @@ private fun handleError(proxy: ShadowProxy, message: () -> String) {
         ShadowGadgets.throwOnUnhandledErrors &&
                 target.onShadowModeChange == null ||
                 target.isInEditMode -> {
-            shadowError("${target.debugId()}: ${message()}")
+            throw ShadowException("${target.debugId()}: ${message()}")
         }
 
         BuildConfig.DEBUG &&

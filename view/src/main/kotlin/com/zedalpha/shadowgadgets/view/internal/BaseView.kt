@@ -43,7 +43,6 @@ internal abstract class BaseView(context: Context) : View(context) {
     @Deprecated("Library stop")
     final override fun invalidate(l: Int, t: Int, r: Int, b: Int) = Unit
 
-    @Suppress("unused")
     @Deprecated("Library stop")
     fun damageInParent() = Unit
 

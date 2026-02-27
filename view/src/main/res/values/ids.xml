@@ -26,7 +26,7 @@
     <item name="move_dispatcher" type="id" />
     <item name="view_painter" type="id" />
 
-    <!-- Experiments -->
+    <!-- Experimental -->
     <item name="on_shadow_mode_change" type="id" />
     <item name="is_in_shadow_update" type="id" />
 

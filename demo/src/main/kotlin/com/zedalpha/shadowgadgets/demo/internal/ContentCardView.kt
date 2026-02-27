@@ -15,7 +15,10 @@ class ContentCardView
     init {
         background = SlantGridDrawable()
         foreground =
-            AppCompatResources.getDrawable(context, R.drawable.fg_content_border)
+            AppCompatResources.getDrawable(
+                /* context = */ context,
+                /* resId = */ R.drawable.fg_content_border
+            )
         outlineProvider = RoundedCornerViewOutlineProvider()
         clipToOutline = true
     }

@@ -1,7 +1,6 @@
 package com.zedalpha.shadowgadgets.demo.topic
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.SpannableString
@@ -25,7 +24,7 @@ internal class Topic<T : TopicFragment<*>>(
 ) {
     fun createFragment(): T = fragmentClass.getConstructor().newInstance()
 
-    fun description(context: Context): CharSequence =
+    fun createDescription(context: Context): CharSequence =
         context.getText(descriptionResId).let { text ->
             if (text !is SpannedString) return@let text
 
@@ -35,11 +34,11 @@ internal class Topic<T : TopicFragment<*>>(
                     .forEach { span ->
                         val start = getSpanStart(span)
                         val end = getSpanEnd(span)
+                        removeSpan(span)
                         val mono = TypefaceSpan("sans-serif-monospace")
                         setSpan(mono, start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
                         val color = ForegroundColorSpan(0xff224466.toInt())
                         setSpan(color, start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
-                        removeSpan(span)
                     }
             }
         }

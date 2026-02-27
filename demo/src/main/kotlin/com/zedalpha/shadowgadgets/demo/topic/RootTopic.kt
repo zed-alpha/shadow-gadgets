@@ -12,6 +12,7 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.view.Window
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
 import android.view.WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
@@ -71,18 +72,7 @@ class RootFragment :
             clipToOutline = false
             outlineProvider = AlphaFixProvider
         }
-
-        val size = popupSize()
-        val location = popupLocation()
-        window.attributes =
-            window.attributes!!.apply {
-                @SuppressLint("RtlHardcoded")
-                gravity = Gravity.TOP or Gravity.LEFT
-                width = size.width
-                height = size.height
-                x = location.x
-                y = location.y
-            }
+        window.centerOver(ui.root)
 
         dialog.show()
     }
@@ -139,8 +129,8 @@ class RootFragment :
         if (view.tag == null) {
             view.tag = manager
 
-            val size = popupSize()
-            val location = popupLocation()
+            val size = popupSize(ui.root)
+            val location = popupLocation(ui.root)
             val yOffset = Resources.getSystem().run {
                 @SuppressLint("DiscouragedApi,InternalInsetResource")
                 val id = getIdentifier("status_bar_height", "dimen", "android")
@@ -159,18 +149,6 @@ class RootFragment :
             manager.removeView(view)
         }
     }
-
-    private fun popupSize() =
-        ui.root.run { Size((0.9F * width).toInt(), (0.9F * height).toInt()) }
-
-    private fun popupLocation() =
-        ui.root.run {
-            val location = IntArray(2)
-            getLocationOnScreen(location)
-            val x = location[0] + (0.05F * width).toInt()
-            val y = location[1] + (0.05F * height).toInt()
-            Point(x, y)
-        }
 }
 
 private val AlphaFixProvider =
@@ -180,3 +158,28 @@ private val AlphaFixProvider =
             outline.alpha = 1F
         }
     }
+
+internal fun Window.centerOver(view: View) {
+    val size = popupSize(view)
+    val location = popupLocation(view)
+    this.attributes =
+        this.attributes!!.apply {
+            @SuppressLint("RtlHardcoded")
+            gravity = Gravity.TOP or Gravity.LEFT
+            width = size.width
+            height = size.height
+            x = location.x
+            y = location.y
+        }
+}
+
+private fun popupSize(view: View): Size =
+    Size((0.9F * view.width).toInt(), (0.9F * view.height).toInt())
+
+private fun popupLocation(view: View): Point {
+    val location = IntArray(2)
+    view.getLocationOnScreen(location)
+    val x = location[0] + (0.05F * view.width).toInt()
+    val y = location[1] + (0.05F * view.height).toInt()
+    return Point(x, y)
+}

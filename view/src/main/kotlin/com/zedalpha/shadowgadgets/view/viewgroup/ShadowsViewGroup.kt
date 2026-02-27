@@ -79,7 +79,7 @@ import com.zedalpha.shadowgadgets.view.ShadowPlane
  *
  * For the purposes of consistent behavior across all the different ViewGroup
  * types, these attributes will work properly only on Views with IDs that are
- * unique within their ShadowsViewGroup.
+ * unique among their siblings.
  */
 public sealed interface ShadowsViewGroup {
 

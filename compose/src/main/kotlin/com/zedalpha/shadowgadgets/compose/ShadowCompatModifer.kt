@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.zedalpha.shadowgadgets.compose.internal.AbstractShadowElement
 import com.zedalpha.shadowgadgets.compose.internal.ShadowNode
-import com.zedalpha.shadowgadgets.compose.internal.isDefault
 import com.zedalpha.shadowgadgets.compose.internal.blendsToDefault
+import com.zedalpha.shadowgadgets.compose.internal.isDefault
 
 /**
  * Creates a [shadow] replacement that can be tinted with the library's color
@@ -23,9 +23,8 @@ import com.zedalpha.shadowgadgets.compose.internal.blendsToDefault
  * native shadow colors. If the current API level is 28 or above, [shadowCompat]
  * falls back to the normal [shadow], unless [forceColorCompat] is `true`.
  *
- * Refer to [shadow][androidx.compose.ui.draw.shadow]'s docs for details on the
- * first five parameters: [elevation], [shape], [clip], [ambientColor], and
- * [spotColor].
+ * Refer to [shadow]'s docs for details on the first five parameters:
+ * [elevation], [shape], [clip], [ambientColor], and [spotColor].
  *
  * [colorCompat] takes a [Color] that's used to tint the shadow on API levels
  * 27 and below. If the passed value is [Color.Black] – the default shadow color

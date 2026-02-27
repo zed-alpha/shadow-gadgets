@@ -101,7 +101,6 @@ private class Painter(context: Context) : ViewGroup(context) {
     @SuppressLint("MissingSuperCall")
     override fun onDescendantInvalidated(child: View, target: View) = Unit
 
-    @Suppress("unused")
     @Deprecated("Library stop")
     fun damageInParent() = Unit
 

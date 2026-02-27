@@ -21,6 +21,7 @@ import com.zedalpha.shadowgadgets.demo.internal.RoundedCornerViewOutlineProvider
 import com.zedalpha.shadowgadgets.demo.internal.applyInsetsListener
 import com.zedalpha.shadowgadgets.demo.internal.showWelcomeDialog
 import com.zedalpha.shadowgadgets.demo.topic.ApplyTopic
+import com.zedalpha.shadowgadgets.demo.topic.ComposeRootTopic
 import com.zedalpha.shadowgadgets.demo.topic.ComposeTopic
 import com.zedalpha.shadowgadgets.demo.topic.DrawableTopic
 import com.zedalpha.shadowgadgets.demo.topic.IntroTopic
@@ -96,6 +97,7 @@ private val Topics =
         DrawableTopic,
         RootTopic,
         ComposeTopic,
+        ComposeRootTopic,
         CompatIntroTopic,
         CompatDrawableTopic,
         CompatStressTestTopic,
@@ -124,7 +126,7 @@ private class InfoAdapter(private val context: Context) :
             }
 
     override fun onBindViewHolder(holder: InfoHolder, position: Int) {
-        holder.text.text = Topics[position].description(context)
+        holder.text.text = Topics[position].createDescription(context)
     }
 }
 

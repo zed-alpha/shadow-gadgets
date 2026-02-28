@@ -26,20 +26,17 @@ class TitleSwitcher
     init {
         val inflater = LayoutInflater.from(context)
         setFactory {
-            inflater.inflate(
-                R.layout.internal_title_switcher,
-                this,
-                false
-            )
+            inflater.inflate(R.layout.internal_title_switcher, this, false)
         }
         setDirection(true)
     }
 
-    fun setDirection(goForward: Boolean) {
+    fun setDirection(goForward: Boolean) =
         if (goForward) {
-            inAnimation = forward.first; outAnimation = forward.second
+            inAnimation = forward.first
+            outAnimation = forward.second
         } else {
-            inAnimation = backward.first; outAnimation = backward.second
+            inAnimation = backward.first
+            outAnimation = backward.second
         }
-    }
 }

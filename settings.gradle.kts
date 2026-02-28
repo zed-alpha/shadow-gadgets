@@ -31,3 +31,5 @@ include(":view")
 include(":view:lint")
 include(":compose")
 include(":demo")
+
+includeBuild("docs")

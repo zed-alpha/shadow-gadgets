@@ -23,23 +23,17 @@ class IrregularFragment :
 
     override fun loadUi(ui: FragmentIrregularBinding) {
         if (Build.VERSION.SDK_INT < 30) {
-            ui.caveat.text = getString(
-                R.string.message_irregular,
-                Build.VERSION.SDK_INT
-            )
+            ui.caveat.text =
+                getString(R.string.message_irregular, Build.VERSION.SDK_INT)
             ui.labelBroken.isInvisible = true
             ui.labelFixed.isInvisible = true
             ui.caveat.isVisible = true
         }
 
-        ui.viewFixed.pathProvider = ViewPathProvider { v, p ->
-            val side = v.width.toFloat()
-            p.addRoundRect(
-                0F, 0F,
-                side, side,
-                floatArrayOf(side / 2, side / 2, 0F, 0F, 0F, 0F, 0F, 0F),
-                Path.Direction.CW
-            )
+        ui.viewFixed.pathProvider = ViewPathProvider { view, path ->
+            val side = view.width.toFloat()
+            val radii = floatArrayOf(side / 2, side / 2, 0F, 0F, 0F, 0F, 0F, 0F)
+            path.addRoundRect(0F, 0F, side, side, radii, Path.Direction.CW)
         }
         ui.buttonFixed.pathProvider = MaterialShapeDrawableViewPathProvider()
 

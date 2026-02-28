@@ -1,6 +1,9 @@
+import java.time.Year
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.dokka)
     id("maven-publish")
 }
 
@@ -37,6 +40,32 @@ afterEvaluate {
         }
     }
 }
+
+project.group = requireProperty("group.id")
+project.version = requireProperty("library.version")
+
+dokka {
+    dokkaSourceSets.configureEach {
+        pluginsConfiguration {
+            html {
+                homepageLink = requireProperty("repository.url")
+                footerMessage =
+                    "© ${Year.now().value} ${requireProperty("developer.name")}"
+            }
+        }
+
+        sourceLink {
+            localDirectory = project.layout.projectDirectory.dir("src")
+            val repoUrl = requireProperty("repository.url")
+            remoteUrl = uri("$repoUrl/tree/main/${project.name}/src")
+            remoteLineSuffix = "#L"
+        }
+    }
+}
+
+fun Project.requireProperty(name: String): String =
+    requireNotNull(this.properties[name]) { "Cannot find property: $name" }
+        .toString()
 
 dependencies {
     implementation(libs.androidx.core.ktx)

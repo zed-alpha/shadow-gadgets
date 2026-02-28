@@ -7,8 +7,8 @@ import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
 import com.zedalpha.shadowgadgets.view.proxy.updatePlane
 
 /**
- * Options for where a target's library shadow is inserted into the View
- * hierarchy's draw routine.
+ * Options for locations in the [View] hierarchy's draw routine where a target's
+ * library shadow can be inserted.
  */
 public enum class ShadowPlane {
 

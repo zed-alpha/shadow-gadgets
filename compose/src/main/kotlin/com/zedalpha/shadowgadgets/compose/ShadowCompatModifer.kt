@@ -29,9 +29,9 @@ import com.zedalpha.shadowgadgets.compose.internal.isDefault
  * [colorCompat] takes a [Color] that's used to tint the shadow on API levels
  * 27 and below. If the passed value is [Color.Black] – the default shadow color
  * – this falls back to the normal [shadow]. If [Color.Unspecified] is passed,
- * the actual value is calculated as a blend of the [ambientColor] and
+ * the actual tint is calculated as a blend of the [ambientColor] and
  * [spotColor], mixed in proportion to their current theme alphas. Setting any
- * other value disables this behavior.
+ * other value disables this blending behavior.
  *
  * NB: The color blending formula that's currently used gives good results only
  * if the ambient and spot colors are both fully opaque; i.e., only if both

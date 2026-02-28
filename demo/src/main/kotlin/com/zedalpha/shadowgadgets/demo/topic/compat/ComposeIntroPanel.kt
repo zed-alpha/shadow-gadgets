@@ -53,12 +53,12 @@ internal class ComposeIntroPanel(
     init {
         ui.composeView.apply {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
-            setContent { ComposeContent() }
+            setContent { ComposeIntroContent() }
         }
     }
 
     @Composable
-    private fun ComposeContent() {
+    private fun ComposeIntroContent() {
         Row(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceEvenly,

@@ -7,67 +7,87 @@
     android:layout_height="match_parent"
     tools:ignore="ContentDescription">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/content_pager"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintBottom_toTopOf="@id/title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_weight="0.7" />
-
-    <ImageButton
-        android:id="@+id/backward"
-        style="?toolbarNavigationButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginStart="10dp"
-        android:src="@drawable/ic_arrow_back"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/info_pager"
-        app:layout_constraintEnd_toStartOf="@+id/title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content_pager" />
-
-    <com.zedalpha.shadowgadgets.demo.internal.TitleSwitcher
-        android:id="@+id/title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="6dp"
-        android:layout_weight="1"
-        android:background="@color/off_white"
-        app:layout_constraintBottom_toTopOf="@id/info_pager"
-        app:layout_constraintEnd_toStartOf="@+id/forward"
-        app:layout_constraintStart_toEndOf="@+id/backward"
-        app:layout_constraintTop_toBottomOf="@id/content_pager" />
-
-    <ImageButton
-        android:id="@+id/forward"
-        style="?toolbarNavigationButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginEnd="10dp"
-        android:src="@drawable/ic_arrow_forward"
-        app:layout_constraintBottom_toTopOf="@id/info_pager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@id/content_pager" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/info_pager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:foreground="@drawable/fg_main_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="800dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        app:layout_constraintVertical_weight="0.3" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="400dp">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/content_pager"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintBottom_toTopOf="@id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_weight="0.7" />
+
+        <ImageButton
+            android:id="@+id/backward"
+            style="?toolbarNavigationButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="Backward"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintBottom_toTopOf="@id/info_pager"
+            app:layout_constraintEnd_toStartOf="@+id/title"
+            app:layout_constraintHeight_min="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/content_pager"
+            app:layout_constraintWidth_min="50dp"
+            tools:ignore="HardcodedText" />
+
+        <com.zedalpha.shadowgadgets.demo.internal.TitleSwitcher
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:layout_weight="1"
+            android:background="@color/off_white"
+            app:layout_constraintBottom_toTopOf="@id/info_pager"
+            app:layout_constraintEnd_toStartOf="@+id/forward"
+            app:layout_constraintStart_toEndOf="@+id/backward"
+            app:layout_constraintTop_toBottomOf="@id/content_pager" />
+
+        <ImageButton
+            android:id="@+id/forward"
+            style="?toolbarNavigationButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="Forkward"
+            android:src="@drawable/ic_arrow_forward"
+            app:layout_constraintBottom_toTopOf="@id/info_pager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_min="50dp"
+            app:layout_constraintStart_toEndOf="@+id/title"
+            app:layout_constraintTop_toBottomOf="@id/content_pager"
+            app:layout_constraintWidth_min="50dp"
+            tools:ignore="HardcodedText" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/info_pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintVertical_weight="0.3" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

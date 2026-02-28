@@ -93,7 +93,7 @@ public enum class ShadowMode {
 }
 
 /**
- * The current [ShadowMode] of the receiver's [View]'s shadow.
+ * The current [ShadowMode] of the receiver's shadow.
  */
 @ExperimentalShadowGadgets
 public val View.shadowMode: ShadowMode
@@ -107,10 +107,10 @@ internal inline val Plane.shadowMode: ShadowMode
  * Callback for [ShadowMode] changes. The target [View] is passed as the
  * receiver for [action], allowing for unqualified access to its members.
  *
- * It is recommended to handle this as you would `View` updates in a recycling
- * `Adapter`: always account for all possible states, since multi-property
- * updates could potentially involve invalid intermediate states. For example,
- * _don't_ do this:
+ * It is recommended to handle this in the same manner as `View` updates in
+ * recycling `Adapter`s: always account for all possible states, since
+ * multi-property updates could potentially involve invalid intermediate states.
+ * For example, do _not_ do this:
  *
  * ```kotlin
  * target.doOnShadowModeChange { mode ->

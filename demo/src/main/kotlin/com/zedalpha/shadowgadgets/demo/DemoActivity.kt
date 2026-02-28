@@ -74,14 +74,15 @@ class DemoActivity : AppCompatActivity() {
         ui.forward.setOnClickListener { setTopic(current + 1) }
 
         ui.title.setOnClickListener { title ->
-            PopupMenu(this, title).apply {
+            PopupMenu(this, title).run {
                 Topics.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
                 menu[current].isEnabled = false
                 setOnMenuItemClickListener { setTopic(it.itemId); true }
-            }.show()
+                show()
+            }
         }
 
-        setTopic(0)
+        ui.root.post { setTopic(ui.contentPager.currentItem) }
 
         if (savedInstanceState == null) showWelcomeDialog()
     }

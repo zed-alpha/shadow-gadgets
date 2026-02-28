@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
@@ -27,12 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.DefaultShadowColor
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -71,17 +70,19 @@ private fun ComposeRootContent() {
         var showDialog by remember { mutableStateOf(false) }
         var showAlertDialog by remember { mutableStateOf(false) }
 
-        OutlinedButton({ showDialog = true }) { Text("Show Dialog") }
-        OutlinedButton({ showAlertDialog = true }) { Text("Show AlertDialog") }
+        OutlinedButton({ showDialog = true }) {
+            BoldText("Show Dialog", 16.sp)
+        }
+        OutlinedButton({ showAlertDialog = true }) {
+            BoldText("Show AlertDialog", 16.sp)
+        }
 
         ProvideTextStyle(LocalTextStyle.current.copy(color = Color.White)) {
             when {
-                showDialog -> {
+                showDialog ->
                     DialogExample({ showDialog = false })
-                }
-                showAlertDialog -> {
+                showAlertDialog ->
                     AlertDialogExample({ showAlertDialog = false })
-                }
             }
         }
     }
@@ -107,22 +108,16 @@ private fun DialogExample(
                     color = ClearBlue,
                     shape = MaterialTheme.shapes.medium
                 )
-                .rootClippedShadow(
-                    elevation = 15.dp,
-                    shape = MaterialTheme.shapes.medium,
-                    ambientColor = Color.Blue,
-                    spotColor = Color.Blue
-                )
+                .rootClippedShadow()
                 .padding(horizontal = 15.dp, vertical = 20.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                Text("Dialog", fontSize = 18.sp)
-                Text("Click to dismiss")
+                BoldText("Dialog", 22.sp)
+                BoldText("Click to dismiss", 22.sp)
             }
         }
 
-        val window = localDialogWindow()
-        if (window != null) {
+        localDialogWindow()?.let { window ->
             SideEffect {
                 window.decorView.elevation = 0F
                 window.setDimAmount(0F)
@@ -142,12 +137,11 @@ private fun AlertDialogExample(
     AlertDialog(
         onDismissRequest = dismiss,
         confirmButton = {},
-        title = { Text("AlertDialog") },
+        title = { BoldText("AlertDialog", 22.sp) },
         text = {
-            Text("Click to dismiss")
+            BoldText("Click to dismiss", 22.sp)
 
-            val window = localDialogWindow()
-            if (window != null) {
+            localDialogWindow()?.let { window ->
                 SideEffect {
                     window.setDimAmount(0F)
                     window.centerOver(view)
@@ -158,12 +152,7 @@ private fun AlertDialogExample(
             .rotate(3F)
             .size(300.dp)
             .clickable { dismiss() }
-            .rootClippedShadow(
-                elevation = 15.dp,
-                shape = MaterialTheme.shapes.medium,
-                ambientColor = Color.Blue,
-                spotColor = Color.Blue
-            ),
+            .rootClippedShadow(),
         backgroundColor = ClearBlue,
         properties = DialogProperties(decorFitsSystemWindows = false)
     )
@@ -173,21 +162,20 @@ private fun AlertDialogExample(
 private fun localDialogWindow(): Window? =
     (LocalView.current.parent as? DialogWindowProvider)?.window
 
-private fun Modifier.rootClippedShadow(
-    elevation: Dp,
-    shape: Shape = RectangleShape,
-    clip: Boolean = elevation > 0.dp,
-    ambientColor: Color = DefaultShadowColor,
-    spotColor: Color = DefaultShadowColor
-): Modifier =
+private fun Modifier.rootClippedShadow(): Modifier =
     if (Build.VERSION.SDK_INT != 28) {
+        // From AlertDialog, MaterialTheme.shapes.medium
+        val shape = RoundedCornerShape(4.dp)
         this.clippedShadow(
-            elevation = elevation,
+            elevation = 10.dp,
             shape = shape,
-            clip = clip,
-            ambientColor = ambientColor,
-            spotColor = spotColor
+            ambientColor = Color.Blue,
+            spotColor = Color.Blue
         )
     } else {
         this.border(5.dp, Color.Magenta)
     }
+
+@Composable
+private fun BoldText(text: String, fontSize: TextUnit) =
+    Text(text = text, fontSize = fontSize, fontWeight = FontWeight.Bold)

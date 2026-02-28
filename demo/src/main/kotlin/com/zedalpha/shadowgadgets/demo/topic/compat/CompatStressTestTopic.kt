@@ -46,7 +46,7 @@ class CompatStressTestFragment :
         ui.recycler.adapter = VeryColorfulAdapter()
         ui.composeView.apply {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
-            setContent { ComposeContent() }
+            setContent { ComposeStressTestContent() }
         }
     }
 }
@@ -62,7 +62,6 @@ private class VeryColorfulAdapter : RecyclerView.Adapter<ItemHolder>() {
             holder.itemView.forceOutlineShadowColorCompat = true
         }
 
-    @OptIn(ExperimentalShadowGadgets::class)
     override fun onBindViewHolder(holder: ItemHolder, position: Int) {
         val color =
             evaluator.evaluate(
@@ -71,6 +70,7 @@ private class VeryColorfulAdapter : RecyclerView.Adapter<ItemHolder>() {
                 if (position < HalfItemCount) ClearGreenInt else ClearBlueInt
             ) as Int
 
+        @OptIn(ExperimentalShadowGadgets::class)
         holder.itemView.updateShadow {
             backgroundTintList = color.toColorStateList()
             outlineShadowColorCompat = ColorUtils.setAlphaComponent(color, 255)
@@ -83,7 +83,7 @@ private class VeryColorfulAdapter : RecyclerView.Adapter<ItemHolder>() {
 }
 
 @Composable
-private fun ComposeContent() {
+private fun ComposeStressTestContent() {
     ColorfulLazyColumn(
         modifier = Modifier
             .fillMaxSize()

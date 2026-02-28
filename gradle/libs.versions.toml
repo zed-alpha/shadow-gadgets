@@ -1,14 +1,14 @@
 [versions]
 agp = "9.0.1"
 kotlin = "2.3.10"
-dokka = "2.1.0"
+dokka = "2.2.0-Beta"
 
 androidxAnnotation = "1.9.1"
 androidxAppcompat = "1.7.1"
 androidxConstraintLayout = "2.2.1"
 androidxCoreKtx = "1.17.0"
 materialComponents = "1.13.0"
-composeBom = "2026.02.00"
+composeBom = "2026.02.01"
 
 junit4 = "4.13.2"
 lint = "32.0.1"
@@ -37,6 +37,8 @@ lint-cli = { module = "com.android.tools.lint:lint", version.ref = "lint" }
 lint-tests = { module = "com.android.tools.lint:lint-tests", version.ref = "lint" }
 
 dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
+shadowgagdgets-compose = { module = "com.zedalpha.shadowgadgets:compose" }
+shadowgagdgets-view = { module = "com.zedalpha.shadowgadgets:view" }
 
 [bundles]
 lint-api = ["kotlin-stdlib", "lint-api", "lint-checks"]

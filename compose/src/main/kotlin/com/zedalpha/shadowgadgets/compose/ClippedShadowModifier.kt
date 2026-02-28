@@ -48,10 +48,10 @@ public fun Modifier.clippedShadow(
  *
  * [colorCompat] takes a [Color] that's used to tint the shadow on API levels
  * 27 and below. If the passed value is [Color.Black] – the default shadow color
- * – no tint is applied. If [Color.Unspecified] is passed, the actual value is
+ * – no tint is applied. If [Color.Unspecified] is passed, the actual tint is
  * calculated as a blend of the [ambientColor] and [spotColor], mixed in
  * proportion to their current theme alphas. Setting any other value disables
- * this behavior.
+ * this blending behavior.
  *
  * [forceColorCompat] is available to enable the effect on API levels 28 and
  * above.

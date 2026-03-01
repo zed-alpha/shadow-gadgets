@@ -12,6 +12,7 @@ import com.zedalpha.shadowgadgets.view.proxy.updatePlane
 /**
  * General, all-purpose annotation for any public API that may change.
  */
+@MustBeDocumented
 @RequiresOptIn("Nonfinal API. May be altered, moved or removed without notice.")
 @Retention(AnnotationRetention.BINARY)
 public annotation class ExperimentalShadowGadgets

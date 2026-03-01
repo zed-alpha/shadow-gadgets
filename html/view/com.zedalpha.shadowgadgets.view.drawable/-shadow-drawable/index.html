@@ -1,0 +1,1282 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ShadowDrawable</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    Shadow Gadgets
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html&quot;}"><div class="dropdown versions-dropdown" data-role="dropdown">
+  <div class="button button_dropdown versions-dropdown-button" role="combobox" data-role="dropdown-toggle" aria-controls="versions-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select version" tabindex="0" title="2.4.0"><span class="versions-dropdown-button-text">2.4.0</span></div>
+  <div class="dropdown--list dropdown--list_positioned_left versions-dropdown-data" role="listbox" data-role="dropdown-listbox" aria-label="Versions" id="versions-listbox">
+    <div class="dropdown--header" data-remove-style="true" style="display: none"><span>Select version</span><button class="button" data-role="dropdown-toggle" aria-label="Close versions selection"><i class="ui-kit-icon ui-kit-icon_cross"></i></button></div>
+<a href="index.html" class="dropdown--option dropdown--option_active dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.4.0"><span class="dropdown--option-icon dropdown--option-icon_selected"></span><span class="dropdown--option-text">2.4.0</span></a><a href="..\..\..\older\2.3.1\view\com.zedalpha.shadowgadgets.view.drawable\-shadow-drawable\index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.3.1"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.3.1</span></a><a href="..\..\..\older\2.3.0\view\com.zedalpha.shadowgadgets.view.drawable\-shadow-drawable\index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.3.0"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.3.0</span></a><a href="..\..\..\older\2.2.1\view\com.zedalpha.shadowgadgets.view.drawable\-shadow-drawable\index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.2.1"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.2.1</span></a><a href="..\..\..\older\2.2.0\view\com.zedalpha.shadowgadgets.view.drawable\-shadow-drawable\index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.2.0"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.2.0</span></a></div>
+  <div class="dropdown--overlay"></div>
+</div>
+</dokka-template-command>        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":view/release">release</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":view/release" data-filter=":view/release">
+                                <span class="checkbox--icon"></span>
+                                release
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://github.com/zed-alpha/shadow-gadgets"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    Shadow Gadgets
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="view::com.zedalpha.shadowgadgets.view.drawable/ShadowDrawable///PointingToDeclaration//-979501901">
+  <div class="breadcrumbs"><a href="../../index.html">view</a><span class="delimiter">/</span><a href="../index.html">com.zedalpha.shadowgadgets.view.drawable</a><span class="delimiter">/</span><span class="current">ShadowDrawable</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Shadow</span><wbr><span><span>Drawable</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">ShadowDrawable</a> : <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/zed-alpha/shadow-gadgets/tree/main/view/src/main/kotlin/com/zedalpha/shadowgadgets/view/drawable/ShadowDrawable.kt#L69">source</a>)</span></span></div><p class="paragraph">This class is a thin wrapper around the library's core draw functionalities, allowing its shadows to be drawn manually without having to use the core module directly.</p><p class="paragraph">Clipped instances with irregular shapes on API levels 30+ must have the outline Path set manually using the <a href="set-clip-path-provider.html">setClipPathProvider</a> function. This is analogous to setting a <a href="../../com.zedalpha.shadowgadgets.view/-view-path-provider/index.html">ViewPathProvider</a> on a target View.</p><p class="paragraph">The user is responsible for invalidating the current draw whenever a property's value is changed. Failure to do so can result in a few different possible defects, depending on the specific setup, including misaligned clip regions, stale draws, etc.</p><p class="paragraph">The color compat functionality is exposed here through the <a href="color-compat.html">colorCompat</a> property, which is set to black by default, disabling the compat tinting. Setting any non-black color enables color compat, and the <a href="ambient-color.html">ambientColor</a> and <a href="spot-color.html">spotColor</a> values are then ignored.</p><p class="paragraph">Color compat requires an <a href="../../../view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/--root--.html">owner</a> View in order to be able to hook into the hardware-accelerated draw routine, and that View must be attached to the onscreen hierarchy. Instances created with the @RequiresApi(29) constructor will throw an <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-illegal-state-exception/index.html">IllegalStateException</a> upon attempts to modify <a href="color-compat.html">colorCompat</a>.</p><p class="paragraph">Color compat shadows are always clipped to the drawable's bounds.</p><p class="paragraph">Normally the <a href="../../../view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/--root--.html">owner</a> is just the View in which the draw happens, though that's not strictly necessary. However, due to a limitation in the core graphics framework, the color compat mechanism needs to track its onscreen location, and the lighting effects may go out of sync with the expected appearance if the drawing View moves differently than the <a href="../../../view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/--root--.html">owner</a>.</p><p class="paragraph">All ShadowDrawable instances created with an <a href="../../../view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/--root--.html">owner</a> should call <a href="dispose.html">dispose</a>. This is technically not necessary for the @RequiresApi(29) ones, but it is still safe to call <a href="dispose.html">dispose</a> on those instances. Use after disposal is not an automatic Exception, but it is not advised, and there is no guaranteed behavior.</p><p class="paragraph">The Drawable class's required <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html#setcolorfilter">setColorFilter</a> override is a no-op here.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="1653930400%2FConstructors%2F-979501901" anchor-label="ShadowDrawable" id="1653930400%2FConstructors%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-shadow-drawable.html"><span>Shadow</span><wbr><span><span>Drawable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1653930400%2FConstructors%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">owner<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">, </span></span><span class="parameter ">isClipped<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">The base constructor for all API levels requires an <a href="../../../view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/--root--.html">owner</a> View that must be attached to the onscreen hierarchy.</p></div><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RequiresApi.html"><span class="token annotation builtin">RequiresApi</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="breakable-word"><span class="token constant">29</span></span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isClipped<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">At API level 29, an owner View is not required, but color compat is unavailable for these instances.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="1068259429%2FProperties%2F-979501901" anchor-label="alpha" id="1068259429%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="alpha.html"><span><span>alpha</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1068259429%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/CallSuper.html"><span class="token annotation builtin">CallSuper</span></a></div><div class="block"><span class="token annotation builtin">@set:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/CallSuper.html"><span class="token annotation builtin">CallSuper</span></a></div></div><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">var </span><a href="alpha.html">alpha</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-270474388%2FProperties%2F-979501901" anchor-label="ambientColor" id="-270474388%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="ambient-color.html"><span>ambient</span><wbr><span><span>Color</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-270474388%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a></div></div><span class="token keyword">var </span><a href="ambient-color.html">ambientColor</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getambientshadowcolor">RenderNode#getAmbientShadowColor()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setambientshadowcolor">RenderNode#setAmbientShadowColor()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1274656228%2FProperties%2F-979501901" anchor-label="bounds" id="1274656228%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1274656228%2FProperties%2F-979501901"><span><span>bounds</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1274656228%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="index.html#1274656228%2FProperties%2F-979501901">bounds</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Rect.html">Rect</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1212583764%2FProperties%2F-979501901" anchor-label="callback" id="1212583764%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1212583764%2FProperties%2F-979501901"><span><span>callback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1212583764%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">var </span><a href="index.html#1212583764%2FProperties%2F-979501901">callback</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.Callback.html">Drawable.Callback</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1853642435%2FProperties%2F-979501901" anchor-label="cameraDistance" id="-1853642435%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="camera-distance.html"><span>camera</span><wbr><span><span>Distance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1853642435%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="camera-distance.html">cameraDistance</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getcameradistance">RenderNode#getCameraDistance()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setcameradistance">RenderNode#setCameraDistance()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1086507473%2FProperties%2F-979501901" anchor-label="changingConfigurations" id="-1086507473%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1086507473%2FProperties%2F-979501901"><span>changing</span><wbr><span><span>Configurations</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1086507473%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">var </span><a href="index.html#-1086507473%2FProperties%2F-979501901">changingConfigurations</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1196484553%2FProperties%2F-979501901" anchor-label="clipToBounds" id="-1196484553%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clip-to-bounds.html"><span>clip</span><wbr><span>To</span><wbr><span><span>Bounds</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1196484553%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="clip-to-bounds.html">clipToBounds</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Determines whether the shadow will be clipped to the drawable's <a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html#getbounds">bounds</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="310613598%2FProperties%2F-979501901" anchor-label="colorCompat" id="310613598%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="color-compat.html"><span>color</span><wbr><span><span>Compat</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="310613598%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a></div></div><span class="token keyword">var </span><a href="color-compat.html">colorCompat</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The color that the compat mechanism uses to tint the shadow. The default value is black (#FF000000), which disables the tint. If any other color is set, the compat mechanism takes over, and the ambient and spot values are ignored.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1265626534%2FProperties%2F-979501901" anchor-label="colorFilter" id="1265626534%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1265626534%2FProperties%2F-979501901"><span>color</span><wbr><span><span>Filter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1265626534%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">var </span><a href="index.html#1265626534%2FProperties%2F-979501901">colorFilter</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/ColorFilter.html">ColorFilter</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-442331564%2FProperties%2F-979501901" anchor-label="constantState" id="-442331564%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-442331564%2FProperties%2F-979501901"><span>constant</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-442331564%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#-442331564%2FProperties%2F-979501901">constantState</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.ConstantState.html">Drawable.ConstantState</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="227259560%2FProperties%2F-979501901" anchor-label="current" id="227259560%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#227259560%2FProperties%2F-979501901"><span><span>current</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="227259560%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#227259560%2FProperties%2F-979501901">current</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1002155706%2FProperties%2F-979501901" anchor-label="dirtyBounds" id="1002155706%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1002155706%2FProperties%2F-979501901"><span>dirty</span><wbr><span><span>Bounds</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1002155706%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#1002155706%2FProperties%2F-979501901">dirtyBounds</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Rect.html">Rect</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1978624698%2FProperties%2F-979501901" anchor-label="elevation" id="-1978624698%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="elevation.html"><span><span>elevation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1978624698%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="elevation.html">elevation</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getelevation">RenderNode#getElevation()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setelevation">RenderNode#setElevation()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-862609199%2FProperties%2F-979501901" anchor-label="forceLayer" id="-862609199%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="force-layer.html"><span>force</span><wbr><span><span>Layer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-862609199%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="force-layer.html"><strike>forceLayer</strike></a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Flag to indicate whether the library shadow should always be composited through a layer, regardless of the color compat state.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1065299211%2FProperties%2F-979501901" anchor-label="intrinsicHeight" id="-1065299211%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1065299211%2FProperties%2F-979501901"><span>intrinsic</span><wbr><span><span>Height</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1065299211%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#-1065299211%2FProperties%2F-979501901">intrinsicHeight</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1934418344%2FProperties%2F-979501901" anchor-label="intrinsicWidth" id="-1934418344%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1934418344%2FProperties%2F-979501901"><span>intrinsic</span><wbr><span><span>Width</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1934418344%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#-1934418344%2FProperties%2F-979501901">intrinsicWidth</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-334815966%2FProperties%2F-979501901" anchor-label="isAutoMirrored" id="-334815966%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-334815966%2FProperties%2F-979501901"><span>is</span><wbr><span>Auto</span><wbr><span><span>Mirrored</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-334815966%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">var </span><a href="index.html#-334815966%2FProperties%2F-979501901">isAutoMirrored</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1372941458%2FProperties%2F-979501901" anchor-label="isClipped" id="-1372941458%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-clipped.html"><span>is</span><wbr><span><span>Clipped</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1372941458%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-clipped.html">isClipped</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-976310520%2FProperties%2F-979501901" anchor-label="isFilterBitmap" id="-976310520%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-976310520%2FProperties%2F-979501901"><span>is</span><wbr><span>Filter</span><wbr><span><span>Bitmap</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-976310520%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">var </span><a href="index.html#-976310520%2FProperties%2F-979501901">isFilterBitmap</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="841164371%2FProperties%2F-979501901" anchor-label="isProjected" id="841164371%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#841164371%2FProperties%2F-979501901"><span>is</span><wbr><span><span>Projected</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="841164371%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#841164371%2FProperties%2F-979501901">isProjected</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1524022493%2FProperties%2F-979501901" anchor-label="isStateful" id="-1524022493%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1524022493%2FProperties%2F-979501901"><span>is</span><wbr><span><span>Stateful</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1524022493%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#-1524022493%2FProperties%2F-979501901">isStateful</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-142310375%2FProperties%2F-979501901" anchor-label="isVisible" id="-142310375%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-142310375%2FProperties%2F-979501901"><span>is</span><wbr><span><span>Visible</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-142310375%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="index.html#-142310375%2FProperties%2F-979501901">isVisible</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1706247724%2FProperties%2F-979501901" anchor-label="layoutDirection" id="1706247724%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1706247724%2FProperties%2F-979501901"><span>layout</span><wbr><span><span>Direction</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1706247724%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">var </span><a href="index.html#1706247724%2FProperties%2F-979501901">layoutDirection</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1968597501%2FProperties%2F-979501901" anchor-label="level" id="1968597501%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1968597501%2FProperties%2F-979501901"><span><span>level</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1968597501%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="index.html#1968597501%2FProperties%2F-979501901">level</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1748343860%2FProperties%2F-979501901" anchor-label="minimumHeight" id="-1748343860%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1748343860%2FProperties%2F-979501901"><span>minimum</span><wbr><span><span>Height</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1748343860%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#-1748343860%2FProperties%2F-979501901">minimumHeight</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1645778593%2FProperties%2F-979501901" anchor-label="minimumWidth" id="1645778593%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1645778593%2FProperties%2F-979501901"><span>minimum</span><wbr><span><span>Width</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1645778593%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#1645778593%2FProperties%2F-979501901">minimumWidth</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1776747736%2FProperties%2F-979501901" anchor-label="opacity" id="1776747736%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="opacity.html"><span><span>opacity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1776747736%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="opacity.html">opacity</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1638155187%2FProperties%2F-979501901" anchor-label="opticalInsets" id="1638155187%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1638155187%2FProperties%2F-979501901"><span>optical</span><wbr><span><span>Insets</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1638155187%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#1638155187%2FProperties%2F-979501901">opticalInsets</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Insets.html">Insets</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-410608479%2FProperties%2F-979501901" anchor-label="pivotX" id="-410608479%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pivot-x.html"><span>pivot</span><wbr><span><span>X</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-410608479%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="pivot-x.html">pivotX</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getpivotx">RenderNode#getPivotX()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setpivotx">RenderNode#setPivotX()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-379588672%2FProperties%2F-979501901" anchor-label="pivotY" id="-379588672%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pivot-y.html"><span>pivot</span><wbr><span><span>Y</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-379588672%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="pivot-y.html">pivotY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getpivoty">RenderNode#getPivotY()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setpivoty">RenderNode#setPivotY()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-348524119%2FProperties%2F-979501901" anchor-label="rotationX" id="-348524119%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rotation-x.html"><span>rotation</span><wbr><span><span>X</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-348524119%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="rotation-x.html">rotationX</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getrotationx">RenderNode#getRotationX()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setrotationx">RenderNode#setRotationX()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-317504312%2FProperties%2F-979501901" anchor-label="rotationY" id="-317504312%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rotation-y.html"><span>rotation</span><wbr><span><span>Y</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-317504312%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="rotation-y.html">rotationY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getrotationy">RenderNode#getRotationY()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setrotationy">RenderNode#setRotationY()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-286484505%2FProperties%2F-979501901" anchor-label="rotationZ" id="-286484505%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="rotation-z.html"><span>rotation</span><wbr><span><span>Z</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-286484505%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="rotation-z.html">rotationZ</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getrotationz">RenderNode#getRotationZ()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setrotationz">RenderNode#setRotationZ()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1871437911%2FProperties%2F-979501901" anchor-label="scaleX" id="-1871437911%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="scale-x.html"><span>scale</span><wbr><span><span>X</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1871437911%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="scale-x.html">scaleX</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getscalex">RenderNode#getScaleX()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setscalex">RenderNode#setScaleX()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1840418104%2FProperties%2F-979501901" anchor-label="scaleY" id="-1840418104%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="scale-y.html"><span>scale</span><wbr><span><span>Y</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1840418104%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="scale-y.html">scaleY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getscaley">RenderNode#getScaleY()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setscaley">RenderNode#setScaleY()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-129368926%2FProperties%2F-979501901" anchor-label="spotColor" id="-129368926%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="spot-color.html"><span>spot</span><wbr><span><span>Color</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-129368926%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorInt.html"><span class="token annotation builtin">ColorInt</span></a></div></div><span class="token keyword">var </span><a href="spot-color.html">spotColor</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getspotshadowcolor">RenderNode#getSpotShadowColor()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setspotshadowcolor">RenderNode#setSpotShadowColor()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1936103824%2FProperties%2F-979501901" anchor-label="state" id="1936103824%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1936103824%2FProperties%2F-979501901"><span><span>state</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1936103824%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">var </span><a href="index.html#1936103824%2FProperties%2F-979501901">state</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int-array/index.html">IntArray</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1270465232%2FProperties%2F-979501901" anchor-label="translationX" id="1270465232%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="translation-x.html"><span>translation</span><wbr><span><span>X</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1270465232%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="translation-x.html">translationX</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#gettranslationx">RenderNode#getTranslationX()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#settranslationx">RenderNode#setTranslationX()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1301485039%2FProperties%2F-979501901" anchor-label="translationY" id="1301485039%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="translation-y.html"><span>translation</span><wbr><span><span>Y</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1301485039%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="translation-y.html">translationY</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#gettranslationy">RenderNode#getTranslationY()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#settranslationy">RenderNode#setTranslationY()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1332504846%2FProperties%2F-979501901" anchor-label="translationZ" id="1332504846%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="translation-z.html"><span>translation</span><wbr><span><span>Z</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1332504846%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="translation-z.html">translationZ</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#gettranslationz">RenderNode#getTranslationZ()</a> and <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#settranslationz">RenderNode#setTranslationZ()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1834501851%2FProperties%2F-979501901" anchor-label="transparentRegion" id="1834501851%2FProperties%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1834501851%2FProperties%2F-979501901"><span>transparent</span><wbr><span><span>Region</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1834501851%2FProperties%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">val </span><a href="index.html#1834501851%2FProperties%2F-979501901">transparentRegion</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Region.html">Region</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-403096154%2FFunctions%2F-979501901" anchor-label="applyTheme" id="-403096154%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-403096154%2FFunctions%2F-979501901"><span>apply</span><wbr><span><span>Theme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-403096154%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-403096154%2FFunctions%2F-979501901"><span class="token function">applyTheme</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">t<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Resources.Theme.html">Resources.Theme</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1033206666%2FFunctions%2F-979501901" anchor-label="canApplyTheme" id="-1033206666%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1033206666%2FFunctions%2F-979501901"><span>can</span><wbr><span>Apply</span><wbr><span><span>Theme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1033206666%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1033206666%2FFunctions%2F-979501901"><span class="token function">canApplyTheme</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="743095179%2FFunctions%2F-979501901" anchor-label="clearColorFilter" id="743095179%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#743095179%2FFunctions%2F-979501901"><span>clear</span><wbr><span>Color</span><wbr><span><span>Filter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="743095179%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#743095179%2FFunctions%2F-979501901"><span class="token function">clearColorFilter</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="125175976%2FFunctions%2F-979501901" anchor-label="copyBounds" id="125175976%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#8212911%2FFunctions%2F-979501901"><span>copy</span><wbr><span><span>Bounds</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="125175976%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#8212911%2FFunctions%2F-979501901"><span class="token function">copyBounds</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Rect.html">Rect</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#-1613455893%2FFunctions%2F-979501901"><span class="token function">copyBounds</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">bounds<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Rect.html">Rect</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1766069572%2FFunctions%2F-979501901" anchor-label="dispose" id="1766069572%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="dispose.html"><span><span>dispose</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1766069572%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="dispose.html"><span class="token function">dispose</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Releases any active internal resources.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1506067379%2FFunctions%2F-979501901" anchor-label="draw" id="1506067379%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw.html"><span><span>draw</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1506067379%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/CallSuper.html"><span class="token annotation builtin">CallSuper</span></a></div></div><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="draw.html"><span class="token function">draw</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">canvas<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Canvas.html">Canvas</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1495414001%2FFunctions%2F-979501901" anchor-label="getAlpha" id="-1495414001%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-alpha.html"><span>get</span><wbr><span><span>Alpha</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1495414001%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/CallSuper.html"><span class="token annotation builtin">CallSuper</span></a></div></div><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="get-alpha.html"><span class="token function">getAlpha</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getalpha">RenderNode#getAlpha()</a>, but returns an Int to conform to Drawable's API.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="357891087%2FFunctions%2F-979501901" anchor-label="getHotspotBounds" id="357891087%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#357891087%2FFunctions%2F-979501901"><span>get</span><wbr><span>Hotspot</span><wbr><span><span>Bounds</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="357891087%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#357891087%2FFunctions%2F-979501901"><span class="token function">getHotspotBounds</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">outRect<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Rect.html">Rect</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1714061356%2FFunctions%2F-979501901" anchor-label="getInverseMatric" id="1714061356%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-inverse-matric.html"><span>get</span><wbr><span>Inverse</span><wbr><span><span>Matric</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1714061356%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-inverse-matric.html"><span class="token function">getInverseMatric</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">outMatrix<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Matrix.html">Matrix</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getinversematrix">RenderNode#getInverseMatrix()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1397052113%2FFunctions%2F-979501901" anchor-label="getMatrix" id="1397052113%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-matrix.html"><span>get</span><wbr><span><span>Matrix</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1397052113%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-matrix.html"><span class="token function">getMatrix</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">outMatrix<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Matrix.html">Matrix</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#getmatrix">RenderNode#getMatrix()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-897157886%2FFunctions%2F-979501901" anchor-label="getOpacity" id="-897157886%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-opacity.html"><span>get</span><wbr><span><span>Opacity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-897157886%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="get-opacity.html"><span class="token function">getOpacity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1938345137%2FFunctions%2F-979501901" anchor-label="getOutline" id="-1938345137%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1938345137%2FFunctions%2F-979501901"><span>get</span><wbr><span><span>Outline</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1938345137%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1938345137%2FFunctions%2F-979501901"><span class="token function">getOutline</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">outline<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Outline.html">Outline</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="770115964%2FFunctions%2F-979501901" anchor-label="getPadding" id="770115964%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#770115964%2FFunctions%2F-979501901"><span>get</span><wbr><span><span>Padding</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="770115964%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#770115964%2FFunctions%2F-979501901"><span class="token function">getPadding</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">padding<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Rect.html">Rect</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1094417276%2FFunctions%2F-979501901" anchor-label="hasFocusStateSpecified" id="1094417276%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1094417276%2FFunctions%2F-979501901"><span>has</span><wbr><span>Focus</span><wbr><span>State</span><wbr><span><span>Specified</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1094417276%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1094417276%2FFunctions%2F-979501901"><span class="token function">hasFocusStateSpecified</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1767389642%2FFunctions%2F-979501901" anchor-label="hasIdentityMatrix" id="1767389642%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-identity-matrix.html"><span>has</span><wbr><span>Identity</span><wbr><span><span>Matrix</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1767389642%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="has-identity-matrix.html"><span class="token function">hasIdentityMatrix</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#hasidentitymatrix">RenderNode#hasIdentityMatrix()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="477942138%2FFunctions%2F-979501901" anchor-label="inflate" id="477942138%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1545414630%2FFunctions%2F-979501901"><span><span>inflate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="477942138%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1545414630%2FFunctions%2F-979501901"><span class="token function">inflate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">r<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Resources.html">Resources</a><span class="token punctuation">, </span></span><span class="parameter ">parser<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/org/xmlpull/v1/XmlPullParser.html">XmlPullParser</a><span class="token punctuation">, </span></span><span class="parameter ">attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-154614408%2FFunctions%2F-979501901"><span class="token function">inflate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">r<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Resources.html">Resources</a><span class="token punctuation">, </span></span><span class="parameter ">parser<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/org/xmlpull/v1/XmlPullParser.html">XmlPullParser</a><span class="token punctuation">, </span></span><span class="parameter ">attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token punctuation">, </span></span><span class="parameter ">theme<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/Resources.Theme.html">Resources.Theme</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1614042546%2FFunctions%2F-979501901" anchor-label="invalidateSelf" id="1614042546%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1614042546%2FFunctions%2F-979501901"><span>invalidate</span><wbr><span><span>Self</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1614042546%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1614042546%2FFunctions%2F-979501901"><span class="token function">invalidateSelf</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="291216280%2FFunctions%2F-979501901" anchor-label="jumpToCurrentState" id="291216280%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#291216280%2FFunctions%2F-979501901"><span>jump</span><wbr><span>To</span><wbr><span>Current</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="291216280%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#291216280%2FFunctions%2F-979501901"><span class="token function">jumpToCurrentState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1296536179%2FFunctions%2F-979501901" anchor-label="mutate" id="1296536179%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1296536179%2FFunctions%2F-979501901"><span><span>mutate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1296536179%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1296536179%2FFunctions%2F-979501901"><span class="token function">mutate</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/drawable/Drawable.html">Drawable</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1832823975%2FFunctions%2F-979501901" anchor-label="onLayoutDirectionChanged" id="-1832823975%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1832823975%2FFunctions%2F-979501901"><span>on</span><wbr><span>Layout</span><wbr><span>Direction</span><wbr><span><span>Changed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1832823975%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1832823975%2FFunctions%2F-979501901"><span class="token function">onLayoutDirectionChanged</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">layoutDirection<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-258370081%2FFunctions%2F-979501901" anchor-label="scheduleSelf" id="-258370081%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-258370081%2FFunctions%2F-979501901"><span>schedule</span><wbr><span><span>Self</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-258370081%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-258370081%2FFunctions%2F-979501901"><span class="token function">scheduleSelf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">what<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Runnable.html">Runnable</a><span class="token punctuation">, </span></span><span class="parameter ">when<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="133803769%2FFunctions%2F-979501901" anchor-label="setAlpha" id="133803769%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-alpha.html"><span>set</span><wbr><span><span>Alpha</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="133803769%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/CallSuper.html"><span class="token annotation builtin">CallSuper</span></a></div></div><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="set-alpha.html"><span class="token function">setAlpha</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">alpha<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setalpha">RenderNode#setAlpha()</a>, but takes an Int to conform to Drawable's API.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="994726682%2FFunctions%2F-979501901" anchor-label="setClipPathProvider" id="994726682%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-clip-path-provider.html"><span>set</span><wbr><span>Clip</span><wbr><span>Path</span><wbr><span><span>Provider</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="994726682%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-clip-path-provider.html"><span class="token function">setClipPathProvider</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">provider<span class="token operator">: </span><span class="token punctuation">(</span><a href="https://developer.android.com/reference/kotlin/android/graphics/Path.html">Path</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the function through which to provide irregular Paths for clipping on API levels 30 and above.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1926903741%2FFunctions%2F-979501901" anchor-label="setColorFilter" id="-1926903741%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#673530483%2FFunctions%2F-979501901"><span>set</span><wbr><span>Color</span><wbr><span><span>Filter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1926903741%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#673530483%2FFunctions%2F-979501901"><span class="token function"><strike>setColorFilter</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">mode<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/PorterDuff.Mode.html">PorterDuff.Mode</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="set-color-filter.html"><span class="token function">setColorFilter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">colorFilter<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/ColorFilter.html">ColorFilter</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1119908958%2FFunctions%2F-979501901" anchor-label="setDither" id="1119908958%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1119908958%2FFunctions%2F-979501901"><span>set</span><wbr><span><span>Dither</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1119908958%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1119908958%2FFunctions%2F-979501901"><span class="token function"><strike>setDither</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dither<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1208590445%2FFunctions%2F-979501901" anchor-label="setHotspot" id="-1208590445%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1208590445%2FFunctions%2F-979501901"><span>set</span><wbr><span><span>Hotspot</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1208590445%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1208590445%2FFunctions%2F-979501901"><span class="token function">setHotspot</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-830955992%2FFunctions%2F-979501901" anchor-label="setHotspotBounds" id="-830955992%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-830955992%2FFunctions%2F-979501901"><span>set</span><wbr><span>Hotspot</span><wbr><span><span>Bounds</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-830955992%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-830955992%2FFunctions%2F-979501901"><span class="token function">setHotspotBounds</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="373581977%2FFunctions%2F-979501901" anchor-label="setOutline" id="373581977%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-outline.html"><span>set</span><wbr><span><span>Outline</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="373581977%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-outline.html"><span class="token function">setOutline</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">outline<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/Outline.html">Outline</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Analogous to <a href="https://developer.android.com/reference/kotlin/android/graphics/RenderNode.html#setoutline">RenderNode#setOutline()</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1886386370%2FFunctions%2F-979501901" anchor-label="setTint" id="1886386370%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1886386370%2FFunctions%2F-979501901"><span>set</span><wbr><span><span>Tint</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1886386370%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1886386370%2FFunctions%2F-979501901"><span class="token function">setTint</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tintColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1861382703%2FFunctions%2F-979501901" anchor-label="setTintBlendMode" id="-1861382703%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1861382703%2FFunctions%2F-979501901"><span>set</span><wbr><span>Tint</span><wbr><span>Blend</span><wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1861382703%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1861382703%2FFunctions%2F-979501901"><span class="token function">setTintBlendMode</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">blendMode<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/BlendMode.html">BlendMode</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="718401419%2FFunctions%2F-979501901" anchor-label="setTintList" id="718401419%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#718401419%2FFunctions%2F-979501901"><span>set</span><wbr><span>Tint</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="718401419%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#718401419%2FFunctions%2F-979501901"><span class="token function">setTintList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tint<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/res/ColorStateList.html">ColorStateList</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1634855184%2FFunctions%2F-979501901" anchor-label="setTintMode" id="1634855184%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1634855184%2FFunctions%2F-979501901"><span>set</span><wbr><span>Tint</span><wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1634855184%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1634855184%2FFunctions%2F-979501901"><span class="token function">setTintMode</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">tintMode<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/graphics/PorterDuff.Mode.html">PorterDuff.Mode</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1503808266%2FFunctions%2F-979501901" anchor-label="setVisible" id="-1503808266%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1503808266%2FFunctions%2F-979501901"><span>set</span><wbr><span><span>Visible</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1503808266%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1503808266%2FFunctions%2F-979501901"><span class="token function">setVisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">visible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">restart<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-42786740%2FFunctions%2F-979501901" anchor-label="unscheduleSelf" id="-42786740%2FFunctions%2F-979501901" data-filterable-set=":view/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":view/release" data-filterable-set=":view/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-42786740%2FFunctions%2F-979501901"><span>unschedule</span><wbr><span><span>Self</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-42786740%2FFunctions%2F-979501901"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":view/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-42786740%2FFunctions%2F-979501901"><span class="token function">unscheduleSelf</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">what<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Runnable.html">Runnable</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 zed-alpha</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

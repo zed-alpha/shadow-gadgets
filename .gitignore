@@ -10,8 +10,7 @@
 local.properties
 .kotlin
 /compose
-/core
 /demo
 /stubs
 /view
-/gradle/build-logic
+/docs

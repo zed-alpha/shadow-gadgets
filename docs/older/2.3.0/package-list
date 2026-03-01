@@ -1,0 +1,10 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:compose
+com.zedalpha.shadowgadgets.compose
+module:view
+com.zedalpha.shadowgadgets.view
+com.zedalpha.shadowgadgets.view.drawable
+com.zedalpha.shadowgadgets.view.inflation
+com.zedalpha.shadowgadgets.view.viewgroup

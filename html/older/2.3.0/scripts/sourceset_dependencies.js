@@ -1,1 +1,0 @@
-sourceset_dependencies = '{":view/debug":[],":view/main":[],":view/release":[],":compose/debug":[],":compose/main":[],":compose/release":[]}'

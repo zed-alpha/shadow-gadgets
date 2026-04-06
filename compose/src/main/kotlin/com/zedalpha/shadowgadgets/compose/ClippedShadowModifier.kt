@@ -29,7 +29,7 @@ import com.zedalpha.shadowgadgets.compose.internal.WorkingShadowScopeImpl
  * Refer to [shadow][androidx.compose.ui.draw.shadow]'s docs for parameter
  * details.
  *
- * **NB:** This should _not_ be used for shadows that extend beyond the root
+ * **NB:** This should not be used for shadows that extend beyond the root
  * composable's bounds on API levels 24..28. The clip feature requires a layer
  * on those versions due to a bug in the system graphics, and layers can be no
  * larger than the root.
@@ -74,7 +74,7 @@ public fun Modifier.clippedShadow(
  * The color blending formula gives good results only if the ambient and spot
  * colors are both fully opaque; i.e., only if both have maximum alpha values.
  *
- * **NB:** This should _not_ be used for shadows that extend beyond the root
+ * **NB:** This should not be used for shadows that extend beyond the root
  * composable's bounds on API levels 24..28. The clip feature requires a
  * compositing layer on those versions due to a bug in the system graphics, and
  * layers can be no larger than the root.
@@ -216,7 +216,7 @@ public interface ClippedShadowScope : ShadowGadgetsScope
  * The rest of the original parameters – `elevation`, `ambientColor`,
  * `spotColor`, `colorCompat`, and `forceColorCompat` – are now inside [block].
  *
- * **NB:** This should _not_ be used for shadows that extend beyond the root
+ * **NB:** This should not be used for shadows that extend beyond the root
  * composable's bounds on API levels 24..28. The clip feature requires a
  * compositing layer on those versions due to a bug in the system graphics, and
  * layers can be no larger than the root.

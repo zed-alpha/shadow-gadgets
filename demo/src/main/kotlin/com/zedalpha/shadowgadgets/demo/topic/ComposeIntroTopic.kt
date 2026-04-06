@@ -124,7 +124,7 @@ private fun ComposeIntroContent() {
 
 @Composable
 internal fun ColorfulLazyColumn(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     shadowModifier: Modifier.(Color) -> Modifier
 ) {
     val textStyle = LocalTextStyle.current.copy(
@@ -164,6 +164,7 @@ internal fun ColorfulLazyColumn(
 
 @Composable
 private fun ClippedShadowFloatingActionButton(
+    modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
     backgroundColor: Color = MaterialTheme.colors.secondary,
     elevation: FloatingActionButtonElevation = FloatingActionButtonDefaults.elevation(),
@@ -174,7 +175,7 @@ private fun ClippedShadowFloatingActionButton(
 
     FloatingActionButton(
         onClick = {},
-        modifier = Modifier.clippedShadow(shape) {
+        modifier = modifier.clippedShadow(shape) {
             this.elevation = elevationDp.toPx()
             ambientColor = shadowColor
             spotColor = shadowColor
@@ -190,6 +191,7 @@ private fun ClippedShadowFloatingActionButton(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ClippedShadowButton(
+    modifier: Modifier = Modifier,
     elevation: ButtonElevation = ButtonDefaults.elevation(),
     shape: Shape = MaterialTheme.shapes.small,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
@@ -201,11 +203,12 @@ private fun ClippedShadowButton(
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Button(
             onClick = {},
-            modifier = Modifier.clippedShadow(shape) {
+            modifier = modifier.clippedShadow(shape) {
                 this.elevation = elevationDp.toPx()
                 ambientColor = shadowColor
                 spotColor = shadowColor
-            }, interactionSource = interactionSource,
+            },
+            interactionSource = interactionSource,
             elevation = ZeroButtonElevation,
             shape = shape,
             colors = colors,

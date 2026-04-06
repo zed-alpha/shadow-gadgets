@@ -1,11 +1,9 @@
 package com.zedalpha.shadowgadgets.view.proxy
 
 import android.view.View
-import android.view.ViewGroup
-import android.widget.AdapterView
-import androidx.recyclerview.widget.RecyclerView
 import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
+import com.zedalpha.shadowgadgets.view.internal.isRecycling
 import com.zedalpha.shadowgadgets.view.internal.parentViewGroup
 import com.zedalpha.shadowgadgets.view.internal.viewTag
 import com.zedalpha.shadowgadgets.view.tintOutlineShadow
@@ -74,6 +72,3 @@ internal fun View.createProxy(): ShadowProxy {
     check(this.isAttachedToWindow) { "View unattached at create Proxy" }
     return ShadowProxy(this).apply { updatePlane() }
 }
-
-internal val ViewGroup.isRecycling: Boolean
-    get() = this is RecyclerView || this is AdapterView<*>

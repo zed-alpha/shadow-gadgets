@@ -11,6 +11,7 @@ import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.ShadowMode
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.internal.ViewShadowColorsHelper
+import com.zedalpha.shadowgadgets.view.internal.isRecycling
 import com.zedalpha.shadowgadgets.view.internal.viewTag
 import com.zedalpha.shadowgadgets.view.layer.Layer
 import com.zedalpha.shadowgadgets.view.onShadowModeChange

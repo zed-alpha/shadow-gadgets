@@ -37,7 +37,7 @@ import com.zedalpha.shadowgadgets.compose.internal.isOrBlendsToDefault
  * The color blending formula gives good results only if the ambient and spot
  * colors are both fully opaque; i.e., only if both have maximum alpha values.
  *
- * **NB:** This should _not_ be used for shadows that extend beyond the root
+ * **NB:** This should not be used for shadows that extend beyond the root
  * composable's bounds. Color compat applies its tint through a compositing
  * layer, which can be no larger than the root.
  */
@@ -186,7 +186,7 @@ public interface ShadowCompatScope : ShadowGadgetsScope
  * Unlike the original, this version never falls back to the framework's
  * [shadow], but it does disable internal layer compositing whenever possible.
  *
- * **NB:** This should _not_ be used for shadows that extend beyond the root
+ * **NB:** This should not be used for shadows that extend beyond the root
  * composable's bounds. Color compat applies its tint through a compositing
  * layer, which can be no larger than the root.
  */

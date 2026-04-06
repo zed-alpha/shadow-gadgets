@@ -88,7 +88,7 @@ results are likely sufficient for many cases.
 - [**Documentation**<sup>↗</sup>][Documentation]
 
   Note that inherited members are suppressed to prevent, for example, all of
-  `ViewGroup`s visible members being listed for each `ShadowsViewGroup`.
+  `ViewGroup`'s visible members being listed for each `ShadowsViewGroup`.
 
 - [**Issues**][Issues]
 
@@ -220,9 +220,9 @@ page][DrawableWiki].
 ### Miscellanea
 
 Aside from the main shadow tools, there are a handful of utilities to help with
-implementing, testing, and debugging library features.
+applying, testing, and debugging library features.
 
-- A `ShadowGadgets` object with a few flags for the active draw method, logs,
+- A `ShadowGadgets` object holds a few flags for the active draw method, logs,
   and error handling. Details can be found on [its wiki
   page][ShadowGadgetsWiki].
 
@@ -235,11 +235,11 @@ implementing, testing, and debugging library features.
   runtime error handling. Further info is on [its wiki page][ShadowModeWiki].
 
 - Lastly, a couple of `View` extensions have been added to allow efficient
-  modification of multiple shadow properties at once. The main function takes a
-  lambda in which to update values while expensive internal operations are
-  paused; helpful in recycling `Adapter`s. The other is a resetter that uses the
-  update function to revert all library values to their defaults. Details are
-  available on [their wiki page][ShadowUpdateWiki].
+  modification of multiple shadow properties at once, helpful especially in
+  recycling `Adapter`s. The main function takes a lambda in which to update
+  values while expensive internal operations are paused. The other is a resetter
+  that uses the update function to revert all library values to their defaults.
+  Details are available on [their wiki page][ShadowUpdateWiki].
 
 <br />
 
@@ -249,10 +249,17 @@ implementing, testing, and debugging library features.
   <summary>Subsections</summary>
 
 - [Native material shadows](#native-material-shadows)
-- [Clipped drop shadows](#clipped-drop-shadows)
+  - [`Modifier.clippedShadow`](#modifierclippedshadow) 
+    - [Simple](#simple) 
+    - [Color compat](#color-compat) 
+    - [Lambda](#lambda)
+  - [`Modifier.shadowCompat`](#modifiershadowcompat)
+    - [Simple](#simple-1)
+    - [Lambda](#lambda-1)
+- [`Modifier.clippedDropShadow`](#modifierclippeddropshadow)
+  - [Simple](#simple-2)
+  - [Lambda](#lambda-2)
 </details>
-
-<br />
 
 Since Compose already allows shadows to be handled and manipulated as discrete
 UI elements, employing the library's features here is straightforward and
@@ -260,112 +267,155 @@ routine.
 
 ### Native material shadows
 
-The base [`clippedShadow`][clippedShadow] is a drop-in replacement for Compose's
-[`shadow`][shadow] function, with the exact same signature and defaults, and
-identical usage. For example:
+The library offers two replacements for the inbuilt [`shadow`][shadow] modifier:
+a clipped version, and an unclipped one that allows use of the color compat
+feature alone.
 
-```kotlin
-Box(
-    Modifier
-        .clippedShadow(
-            elevation = 10.dp,
-            shape = CircleShape
-        )
-    …
-)
-```
+#### `Modifier.clippedShadow`
 
-Color compat is handled with additional parameters in an overload.
+- ##### Simple
 
-```kotlin
-Box(
-    Modifier
-        .clippedShadow(
-            elevation = 10.dp,
-            shape = CircleShape,
-            colorCompat = Color.Blue,
-            forceColorCompat = true
-        )
-    …
-)
-```
+  The base [`clippedShadow`][clippedShadow] is a drop-in replacement for
+  [`shadow`][shadow], with the exact same signature and defaults, and identical
+  usage. For example:
 
-There is now also an overload that takes a lambda to allow for efficient
-animations of shadow properties, without recomposition.
+  ```kotlin
+  Box(
+      Modifier
+          .clippedShadow(
+              elevation = 10.dp,
+              shape = CircleShape
+          )
+      …
+  )
+  ```
 
-```kotlin
-Box(
-    Modifier
-        .clippedShadow(shape = CircleShape) {
-            elevation = animatedElevationDp.toPx()
-            …
-        }
-    …
-)
-```
+- ##### Color compat
 
-For those cases where you need only color compat without the clip,
-[`shadowCompat`][shadowCompat] is a more performant option.
+  Color compat is handled with additional parameters in an overload.
 
-```kotlin
-Box(
-    Modifier
-        .shadowCompat(
-            elevation = 10.dp,
-            shape = CircleShape,
-            ambientColor = Color.Blue,
-            spotColor = Color.Cyan,
-            colorCompat = Color.Blue
-        )
-    …
-)
-```
+  ```kotlin
+  Box(
+      Modifier
+          .clippedShadow(
+              elevation = 10.dp,
+              shape = CircleShape,
+              colorCompat = Color.Blue,
+              forceColorCompat = true
+          )
+      …
+  )
+  ```
 
-`shadowCompat` also has a lambda overload that is exactly like
-`clippedShadow`'s, except for the name of its scope interface, which itself is
-otherwise identical.
+- ##### Lambda
+
+  There is now also an overload that takes a lambda to allow for efficient
+  updates of shadow properties without recomposition. This mimics the lambda
+  versions of dropShadow() and innerShadow(); dimensions are accepted in pixels
+  rather than `Dp`, but the scope is a `Density` so conversions are trivial.
+
+  ```kotlin
+  Box(
+      Modifier
+          .clippedShadow(shape = CircleShape) {
+              elevation = animatedElevationDp.toPx()
+              …
+          }
+      …
+  )
+  ```
+
+#### `Modifier.shadowCompat`
+
+- ##### Simple
+
+  For those cases where you need only color compat without the clip,
+  [`shadowCompat`][shadowCompat] is a more performant option.
+
+  ```kotlin
+  Box(
+      Modifier
+          .shadowCompat(
+              elevation = 10.dp,
+              shape = CircleShape,
+              ambientColor = Color.Blue,
+              spotColor = Color.Cyan,
+              colorCompat = Color.Blue
+          )
+      …
+  )
+  ```
+
+- ##### Lambda
+
+  `shadowCompat` also has a lambda overload that is exactly like
+  `clippedShadow`'s, except for the name of its scope interface, which itself is
+  otherwise identical.
+
+  ```kotlin
+  Box(
+      Modifier
+          .shadowCompat(shape = CircleShape) {
+              elevation = animatedElevationDp.toPx()
+              colorCompat = animatedColor
+              forceColorCompat = true
+              …
+          }
+      …
+  )
+  ```
+
+<br />
 
 Details and examples for both functions can be found on the [Native material
-shadow wiki][ComposeNativeWiki].
+shadow wiki page][ComposeNativeWiki].
 
-### Clipped drop shadows
+### `Modifier.clippedDropShadow`
 
 The clip feature has been applied to Compose's new `dropShadow()` modifier, both
 the base version that requires a `Shadow` instance, and the overload that takes
 a lambda. Both are drop-in replacements.
 
-A quick example of the "simple" version:
+- #### Simple
 
-```kotlin
-Box(
-    Modifier
-        .clippedDropShadow(
-            shape = CircleShape,
-            shadow = Shadow(radius = 10.dp, color = Color.Blue)
-        )
-)
-```
+  ```kotlin
+  private val BlueShadow = Shadow(radius = 10.dp, color = Color.Blue)
+  …
+  Box(
+      Modifier
+          .clippedDropShadow(
+              shape = CircleShape,
+              shadow = BlueShadow
+          )
+      …
+  )
+  ```
 
-And the lambda version:
+- #### Lambda
 
-```kotlin
-Box(
-    Modifier
-        .clippedDropShadow(shape = CircleShape) {
-            radius = animatedElevationDp.toPx()
-            color = Color.Blue
-        }
-)
-```
+  ```kotlin
+  Box(
+      Modifier
+          .clippedDropShadow(shape = CircleShape) {
+              radius = animatedElevationDp.toPx()
+              color = Color.Blue
+          }
+      …
+  )
+  ```
 
 Details and examples can be found on the [Clipped drop shadow
-wiki][ComposeDropWiki].
+wiki page][ComposeDropWiki].
 
 <br />
 
 ## Download
 
-The library is available as a compiled dependency through the very handy service
+> [!IMPORTANT]
+> Remember to check [the Notes][Notes] for anything that might be relevant to
+> your project.
+
+The library is available as compiled dependencies through the very handy service
 [JitPack][JitPack]. To enable download in a modern Gradle setup, add their Maven
 URL to the `repositories` block inside the `dependencyResolutionManagement` in
 the root project's `settings.gradle.kts` file; e.g.:
@@ -395,10 +445,6 @@ There is no longer a shared `:core` module. Compose updates have obviated the
 need for it in that framework, so it's all been moved into `:view`.
 
 <br />
-
-> [!IMPORTANT]
-> Remember to check [the wiki Notes][Notes] for anything that might be relevant
-> to your project.
 
 <br />
 

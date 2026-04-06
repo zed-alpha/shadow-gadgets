@@ -1,6 +1,5 @@
 package com.zedalpha.shadowgadgets.compose.internal
 
-import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import com.zedalpha.shadowgadgets.compose.ShadowGadgetsScope
@@ -9,7 +8,6 @@ internal interface WorkingShadowScope : ShadowGadgetsScope, MutableDensity
 
 internal fun WorkingShadowScope.isColorCompatDefault(): Boolean =
     this.colorCompat.isOrBlendsToDefault(this.ambientColor, this.spotColor)
-        .also { Log.d("QQQ", "$it, $colorCompat, $ambientColor, $spotColor") }
 
 internal abstract class WorkingShadowScopeImpl(private val defaultColorCompat: Color) :
     WorkingShadowScope {

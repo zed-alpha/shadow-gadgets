@@ -32,9 +32,9 @@ internal var View.isInShadowUpdate: Boolean
         by viewTag(R.id.is_in_shadow_update, false)
 
 /**
- * Convenience function that completely resets a target's shadow state, removing
- * the library shadow if present, and restoring the (presumably broken) native
- * one. Handy for testing and debugging.
+ * A convenience function that utilizes [updateShadow] to revert a target's
+ * library shadow properties to their default values, restoring the (presumably
+ * broken) native shadow.
  */
 public fun View.resetShadow(): Unit =
     this.updateShadow {

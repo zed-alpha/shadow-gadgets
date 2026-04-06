@@ -27,8 +27,7 @@ internal class RegularManager<T>(
     superDrawChild = superDrawChild
 ) where T : ViewGroup, T : ShadowsViewGroup {
 
-    private var xmlAttributes: MutableMap<Int, ShadowAttributes>? =
-        mutableMapOf()
+    private var xmlAttributes: MutableMap<Int, ShadowAttributes>? = null
 
     override fun onAttach() {
         super.onAttach()
@@ -36,17 +35,19 @@ internal class RegularManager<T>(
     }
 
     fun generateLayoutParams(attributeSet: AttributeSet?) {
-        if (isAttached) return
+        if (attached) return
 
         val context = viewGroup.context
         val attributes = attributeSet.extractShadowAttributes(context)
         if (attributes.id == View.NO_ID) return
 
-        xmlAttributes?.put(attributes.id, attributes)
+        val map = xmlAttributes
+            ?: mutableMapOf<Int, ShadowAttributes>().also { xmlAttributes = it }
+        map[attributes.id] = attributes
     }
 
     override fun onViewAdded(child: View) {
-        if (isAttached) return
+        if (attached) return
 
         val attributes = xmlAttributes?.remove(child.id)
         if (attributes == null) {

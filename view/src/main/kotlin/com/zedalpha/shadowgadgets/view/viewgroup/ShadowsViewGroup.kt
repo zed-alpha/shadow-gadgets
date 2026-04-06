@@ -116,7 +116,7 @@ public sealed interface ShadowsViewGroup {
      * [Inline][com.zedalpha.shadowgadgets.view.ShadowPlane.Inline] shadows.
      *
      * When `true`, Inline shadows on children of the [ShadowsViewGroup] do
-     * _not_ require the additional clip settings noted in
+     * not require the additional clip settings noted in
      * [Inline][com.zedalpha.shadowgadgets.view.ShadowPlane.Inline]'s docs.
      *
      * The Regular groups do this by default – i.e., they set
@@ -139,7 +139,7 @@ public sealed interface ShadowsViewGroup {
      * [Inline][com.zedalpha.shadowgadgets.view.ShadowPlane.Inline] shadows.
      *
      * When `false`, Inline shadows on children of the [ShadowsViewGroup] do
-     * _not_ require the additional clip settings noted in
+     * not require the additional clip settings noted in
      * [Inline][com.zedalpha.shadowgadgets.view.ShadowPlane.Inline]'s docs.
      *
      * The Regular groups do this by default – i.e., they set

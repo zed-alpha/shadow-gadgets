@@ -45,6 +45,7 @@ internal class OverlayPlane(
     private val checkInvalidate =
         OnPreDraw {
             if (invalidator.isInvalidated) return@OnPreDraw
+
             val isInvalid =
                 inertLayer?.isInvalid() == true ||
                         activeLayers?.has { it.isInvalid() } == true

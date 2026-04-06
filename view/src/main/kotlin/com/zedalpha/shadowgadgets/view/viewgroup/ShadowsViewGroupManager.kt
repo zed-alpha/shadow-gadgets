@@ -15,9 +15,9 @@ import com.zedalpha.shadowgadgets.view.ShadowPlane.Foreground
 import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
 import com.zedalpha.shadowgadgets.view.internal.disableZ
 import com.zedalpha.shadowgadgets.view.internal.enableZ
+import com.zedalpha.shadowgadgets.view.internal.isRecycling
 import com.zedalpha.shadowgadgets.view.plane.Plane
 import com.zedalpha.shadowgadgets.view.plane.inlinePlane
-import com.zedalpha.shadowgadgets.view.proxy.isRecycling
 import com.zedalpha.shadowgadgets.view.proxy.shadowProxy
 import kotlin.properties.Delegates
 
@@ -65,10 +65,10 @@ internal abstract class ShadowsViewGroupManager<T>(
 
     private fun <T> initOnly(initial: T, onSet: () -> Unit) =
         Delegates.vetoable(initial) { _, _, _ ->
-            (!isAttached).also { unattached -> if (unattached) onSet() }
+            (!attached).also { unattached -> if (unattached) onSet() }
         }
 
-    protected var isAttached = false
+    protected var attached = false
         private set
 
     init {
@@ -122,7 +122,7 @@ internal abstract class ShadowsViewGroupManager<T>(
 
     @CallSuper
     protected open fun onAttach() {
-        isAttached = true
+        attached = true
     }
 
     abstract fun onViewAdded(child: View)

@@ -354,15 +354,15 @@ private constructor(
             if (field == value) return
             field = value
 
-            val shadow = shadow
+            val shadow = this.shadow
 
             if (value.isNotDefault || isClipped && ClipRequiresLayer) {
                 shadow.ambientColor = DefaultShadowColor
                 shadow.spotColor = DefaultShadowColor
 
-                val layer = layer
+                val layer = this.layer
                     ?: DrawableLayer(owner, shadow::draw, ::invalidateSelf)
-                        .also { it.bounds = bounds; layer = it }
+                        .also { it.bounds = bounds; this.layer = it }
 
                 layer.color = value
             } else {

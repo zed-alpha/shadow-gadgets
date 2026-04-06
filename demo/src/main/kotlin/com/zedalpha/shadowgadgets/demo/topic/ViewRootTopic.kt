@@ -155,6 +155,7 @@ private val AlphaFixProvider =
         }
     }
 
+// Used for Compose Root too. Hacky, but it works for a demo.
 internal fun Window.centerOver(view: View) {
     val size = popupSize(view)
     val location = popupLocation(view)

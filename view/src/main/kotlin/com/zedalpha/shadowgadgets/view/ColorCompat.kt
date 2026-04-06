@@ -61,7 +61,6 @@ private fun View.updateTint() {
     this.tintOutlineShadow =
         (Build.VERSION.SDK_INT < 28 || this.forceOutlineShadowColorCompat) &&
                 this.outlineShadowColorCompat.isNotDefault
-
     val proxy = this.shadowProxy ?: return
 
     // If the Plane changes, the Layer has been handled.

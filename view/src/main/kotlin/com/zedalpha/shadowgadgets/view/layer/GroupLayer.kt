@@ -35,7 +35,7 @@ internal class InertGroupLayer : GroupLayer, Group<ShadowProxy> by ListGroup() {
         set(_) {}
 
     override fun draw(canvas: Canvas) = iterate { it.updateAndDraw(canvas) }
-    override fun recreate(): Boolean = false
+    override fun recreate() {}
     override fun dispose() {}
 }
 

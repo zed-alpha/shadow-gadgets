@@ -73,7 +73,6 @@ private fun ComposeDropContent() {
     var clipped by rememberSaveable { mutableStateOf(true) }
 
     Row(modifier = Modifier.fillMaxSize()) {
-
         Column(
             modifier = Modifier
                 .fillMaxHeight()
@@ -137,17 +136,11 @@ private fun ComposeDropContent() {
     }
 }
 
-private fun Modifier.selectDropShadow(
-    clipped: Boolean,
-    shape: Shape,
-    block: DropShadowScope.() -> Unit
-): Modifier =
-    if (clipped) clippedDropShadow(shape, block) else dropShadow(shape, block)
-
 @Composable
 private fun DropShadowFloatingActionButton(
     clipped: Boolean,
     shadowColor: Color,
+    modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
     backgroundColor: Color = MaterialTheme.colors.secondary,
     elevation: FloatingActionButtonElevation = FloatingActionButtonDefaults.elevation(),
@@ -157,7 +150,7 @@ private fun DropShadowFloatingActionButton(
 
     FloatingActionButton(
         onClick = {},
-        modifier = Modifier.selectDropShadow(clipped, shape) {
+        modifier = modifier.selectDropShadow(clipped, shape) {
             radius = elevationDp.toPx()
             color = shadowColor
         },
@@ -174,6 +167,7 @@ private fun DropShadowFloatingActionButton(
 private fun DropShadowButton(
     clipped: Boolean,
     shadowColor: Color,
+    modifier: Modifier = Modifier,
     elevation: ButtonElevation = ButtonDefaults.elevation(),
     shape: Shape = MaterialTheme.shapes.small,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
@@ -184,7 +178,7 @@ private fun DropShadowButton(
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Button(
             onClick = {},
-            modifier = Modifier.selectDropShadow(clipped, shape) {
+            modifier = modifier.selectDropShadow(clipped, shape) {
                 radius = elevationDp.toPx()
                 color = shadowColor
             },
@@ -196,3 +190,10 @@ private fun DropShadowButton(
         )
     }
 }
+
+private fun Modifier.selectDropShadow(
+    clipped: Boolean,
+    shape: Shape,
+    block: DropShadowScope.() -> Unit
+): Modifier =
+    if (clipped) clippedDropShadow(shape, block) else dropShadow(shape, block)

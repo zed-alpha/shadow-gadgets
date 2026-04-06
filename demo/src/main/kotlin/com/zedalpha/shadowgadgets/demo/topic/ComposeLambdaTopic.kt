@@ -67,7 +67,9 @@ private fun ComposeBlockContent() {
     ) {
         Row {
             AnimatedClippedShadow(animate, useLambda)
+
             Spacer(Modifier.size(40.dp))
+
             AnimatedShadowCompat(animate, useLambda)
         }
 

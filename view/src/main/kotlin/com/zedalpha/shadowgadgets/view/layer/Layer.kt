@@ -20,7 +20,7 @@ internal interface Layer {
     var color: Int
     var bounds: Rect
     fun draw(canvas: Canvas)
-    fun recreate(): Boolean
+    fun recreate()
     fun dispose()
 }
 
@@ -70,12 +70,12 @@ internal abstract class AbstractLayer(
 
     protected abstract fun drawLayer(canvas: Canvas)
 
-    final override fun recreate(): Boolean {
-        if (color.isNotTint) return false
+    final override fun recreate() {
+        if (color.isNotTint) return
+
         recreateLayer()
         updateLayerType()
         updateLayerBounds()
-        return true
     }
 
     protected abstract fun recreateLayer()

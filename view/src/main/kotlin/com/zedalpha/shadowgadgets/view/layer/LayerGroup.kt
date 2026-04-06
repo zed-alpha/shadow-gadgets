@@ -16,9 +16,8 @@ internal class LayerGroup<T : Layer>(
 
     private val recreateLayers =
         OnMove {
-            var invalidate = false
-            iterate { invalidate = it.recreate() || invalidate }
-            if (invalidate) plane.invalidate()
+            iterate { it.recreate() }
+            plane.invalidate()
         }
 
     private var recreateCount = 0

@@ -7,12 +7,12 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Build
 import android.view.View
+import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
 import com.zedalpha.shadowgadgets.view.internal.isDefault
 import com.zedalpha.shadowgadgets.view.internal.isNotTint
 import com.zedalpha.shadowgadgets.view.internal.isTint
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
-import com.zedalpha.shadowgadgets.view.proxy.ShadowProxy
 import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.view.tintOutlineShadow
 
@@ -57,6 +57,7 @@ internal abstract class AbstractLayer(
 
     final override var bounds = Rect()
         set(value) {
+            if (field == value) return
             field.set(value)
             updateLayerBounds()
         }
@@ -97,11 +98,11 @@ private fun Paint.setLayerFilter(color: Int) =
         this.colorFilter = null
     }
 
-internal val RequiresDefaultClipLayer = Build.VERSION.SDK_INT in 24..28
+internal val ClipRequiresLayer = Build.VERSION.SDK_INT in 24..28
 
-internal val ShadowProxy.desiredLayerColor: Int?
-    get() = when {
-        this.target.tintOutlineShadow -> this.target.outlineShadowColorCompat
-        RequiresDefaultClipLayer -> DefaultShadowColor
+internal fun View.desiredLayerColor(): Int? =
+    when {
+        this.tintOutlineShadow -> this.outlineShadowColorCompat
+        this.clipOutlineShadow && ClipRequiresLayer -> DefaultShadowColor
         else -> null
     }

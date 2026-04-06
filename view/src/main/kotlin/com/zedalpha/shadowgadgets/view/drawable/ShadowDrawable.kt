@@ -16,8 +16,8 @@ import androidx.core.graphics.withClip
 import androidx.core.graphics.withTranslation
 import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
 import com.zedalpha.shadowgadgets.view.internal.isNotDefault
+import com.zedalpha.shadowgadgets.view.layer.ClipRequiresLayer
 import com.zedalpha.shadowgadgets.view.layer.Layer
-import com.zedalpha.shadowgadgets.view.layer.RequiresDefaultClipLayer
 import com.zedalpha.shadowgadgets.view.shadow.ClippedShadow
 import com.zedalpha.shadowgadgets.view.shadow.PathProvider
 import com.zedalpha.shadowgadgets.view.shadow.Shadow
@@ -25,8 +25,7 @@ import kotlin.math.roundToInt
 
 /**
  * This class is a thin wrapper around the library's core draw functionalities,
- * allowing its shadows to be drawn manually without having to use the core
- * module directly.
+ * allowing its shadows to be drawn manually.
  *
  * Clipped instances with irregular shapes on API levels 30+ must have the
  * outline Path set manually using the [setClipPathProvider] function. This is
@@ -357,7 +356,7 @@ private constructor(
 
             val shadow = shadow
 
-            if (value.isNotDefault || isClipped && RequiresDefaultClipLayer) {
+            if (value.isNotDefault || isClipped && ClipRequiresLayer) {
                 shadow.ambientColor = DefaultShadowColor
                 shadow.spotColor = DefaultShadowColor
 
@@ -372,26 +371,25 @@ private constructor(
 
                 layer?.let { layer = null; it.dispose() }
             }
-
-            invalidateSelf()
         }
 
     /**
      * Determines whether the shadow will be clipped to the drawable's [bounds].
      */
     public var clipToBounds: Boolean = false
-        set(value) {
-            if (field == value) return
-            field = value
-            invalidateSelf()
-        }
+
+    /**
+     * Analogous to
+     * [RenderNode#setPosition()][android.graphics.RenderNode.setPosition].
+     */
+    public fun setPosition(left: Int, top: Int, right: Int, bottom: Int): Unit =
+        shadow.setPosition(left, top, right, bottom)
 
     /**
      * Analogous to
      * [RenderNode#setOutline()][android.graphics.RenderNode.setOutline].
      */
-    public fun setOutline(outline: Outline): Unit =
-        shadow.setOutline(outline)
+    public fun setOutline(outline: Outline): Unit = shadow.setOutline(outline)
 
     /**
      * Analogous to
@@ -403,8 +401,7 @@ private constructor(
      * Analogous to
      * [RenderNode#getMatrix()][android.graphics.RenderNode.getMatrix].
      */
-    public fun getMatrix(outMatrix: Matrix): Unit =
-        shadow.getMatrix(outMatrix)
+    public fun getMatrix(outMatrix: Matrix): Unit = shadow.getMatrix(outMatrix)
 
     /**
      * Analogous to
@@ -430,7 +427,6 @@ private constructor(
 
     @CallSuper
     override fun onBoundsChange(bounds: Rect) {
-        shadow.setPosition(0, 0, bounds.width(), bounds.height())
         layer?.bounds = bounds
     }
 
@@ -450,7 +446,7 @@ private constructor(
                 block = { shadow.draw(this) }
             )
 
-    @Suppress("OVERRIDE_DEPRECATION")
+    @Deprecated("Deprecated in Drawable")
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     override fun setColorFilter(colorFilter: ColorFilter?) {}

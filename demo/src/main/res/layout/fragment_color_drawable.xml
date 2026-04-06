@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:background="@color/off_white"
-        android:max="360"
+        android:max="180"
         app:layout_constraintBottom_toTopOf="@id/clip_switch"
         app:layout_constraintEnd_toStartOf="@id/label_rotation"
         app:layout_constraintStart_toStartOf="parent"

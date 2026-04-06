@@ -80,7 +80,7 @@ internal class OverlayPlane(
 
     override fun updateLayer(proxy: ShadowProxy) {
         val current = proxy.layer as GroupLayer?
-        val color = proxy.desiredLayerColor
+        val color = proxy.target.desiredLayerColor()
 
         if (current != null &&
             (color == null && current == inertLayer ||
@@ -93,7 +93,7 @@ internal class OverlayPlane(
         if (current != null) {
             proxy.layer = null
             current.remove(proxy)
-            if (current.isEmpty) {
+            if (current.isEmpty()) {
                 if (current == inertLayer) {
                     disposeInertLayer(current)
                 } else {
@@ -111,7 +111,7 @@ internal class OverlayPlane(
                     ?: LayerGroup<GroupLayer>(viewGroup, this)
                         .also { activeLayers = it }
 
-                val existing = layers.leading { it.color == color }
+                val existing = layers.find { it.color == color }
                 if (existing == null) {
                     (recycled ?: GroupLayer(viewGroup).also { layers.add(it) })
                         .also { it.color = color }
@@ -130,12 +130,12 @@ internal class OverlayPlane(
     override fun removeProxy(proxy: ShadowProxy) {
         val layer =
             checkNotNull(proxy.layer as? GroupLayer) {
-                "Overlay Proxy missing Layer"
+                "Overlay Proxy missing GroupLayer"
             }
 
         proxy.layer = null
         layer.remove(proxy)
-        if (!layer.isEmpty) return
+        if (!layer.isEmpty()) return
 
         if (layer == inertLayer) {
             disposeInertLayer(layer)
@@ -156,6 +156,6 @@ internal class OverlayPlane(
         val layers = checkNotNull(activeLayers) { "LayerGroup is empty" }
         layers.remove(layer)
         layer.dispose()
-        if (layers.isEmpty) activeLayers = null
+        if (layers.isEmpty()) activeLayers = null
     }
 }

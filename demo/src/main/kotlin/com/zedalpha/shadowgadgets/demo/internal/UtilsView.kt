@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Outline
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import android.widget.CheckBox
 import android.widget.SeekBar
 import androidx.annotation.ColorInt
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.core.view.ViewCompat
@@ -81,3 +83,6 @@ internal class RoundedCornerViewOutlineProvider(val radiusDp: Float = 5F) :
         outline.setRoundRect(0, 0, view.width, view.height, radius)
     }
 }
+
+internal fun ViewGroup.inflateUnattached(@LayoutRes layoutId: Int): View =
+    LayoutInflater.from(this.context).inflate(layoutId, this, false)

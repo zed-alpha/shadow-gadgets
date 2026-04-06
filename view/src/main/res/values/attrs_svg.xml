@@ -8,9 +8,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsChipGroup_Layout">
@@ -25,9 +25,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsConstraintLayout_Layout">
@@ -42,9 +42,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsCoordinatorLayout_Layout">
@@ -59,9 +59,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsMaterialButtonToggleGroup_Layout">
@@ -76,9 +76,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsMotionLayout_Layout">
@@ -93,9 +93,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsFrameLayout_Layout">
@@ -110,9 +110,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsLinearLayout_Layout">
@@ -127,9 +127,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsRadioGroup_Layout">
@@ -144,9 +144,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsRelativeLayout_Layout">
@@ -163,9 +163,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsExpandableListView">
@@ -173,9 +173,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsGridView">
@@ -183,9 +183,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsListView">
@@ -193,9 +193,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
     <declare-styleable name="ShadowsStackView">
@@ -203,9 +203,9 @@
         <attr name="clipAllChildShadows" />
         <attr name="childOutlineShadowsColorCompat" />
         <attr name="forceChildOutlineShadowsColorCompat" />
+        <attr name="takeOverDrawForInlineChildShadows" />
         <!-- @deprecated -->
         <attr name="ignoreInlineChildShadows" />
-        <attr name="takeOverDrawForInlineChildShadows" />
     </declare-styleable>
 
 </resources>

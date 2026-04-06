@@ -178,8 +178,8 @@ internal abstract class ShadowsViewGroupManager<T>(
 
         if (proxy != null && proxy.updateAndConfirmDraw()) {
             disableZ(canvas)
-            proxy.layer?.draw(canvas) ?: proxy.shadow.draw(canvas)
             result = superDrawChild(canvas, child, drawingTime)
+            proxy.layer?.draw(canvas) ?: proxy.shadow.draw(canvas)
             enableZ(canvas)
         } else {
             result = superDrawChild(canvas, child, drawingTime)

@@ -11,7 +11,7 @@ private var ViewGroup.invalidator: Invalidator?
         by viewTag(R.id.invalidator, null)
 
 internal class Invalidator(private val viewGroup: ViewGroup) :
-    AutoDisposeSwitchGroup<Plane>() {
+    AutoDisposeListGroup<Plane>() {
 
     var isInvalidated = false
         private set

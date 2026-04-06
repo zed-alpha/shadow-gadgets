@@ -30,7 +30,7 @@ public enum class ShadowPlane {
      *
      * Use of this plane requires that either:
      *
-     * + The target View has [clipToOutline][android.view.View.setClipToOutline]
+     * + The target View has [clipToOutline][View.setClipToOutline]
      *   set to `false`, and the parent ViewGroup has
      *   [clipChildren][android.view.ViewGroup.setClipChildren] set to `false`.
      *

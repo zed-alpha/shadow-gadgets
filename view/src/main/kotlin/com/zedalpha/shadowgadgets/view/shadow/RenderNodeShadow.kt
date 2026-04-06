@@ -7,7 +7,7 @@ import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
 
 internal class RenderNodeShadow : CoreShadow() {
 
-    private val shadow = RenderNodeFactory.create("CoreShadow")
+    private val shadow = RenderNodeFactory.create("Shadow")
 
     override fun dispose() {}
 

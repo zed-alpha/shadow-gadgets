@@ -9,20 +9,22 @@ import android.view.DragEvent
 import android.view.View
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.demo.R
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentIntroBinding
+import com.zedalpha.shadowgadgets.demo.databinding.FragmentViewIntroBinding
 import com.zedalpha.shadowgadgets.demo.internal.DefaultTargetColor
+import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
+import com.zedalpha.shadowgadgets.view.shadowPlane
 
-internal val IntroTopic =
+internal val ViewIntroTopic =
     Topic(
-        title = "Intro",
-        descriptionResId = R.string.description_intro,
-        fragmentClass = IntroFragment::class.java
+        title = "View: Intro",
+        descriptionResId = R.string.description_view_intro,
+        fragmentClass = ViewIntroFragment::class.java
     )
 
-class IntroFragment :
-    TopicFragment<FragmentIntroBinding>(FragmentIntroBinding::inflate) {
+class ViewIntroFragment :
+    TopicFragment<FragmentViewIntroBinding>(FragmentViewIntroBinding::inflate) {
 
     private var shadowColor: Int = Color.BLACK
         set(color) {
@@ -41,7 +43,9 @@ class IntroFragment :
             ui.target.background.setTint(color)
         }
 
-    override fun loadUi(ui: FragmentIntroBinding) {
+    override fun loadUi(ui: FragmentViewIntroBinding) {
+        ui.target.shadowPlane = ShadowPlane.Background
+
         ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
             ui.target.clipOutlineShadow = isChecked
         }

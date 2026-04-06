@@ -16,13 +16,16 @@ internal abstract class IndividualLayer(
 
     final override var color: Int
         get() = layer.color
-        set(value) {
-            val field = layer.color
-            if (field == value) return
-            if (field.isTint != value.isTint) {
-                if (value.isTint) owner.addOnMove(recreateLayer)
-                if (field.isTint) owner.removeOnMove(recreateLayer)
+        set(next) {
+            val current = layer.color
+            if (current == next) return
+
+            val nextIsTint = next.isTint
+            if (current.isTint != nextIsTint) {
+                if (nextIsTint) owner.addOnMove(recreateLayer)
+                else owner.removeOnMove(recreateLayer)
             }
-            layer.color = value
+
+            layer.color = next
         }
 }

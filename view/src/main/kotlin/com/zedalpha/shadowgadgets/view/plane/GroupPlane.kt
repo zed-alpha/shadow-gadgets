@@ -20,8 +20,8 @@ internal abstract class GroupPlane(override val viewGroup: ViewGroup) :
         if (this.right != target.right) return true
         if (this.bottom != target.bottom) return true
         if (this.translationZ != target.translationZ) return true
-        if (this.translationX != target.translationX) return true
         if (this.translationY != target.translationY) return true
+        if (this.translationX != target.translationX) return true
         if (this.alpha != target.alpha) return true
         if (this.scaleX != target.scaleX) return true
         if (this.scaleY != target.scaleY) return true

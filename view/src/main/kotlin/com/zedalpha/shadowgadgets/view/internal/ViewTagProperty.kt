@@ -7,15 +7,15 @@ import kotlin.reflect.KProperty
 
 internal fun <T : View, V> viewTag(
     @IdRes id: Int,
-    default: V,
-    onChange: (T.(new: V) -> Unit)? = null
+    initialValue: V,
+    onChange: (T.(newValue: V) -> Unit)? = null
 ): ReadWriteProperty<T, V> =
-    ViewTagProperty(id, default, onChange)
+    ViewTagProperty(id, initialValue, onChange)
 
 private class ViewTagProperty<T : View, V>(
     private val id: Int,
-    private val default: V,
-    private val onChange: (T.(new: V) -> Unit)?
+    private val initialValue: V,
+    private val onChange: (T.(newValue: V) -> Unit)?
 ) : ReadWriteProperty<T, V> {
 
     class Holder<V>(var value: V)
@@ -23,7 +23,7 @@ private class ViewTagProperty<T : View, V>(
     override fun getValue(thisRef: T, property: KProperty<*>): V {
         @Suppress("UNCHECKED_CAST")
         val holder = thisRef.getTag(id) as? Holder<V>
-        return if (holder != null) holder.value else default
+        return if (holder != null) holder.value else initialValue
     }
 
     override fun setValue(thisRef: T, property: KProperty<*>, value: V) {
@@ -31,7 +31,7 @@ private class ViewTagProperty<T : View, V>(
         val holder = thisRef.getTag(id) as? Holder<V>
 
         val initialized = holder != null
-        val current = if (initialized) holder.value else default
+        val current = if (initialized) holder.value else initialValue
 
         val changed = current != value
         if (initialized && !changed) return

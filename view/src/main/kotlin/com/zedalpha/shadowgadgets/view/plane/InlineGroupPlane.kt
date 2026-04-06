@@ -3,8 +3,8 @@ package com.zedalpha.shadowgadgets.view.plane
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.internal.Group
+import com.zedalpha.shadowgadgets.view.internal.ListGroup
 import com.zedalpha.shadowgadgets.view.internal.OnPreDraw
-import com.zedalpha.shadowgadgets.view.internal.SwitchGroup
 import com.zedalpha.shadowgadgets.view.internal.addOnPreDraw
 import com.zedalpha.shadowgadgets.view.internal.invalidator
 import com.zedalpha.shadowgadgets.view.internal.removeOnPreDraw
@@ -55,19 +55,20 @@ internal class InlineGroupPlane<T>(override val viewGroup: T) :
     override fun addProxy(proxy: ShadowProxy) {
         updateLayer(proxy)
         val proxies = this.proxies
-            ?: SwitchGroup<ShadowProxy>().also { this.proxies = it }
+            ?: ListGroup<ShadowProxy>().also { this.proxies = it }
         proxies.add(proxy)
     }
 
     override fun updateLayer(proxy: ShadowProxy) {
         val current = proxy.layer
-        val color = proxy.desiredLayerColor
+        val color = proxy.target.desiredLayerColor()
         if (current?.color == color) return
 
         if (color == null) {
             disposeLayer(proxy)
         } else {
-            val layer = current ?: createLayer(proxy).also { proxy.layer = it }
+            val layer = current
+                ?: createLayer(proxy).also { proxy.layer = it }
             layer.color = color
         }
 
@@ -76,12 +77,10 @@ internal class InlineGroupPlane<T>(override val viewGroup: T) :
 
     private fun createLayer(proxy: ShadowProxy): Layer {
         val layers = this.layers
-            ?: LayerGroup<Layer>(viewGroup, this)
-                .also { this.layers = it }
+            ?: LayerGroup<Layer>(viewGroup, this).also { this.layers = it }
 
-        val layer = AutoPositionLayer(viewGroup, proxy::updateAndDraw)
-        layers.add(layer)
-        return layer
+        return AutoPositionLayer(viewGroup, proxy::updateAndDraw)
+            .also { layers.add(it) }
     }
 
     override fun removeProxy(proxy: ShadowProxy) {
@@ -91,7 +90,7 @@ internal class InlineGroupPlane<T>(override val viewGroup: T) :
         layers?.updateRecreateCount()
 
         proxies.remove(proxy)
-        if (proxies.isEmpty) dispose()
+        if (proxies.isEmpty()) dispose()
     }
 
     private fun disposeLayer(proxy: ShadowProxy) {
@@ -101,7 +100,7 @@ internal class InlineGroupPlane<T>(override val viewGroup: T) :
         proxy.layer = null
         layer.dispose()
         layers.remove(layer)
-        if (layers.isEmpty) this.layers = null
+        if (layers.isEmpty()) this.layers = null
     }
 
     override fun invalidate() = invalidator.invalidate()

@@ -75,7 +75,7 @@ internal class RootSoloPlane(proxy: ShadowProxy) : InlineSoloPlane(proxy) {
     override fun createLayer(): Layer {
         val target = proxy.target
         return SoloLayer(target, proxy.shadow::draw, ::invalidate) { bounds ->
-            // Insets from WindowManager.LayoutParams.setSurfaceInsets().
+            // Insets are from WindowManager.LayoutParams.setSurfaceInsets().
             val ds = (2 * target.z).roundToInt()
             bounds.inset(-ds, -ds)
         }
@@ -120,13 +120,14 @@ internal abstract class InlineSoloPlane(protected val proxy: ShadowProxy) :
     override fun addProxy(proxy: ShadowProxy) = updateLayer(proxy)
 
     override fun updateLayer(proxy: ShadowProxy) {
-        val color = proxy.desiredLayerColor
+        val color = proxy.target.desiredLayerColor()
         if (proxy.layer?.color == color) return
 
         if (color == null) {
             proxy.layer?.let { proxy.layer = null; it.dispose() }
         } else {
-            val layer = proxy.layer ?: createLayer().also { proxy.layer = it }
+            val layer = proxy.layer
+                ?: createLayer().also { proxy.layer = it }
             layer.color = color
         }
     }
@@ -134,7 +135,8 @@ internal abstract class InlineSoloPlane(protected val proxy: ShadowProxy) :
     protected abstract fun createLayer(): Layer
 
     override fun removeProxy(proxy: ShadowProxy) {
-        if (this.proxy == proxy) dispose()
+        check(this.proxy == proxy) { "Proxy is not present" }
+        dispose()
     }
 
     final override fun Shadow.doesNotMatch(target: View): Boolean {

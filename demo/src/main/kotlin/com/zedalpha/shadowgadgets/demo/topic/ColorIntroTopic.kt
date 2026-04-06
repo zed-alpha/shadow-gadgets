@@ -1,4 +1,4 @@
-package com.zedalpha.shadowgadgets.demo.topic.compat
+package com.zedalpha.shadowgadgets.demo.topic
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.PaintDrawable
@@ -6,29 +6,26 @@ import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ViewSwitcher
-import androidx.viewbinding.ViewBinding
 import com.zedalpha.shadowgadgets.demo.R
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentCompatIntroBinding
-import com.zedalpha.shadowgadgets.demo.topic.Topic
-import com.zedalpha.shadowgadgets.demo.topic.TopicFragment
+import com.zedalpha.shadowgadgets.demo.databinding.FragmentColorIntroBinding
 import kotlin.math.roundToInt
 import android.graphics.Color as AndroidColor
 
-internal val CompatIntroTopic =
+internal val ColorIntroTopic =
     Topic(
-        title = "Compat - Intro",
-        descriptionResId = R.string.description_compat_intro,
-        fragmentClass = CompatIntroFragment::class.java
+        title = "Color: Intro",
+        descriptionResId = R.string.description_color_intro,
+        fragmentClass = ColorIntroFragment::class.java
     )
 
-class CompatIntroFragment :
-    TopicFragment<FragmentCompatIntroBinding>(
-        inflate = FragmentCompatIntroBinding::inflate
+class ColorIntroFragment :
+    TopicFragment<FragmentColorIntroBinding>(
+        inflate = FragmentColorIntroBinding::inflate
     ) {
 
     private lateinit var controller: PanelController
 
-    override fun loadUi(ui: FragmentCompatIntroBinding) {
+    override fun loadUi(ui: FragmentColorIntroBinding) {
         @SuppressLint("SetTextI18n")
         if (Build.VERSION.SDK_INT < 28) ui.labelNative.text = "SDK < 28"
 
@@ -105,12 +102,12 @@ internal class PanelController(
     elevation: Float
 ) {
     private val viewPanel =
-        ViewIntroPanel(LayoutInflater.from(parent.context), parent)
+        ViewColorIntroPanel(LayoutInflater.from(parent.context), parent)
 
     private val composePanel =
-        ComposeIntroPanel(LayoutInflater.from(parent.context), parent)
+        ComposeColorIntroPanel(LayoutInflater.from(parent.context), parent)
 
-    private var currentPanel: IntroPanel = viewPanel
+    private var currentPanel: ColorIntroPanel = viewPanel
         set(newPanel) {
             field = newPanel
             sync(newPanel)
@@ -145,7 +142,7 @@ internal class PanelController(
         sync(viewPanel)
     }
 
-    private fun sync(panel: IntroPanel) {
+    private fun sync(panel: ColorIntroPanel) {
         panel.isShowingBackgrounds = isShowingBackgrounds
         panel.outlineAmbientShadowColor = outlineAmbientShadowColor
         panel.outlineSpotShadowColor = outlineSpotShadowColor
@@ -156,17 +153,4 @@ internal class PanelController(
         currentPanel =
             if (selection == R.id.view_selection) viewPanel else composePanel
     }
-}
-
-internal interface IntroPanel {
-
-    val ui: ViewBinding
-
-    var isShowingBackgrounds: Boolean
-
-    var outlineAmbientShadowColor: Int
-
-    var outlineSpotShadowColor: Int
-
-    var elevation: Float
 }

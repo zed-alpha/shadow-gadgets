@@ -10,7 +10,7 @@ import com.zedalpha.shadowgadgets.view.internal.parentViewGroup
 import com.zedalpha.shadowgadgets.view.internal.viewTag
 import com.zedalpha.shadowgadgets.view.tintOutlineShadow
 import com.zedalpha.shadowgadgets.view.viewgroup.ShadowsViewGroup
-import com.zedalpha.shadowgadgets.view.viewgroup.isInitializedForRecyclingSVG
+import com.zedalpha.shadowgadgets.view.viewgroup.isInitializedForRecyclingShadowsViewGroup
 
 internal fun View.updateProxy() {
     val requiresProxy = this.clipOutlineShadow || this.tintOutlineShadow
@@ -41,27 +41,27 @@ private fun handleAttach(target: View) {
     val proxy = target.shadowProxy
     val parent = target.parentViewGroup
 
-    if (proxy != null) {
+    if (proxy == null) {
+        val parentWillNotCreateProxy =
+            parent !is ShadowsViewGroup || !parent.isRecycling ||
+                    target.isInitializedForRecyclingShadowsViewGroup
+
+        if (parentWillNotCreateProxy) target.createProxy()
+    } else {
         check(proxy.isChildOfRecyclingViewGroup) {
-            "Non-Recycling ViewGroup child attached with Proxy"
+            "Child of non-recycling ViewGroup attached with Proxy"
         }
+
         if (proxy.plane.viewGroup === parent) {
             proxy.isShown = true
         } else {
             proxy.updatePlane()
         }
-    } else {
-        if (parent is ShadowsViewGroup && parent.isRecycling &&
-            !target.isInitializedForRecyclingSVG
-        ) {
-            return
-        }
-        createProxy(target)
     }
 }
 
 private fun handleDetach(target: View) {
-    val proxy = checkNotNull(target.shadowProxy) { "Null Proxy on detach" }
+    val proxy = checkNotNull(target.shadowProxy) { "Null Proxy on View detach" }
 
     if (proxy.isChildOfRecyclingViewGroup) {
         proxy.isShown = false
@@ -70,8 +70,10 @@ private fun handleDetach(target: View) {
     }
 }
 
-internal fun createProxy(target: View) =
-    ShadowProxy(target).apply { updatePlane() }
+internal fun View.createProxy(): ShadowProxy {
+    check(this.isAttachedToWindow) { "View unattached at create Proxy" }
+    return ShadowProxy(this).apply { updatePlane() }
+}
 
 internal val ViewGroup.isRecycling: Boolean
     get() = this is RecyclerView || this is AdapterView<*>

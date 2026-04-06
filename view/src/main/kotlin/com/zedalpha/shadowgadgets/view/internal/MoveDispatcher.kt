@@ -17,7 +17,7 @@ private var View.moveDispatcher: MoveDispatcher?
         by viewTag(R.id.move_dispatcher, null)
 
 private class MoveDispatcher(private val view: View) :
-    AutoDisposeSwitchGroup<OnMove>() {
+    AutoDisposeListGroup<OnMove>() {
 
     private val checkLocationChange =
         OnPreDraw { if (hasMoved()) iterate { it.onMove() } }

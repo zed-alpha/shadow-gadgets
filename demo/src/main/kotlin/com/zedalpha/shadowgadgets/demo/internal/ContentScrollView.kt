@@ -17,6 +17,11 @@ internal class ContentScrollView
     private val drawable =
         AppCompatResources.getDrawable(context, R.drawable.fg_content_border)
 
+    init {
+        outlineProvider = RoundedCornerViewOutlineProvider()
+        clipToOutline = true
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         drawable?.setBounds(0, 0, w, h)
     }

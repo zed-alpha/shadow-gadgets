@@ -11,9 +11,8 @@ import androidx.annotation.RequiresApi
 import com.zedalpha.shadowgadgets.view.internal.BaseDrawable
 import com.zedalpha.shadowgadgets.view.internal.BaseView
 import com.zedalpha.shadowgadgets.view.internal.fastLayout
-import com.zedalpha.shadowgadgets.view.internal.viewPainter
+import com.zedalpha.shadowgadgets.view.internal.obtainViewPainter
 import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
-import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeReflector
 import com.zedalpha.shadowgadgets.view.rendernode.nativeRenderNode
 import com.zedalpha.shadowgadgets.view.rendernode.record
 
@@ -33,8 +32,6 @@ internal abstract class OverlayProjector(
                     RenderNodeProjector(viewGroup, content)
                 RenderNodeFactory.isOpen ->
                     RenderNodeWrapperProjector(viewGroup, content)
-                RenderNodeReflector.isValid ->
-                    RenderNodeReflectorProjector(viewGroup, content)
                 else ->
                     ViewProjector(viewGroup, content)
             }
@@ -118,39 +115,6 @@ private class RenderNodeWrapperProjector(
     }
 }
 
-private class RenderNodeReflectorProjector(
-    viewGroup: ViewGroup,
-    content: (Canvas) -> Unit
-) : OverlayProjector(viewGroup, content) {
-
-    private val base = RenderNodeReflector.createRenderNode("ProjectorBase")
-
-    private val projector =
-        RenderNodeReflector.createRenderNode("Projector")
-            .apply { RenderNodeReflector.setProjectBackwards(this, true) }
-
-    override fun draw(canvas: Canvas) {
-        RenderNodeReflector.record(projector) { canvas ->
-            super.draw(canvas)
-        }
-        RenderNodeReflector.record(base) { canvas ->
-            RenderNodeReflector.drawRenderNode(canvas, projector)
-        }
-        RenderNodeReflector.drawRenderNode(canvas, base)
-    }
-
-    override fun dispose() {
-        super.dispose()
-        RenderNodeReflector.discardDisplayList(base)
-        RenderNodeReflector.discardDisplayList(projector)
-    }
-
-    override fun updateSize(width: Int, height: Int) {
-        RenderNodeReflector.setPosition(base, 0, 0, width, height)
-        RenderNodeReflector.setPosition(projector, 0, 0, width, height)
-    }
-}
-
 private class ViewProjector(viewGroup: ViewGroup, content: (Canvas) -> Unit) :
     OverlayProjector(viewGroup, content) {
 
@@ -167,21 +131,21 @@ private class ViewProjector(viewGroup: ViewGroup, content: (Canvas) -> Unit) :
     private val base =
         ProjectorBase(viewGroup.context).apply { background = projector }
 
-    private val viewPainter = viewGroup.viewPainter
+    private val painter = viewGroup.obtainViewPainter()
 
     init {
-        viewPainter?.add(base)
+        painter?.add(base)
     }
 
     override fun dispose() {
         super.dispose()
-        viewPainter?.remove(base)
+        painter?.remove(base)
     }
 
     @SuppressLint("MissingSuperCall")
     override fun draw(canvas: Canvas) {
         base.superInvalidate()
-        viewPainter?.drawView(canvas, base)
+        painter?.drawView(canvas, base)
     }
 
     override fun updateSize(width: Int, height: Int) {

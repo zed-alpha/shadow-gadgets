@@ -1,22 +1,22 @@
 package com.zedalpha.shadowgadgets.demo.topic
 
 import com.zedalpha.shadowgadgets.demo.R
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentPlaneBinding
+import com.zedalpha.shadowgadgets.demo.databinding.FragmentViewPlaneBinding
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.shadowPlane
 
-internal val PlaneTopic =
+internal val ViewPlaneTopic =
     Topic(
-        title = "Plane",
-        descriptionResId = R.string.description_plane,
-        fragmentClass = PlaneFragment::class.java
+        title = "View: Plane",
+        descriptionResId = R.string.description_view_plane,
+        fragmentClass = ViewPlaneFragment::class.java
     )
 
-class PlaneFragment :
-    TopicFragment<FragmentPlaneBinding>(FragmentPlaneBinding::inflate) {
+class ViewPlaneFragment :
+    TopicFragment<FragmentViewPlaneBinding>(FragmentViewPlaneBinding::inflate) {
 
-    override fun loadUi(ui: FragmentPlaneBinding) {
+    override fun loadUi(ui: FragmentViewPlaneBinding) {
         ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
             ui.motionView.clipOutlineShadow = isChecked
             ui.staticView.clipOutlineShadow = isChecked

@@ -32,11 +32,8 @@ internal abstract class FallbackDrawable(density: Float) : PaintDrawable() {
 private class ShadowDrawable(density: Float) : FallbackDrawable(density) {
 
     init {
-        paint.apply {
-            // radius isn't the same thing here, but the value works.
-            setShadowLayer(radius, 0F, 0F, Color.MAGENTA)
-            this.color = Color.TRANSPARENT
-        }
+        // radius isn't the same thing here, but the value works.
+        paint.setShadowLayer(radius, 0F, 0F, Color.MAGENTA)
     }
 
     private val clip = Path()
@@ -49,8 +46,8 @@ private class ShadowDrawable(density: Float) : FallbackDrawable(density) {
 
     override fun draw(canvas: Canvas) =
         canvas.withSave {
-            canvas.clipOutPath(clip)
-            super.draw(canvas)
+            clipOutPath(clip)
+            super.draw(this)
         }
 }
 

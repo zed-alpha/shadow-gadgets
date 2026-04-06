@@ -1,9 +1,6 @@
 package com.zedalpha.shadowgadgets.demo
 
-import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -14,24 +11,25 @@ import androidx.core.view.get
 import androidx.core.view.isInvisible
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.zedalpha.shadowgadgets.demo.databinding.ActivityDemoBinding
-import com.zedalpha.shadowgadgets.demo.internal.RoundedCornerViewOutlineProvider
 import com.zedalpha.shadowgadgets.demo.internal.applyInsetsListener
+import com.zedalpha.shadowgadgets.demo.internal.inflateUnattached
 import com.zedalpha.shadowgadgets.demo.internal.showWelcomeDialog
-import com.zedalpha.shadowgadgets.demo.topic.ApplyTopic
+import com.zedalpha.shadowgadgets.demo.topic.ColorDrawableTopic
+import com.zedalpha.shadowgadgets.demo.topic.ColorIntroTopic
+import com.zedalpha.shadowgadgets.demo.topic.ColorStressTestTopic
+import com.zedalpha.shadowgadgets.demo.topic.ComposeDropTopic
+import com.zedalpha.shadowgadgets.demo.topic.ComposeIntroTopic
+import com.zedalpha.shadowgadgets.demo.topic.ComposeLambdaTopic
 import com.zedalpha.shadowgadgets.demo.topic.ComposeRootTopic
-import com.zedalpha.shadowgadgets.demo.topic.ComposeTopic
-import com.zedalpha.shadowgadgets.demo.topic.DrawableTopic
-import com.zedalpha.shadowgadgets.demo.topic.IntroTopic
-import com.zedalpha.shadowgadgets.demo.topic.IrregularTopic
-import com.zedalpha.shadowgadgets.demo.topic.MotionTopic
-import com.zedalpha.shadowgadgets.demo.topic.PlaneTopic
-import com.zedalpha.shadowgadgets.demo.topic.RootTopic
-import com.zedalpha.shadowgadgets.demo.topic.compat.CompatDrawableTopic
-import com.zedalpha.shadowgadgets.demo.topic.compat.CompatIntroTopic
-import com.zedalpha.shadowgadgets.demo.topic.compat.CompatStressTestTopic
+import com.zedalpha.shadowgadgets.demo.topic.ViewDrawableTopic
+import com.zedalpha.shadowgadgets.demo.topic.ViewGroupsTopic
+import com.zedalpha.shadowgadgets.demo.topic.ViewIntroTopic
+import com.zedalpha.shadowgadgets.demo.topic.ViewIrregularTopic
+import com.zedalpha.shadowgadgets.demo.topic.ViewMotionTopic
+import com.zedalpha.shadowgadgets.demo.topic.ViewPlaneTopic
+import com.zedalpha.shadowgadgets.demo.topic.ViewRootTopic
 
 class DemoActivity : AppCompatActivity() {
 
@@ -48,7 +46,7 @@ class DemoActivity : AppCompatActivity() {
             isUserInputEnabled = false
         }
         ui.infoPager.apply {
-            adapter = InfoAdapter(this@DemoActivity)
+            adapter = InfoAdapter()
             isUserInputEnabled = false
         }
 
@@ -76,8 +74,8 @@ class DemoActivity : AppCompatActivity() {
         ui.title.setOnClickListener { title ->
             PopupMenu(this, title).run {
                 Topics.forEachIndexed { i, t -> menu.add(0, i, 0, t.title) }
-                menu[current].isEnabled = false
                 setOnMenuItemClickListener { setTopic(it.itemId); true }
+                menu[current].isEnabled = false
                 show()
             }
         }
@@ -90,18 +88,20 @@ class DemoActivity : AppCompatActivity() {
 
 private val Topics =
     listOf(
-        IntroTopic,
-        MotionTopic,
-        PlaneTopic,
-        ApplyTopic,
-        IrregularTopic,
-        DrawableTopic,
-        RootTopic,
-        ComposeTopic,
+        ViewIntroTopic,
+        ViewMotionTopic,
+        ViewPlaneTopic,
+        ViewGroupsTopic,
+        ViewIrregularTopic,
+        ViewDrawableTopic,
+        ViewRootTopic,
+        ComposeIntroTopic,
+        ComposeLambdaTopic,
+        ComposeDropTopic,
         ComposeRootTopic,
-        CompatIntroTopic,
-        CompatDrawableTopic,
-        CompatStressTestTopic,
+        ColorIntroTopic,
+        ColorDrawableTopic,
+        ColorStressTestTopic,
     )
 
 private class ContentAdapter(activity: FragmentActivity) :
@@ -113,36 +113,34 @@ private class ContentAdapter(activity: FragmentActivity) :
         Topics[position].createFragment()
 }
 
-private class InfoAdapter(private val context: Context) :
-    RecyclerView.Adapter<InfoHolder>() {
+private class InfoAdapter : RecyclerView.Adapter<InfoHolder>() {
 
     override fun getItemCount() = Topics.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_description, parent, false).run {
-                outlineProvider = RoundedCornerViewOutlineProvider()
-                clipToOutline = true
-                InfoHolder(this)
-            }
+        InfoHolder(parent)
 
-    override fun onBindViewHolder(holder: InfoHolder, position: Int) {
-        holder.text.text = Topics[position].createDescription(context)
-    }
+    override fun onBindViewHolder(holder: InfoHolder, position: Int) =
+        holder.bind(position)
 }
 
-private class InfoHolder(view: View) : ViewHolder(view) {
+private class InfoHolder(parent: ViewGroup) :
+    RecyclerView.ViewHolder(parent.inflateUnattached(R.layout.item_description)) {
 
-    val text: TextView = view.findViewById(R.id.text)
+    private val text: TextView = itemView.findViewById(R.id.text)
 
     init {
         text.setOnLongClickListener {
-            AlertDialog.Builder(text.context)
+            AlertDialog.Builder(it.context)
                 .setView(R.layout.dialog_description)
                 .setPositiveButton("Close", null)
                 .show()
                 .findViewById<TextView>(R.id.text)?.text = text.text
             true
         }
+    }
+
+    fun bind(position: Int) {
+        text.text = Topics[position].createDescription(itemView.context)
     }
 }

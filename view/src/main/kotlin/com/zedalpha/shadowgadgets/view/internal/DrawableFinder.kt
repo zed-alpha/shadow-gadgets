@@ -1,7 +1,6 @@
 package com.zedalpha.shadowgadgets.view.internal
 
 import android.annotation.SuppressLint
-import android.graphics.Path
 import android.graphics.drawable.ClipDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.DrawableContainer
@@ -13,7 +12,6 @@ import android.graphics.drawable.ScaleDrawable
 import android.os.Build
 import androidx.appcompat.graphics.drawable.DrawableWrapperCompat
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearancePathProvider
 import java.lang.reflect.Field
 
 internal fun Drawable.findMaterialShapeDrawable(): MaterialShapeDrawable? =
@@ -27,27 +25,26 @@ internal class DrawableFinder<T>(val root: Drawable, val clazz: Class<T>)
 
     fun find(): T? = root.find()
 
-    private fun Drawable.find(): T? =
-        with(this) {
-            if (clazz.isInstance(this)) return clazz.cast(this)
-            if (this is DrawableContainer) return this.current.find()
-            if (this is DrawableWrapperCompat) return this.drawable?.find()
-            if (Build.VERSION.SDK_INT >= 23) {
-                if (this is DrawableWrapper) return this.drawable?.find()
-            } else {
-                if (this is ClipDrawable) return this.drawableLollipop?.find()
-                if (this is InsetDrawable) return this.drawable?.find()
-                if (this is RotateDrawable) return this.drawable?.find()
-                if (this is ScaleDrawable) return this.drawable?.find()
-            }
-            if (this is LayerDrawable) {
-                return (0..<this.numberOfLayers)
-                    .asSequence()
-                    .map { this.getDrawable(it)?.find() }
-                    .firstNotNullOfOrNull { it }
-            }
-            return null
+    private fun Drawable.find(): T? {
+        if (clazz.isInstance(this)) return clazz.cast(this)
+        if (this is DrawableContainer) return this.current.find()
+        if (this is DrawableWrapperCompat) return this.drawable?.find()
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (this is DrawableWrapper) return this.drawable?.find()
+        } else {
+            if (this is ClipDrawable) return this.drawableLollipop?.find()
+            if (this is InsetDrawable) return this.drawable?.find()
+            if (this is RotateDrawable) return this.drawable?.find()
+            if (this is ScaleDrawable) return this.drawable?.find()
         }
+        if (this is LayerDrawable) {
+            return (0..<this.numberOfLayers)
+                .asSequence()
+                .map { this.getDrawable(it)?.find() }
+                .firstNotNullOfOrNull { it }
+        }
+        return null
+    }
 }
 
 private val ClipDrawable.drawableLollipop: Drawable?
@@ -80,23 +77,3 @@ private object ClipDrawableReflector {
         return mDrawableField?.get(state) as? Drawable
     }
 }
-
-internal fun Path.setFromMaterialShapeDrawable(msd: MaterialShapeDrawable) {
-    val pathProvider =
-        ShapeAppearancePathProviderThreadLocal.get()
-            ?: ShapeAppearancePathProvider()
-                .also { ShapeAppearancePathProviderThreadLocal.set(it) }
-
-    val bounds = ThreadLocalGraphicsTemps.rectF
-    bounds.set(msd.bounds)
-
-    pathProvider.calculatePath(
-        /* shapeAppearanceModel = */ msd.shapeAppearanceModel,
-        /* interpolation = */ msd.interpolation,
-        /* bounds = */ bounds,
-        /* path = */ this
-    )
-}
-
-private val ShapeAppearancePathProviderThreadLocal =
-    ThreadLocal<ShapeAppearancePathProvider>()

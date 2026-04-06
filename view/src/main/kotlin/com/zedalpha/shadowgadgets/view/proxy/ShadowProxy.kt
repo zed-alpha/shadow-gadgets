@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import androidx.core.view.isVisible
-import com.zedalpha.shadowgadgets.view.ExperimentalShadowGadgets
 import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.ShadowMode
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
@@ -30,11 +29,9 @@ internal class ShadowProxy(val target: View) {
     var shadow: Shadow = obtainShadow(null)
         private set
 
-    val isClipped: Boolean get() = shadow is ClippedShadow
-
     fun updateClip() {
         shadow = obtainShadow(shadow)
-        if (isClipped) target.invalidateOutline()
+        if (shadow is ClippedShadow) target.invalidateOutline()
         plane.invalidate()
     }
 
@@ -92,7 +89,6 @@ internal class ShadowProxy(val target: View) {
             field = next
         }
 
-    @OptIn(ExperimentalShadowGadgets::class)
     private fun notifyModeChange(current: Plane, next: Plane) {
         val target = this.target
         val onModeChange = target.onShadowModeChange ?: return
@@ -101,39 +97,36 @@ internal class ShadowProxy(val target: View) {
         if (current.shadowMode != nextMode) target.onModeChange(nextMode)
     }
 
-    private val originalProvider: ViewOutlineProvider = target.outlineProvider
+    var layer: Layer? = null
 
-    private inner class ShadowOutlineProvider : ViewOutlineProvider() {
-        override fun getOutline(view: View, outline: Outline) {
-            originalProvider.getOutline(view, outline)
-            shadow.setOutline(outline)
-            outline.alpha = 0F
-        }
-    }
+    fun updateLayer() = plane.let { it.updateLayer(this); it.invalidate() }
 
     var isShown: Boolean = true
 
     init {
+        val target = this.target
         target.shadowProxy = this
-        target.outlineProvider = ShadowOutlineProvider()
+
+        val original = target.outlineProvider
+        target.outlineProvider = ShadowOutlineProvider(original, this)
     }
 
     fun dispose() {
+        val target = this.target
         target.shadowProxy = null
-        target.outlineProvider = originalProvider
+
+        val provider = target.outlineProvider as? ShadowOutlineProvider
+        target.outlineProvider = provider?.original
 
         plane = Plane.Null
         shadow.dispose()
 
-        @OptIn(ExperimentalShadowGadgets::class)
         target.onShadowModeChange?.invoke(target, ShadowMode.Native)
     }
 
     fun updateAndDraw(canvas: Canvas) {
         if (updateAndConfirmDraw()) shadow.draw(canvas)
     }
-
-    fun invalidate() = plane.invalidate()
 
     fun updateAndConfirmDraw(): Boolean =
         shadow.run {
@@ -159,9 +152,19 @@ internal class ShadowProxy(val target: View) {
             isShown && view.isVisible && view.z > 0F
         }
 
-    var layer: Layer? = null
+    fun invalidate() = plane.invalidate()
+}
 
-    fun updateLayer() = plane.let { it.updateLayer(this); it.invalidate() }
+private class ShadowOutlineProvider(
+    val original: ViewOutlineProvider?,
+    private val proxy: ShadowProxy
+) : ViewOutlineProvider() {
+
+    override fun getOutline(view: View, outline: Outline) {
+        original?.getOutline(view, outline)
+        proxy.shadow.setOutline(outline)
+        outline.alpha = 0F
+    }
 }
 
 private class RecyclingParent(

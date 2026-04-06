@@ -13,8 +13,8 @@ internal inline val Color.isDefault get() = this == DefaultShadowColor
 internal inline val Color.isTint: Boolean
     get() = this.isSpecified && this != DefaultShadowColor && this != Transparent
 
-internal fun blendsToDefault(compat: Color, ambient: Color, spot: Color) =
-    compat.isUnspecified && ambient.isDefault && spot.isDefault
+internal fun Color.isOrBlendsToDefault(ambient: Color, spot: Color) =
+    this.isDefault || this.isUnspecified && ambient.isDefault && spot.isDefault
 
 // Technically, we should account for configuration changes here,
 // but since it's not really possible to modify these alphas without

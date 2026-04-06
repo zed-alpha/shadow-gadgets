@@ -4,7 +4,7 @@ internal inline fun <T> List<T>.iterate(block: (T) -> Unit) {
     for (index in this.indices) block(this[index])
 }
 
-internal inline fun <T> List<T>.leading(condition: (T) -> Boolean): T? {
+internal inline fun <T> List<T>.find(condition: (T) -> Boolean): T? {
     this.iterate { if (condition(it)) return it }
     return null
 }

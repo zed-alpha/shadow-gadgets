@@ -1,8 +1,9 @@
 package com.zedalpha.shadowgadgets.view.layer
 
 import android.view.ViewGroup
+import com.zedalpha.shadowgadgets.view.internal.Group
+import com.zedalpha.shadowgadgets.view.internal.ListGroup
 import com.zedalpha.shadowgadgets.view.internal.OnMove
-import com.zedalpha.shadowgadgets.view.internal.SwitchGroup
 import com.zedalpha.shadowgadgets.view.internal.addOnMove
 import com.zedalpha.shadowgadgets.view.internal.isTint
 import com.zedalpha.shadowgadgets.view.internal.removeOnMove
@@ -11,7 +12,7 @@ import com.zedalpha.shadowgadgets.view.plane.Plane
 internal class LayerGroup<T : Layer>(
     private val viewGroup: ViewGroup,
     private val plane: Plane
-) : SwitchGroup<T>() {
+) : Group<T> by ListGroup() {
 
     private val recreateLayers =
         OnMove {

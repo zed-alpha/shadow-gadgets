@@ -10,5 +10,4 @@
     android:singleLine="true"
     android:textAlignment="center"
     android:textSize="20sp"
-    android:textStyle="bold"
     tools:viewBindingIgnore="true" />

@@ -30,7 +30,7 @@ internal class RecyclingManager<T>(
 ) where T : ViewGroup, T : ShadowsViewGroup {
 
     override fun onViewAdded(child: View) {
-        if (child.isInitializedForRecyclingSVG) return
+        if (child.isInitializedForRecyclingShadowsViewGroup) return
 
         if (child.isPlaneNotSet && isGroupPlaneSet) {
             child.shadowPlane = childShadowsPlane
@@ -52,14 +52,14 @@ internal class RecyclingManager<T>(
                 forceChildOutlineShadowsColorCompat
         }
 
-        child.isInitializedForRecyclingSVG = true
+        child.isInitializedForRecyclingShadowsViewGroup = true
 
         if (child.clipOutlineShadow || child.tintOutlineShadow) {
-            createProxy(child)
+            child.createProxy()
         }
     }
 }
 
-internal var View.isInitializedForRecyclingSVG: Boolean
-        by viewTag(R.id.is_initialized_for_recycling_svg, false)
+internal var View.isInitializedForRecyclingShadowsViewGroup: Boolean
+        by viewTag(R.id.is_initialized_for_recycling_shadows_view_group, false)
     private set

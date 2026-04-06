@@ -3,18 +3,22 @@ package com.zedalpha.shadowgadgets.view.rendernode
 import android.graphics.Matrix
 import android.graphics.Outline
 import android.os.Build
+import com.zedalpha.shadowgadgets.view.ShadowGadgets
 
 internal object RenderNodeFactory {
 
-    val isOpen: Boolean =
+    private val isCapable: Boolean =
         when {
             Build.VERSION.SDK_INT >= 29 -> true
             Build.VERSION.SDK_INT == 28 -> false
-            else -> testInstance()
+            else -> testWrapper()
         }
 
+    val isOpen: Boolean
+        get() = isCapable && !ShadowGadgets.forceFallbackDrawMethod
+
     fun create(name: String? = null): RenderNodeWrapper {
-        check(isOpen) { "Unavailable" }
+        check(isOpen) { "RenderNodes are unavailable" }
         return createWrapper(name).apply { setClipToBounds(false) }
     }
 
@@ -26,9 +30,9 @@ internal object RenderNodeFactory {
             else -> RenderNodeApi29(name)
         }
 
-    private fun testInstance(): Boolean =
+    private fun testWrapper(): Boolean =
         try {
-            with(createWrapper("Tester")) {
+            with(createWrapper("TestInstance")) {
                 alpha = alpha
                 cameraDistance = cameraDistance
                 elevation = elevation

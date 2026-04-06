@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -40,10 +39,12 @@ import androidx.compose.ui.window.DialogWindowProvider
 import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.ComposeViewBinding
+import com.zedalpha.shadowgadgets.demo.internal.ItemBlue
+import com.zedalpha.shadowgadgets.demo.internal.setTopicContent
 
 internal val ComposeRootTopic =
     Topic(
-        title = "Compose - Root",
+        title = "Compose: Root",
         descriptionResId = R.string.description_compose_root,
         fragmentClass = ComposeRootFragment::class.java
     )
@@ -51,12 +52,8 @@ internal val ComposeRootTopic =
 class ComposeRootFragment :
     TopicFragment<ComposeViewBinding>(ComposeViewBinding::inflate) {
 
-    override fun loadUi(ui: ComposeViewBinding) {
-        ui.composeView.apply {
-            setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
-            setContent { ComposeRootContent() }
-        }
-    }
+    override fun loadUi(ui: ComposeViewBinding) =
+        ui.composeView.setTopicContent { ComposeRootContent() }
 }
 
 @Composable
@@ -104,11 +101,8 @@ private fun DialogExample(
                 .rotate(-3F)
                 .size(300.dp)
                 .clickable { dismiss() }
-                .background(
-                    color = ClearBlue,
-                    shape = MaterialTheme.shapes.medium
-                )
-                .rootClippedShadow()
+                .background(ItemBlue, MaterialTheme.shapes.medium)
+                .rootShadow()
                 .padding(horizontal = 15.dp, vertical = 20.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -152,8 +146,8 @@ private fun AlertDialogExample(
             .rotate(3F)
             .size(300.dp)
             .clickable { dismiss() }
-            .rootClippedShadow(),
-        backgroundColor = ClearBlue,
+            .rootShadow(),
+        backgroundColor = ItemBlue,
         properties = DialogProperties(decorFitsSystemWindows = false)
     )
 }
@@ -162,8 +156,8 @@ private fun AlertDialogExample(
 private fun localDialogWindow(): Window? =
     (LocalView.current.parent as? DialogWindowProvider)?.window
 
-private fun Modifier.rootClippedShadow(): Modifier =
-    if (Build.VERSION.SDK_INT != 28) {
+private fun Modifier.rootShadow(): Modifier =
+    if (Build.VERSION.SDK_INT !in 24..28) {
         // From AlertDialog, MaterialTheme.shapes.medium
         val shape = RoundedCornerShape(4.dp)
         this.clippedShadow(

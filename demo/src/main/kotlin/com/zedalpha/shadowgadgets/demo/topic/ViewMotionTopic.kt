@@ -9,28 +9,29 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
 import com.zedalpha.shadowgadgets.demo.R
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentMotionBinding
+import com.zedalpha.shadowgadgets.demo.databinding.FragmentViewMotionBinding
 import com.zedalpha.shadowgadgets.demo.internal.DefaultTargetColor
 import com.zedalpha.shadowgadgets.demo.internal.toColorStateList
 import com.zedalpha.shadowgadgets.demo.topic.Action.Hide
 import com.zedalpha.shadowgadgets.demo.topic.Action.Show
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-internal val MotionTopic =
+internal val ViewMotionTopic =
     Topic(
-        title = "Motion",
-        descriptionResId = R.string.description_motion,
-        fragmentClass = MotionFragment::class.java
+        title = "View: Motion",
+        descriptionResId = R.string.description_view_motion,
+        fragmentClass = ViewMotionFragment::class.java
     )
 
-class MotionFragment :
-    TopicFragment<FragmentMotionBinding>(FragmentMotionBinding::inflate) {
+class ViewMotionFragment :
+    TopicFragment<FragmentViewMotionBinding>(FragmentViewMotionBinding::inflate) {
 
-    override fun loadUi(ui: FragmentMotionBinding) {
+    override fun loadUi(ui: FragmentViewMotionBinding) {
         val snackbar =
             Snackbar.make(ui.fabUp, "I'm translucent!", LENGTH_INDEFINITE)
         snackbar.view.backgroundTintList = DefaultTargetColor.toColorStateList()
@@ -63,17 +64,13 @@ class MotionFragment :
         }
     }
 
-    private var animating = false
+    private var currentJob: Job? = null
 
     private fun View.setAnimations(block: suspend () -> Unit) {
         setOnClickListener {
-            if (animating) return@setOnClickListener
+            if (currentJob?.isActive == true) return@setOnClickListener
 
-            animating = true
-            viewLifecycleOwner.lifecycleScope.launch {
-                block()
-                animating = false
-            }
+            currentJob = viewLifecycleOwner.lifecycleScope.launch { block() }
         }
     }
 }

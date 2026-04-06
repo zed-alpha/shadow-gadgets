@@ -12,13 +12,13 @@ import com.zedalpha.shadowgadgets.view.internal.BaseView
 import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
 import com.zedalpha.shadowgadgets.view.internal.ViewShadowColorsHelper
 import com.zedalpha.shadowgadgets.view.internal.fastLayout
-import com.zedalpha.shadowgadgets.view.internal.viewPainter
+import com.zedalpha.shadowgadgets.view.internal.obtainViewPainter
 
 internal class ViewShadow(link: View) : CoreShadow() {
 
     private val shadow = ShadowView(link.context)
 
-    private val painter = link.viewPainter
+    private val painter = link.obtainViewPainter()
 
     init {
         painter?.add(shadow)
@@ -143,7 +143,7 @@ internal class ViewShadow(link: View) : CoreShadow() {
     override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
         shadow.fastLayout(left, top, right, bottom)
 
-    override fun setOutline(outline: Outline) = shadow.outline.set(outline)
+    override fun setOutline(outline: Outline) = shadow.setOutline(outline)
 
     override fun hasIdentityMatrix(): Boolean = shadow.matrix.isIdentity
 
@@ -154,13 +154,13 @@ internal class ViewShadow(link: View) : CoreShadow() {
     }
 
     override fun onDraw(canvas: Canvas) {
-        shadow.run { superInvalidateOutline(); painter?.drawView(canvas, this) }
+        painter?.drawView(canvas, shadow)
     }
 }
 
 private class ShadowView(context: Context) : BaseView(context) {
 
-    val outline = Outline()
+    private val outline = Outline()
 
     init {
         visibility = GONE
@@ -169,6 +169,11 @@ private class ShadowView(context: Context) : BaseView(context) {
                 override fun getOutline(view: View, outline: Outline) =
                     outline.set(this@ShadowView.outline)
             }
+    }
+
+    fun setOutline(outline: Outline) {
+        this.outline.set(outline)
+        superInvalidateOutline()
     }
 
     @Deprecated("Library stop")

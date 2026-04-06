@@ -14,7 +14,7 @@
     <item name="force_shadow_layer" type="id" />
 
     <item name="is_switched" type="id" />
-    <item name="is_initialized_for_recycling_svg" type="id" />
+    <item name="is_initialized_for_recycling_shadows_view_group" type="id" />
 
     <item name="shadow_proxy" type="id" />
 
@@ -26,7 +26,6 @@
     <item name="move_dispatcher" type="id" />
     <item name="view_painter" type="id" />
 
-    <!-- Experimental -->
     <item name="on_shadow_mode_change" type="id" />
     <item name="is_in_shadow_update" type="id" />
 

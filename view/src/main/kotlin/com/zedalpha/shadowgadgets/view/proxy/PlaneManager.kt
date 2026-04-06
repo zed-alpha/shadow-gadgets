@@ -1,12 +1,10 @@
 package com.zedalpha.shadowgadgets.view.proxy
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.view.BuildConfig
-import com.zedalpha.shadowgadgets.view.ExperimentalShadowGadgets
 import com.zedalpha.shadowgadgets.view.ShadowException
 import com.zedalpha.shadowgadgets.view.ShadowGadgets
 import com.zedalpha.shadowgadgets.view.ShadowPlane
@@ -41,13 +39,13 @@ internal fun ShadowProxy.updatePlane(): Boolean {
         }
 
     return if (parent != null) {
-        childPlane(this, target, parent)
+        updateChild(this, target, parent)
     } else {
-        rootPlane(this, target)
+        updateRoot(this, target)
     }
 }
 
-private fun childPlane(
+private fun updateChild(
     proxy: ShadowProxy,
     target: View,
     parent: ViewGroup
@@ -109,7 +107,7 @@ private fun childPlane(
     return false
 }
 
-private fun rootPlane(proxy: ShadowProxy, target: View): Boolean {
+private fun updateRoot(proxy: ShadowProxy, target: View): Boolean {
     when {
         target.shadowPlane != ShadowPlane.Inline -> {
             handleError(proxy) {
@@ -131,16 +129,15 @@ private fun rootPlane(proxy: ShadowProxy, target: View): Boolean {
         }
 
         target !is ViewGroup &&
-                (Build.VERSION.SDK_INT == 28 || !RenderNodeFactory.isOpen) -> {
+                (NonViewGroupRootsNotSupported || !RenderNodeFactory.isOpen) -> {
             handleError(proxy) {
                 buildString {
                     append(
                         "Library shadows are not " +
                                 "available on non-ViewGroup roots "
                     )
-                    @SuppressLint("ObsoleteSdkInt")
-                    if (Build.VERSION.SDK_INT == 28) {
-                        append("on API level 28, Pie")
+                    if (NonViewGroupRootsNotSupported) {
+                        append("on API levels 21, 22, and 28")
                     } else {
                         append("with the fallback draw method currently in use")
                     }
@@ -159,7 +156,9 @@ private fun rootPlane(proxy: ShadowProxy, target: View): Boolean {
     return false
 }
 
-@OptIn(ExperimentalShadowGadgets::class)
+private val NonViewGroupRootsNotSupported =
+    Build.VERSION.SDK_INT in arrayOf(21, 22, 28)
+
 private fun handleError(proxy: ShadowProxy, message: () -> String) {
     val target = proxy.target
 

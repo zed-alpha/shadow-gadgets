@@ -12,17 +12,23 @@ import android.text.style.TypefaceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.buildSpannedString
 import androidx.core.text.getSpans
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.zedalpha.shadowgadgets.demo.internal.ContentCardView
 
 internal class Topic<T : TopicFragment<*>>(
-    val title: String,
+    title: String,
     private val descriptionResId: Int,
     private val fragmentClass: Class<T>
 ) {
-    fun createFragment(): T = fragmentClass.getConstructor().newInstance()
+    val title: CharSequence =
+        buildSpannedString {
+            append(title)
+            val bold = StyleSpan(Typeface.BOLD)
+            setSpan(bold, 0, indexOf(':') + 1, SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
 
     fun createDescription(context: Context): CharSequence =
         context.getText(descriptionResId).let { text ->
@@ -42,6 +48,8 @@ internal class Topic<T : TopicFragment<*>>(
                     }
             }
         }
+
+    fun createFragment(): T = fragmentClass.getConstructor().newInstance()
 }
 
 abstract class TopicFragment<T : ViewBinding>(
@@ -49,6 +57,7 @@ abstract class TopicFragment<T : ViewBinding>(
 ) : Fragment() {
 
     protected lateinit var ui: T
+        private set
 
     final override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,5 +70,5 @@ abstract class TopicFragment<T : ViewBinding>(
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) =
         loadUi(ui)
 
-    abstract fun loadUi(ui: T)
+    protected abstract fun loadUi(ui: T)
 }

@@ -29,13 +29,3 @@ internal fun getDeclaredMethod(
     } else {
         clazz.getDeclaredMethod(name, *parameterTypes)
     }
-
-internal fun requireDeclaredMethod(
-    clazz: Class<*>,
-    name: String,
-    vararg parameterTypes: Class<*>
-): Method =
-    checkNotNull(getDeclaredMethod(clazz, name, *parameterTypes)) {
-        val params = parameterTypes.joinToString { it.simpleName }
-        "Unable to obtain method $name($params) in ${clazz.name}"
-    }

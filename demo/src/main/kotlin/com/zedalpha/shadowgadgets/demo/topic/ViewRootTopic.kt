@@ -20,10 +20,9 @@ import android.view.WindowManager.LayoutParams.TYPE_APPLICATION
 import androidx.core.view.updateLayoutParams
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.DialogRootBinding
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentRootBinding
+import com.zedalpha.shadowgadgets.demo.databinding.FragmentViewRootBinding
 import com.zedalpha.shadowgadgets.demo.databinding.ViewRootBinding
 import com.zedalpha.shadowgadgets.demo.internal.FallbackDrawable
-import com.zedalpha.shadowgadgets.view.ExperimentalShadowGadgets
 import com.zedalpha.shadowgadgets.view.ShadowMode
 import com.zedalpha.shadowgadgets.view.ShadowPlane
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
@@ -33,17 +32,17 @@ import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.shadowPlane
 import com.zedalpha.shadowgadgets.view.updateShadow
 
-internal val RootTopic =
+internal val ViewRootTopic =
     Topic(
-        title = "Root",
-        descriptionResId = R.string.description_root,
-        fragmentClass = RootFragment::class.java
+        title = "View: Root",
+        descriptionResId = R.string.description_view_root,
+        fragmentClass = ViewRootFragment::class.java
     )
 
-class RootFragment :
-    TopicFragment<FragmentRootBinding>(FragmentRootBinding::inflate) {
+class ViewRootFragment :
+    TopicFragment<FragmentViewRootBinding>(FragmentViewRootBinding::inflate) {
 
-    override fun loadUi(ui: FragmentRootBinding) {
+    override fun loadUi(ui: FragmentViewRootBinding) {
         ui.buttonDialog.setOnClickListener { showDialog() }
         ui.buttonView.setOnClickListener { toggleView() }
     }
@@ -60,7 +59,6 @@ class RootFragment :
         val window = dialog.window!!
 
         window.decorView.apply {
-            @OptIn(ExperimentalShadowGadgets::class)
             updateShadow {
                 shadowPlane = ShadowPlane.Inline
                 clipOutlineShadow = true
@@ -80,7 +78,6 @@ class RootFragment :
     private val textView by lazy {
         val vui = ViewRootBinding.inflate(requireActivity().layoutInflater)
         vui.root.apply {
-            @OptIn(ExperimentalShadowGadgets::class)
             updateShadow {
                 shadowPlane = ShadowPlane.Inline
                 clipOutlineShadow = true
@@ -88,7 +85,6 @@ class RootFragment :
                 forceOutlineShadowColorCompat = true
             }
 
-            @OptIn(ExperimentalShadowGadgets::class)
             doOnShadowModeChange { mode ->
                 foreground =
                     if (mode == ShadowMode.Error) {

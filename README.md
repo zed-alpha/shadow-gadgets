@@ -1,14 +1,14 @@
 # Shadow Gadgets
 
-A utility library for Android with various tools to help remedy a couple of
-shortcomings in the native material shadows.
+A utility library for Android with various tools to help remedy shortcomings in
+the shadow implementations for Views and Composables.
 
 <br />
 
 **Visual artifacts**
 
-Unsightly draw defects are visible on `View`s and `Composable`s with see-through
-backgrounds.
+Unsightly draw defects in the native shadows are visible on elements with
+see-through backgrounds.
 
 <!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
@@ -19,8 +19,8 @@ backgrounds.
         width="55%" />
 </p>
 
-The clip tools use the same classes and methods that the native framework uses
-to render shadows, simply replacing the originals with clipped copies.
+The clip tools use the same classes and methods that the framework uses to
+render shadows, simply replacing the originals with clipped copies.
 
 <!--suppress HtmlDeprecatedAttribute -->
 <p align="center">
@@ -31,10 +31,15 @@ to render shadows, simply replacing the originals with clipped copies.
         width="55%" />
 </p>
 
+The clip feature is now also available for Compose's new drop shadow modifiers.
+
+<br />
+
 **Color support**
 
-Shadow colors were not added to the SDK until API level 28 (Pie). Before that,
-the only relevant adjustment available was the alpha value of plain black.
+Shadow colors were not added to the native shadows until API level 28 (Pie).
+Before that, the only relevant adjustment available was the alpha value of plain
+black.
 
 Like the clip feature, color compat uses the same native classes and methods,
 replacing the originals with tinted copies. Only one color can be applied with
@@ -65,9 +70,12 @@ results are likely sufficient for many cases.
 
 - [**Compose**](#compose)
 
-  For the analogous features in the modern UI toolkit, the `compose` package
-  comprises just two functions (and one overload) as direct replacements for the
-  inbuilt shadow.
+  For the analogous features for native shadows in the modern UI toolkit, the
+  `compose` package contains just two functions (plus overloads) as direct
+  replacements for the inbuilt shadow.
+
+  Additionally, a pair of overloads that apply the clip feature to the new drop
+  shadows are now available as well.
 
 - [**Notes**][Notes]
 
@@ -77,7 +85,7 @@ results are likely sufficient for many cases.
 
   Compiled artifacts are available through JitPack.
 
-- [**Documentation ↗**][Documentation]
+- [**Documentation**<sup>↗</sup>][Documentation]
 
   Note that inherited members are suppressed to prevent, for example, all of
   `ViewGroup`s visible members being listed for each `ShadowsViewGroup`.
@@ -93,13 +101,13 @@ results are likely sufficient for many cases.
 <details>
   <summary>Subsections</summary>
 
-+ [Overview](#overview)
-+ [Limitations and recourses](#limitations-and-recourses)
-    + [Overlapping sibling Views](#overlapping-sibling-views)
-    + [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
-+ [ViewGroups](#viewgroups)
-+ [Drawable](#drawable)
-+ [Experimental <sup>New!</sup>](#experimental-new)
+- [Overview](#overview)
+- [Limitations and recourses](#limitations-and-recourses)
+  - [Overlapping sibling Views](#overlapping-sibling-views)
+  - [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
+- [ViewGroups](#viewgroups)
+- [Drawable](#drawable)
+- [Miscellanea](#miscellanea)
 </details>
 
 ### Overview
@@ -117,9 +125,9 @@ That's it. Unless your setup requires that a sibling `View` overlap a target of
 the fix, or it involves a target with an irregular shape on Android R and above,
 that's possibly all you need.
 
-- The [`View.clipOutlineShadow: Boolean`][clipOutlineShadow] extension is
-  simply a switch that toggles the clip fix on the receiver `View`. When `true`,
-  the intrinsic shadow is disabled and replaced with a clipped copy.
+- The [`View.clipOutlineShadow: Boolean`][clipOutlineShadow] extension is simply
+  a switch that toggles the clip fix on the receiver `View`. When `true`, the
+  intrinsic shadow is disabled and replaced with a clipped copy.
 
 - The [`View.outlineShadowColorCompat: Int`][outlineShadowColorCompat] property
   takes a `@ColorInt` with which to tint replacement shadows on versions before
@@ -131,7 +139,7 @@ Though the library's shadow is actually being handled and drawn in the parent
 `ViewGroup`, these properties can be set on the target `View` at any point, even
 while it's unattached, so there's no need to worry about timing. Additionally,
 the shadow automatically animates and transforms along with its target, and it
-will handle moving itself to any new parents, should the target be moved.
+will handle moving itself to any new parents should the target be moved.
 
 It is hoped that the base features will cover most cases. For those setups that
 might be problematic, the library offers a couple of other configuration
@@ -205,38 +213,52 @@ with descriptions of their behaviors and usage in layout XML can be found on the
 ### Drawable
 
 [`ShadowDrawable`][ShadowDrawable] is a thin wrapper around the core classes
-that allows these shadows to be drawn manually without having to mess with the
-`core` module. Information on requirements and usage, and links to examples are
-available on the [Drawable wiki page][DrawableWiki].
+that allows these shadows to be drawn manually. Information on requirements and
+usage, and links to examples are available on the [Drawable wiki
+page][DrawableWiki].
 
-### Experimental <sup>New!</sup>
+### Miscellanea
 
-A new `ExperimentalShadowGadgets` annotation has been added along with a few
-helpers that are mainly concerned with logging and `Exception` behavior, and
-providing a fallback mechanism for error states. Details can be found on the
-[Experimental wiki page][ExperimentalWiki].
+Aside from the main shadow tools, there are a handful of utilities to help with
+implementing, testing, and debugging library features.
 
-These will likely be promoted to stable rather quickly, after just a short time
-to allow users an opportunity to [report any issues][Issues] before they're made
-permanent.
+- A `ShadowGadgets` object with a few flags for the active draw method, logs,
+  and error handling. Details can be found on [its wiki
+  page][ShadowGadgetsWiki].
+
+- `ShadowException` has been defined for known error states. There are about
+  half a dozen, and all but one can be remedied with design-time alterations.
+  The full list is on [this wiki page][ShadowExceptionWiki].
+
+- The `ShadowMode` enum has been added along with a couple of `View` extensions
+  to get the current mode and set a change callback. These are meant mainly for
+  runtime error handling. Further info is on [its wiki page][ShadowModeWiki].
+
+- Lastly, a couple of `View` extensions have been added to allow efficient
+  modification of multiple shadow properties at once. The main function takes a
+  lambda in which to update values while expensive internal operations are
+  paused; helpful in recycling `Adapter`s. The other is a resetter that uses the
+  update function to revert all library values to their defaults. Details are
+  available on [their wiki page][ShadowUpdateWiki].
 
 <br />
 
 ## Compose
 
-> [!IMPORTANT]
-> If you need only the clip fix in this one framework, you might be able to
-> avoid the library overhead. Recent improvements to Compose have made it
-> possible to create a `Modifier` purely within the framework, and it may be
-> preferable to simply copy the short example given in
-> <a href="https://stackoverflow.com/a/71868521">this Stack Overflow post</a>,
-> or the longer one in
-> <a href="https://gist.github.com/zed-alpha/50acf298881ebd112e6bfb934a30d0ba">
-> the linked gist</a> if supporting API levels 24..28.
+<details>
+  <summary>Subsections</summary>
+
+- [Native material shadows](#native-material-shadows)
+- [Clipped drop shadows](#clipped-drop-shadows)
+</details>
+
+<br />
 
 Since Compose already allows shadows to be handled and manipulated as discrete
 UI elements, employing the library's features here is straightforward and
 routine.
+
+### Native material shadows
 
 The base [`clippedShadow`][clippedShadow] is a drop-in replacement for Compose's
 [`shadow`][shadow] function, with the exact same signature and defaults, and
@@ -268,6 +290,20 @@ Box(
 )
 ```
 
+There is now also an overload that takes a lambda to allow for efficient
+animations of shadow properties, without recomposition.
+
+```kotlin
+Box(
+    Modifier
+        .clippedShadow(shape = CircleShape) {
+            elevation = animatedElevationDp.toPx()
+            …
+        }
+    …
+)
+```
+
 For those cases where you need only color compat without the clip,
 [`shadowCompat`][shadowCompat] is a more performant option.
 
@@ -285,8 +321,45 @@ Box(
 )
 ```
 
-Details and examples for both functions can be found on the [Compose wiki
-page][ComposeWiki].
+`shadowCompat` also has a lambda overload that is exactly like
+`clippedShadow`'s, except for the name of its scope interface, which itself is
+otherwise identical.
+
+Details and examples for both functions can be found on the [Native material
+shadow wiki][ComposeNativeWiki].
+
+### Clipped drop shadows
+
+The clip feature has been applied to Compose's new `dropShadow()` modifier, both
+the base version that requires a `Shadow` instance, and the overload that takes
+a lambda. Both are drop-in replacements.
+
+A quick example of the "simple" version:
+
+```kotlin
+Box(
+    Modifier
+        .clippedDropShadow(
+            shape = CircleShape,
+            shadow = Shadow(radius = 10.dp, color = Color.Blue)
+        )
+)
+```
+
+And the lambda version:
+
+```kotlin
+Box(
+    Modifier
+        .clippedDropShadow(shape = CircleShape) {
+            radius = animatedElevationDp.toPx()
+            color = Color.Blue
+        }
+)
+```
+
+Details and examples can be found on the [Clipped drop shadow
+wiki][ComposeDropWiki].
 
 <br />
 
@@ -320,6 +393,12 @@ dependencies {
 
 There is no longer a shared `:core` module. Compose updates have obviated the
 need for it in that framework, so it's all been moved into `:view`.
+
+<br />
+
+> [!IMPORTANT]
+> Remember to check [the wiki Notes][Notes] for anything that might be relevant
+> to your project.
 
 <br />
 
@@ -360,10 +439,22 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [ViewGroupsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
 [ShadowDrawable]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
 [DrawableWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
-[ExperimentalWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Experimental
+
+[ShadowGadgets]: https://todo
+[ShadowGadgetsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowGadgets
+
+[ShadowException]: https://todo
+[ShadowExceptionWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowException
+
+[ShadowMode]: https://todo
+[ShadowModeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowMode
+
+[ShadowUpdateWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Shadow-update
+
 [clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
 [shadow]: https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color)
 [shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
-[ComposeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Compose
+[ComposeNativeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Native-material-shadows
+[ComposeDropWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Clipped-drop-shadows
 [JitPack]: https://jitpack.io/#zed-alpha/shadow-gadgets
 [Releases]: https://github.com/zed-alpha/shadow-gadgets/releases

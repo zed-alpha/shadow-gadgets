@@ -5,7 +5,7 @@ import android.graphics.Rect
 import android.view.View
 import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
 import com.zedalpha.shadowgadgets.view.internal.Group
-import com.zedalpha.shadowgadgets.view.internal.SwitchGroup
+import com.zedalpha.shadowgadgets.view.internal.ListGroup
 import com.zedalpha.shadowgadgets.view.proxy.ShadowProxy
 
 internal interface GroupLayer : Layer, Group<ShadowProxy>
@@ -21,10 +21,10 @@ private constructor(owner: View, proxies: Group<ShadowProxy>) :
     ),
     Group<ShadowProxy> by proxies {
 
-    constructor(owner: View) : this(owner, SwitchGroup())
+    constructor(owner: View) : this(owner, ListGroup())
 }
 
-internal class InertGroupLayer : GroupLayer, SwitchGroup<ShadowProxy>() {
+internal class InertGroupLayer : GroupLayer, Group<ShadowProxy> by ListGroup() {
 
     @Suppress("SetterBackingFieldAssignment")
     override var color: Int = DefaultShadowColor

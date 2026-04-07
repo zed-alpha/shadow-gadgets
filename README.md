@@ -222,17 +222,18 @@ page][DrawableWiki].
 Aside from the main shadow tools, there are a handful of utilities to help with
 applying, testing, and debugging library features.
 
-- A `ShadowGadgets` object holds a few flags for the active draw method, logs,
-  and error handling. Details can be found on [its wiki
+- A [`ShadowGadgets`][ShadowGadgets] object holds a few flags for the active
+  draw method, logs, and error handling. Details can be found on [its wiki
   page][ShadowGadgetsWiki].
 
-- `ShadowException` has been defined for known error states. There are about
-  half a dozen, and all but one can be remedied with design-time alterations.
-  The full list is on [this wiki page][ShadowExceptionWiki].
+- [`ShadowException`][ShadowException] has been defined for known error states.
+  There are about half a dozen, and all but one can be remedied with design-time
+  alterations. The full list is on [this wiki page][ShadowExceptionWiki].
 
-- The `ShadowMode` enum has been added along with a couple of `View` extensions
-  to get the current mode and set a change callback. These are meant mainly for
-  runtime error handling. Further info is on [its wiki page][ShadowModeWiki].
+- The [`ShadowMode`][ShadowMode] enum has been added along with a couple of
+  `View` extensions to get the current mode and set a change callback. These are
+  meant mainly for runtime error handling. Further info is on [its wiki
+  page][ShadowModeWiki].
 
 - Lastly, a couple of `View` extensions have been added to allow efficient
   modification of multiple shadow properties at once, helpful especially in
@@ -248,15 +249,14 @@ applying, testing, and debugging library features.
 <details>
   <summary>Subsections</summary>
 
-- [Native material shadows](#native-material-shadows)
-  - [`Modifier.clippedShadow`](#modifierclippedshadow) 
-    - [Simple](#simple) 
-    - [Color compat](#color-compat) 
-    - [Lambda](#lambda)
-  - [`Modifier.shadowCompat`](#modifiershadowcompat)
-    - [Simple](#simple-1)
-    - [Lambda](#lambda-1)
-- [`Modifier.clippedDropShadow`](#modifierclippeddropshadow)
+- [Modifier.clippedShadow](#modifierclippedshadow) 
+  - [Simple](#simple) 
+  - [Color compat](#color-compat) 
+  - [Lambda](#lambda)
+- [Modifier.shadowCompat](#modifiershadowcompat)
+  - [Simple](#simple-1)
+  - [Lambda](#lambda-1)
+- [Modifier.clippedDropShadow](#modifierclippeddropshadow)
   - [Simple](#simple-2)
   - [Lambda](#lambda-2)
 </details>
@@ -265,143 +265,131 @@ Since Compose already allows shadows to be handled and manipulated as discrete
 UI elements, employing the library's features here is straightforward and
 routine.
 
-### Native material shadows
+There are two replacements for the inbuilt [`shadow`][shadow] modifier:
+`clippedShadow` and `shadowCompat`, the latter being the more performant option
+when only color compat is needed.
 
-The library offers two replacements for the inbuilt [`shadow`][shadow] modifier:
-a clipped version, and an unclipped one that allows use of the color compat
-feature alone.
+The last modifier, `clippedDropShadow`, adds the clip feature to the new
+`dropShadow` modifier, which has supported color from the start so no need for
+a compat version of this one.
 
-#### `Modifier.clippedShadow`
+### Modifier.clippedShadow
 
-- ##### Simple
+- #### Simple
 
   The base [`clippedShadow`][clippedShadow] is a drop-in replacement for
   [`shadow`][shadow], with the exact same signature and defaults, and identical
   usage. For example:
 
   ```kotlin
-  Box(
-      Modifier
-          .clippedShadow(
-              elevation = 10.dp,
-              shape = CircleShape
-          )
-      …
-  )
+  Modifier
+      .clippedShadow(
+          elevation = 10.dp,
+          shape = CircleShape,
+          …
+      )
   ```
 
-- ##### Color compat
+- #### Color compat
 
   Color compat is handled with additional parameters in an overload.
 
   ```kotlin
-  Box(
-      Modifier
-          .clippedShadow(
-              elevation = 10.dp,
-              shape = CircleShape,
-              colorCompat = Color.Blue,
-              forceColorCompat = true
-          )
-      …
-  )
+  Modifier
+      .clippedShadow(
+          elevation = 10.dp,
+          shape = CircleShape,
+          …
+          colorCompat = Color.Blue,
+          forceColorCompat = true
+      )
   ```
 
-- ##### Lambda
+- #### Lambda
 
   There is now also an overload that takes a lambda to allow for efficient
   updates of shadow properties without recomposition. This mimics the lambda
-  versions of dropShadow() and innerShadow(); dimensions are accepted in pixels
-  rather than `Dp`, but the scope is a `Density` so conversions are trivial.
+  version of `dropShadow`; dimensions are accepted in pixels rather than `Dp`,
+  but the scope is a `Density` so conversions are trivial.
 
   ```kotlin
-  Box(
-      Modifier
-          .clippedShadow(shape = CircleShape) {
-              elevation = animatedElevationDp.toPx()
-              …
-          }
-      …
-  )
+  Modifier
+      .clippedShadow(shape = CircleShape) {
+          elevation = animatedElevationDp.toPx()
+          …
+      }
   ```
 
-#### `Modifier.shadowCompat`
+### Modifier.shadowCompat
 
-- ##### Simple
+- #### Simple
 
-  For those cases where you need only color compat without the clip,
-  [`shadowCompat`][shadowCompat] is a more performant option.
+  The [`shadowCompat`][shadowCompat] modifier is a more performant option for
+  those cases where only color compat is needed.
 
   ```kotlin
-  Box(
-      Modifier
-          .shadowCompat(
-              elevation = 10.dp,
-              shape = CircleShape,
-              ambientColor = Color.Blue,
-              spotColor = Color.Cyan,
-              colorCompat = Color.Blue
-          )
-      …
-  )
+  Modifier
+      .shadowCompat(
+          elevation = 10.dp,
+          shape = CircleShape,
+          ambientColor = Color.Blue,
+          spotColor = Color.Cyan,
+          colorCompat = Color.Blue
+      )
   ```
 
-- ##### Lambda
+- #### Lambda
 
   `shadowCompat` also has a lambda overload that is exactly like
   `clippedShadow`'s, except for the name of its scope interface, which itself is
   otherwise identical.
 
   ```kotlin
-  Box(
-      Modifier
-          .shadowCompat(shape = CircleShape) {
-              elevation = animatedElevationDp.toPx()
-              colorCompat = animatedColor
-              forceColorCompat = true
-              …
-          }
-      …
-  )
+  Modifier
+      .shadowCompat(shape = CircleShape) {
+          elevation = animatedElevationDp.toPx()
+          colorCompat = animatedColor
+          forceColorCompat = true
+          …
+      }
   ```
 
 <br />
 
-Details and examples for both functions can be found on the [Native material
-shadow wiki page][ComposeNativeWiki].
+Details and examples for the above functions can be found on the [Native
+material shadow wiki page][ComposeNativeWiki].
 
-### `Modifier.clippedDropShadow`
+### Modifier.clippedDropShadow
 
-The clip feature has been applied to Compose's new `dropShadow()` modifier, both
-the base version that requires a `Shadow` instance, and the overload that takes
-a lambda. Both are drop-in replacements.
+The [`clippedDropShadow`][clippedDropShadow] modifiers apply the clip feature
+to Compose's new `dropShadow()`. Both are drop-in replacements.
 
 - #### Simple
+
+  The base version requires a `Shadow` instance.
 
   ```kotlin
   private val BlueShadow = Shadow(radius = 10.dp, color = Color.Blue)
   …
-  Box(
-      Modifier
-          .clippedDropShadow(
-              shape = CircleShape,
-              shadow = BlueShadow
-          )
-      …
-  )
+
+  Modifier
+      .clippedDropShadow(
+          shape = CircleShape,
+          shadow = BlueShadow
+      )
   ```
 
 - #### Lambda
 
+  This version allows for shadow property updates without recomposition.
+
   ```kotlin
-  Box(
-      Modifier
-          .clippedDropShadow(shape = CircleShape) {
-              radius = animatedElevationDp.toPx()
-              color = Color.Blue
-          }
-      …
-  )
+  Modifier
+      .clippedDropShadow(shape = CircleShape) {
+          radius = animatedElevationDp.toPx()
+          color = Color.Blue
+          …
+      }
   ```
 
 Details and examples can be found on the [Clipped drop shadow
@@ -430,8 +418,8 @@ dependencyResolutionManagement {
 }
 ```
 
-Then add a dependency for [the latest release][Releases] of whichever module is
-required, `view` or `compose`:
+Then, add a dependency for [the latest release][Releases] of each required
+module, directly, or through your `libs.versions.toml`:
 
 ```kotlin
 dependencies {
@@ -440,9 +428,6 @@ dependencies {
     implementation("com.github.zed-alpha.shadow-gadgets:compose:[latest-release]")
 }
 ```
-
-There is no longer a shared `:core` module. Compose updates have obviated the
-need for it in that framework, so it's all been moved into `:view`.
 
 <br />
 
@@ -485,21 +470,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [ViewGroupsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
 [ShadowDrawable]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
 [DrawableWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
-
-[ShadowGadgets]: https://todo
+[ShadowGadgets]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-gadgets/index.html
 [ShadowGadgetsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowGadgets
-
-[ShadowException]: https://todo
+[ShadowException]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-exception/index.html
 [ShadowExceptionWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowException
-
-[ShadowMode]: https://todo
+[ShadowMode]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-mode/index.html
 [ShadowModeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowMode
-
 [ShadowUpdateWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Shadow-update
-
-[clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
 [shadow]: https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color)
+[clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
 [shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
+[clippedDropShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-drop-shadow.html
 [ComposeNativeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Native-material-shadows
 [ComposeDropWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Clipped-drop-shadows
 [JitPack]: https://jitpack.io/#zed-alpha/shadow-gadgets

@@ -100,7 +100,11 @@ internal class ShadowProxy(val target: View) {
 
     var layer: Layer? = null
 
-    fun updateLayer() = plane.let { it.updateLayer(this); it.invalidate() }
+    fun updateLayer() {
+        val plane = this.plane
+        plane.updateLayer(this)
+        plane.invalidate()
+    }
 
     var isShown: Boolean = true
 

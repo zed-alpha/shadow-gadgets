@@ -41,15 +41,18 @@ internal class ViewLayer(link: View, content: (Canvas) -> Unit) :
 
     override fun drawLayer(canvas: Canvas) {
         painter?.run {
-            val view = layerView
-            view.superInvalidate()
-            drawView(canvas, view)
+            val layer = layerView
+            layer.superInvalidate()
+            drawView(canvas, layer)
         }
     }
 
     override fun recreateLayer() {
         val newView = LayerView(link, content)
-        painter?.run { remove(layerView); add(newView) }
+        painter?.run {
+            remove(layerView)
+            add(newView)
+        }
         layerView = newView
     }
 }

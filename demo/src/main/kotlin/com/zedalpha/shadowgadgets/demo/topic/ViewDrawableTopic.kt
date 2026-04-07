@@ -66,8 +66,8 @@ private class DemoClippedShadowDrawable(view: View) :
         spotColor = Color.BLUE
     }
 
-    // This is analogous to a View's layout within its parent ViewGroup:
-    // setPosition() defines the shadow's bounds within the drawable's bounds.
+    // This is analogous to how a View positions its outline within its bounds.
+    // setPosition() defines the shadow's position within the drawable's bounds.
     // Alternately, DemoShadowCompatDrawable's override uses only translations.
     override fun centerShadow(bounds: Rect, sideLength: Float) {
         val side = sideLength.roundToInt()

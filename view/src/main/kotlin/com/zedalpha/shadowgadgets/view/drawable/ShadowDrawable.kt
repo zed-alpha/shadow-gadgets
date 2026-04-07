@@ -369,7 +369,7 @@ private constructor(
                 shadow.ambientColor = ambientColor
                 shadow.spotColor = spotColor
 
-                layer?.let { layer = null; it.dispose() }
+                layer?.let { it.dispose(); layer = null }
             }
         }
 

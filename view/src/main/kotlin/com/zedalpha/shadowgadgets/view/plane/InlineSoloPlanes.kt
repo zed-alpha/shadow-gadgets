@@ -114,7 +114,7 @@ internal abstract class InlineSoloPlane(protected val proxy: ShadowProxy) :
     protected open fun dispose() {
         (viewGroup ?: proxy.target).removeOnPreDraw(checkInvalidate)
         proxy.target.overlay.remove(drawable)
-        proxy.layer?.let { proxy.layer = null; it.dispose() }
+        proxy.layer?.let { it.dispose(); proxy.layer = null }
     }
 
     override fun addProxy(proxy: ShadowProxy) = updateLayer(proxy)
@@ -124,7 +124,7 @@ internal abstract class InlineSoloPlane(protected val proxy: ShadowProxy) :
         if (proxy.layer?.color == color) return
 
         if (color == null) {
-            proxy.layer?.let { proxy.layer = null; it.dispose() }
+            proxy.layer?.let { it.dispose(); proxy.layer = null }
         } else {
             val layer = proxy.layer
                 ?: createLayer().also { proxy.layer = it }

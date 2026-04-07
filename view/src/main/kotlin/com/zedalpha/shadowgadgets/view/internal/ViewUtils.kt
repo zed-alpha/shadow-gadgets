@@ -49,8 +49,13 @@ internal fun interface OnLayoutChangeSizeAdapter : View.OnLayoutChangeListener {
         oldTop: Int,
         oldRight: Int,
         oldBottom: Int
-    ) =
-        onSizeChange(right - left, bottom - top)
+    ) {
+        val width = right - left
+        val height = bottom - top
+        if (width != oldRight - oldLeft || height != oldBottom - oldTop) {
+            onSizeChange(width, height)
+        }
+    }
 }
 
 internal fun View.debugId(): String =

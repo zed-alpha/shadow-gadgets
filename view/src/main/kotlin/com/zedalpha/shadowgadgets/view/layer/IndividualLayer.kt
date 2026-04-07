@@ -12,7 +12,11 @@ internal abstract class IndividualLayer(
     private val layer: Layer
 ) : Layer by layer {
 
-    private val recreateLayer = OnMove { recreate(); invalidate() }
+    private val recreateLayer =
+        OnMove {
+            recreate()
+            invalidate()
+        }
 
     final override var color: Int
         get() = layer.color

@@ -31,8 +31,11 @@ internal class ViewPainter(private val owner: ViewGroup) {
 
     fun add(view: View) = painter.add(view)
 
-    fun remove(view: View) =
-        painter.let { it.remove(view); if (it.isEmpty()) dispose() }
+    fun remove(view: View) {
+        val painter = this.painter
+        painter.remove(view)
+        if (painter.isEmpty()) dispose()
+    }
 
     fun drawView(canvas: Canvas, view: View) {
         if (view.parent === painter) painter.drawView(canvas, view)

@@ -8,8 +8,8 @@ internal interface Group<E> {
     fun add(element: E)
     fun remove(element: E)
     fun iterate(block: (E) -> Unit)
-    fun has(condition: (E) -> Boolean): Boolean
     fun find(condition: (E) -> Boolean): E?
+    fun has(condition: (E) -> Boolean): Boolean
 }
 
 @JvmInline

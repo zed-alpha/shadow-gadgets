@@ -152,6 +152,11 @@ private class BlockClippedDropShadowNode(
 
     override val shadowMargin: Float get() = shadowState.run { radius + spread }
 
+    // Regardless of comments, dropShadow creates a new Shadow/Painter if offset
+    // changes; they're both immutable, so there's no other way to update. Since
+    // there's no optimized case, there's no point comparing each value, as any
+    // scope value change requires new objects. Just don't do unrelated state
+    // reads within the shadow's block, but that's a universal recommendation.
     override fun createPainter(scope: CacheDrawScope): Painter {
         val state = shadowState
         state.reset()
@@ -174,11 +179,6 @@ private class BlockClippedDropShadowNode(
         invalidateDrawCache()
     }
 
-    // Surely it makes more sense to directly recreate the Painter here rather
-    // than doing a bunch of calculations and comparisons above that are going
-    // to differ 99% of the time anyway, yeah? Is it even possible to modify a
-    // scope value and _not_ change the Shadow? Just don't do unrelated state
-    // reads within the shadow's block, but that's a universal recommendation.
     override fun onObservedReadsChanged() {
         invalidatePainter()
         invalidateDrawCache()

@@ -134,9 +134,12 @@ internal abstract class ShadowsViewGroupManager<T>(
 
     fun dispatchDraw(canvas: Canvas) {
         val inlinePlane =
-            viewGroup.inlinePlane
-                .takeIf { canvas.isHardwareAccelerated }
-                .also { this.inlinePlane = it }
+            if (canvas.isHardwareAccelerated) {
+                viewGroup.inlinePlane
+            } else {
+                null
+            }
+        this.inlinePlane = inlinePlane
 
         if (inlinePlane == null) {
             superDispatchDraw(canvas)

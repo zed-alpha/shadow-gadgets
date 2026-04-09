@@ -11,7 +11,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentColorStressTestBinding
+import com.zedalpha.shadowgadgets.demo.databinding.FragmentColorCompatStressBinding
 import com.zedalpha.shadowgadgets.demo.internal.ItemElevation
 import com.zedalpha.shadowgadgets.demo.internal.ItemShape
 import com.zedalpha.shadowgadgets.demo.internal.setTopicContent
@@ -21,19 +21,19 @@ import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.shadowPlane
 import com.zedalpha.shadowgadgets.view.updateShadow
 
-internal val ColorStressTestTopic =
+internal val ColorCompatStressTopic =
     Topic(
-        title = "Color: Stress test",
-        descriptionResId = R.string.description_color_stress_test,
-        fragmentClass = ColorStressTestFragment::class.java
+        title = "ColorCompat: Stress",
+        descriptionResId = R.string.description_color_compat_stress,
+        fragmentClass = ColorCompatStressFragment::class.java
     )
 
-class ColorStressTestFragment :
-    TopicFragment<FragmentColorStressTestBinding>(
-        inflate = FragmentColorStressTestBinding::inflate
+class ColorCompatStressFragment :
+    TopicFragment<FragmentColorCompatStressBinding>(
+        inflate = FragmentColorCompatStressBinding::inflate
     ) {
 
-    override fun loadUi(ui: FragmentColorStressTestBinding) {
+    override fun loadUi(ui: FragmentColorCompatStressBinding) {
         ui.recycler.adapter = VeryColorfulAdapter()
         ui.composeView.setTopicContent { ComposeStressTestContent() }
     }

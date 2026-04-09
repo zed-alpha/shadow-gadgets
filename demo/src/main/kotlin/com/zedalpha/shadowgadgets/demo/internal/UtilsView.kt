@@ -51,7 +51,7 @@ internal fun Activity.showWelcomeDialog() {
 
 private const val PrefHideWelcome = "hide_welcome"
 
-internal fun interface SeekChangeListener : SeekBar.OnSeekBarChangeListener {
+internal fun interface UserChangeListener : SeekBar.OnSeekBarChangeListener {
 
     fun onChange(progress: Int)
 
@@ -66,6 +66,10 @@ internal fun interface SeekChangeListener : SeekBar.OnSeekBarChangeListener {
     override fun onStartTrackingTouch(seekBar: SeekBar?) {}
     override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 }
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun SeekBar.doOnUserChange(action: UserChangeListener?) =
+    this.setOnSeekBarChangeListener(action)
 
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun @receiver:ColorInt Int.toColorStateList(): ColorStateList =

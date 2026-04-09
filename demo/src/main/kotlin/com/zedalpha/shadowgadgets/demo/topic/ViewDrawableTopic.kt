@@ -7,7 +7,7 @@ import android.view.View
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.FragmentViewDrawableBinding
 import com.zedalpha.shadowgadgets.demo.internal.DemoShadowDrawable
-import com.zedalpha.shadowgadgets.demo.internal.SeekChangeListener
+import com.zedalpha.shadowgadgets.demo.internal.doOnUserChange
 import kotlin.math.roundToInt
 
 internal val ViewDrawableTopic =
@@ -28,21 +28,17 @@ class ViewDrawableFragment :
     override fun loadUi(ui: FragmentViewDrawableBinding) {
         syncedDrawable = DemoClippedShadowDrawable(ui.viewSynced)
         ui.viewSynced.background = syncedDrawable
-        ui.seekSynced.setOnSeekBarChangeListener(
-            SeekChangeListener { progress ->
-                syncedDrawable.rotationZ = progress.toFloat()
-                syncedDrawable.invalidateSelf()
-            }
-        )
+        ui.seekSynced.doOnUserChange { progress ->
+            syncedDrawable.rotationZ = progress.toFloat()
+            syncedDrawable.invalidateSelf()
+        }
 
         unsyncedDrawable = DemoClippedShadowDrawable(ui.viewUnsynced)
         ui.viewUnsynced.background = unsyncedDrawable
-        ui.seekUnsynced.setOnSeekBarChangeListener(
-            SeekChangeListener { progress ->
-                unsyncedDrawable.rotationZ = progress.toFloat()
-                // No call to invalidateSelf()
-            }
-        )
+        ui.seekUnsynced.doOnUserChange { progress ->
+            unsyncedDrawable.rotationZ = progress.toFloat()
+            // No call to invalidateSelf()
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

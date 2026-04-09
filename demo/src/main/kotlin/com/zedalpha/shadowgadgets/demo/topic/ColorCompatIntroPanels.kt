@@ -35,7 +35,7 @@ import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.shadowPlane
 import android.graphics.Color as AndroidColor
 
-internal interface ColorIntroPanel {
+internal interface ColorCompatIntroPanel {
     val ui: ViewBinding
     var isShowingBackgrounds: Boolean
     var outlineAmbientShadowColor: Int
@@ -43,10 +43,10 @@ internal interface ColorIntroPanel {
     var elevation: Float
 }
 
-internal class ViewColorIntroPanel(
+internal class ViewColorCompatIntroPanel(
     inflater: LayoutInflater,
     parent: ViewGroup
-) : ColorIntroPanel {
+) : ColorCompatIntroPanel {
 
     private val blender = ShadowColorsBlender(parent.context)
 
@@ -100,10 +100,10 @@ internal class ViewColorIntroPanel(
     }
 }
 
-internal class ComposeColorIntroPanel(
+internal class ComposeColorCompatIntroPanel(
     inflater: LayoutInflater,
     parent: ViewGroup
-) : ColorIntroPanel {
+) : ColorCompatIntroPanel {
 
     override val ui = ComposeViewBinding.inflate(inflater, parent, true)
 

@@ -5,7 +5,9 @@ import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonElevation
+import androidx.compose.material.Checkbox
 import androidx.compose.material.FloatingActionButtonElevation
+import androidx.compose.material.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.geometry.CornerRadius
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.zedalpha.shadowgadgets.demo.topic.ItemBlueInt
 import com.zedalpha.shadowgadgets.demo.topic.ItemGreenInt
 import com.zedalpha.shadowgadgets.demo.topic.ItemRedInt
+import com.zedalpha.shadowgadgets.view.BuildConfig
 
 internal fun ComposeView.setTopicContent(content: @Composable (() -> Unit)) {
     this.setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
@@ -127,3 +130,16 @@ internal val GenericCardShape: GenericShape =
             compassPointerBuilder()
         }
     )
+
+@Composable
+internal fun SwitchCompat(
+    onCheckedChange: (Boolean) -> Unit,
+    checked: Boolean
+) {
+    // Switch crashes in release builds on Marshmallow. No idea why.
+    if (Build.VERSION.SDK_INT == 23 && !BuildConfig.DEBUG) {
+        Checkbox(checked, onCheckedChange)
+    } else {
+        Switch(checked, onCheckedChange)
+    }
+}

@@ -22,9 +22,8 @@ import com.zedalpha.shadowgadgets.compose.internal.ClippedDropShadowNode
 import com.zedalpha.shadowgadgets.compose.internal.MutableDensity
 
 /**
- * Creates a replacement for the regular
- * [dropShadow][androidx.compose.ui.draw.dropShadow] modifier with the interior
- * area clipped out.
+ * Creates a [dropShadow][androidx.compose.ui.draw.dropShadow] replacement with
+ * the content area clipped out.
  *
  * Refer to [dropShadow][androidx.compose.ui.draw.dropShadow]'s docs for
  * parameter details.
@@ -94,9 +93,8 @@ private class SimpleClippedDropShadowNode(
 }
 
 /**
- * Creates a replacement for the regular
- * [dropShadow][androidx.compose.ui.draw.dropShadow] modifier with the interior
- * area clipped out.
+ * Creates a [dropShadow][androidx.compose.ui.draw.dropShadow] replacement with
+ * the content area clipped out.
  *
  * Refer to [dropShadow][androidx.compose.ui.draw.dropShadow]'s docs for
  * parameter details.
@@ -152,10 +150,10 @@ private class BlockClippedDropShadowNode(
 
     override val shadowMargin: Float get() = shadowState.run { radius + spread }
 
-    // Regardless of comments, dropShadow creates a new Shadow/Painter if offset
-    // changes; they're both immutable, so there's no other way to update. Since
-    // there's no optimized case, there's no point comparing each value, as any
-    // scope value change requires new objects. Just don't do unrelated state
+    // Despite its comments, dropShadow creates a new Shadow & Painter if offset
+    // changes; they're both immutable, so that's the only way to update. Since
+    // there is no optimized case, it's pointless to check each property, as any
+    // scope value change will need new objects. Just don't do unrelated state
     // reads within the shadow's block, but that's a universal recommendation.
     override fun createPainter(scope: CacheDrawScope): Painter {
         val state = shadowState

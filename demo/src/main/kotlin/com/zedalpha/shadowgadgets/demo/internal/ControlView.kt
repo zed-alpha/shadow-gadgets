@@ -53,14 +53,12 @@ class ControlView
     fun syncElevation() = onElevationChanged(elevation)
 
     init {
-        val seekListener = SeekChangeListener { onColorChanged(color) }
-        ui.seekAlpha.setOnSeekBarChangeListener(seekListener)
-        ui.seekRed.setOnSeekBarChangeListener(seekListener)
-        ui.seekGreen.setOnSeekBarChangeListener(seekListener)
-        ui.seekBlue.setOnSeekBarChangeListener(seekListener)
+        val notifyChange = UserChangeListener { onColorChanged(color) }
+        ui.seekAlpha.setOnSeekBarChangeListener(notifyChange)
+        ui.seekRed.setOnSeekBarChangeListener(notifyChange)
+        ui.seekGreen.setOnSeekBarChangeListener(notifyChange)
+        ui.seekBlue.setOnSeekBarChangeListener(notifyChange)
 
-        ui.seekElevation.setOnSeekBarChangeListener(
-            SeekChangeListener { onElevationChanged(it) }
-        )
+        ui.seekElevation.doOnUserChange { onElevationChanged(it) }
     }
 }

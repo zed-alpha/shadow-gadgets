@@ -22,17 +22,16 @@ import com.zedalpha.shadowgadgets.compose.internal.SimpleShadowNode
 import com.zedalpha.shadowgadgets.compose.internal.WorkingShadowScopeImpl
 
 /**
- * Creates a replacement for the regular
- * [shadow][androidx.compose.ui.draw.shadow] modifier with the interior artifact
- * clipped out.
+ * Creates a [shadow][androidx.compose.ui.draw.shadow] replacement with the
+ * interior artifact clipped out.
  *
  * Refer to [shadow][androidx.compose.ui.draw.shadow]'s docs for parameter
  * details.
  *
  * **NB:** This should not be used for shadows that extend beyond the root
- * composable's bounds on API levels 24..28. The clip feature requires a layer
- * on those versions due to a bug in the system graphics, and layers can be no
- * larger than the root.
+ * composable's bounds on API levels 24..28. The clip feature requires a
+ * compositing layer on those versions due to a bug in the system graphics, and
+ * layers can be no larger than the root.
  */
 @Stable
 public fun Modifier.clippedShadow(

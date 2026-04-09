@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -39,6 +38,7 @@ import com.zedalpha.shadowgadgets.demo.internal.GenericCardShape
 import com.zedalpha.shadowgadgets.demo.internal.ItemElevation
 import com.zedalpha.shadowgadgets.demo.internal.ShadowBlue
 import com.zedalpha.shadowgadgets.demo.internal.State
+import com.zedalpha.shadowgadgets.demo.internal.SwitchCompat
 import com.zedalpha.shadowgadgets.demo.internal.setTopicContent
 
 internal val ComposeLambdaTopic =
@@ -80,7 +80,7 @@ private fun ComposeBlockContent() {
                     .minimumInteractiveComponentSize()
                     .clickable { animate = !animate }
             ) {
-                Switch(animate, { animate = it })
+                SwitchCompat({ animate = it }, animate)
                 Text("Animate")
             }
 
@@ -92,7 +92,7 @@ private fun ComposeBlockContent() {
                     .minimumInteractiveComponentSize()
                     .clickable { useLambda = !useLambda }
             ) {
-                Switch(useLambda, { useLambda = it })
+                SwitchCompat({ useLambda = it }, useLambda)
                 Text("Use lambda")
             }
 

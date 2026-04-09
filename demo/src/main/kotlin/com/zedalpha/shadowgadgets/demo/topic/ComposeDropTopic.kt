@@ -21,7 +21,6 @@ import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.FloatingActionButtonElevation
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -50,6 +49,7 @@ import com.zedalpha.shadowgadgets.demo.internal.ItemShape
 import com.zedalpha.shadowgadgets.demo.internal.ShadowBlue
 import com.zedalpha.shadowgadgets.demo.internal.ShadowGreen
 import com.zedalpha.shadowgadgets.demo.internal.ShadowRed
+import com.zedalpha.shadowgadgets.demo.internal.SwitchCompat
 import com.zedalpha.shadowgadgets.demo.internal.ZeroButtonElevation
 import com.zedalpha.shadowgadgets.demo.internal.ZeroFloatingActionButtonElevation
 import com.zedalpha.shadowgadgets.demo.internal.setTopicContent
@@ -87,7 +87,7 @@ private fun ComposeDropContent() {
                         .minimumInteractiveComponentSize()
                         .clickable { clipped = !clipped }
                 ) {
-                    Switch(clipped, { clipped = it })
+                    SwitchCompat({ clipped = it }, clipped)
                     Text("Clip")
                 }
             }

@@ -27,6 +27,7 @@ internal class LayerGroup<T : Layer>(
 
             if (field == 0) viewGroup.addOnMove(recreateLayers)
             if (value == 0) viewGroup.removeOnMove(recreateLayers)
+
             field = value
         }
 

@@ -16,9 +16,9 @@ import com.zedalpha.shadowgadgets.demo.databinding.ActivityDemoBinding
 import com.zedalpha.shadowgadgets.demo.internal.applyInsetsListener
 import com.zedalpha.shadowgadgets.demo.internal.inflateUnattached
 import com.zedalpha.shadowgadgets.demo.internal.showWelcomeDialog
-import com.zedalpha.shadowgadgets.demo.topic.ColorDrawableTopic
-import com.zedalpha.shadowgadgets.demo.topic.ColorIntroTopic
-import com.zedalpha.shadowgadgets.demo.topic.ColorStressTestTopic
+import com.zedalpha.shadowgadgets.demo.topic.ColorCompatDrawableTopic
+import com.zedalpha.shadowgadgets.demo.topic.ColorCompatIntroTopic
+import com.zedalpha.shadowgadgets.demo.topic.ColorCompatStressTopic
 import com.zedalpha.shadowgadgets.demo.topic.ComposeDropTopic
 import com.zedalpha.shadowgadgets.demo.topic.ComposeIntroTopic
 import com.zedalpha.shadowgadgets.demo.topic.ComposeLambdaTopic
@@ -99,9 +99,9 @@ private val Topics =
         ComposeLambdaTopic,
         ComposeDropTopic,
         ComposeRootTopic,
-        ColorIntroTopic,
-        ColorDrawableTopic,
-        ColorStressTestTopic,
+        ColorCompatIntroTopic,
+        ColorCompatDrawableTopic,
+        ColorCompatStressTopic,
     )
 
 private class ContentAdapter(activity: FragmentActivity) :

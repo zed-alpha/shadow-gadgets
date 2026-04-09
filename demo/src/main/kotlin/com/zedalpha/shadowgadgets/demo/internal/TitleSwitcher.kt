@@ -24,8 +24,8 @@ class TitleSwitcher
     )
 
     init {
-        val inflater = LayoutInflater.from(context)
         setFactory {
+            val inflater = LayoutInflater.from(context)
             inflater.inflate(R.layout.internal_title_switcher, this, false)
         }
         setDirection(true)

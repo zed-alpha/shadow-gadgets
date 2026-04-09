@@ -7,25 +7,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ViewSwitcher
 import com.zedalpha.shadowgadgets.demo.R
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentColorIntroBinding
+import com.zedalpha.shadowgadgets.demo.databinding.FragmentColorCompatIntroBinding
 import kotlin.math.roundToInt
 import android.graphics.Color as AndroidColor
 
-internal val ColorIntroTopic =
+internal val ColorCompatIntroTopic =
     Topic(
-        title = "Color: Intro",
-        descriptionResId = R.string.description_color_intro,
-        fragmentClass = ColorIntroFragment::class.java
+        title = "ColorCompat: Intro",
+        descriptionResId = R.string.description_color_compat_intro,
+        fragmentClass = ColorCompatIntroFragment::class.java
     )
 
-class ColorIntroFragment :
-    TopicFragment<FragmentColorIntroBinding>(
-        inflate = FragmentColorIntroBinding::inflate
+class ColorCompatIntroFragment :
+    TopicFragment<FragmentColorCompatIntroBinding>(
+        inflate = FragmentColorCompatIntroBinding::inflate
     ) {
 
     private lateinit var controller: PanelController
 
-    override fun loadUi(ui: FragmentColorIntroBinding) {
+    override fun loadUi(ui: FragmentColorCompatIntroBinding) {
         @SuppressLint("SetTextI18n")
         if (Build.VERSION.SDK_INT < 28) ui.labelNative.text = "SDK < 28"
 
@@ -39,13 +39,13 @@ class ColorIntroFragment :
             )
 
         val ambientIndicator =
-            PaintDrawable(AndroidColor.BLACK).apply {
+            PaintDrawable(AndroidColor.WHITE).apply {
                 setCornerRadius(10F)
                 setBounds(0, 0, 50, 50)
                 ui.ambientSelection.setCompoundDrawables(null, null, this, null)
             }
         val spotIndicator =
-            PaintDrawable(AndroidColor.BLACK).apply {
+            PaintDrawable(AndroidColor.WHITE).apply {
                 setCornerRadius(10F)
                 setBounds(0, 0, 50, 50)
                 ui.spotSelection.setCompoundDrawables(null, null, this, null)
@@ -101,13 +101,20 @@ internal class PanelController(
     outlineSpotShadowColor: Int,
     elevation: Float
 ) {
+
     private val viewPanel =
-        ViewColorIntroPanel(LayoutInflater.from(parent.context), parent)
+        ViewColorCompatIntroPanel(
+            inflater = LayoutInflater.from(parent.context),
+            parent = parent
+        )
 
     private val composePanel =
-        ComposeColorIntroPanel(LayoutInflater.from(parent.context), parent)
+        ComposeColorCompatIntroPanel(
+            inflater = LayoutInflater.from(parent.context),
+            parent = parent
+        )
 
-    private var currentPanel: ColorIntroPanel = viewPanel
+    private var currentPanel: ColorCompatIntroPanel = viewPanel
         set(newPanel) {
             field = newPanel
             sync(newPanel)
@@ -142,7 +149,7 @@ internal class PanelController(
         sync(viewPanel)
     }
 
-    private fun sync(panel: ColorIntroPanel) {
+    private fun sync(panel: ColorCompatIntroPanel) {
         panel.isShowingBackgrounds = isShowingBackgrounds
         panel.outlineAmbientShadowColor = outlineAmbientShadowColor
         panel.outlineSpotShadowColor = outlineSpotShadowColor

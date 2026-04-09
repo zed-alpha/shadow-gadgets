@@ -18,17 +18,17 @@ internal open class AutoPositionLayer(
         adjustBounds: ((Rect) -> Unit)? = null
     ) : this(owner, Layer(owner, content), adjustBounds)
 
-    private val sizeChange = OnLayoutChangeSizeAdapter(::updateBounds)
+    private val updateBounds = OnLayoutChangeSizeAdapter(::updateBounds)
 
     private val rect = ThreadLocalGraphicsTemps.rect
 
     init {
-        owner.addOnLayoutChangeListener(sizeChange)
+        owner.addOnLayoutChangeListener(updateBounds)
         updateBounds(owner.width, owner.height)
     }
 
     final override fun dispose() {
-        owner.removeOnLayoutChangeListener(sizeChange)
+        owner.removeOnLayoutChangeListener(updateBounds)
         layer.dispose()
     }
 

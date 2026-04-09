@@ -16,7 +16,7 @@ see-through backgrounds.
     <img
         src="images/intro_clip_broken.png" 
         alt="Examples of various translucent UI elements showing the artifacts." 
-        width="55%" />
+        width="45%" />
 </p>
 
 The clip tools use the same classes and methods that the framework uses to
@@ -28,7 +28,7 @@ render shadows, simply replacing the originals with clipped copies.
     <img
         src="images/intro_clip_fixed.png" 
         alt="The above examples with the clip fix applied to each." 
-        width="55%" />
+        width="45%" />
 </p>
 
 The clip feature is now also available for Compose's new drop shadow modifiers.
@@ -74,8 +74,8 @@ results are likely sufficient for many cases.
   `compose` package contains just two functions (plus overloads) as direct
   replacements for the inbuilt shadow.
 
-  Additionally, a pair of overloads that apply the clip feature to the new drop
-  shadows are now available as well.
+  Additionally, a new modifier that applies the clip feature to drop shadows is
+  now available as well.
 
 - [**Notes**][Notes]
 
@@ -223,24 +223,19 @@ Aside from the main shadow tools, there are a handful of utilities to help with
 applying, testing, and debugging library features.
 
 - A [`ShadowGadgets`][ShadowGadgets] object holds a few flags for the active
-  draw method, logs, and error handling. Details can be found on [its wiki
-  page][ShadowGadgetsWiki].
+  draw method, logs, and error handling. ([wiki page][ShadowGadgetsWiki])
 
 - [`ShadowException`][ShadowException] has been defined for known error states.
   There are about half a dozen, and all but one can be remedied with design-time
-  alterations. The full list is on [this wiki page][ShadowExceptionWiki].
+  alterations. ([wiki page][ShadowExceptionWiki])
 
-- The [`ShadowMode`][ShadowMode] enum has been added along with a couple of
-  `View` extensions to get the current mode and set a change callback. These are
-  meant mainly for runtime error handling. Further info is on [its wiki
-  page][ShadowModeWiki].
+- The [`ShadowMode`][ShadowMode] enum has been added along with `View`
+  extensions to get the current mode and set a change callback, meant mainly for
+  runtime error handling. ([wiki page][ShadowModeWiki])
 
 - Lastly, a couple of `View` extensions have been added to allow efficient
   modification of multiple shadow properties at once, helpful especially in
-  recycling `Adapter`s. The main function takes a lambda in which to update
-  values while expensive internal operations are paused. The other is a resetter
-  that uses the update function to revert all library values to their defaults.
-  Details are available on [their wiki page][ShadowUpdateWiki].
+  recycling `Adapter`s. ([wiki page][ShadowUpdateWiki])
 
 <br />
 
@@ -265,20 +260,21 @@ Since Compose already allows shadows to be handled and manipulated as discrete
 UI elements, employing the library's features here is straightforward and
 routine.
 
-There are two replacements for the inbuilt [`shadow`][shadow] modifier:
-`clippedShadow` and `shadowCompat`, the latter being the more performant option
-when only color compat is needed.
+There are two replacements for the inbuilt `shadow` modifier:
+[`clippedShadow`][clippedShadow] and [`shadowCompat`][shadowCompat], the latter
+being the more performant option when only color compat is needed.
+([wiki page][ComposeNativeWiki])
 
-The last modifier, `clippedDropShadow`, adds the clip feature to the new
-`dropShadow` modifier, which has supported color from the start so no need for
-a compat version of this one.
+The last modifier, [`clippedDropShadow`][clippedDropShadow], adds the clip
+feature to the new `dropShadow` modifier, which has supported color from the
+start, so no need for a compat version here. ([wiki page][ComposeDropWiki])
 
 ### Modifier.clippedShadow
 
 - #### Simple
 
   The base [`clippedShadow`][clippedShadow] is a drop-in replacement for
-  [`shadow`][shadow], with the exact same signature and defaults, and identical
+  `shadow`, with the exact same signature and defaults, and identical
   usage. For example:
 
   ```kotlin
@@ -341,7 +337,7 @@ a compat version of this one.
 - #### Lambda
 
   `shadowCompat` also has a lambda overload that is exactly like
-  `clippedShadow`'s, except for the name of its scope interface, which itself is
+  `clippedShadow`'s except for the name of its scope interface, which itself is
   otherwise identical.
 
   ```kotlin
@@ -354,46 +350,35 @@ a compat version of this one.
       }
   ```
 
-<br />
-
-Details and examples for the above functions can be found on the [Native
-material shadow wiki page][ComposeNativeWiki].
-
 ### Modifier.clippedDropShadow
-
-The [`clippedDropShadow`][clippedDropShadow] modifiers apply the clip feature
-to Compose's new `dropShadow()`. Both are drop-in replacements.
 
 - #### Simple
 
-  The base version requires a `Shadow` instance.
+  The base [`clippedDropShadow`][clippedDropShadow] requires a `Shadow`
+  instance, and is a drop-in replacement for the corresponding `dropShadow`
+  overload.
 
   ```kotlin
-  private val BlueShadow = Shadow(radius = 10.dp, color = Color.Blue)
-  …
-
   Modifier
       .clippedDropShadow(
           shape = CircleShape,
-          shadow = BlueShadow
+          shadow = Shadow(radius = 10.dp, color = Color.Blue)
       )
   ```
 
 - #### Lambda
 
-  This version allows for shadow property updates without recomposition.
+  This version allows for shadow property updates without recomposition. It is
+  a drop-in replacement as well.
 
   ```kotlin
   Modifier
       .clippedDropShadow(shape = CircleShape) {
           radius = animatedElevationDp.toPx()
-          color = Color.Blue
+          color = animatedColor
           …
       }
   ```
-
-Details and examples can be found on the [Clipped drop shadow
-wiki page][ComposeDropWiki].
 
 <br />
 
@@ -477,7 +462,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [ShadowMode]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-mode/index.html
 [ShadowModeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowMode
 [ShadowUpdateWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Shadow-update
-[shadow]: https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#(androidx.compose.ui.Modifier).shadow(androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,kotlin.Boolean,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color)
 [clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
 [shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
 [clippedDropShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-drop-shadow.html

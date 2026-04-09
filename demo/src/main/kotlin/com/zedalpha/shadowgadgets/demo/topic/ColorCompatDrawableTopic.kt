@@ -4,35 +4,33 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import com.zedalpha.shadowgadgets.demo.R
-import com.zedalpha.shadowgadgets.demo.databinding.FragmentColorDrawableBinding
+import com.zedalpha.shadowgadgets.demo.databinding.FragmentColorCompatDrawableBinding
 import com.zedalpha.shadowgadgets.demo.internal.DemoShadowDrawable
-import com.zedalpha.shadowgadgets.demo.internal.SeekChangeListener
+import com.zedalpha.shadowgadgets.demo.internal.doOnUserChange
 import android.graphics.Color as AndroidColor
 
-internal val ColorDrawableTopic =
+internal val ColorCompatDrawableTopic =
     Topic(
-        title = "Color: Drawable",
-        descriptionResId = R.string.description_color_drawable,
-        fragmentClass = ColorDrawableFragment::class.java
+        title = "ColorCompat: Drawable",
+        descriptionResId = R.string.description_color_compat_drawable,
+        fragmentClass = ColorCompatDrawableFragment::class.java
     )
 
-class ColorDrawableFragment :
-    TopicFragment<FragmentColorDrawableBinding>(
-        inflate = FragmentColorDrawableBinding::inflate
+class ColorCompatDrawableFragment :
+    TopicFragment<FragmentColorCompatDrawableBinding>(
+        inflate = FragmentColorCompatDrawableBinding::inflate
     ) {
 
     private lateinit var drawable: DemoShadowCompatDrawable
 
-    override fun loadUi(ui: FragmentColorDrawableBinding) {
+    override fun loadUi(ui: FragmentColorCompatDrawableBinding) {
         ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->
             setDrawable(isChecked)
         }
-        ui.seekRotation.setOnSeekBarChangeListener(
-            SeekChangeListener { progress ->
-                drawable.rotationZ = progress.toFloat()
-                drawable.invalidateSelf()
-            }
-        )
+        ui.seekRotation.doOnUserChange { progress ->
+            drawable.rotationZ = progress.toFloat()
+            drawable.invalidateSelf()
+        }
         ui.controls.apply {
             onColorChanged { color ->
                 drawable.colorCompat = color

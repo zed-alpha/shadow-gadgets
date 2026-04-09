@@ -1,6 +1,2 @@
-before_install:
-  - sdk install java 21.0.10-ms
-  - sdk use java 21.0.10-ms
-
 jdk:
   - openjdk17

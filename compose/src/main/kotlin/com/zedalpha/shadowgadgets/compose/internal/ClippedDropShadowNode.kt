@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.requireDensity
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.toIntSize
+import androidx.compose.ui.unit.roundToIntSize
 
 internal abstract class ClippedDropShadowNode(protected var shape: Shape) :
     DelegatingNode() {
@@ -69,9 +69,8 @@ internal abstract class ClippedDropShadowNode(protected var shape: Shape) :
         painter: Painter,
         clip: Path
     ): DrawResult {
-        val layer = scope.obtainGraphicsLayer().apply {
-            compositingStrategy = CompositingStrategy.ModulateAlpha
-        }
+        val layer = scope.obtainGraphicsLayer()
+        layer.compositingStrategy = CompositingStrategy.ModulateAlpha
 
         // Sizing is from androidx.compose.ui.graphics.shadow.DropShadowPainter.
         val margin = shadowMargin // = radius + spread
@@ -80,14 +79,16 @@ internal abstract class ClippedDropShadowNode(protected var shape: Shape) :
         val outset = 2 * margin
         val layerSize = Size(size.width + outset, size.height + outset)
 
-        layer.record(scope, scope.layoutDirection, layerSize.toIntSize()) {
+        layer.record(scope, scope.layoutDirection, layerSize.roundToIntSize()) {
             translate(margin, margin) {
                 drawShadow(scope, painter, clip)
             }
         }
 
         return scope.onDrawBehind {
-            translate(-margin, -margin) { drawLayer(layer) }
+            translate(-margin, -margin) {
+                drawLayer(layer)
+            }
         }
     }
 

@@ -145,3 +145,32 @@ private object CanvasZReflector {
         }
     }
 }
+
+internal object OutlinePathReflector {
+
+    @SuppressLint("PrivateApi", "SoonBlockedPrivateApi")
+    private val mPath: Field? =
+        try {
+            if (Build.VERSION.SDK_INT >= 28) {
+                Class::class.java
+                    .getDeclaredMethod("getDeclaredField", String::class.java)
+                    .invoke(Outline::class.java, "mPath") as Field
+            } else {
+                Outline::class.java.getDeclaredField("mPath")
+            }
+        } catch (_: Exception) {
+            null
+        }
+
+    fun getPath(outline: Outline, outPath: Path): Boolean {
+        val pathField = mPath ?: return false
+
+        return try {
+            val path = pathField.get(outline) as Path
+            outPath.set(path)
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+}

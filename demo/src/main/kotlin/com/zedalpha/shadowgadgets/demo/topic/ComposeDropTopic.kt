@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import com.zedalpha.shadowgadgets.compose.LocalInlineDefaultShadowLayers
 import com.zedalpha.shadowgadgets.compose.clippedDropShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.ComposeViewBinding
@@ -121,18 +122,20 @@ private fun ComposeDropContent() {
             ) {}
         }
 
-        ColorfulLazyColumn(
-            modifier = Modifier
-                .weight(0.5F)
-                .fillMaxHeight()
-                .padding(start = 10.dp, end = 20.dp),
-            shadowModifier = { color ->
-                selectDropShadow(clipped, ItemShape) {
-                    radius = ItemShadowRadius.toPx()
-                    this.color = color
+        CompositionLocalProvider(LocalInlineDefaultShadowLayers provides true) {
+            ColorfulLazyColumn(
+                modifier = Modifier
+                    .weight(0.5F)
+                    .fillMaxHeight()
+                    .padding(start = 10.dp, end = 20.dp),
+                shadowModifier = { color ->
+                    selectDropShadow(clipped, ItemShape) {
+                        radius = ItemShadowRadius.toPx()
+                        this.color = color
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 

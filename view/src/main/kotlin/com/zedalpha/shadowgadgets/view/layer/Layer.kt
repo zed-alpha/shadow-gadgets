@@ -9,8 +9,6 @@ import android.os.Build
 import android.view.View
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
-import com.zedalpha.shadowgadgets.view.internal.isDefault
-import com.zedalpha.shadowgadgets.view.internal.isNotTint
 import com.zedalpha.shadowgadgets.view.internal.isTint
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
@@ -41,19 +39,15 @@ internal abstract class AbstractLayer(
 
     protected val paint = Paint()
 
-    protected var isOffscreen: Boolean = false
-        private set
-
     final override var color: Int = DefaultShadowColor
         set(color) {
             if (field == color) return
             field = color
-            paint.setLayerFilter(color)
-            isOffscreen = color.isTint
-            updateLayerType()
+            paint.setTint(color)
+            updateLayerPaint()
         }
 
-    protected abstract fun updateLayerType()
+    protected abstract fun updateLayerPaint()
 
     final override var bounds = Rect()
         set(value) {
@@ -71,30 +65,30 @@ internal abstract class AbstractLayer(
     protected abstract fun drawLayer(canvas: Canvas)
 
     final override fun recreate() {
-        if (color.isNotTint) return
+        if (paint.colorFilter == null) return
 
         recreateLayer()
-        updateLayerType()
+        updateLayerPaint()
         updateLayerBounds()
     }
 
     protected abstract fun recreateLayer()
 }
 
-private fun Paint.setLayerFilter(color: Int) =
+private fun Paint.setTint(color: Int) =
     if (color.isTint) {
-        this.alpha = Color.alpha(color)
+        this.alpha = 255
         this.colorFilter =
             ColorMatrixColorFilter(
                 floatArrayOf(
                     0F, 0F, 0F, 0F, Color.red(color).toFloat(),
                     0F, 0F, 0F, 0F, Color.green(color).toFloat(),
                     0F, 0F, 0F, 0F, Color.blue(color).toFloat(),
-                    0F, 0F, 0F, 1F, 0F
+                    0F, 0F, 0F, Color.alpha(color) / 255F, 0F
                 )
             )
     } else {
-        this.alpha = if (color.isDefault) 255 else 0
+        this.alpha = Color.alpha(color)
         this.colorFilter = null
     }
 

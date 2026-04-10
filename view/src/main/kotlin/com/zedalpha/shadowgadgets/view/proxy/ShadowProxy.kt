@@ -49,14 +49,18 @@ internal class ShadowProxy(val target: View) {
     }
 
     fun updatePathProvider() {
-        val shadow = shadow as? ClippedShadow ?: return
+        val shadow = this.shadow as? ClippedShadow ?: return
         setPathProvider(shadow)
+        target.invalidateOutline()
         plane.invalidate()
     }
 
     private fun setPathProvider(shadow: ClippedShadow) {
-        val provider = target.pathProvider ?: return
-        shadow.pathProvider = PathProvider { provider.getPath(target, it) }
+        val target = this.target
+        shadow.pathProvider =
+            target.pathProvider?.let { viewPathProvider ->
+                PathProvider { viewPathProvider.getPath(target, it) }
+            }
     }
 
     private var recyclingParent: RecyclingParent? = null

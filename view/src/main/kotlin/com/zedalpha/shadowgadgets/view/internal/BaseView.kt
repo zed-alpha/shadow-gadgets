@@ -17,6 +17,9 @@ internal abstract class BaseView(context: Context) : View(context) {
     final override fun hasFocus(): Boolean = false
 
     @Deprecated("Library stop")
+    final override fun hasOverlappingRendering(): Boolean = false
+
+    @Deprecated("Library stop")
     final override fun invalidate() = Unit
 
     @Deprecated("Library stop")

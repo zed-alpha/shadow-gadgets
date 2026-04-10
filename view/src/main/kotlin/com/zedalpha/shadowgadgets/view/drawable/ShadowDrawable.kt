@@ -9,7 +9,6 @@ import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.annotation.CallSuper
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.withClip
@@ -141,7 +140,6 @@ private constructor(
      * [RenderNode#setAlpha()][android.graphics.RenderNode.setAlpha],
      * but takes an Int to conform to Drawable's API.
      */
-    @CallSuper
     override fun setAlpha(alpha: Int) {
         shadow.alpha = alpha / 255F
     }
@@ -151,7 +149,6 @@ private constructor(
      * [RenderNode#getAlpha()][android.graphics.RenderNode.getAlpha],
      * but returns an Int to conform to Drawable's API.
      */
-    @CallSuper
     override fun getAlpha(): Int = (255 * shadow.alpha).roundToInt()
 
     /**
@@ -425,12 +422,10 @@ private constructor(
     )
     public var forceLayer: Boolean = false
 
-    @CallSuper
     override fun onBoundsChange(bounds: Rect) {
         layer?.bounds = bounds
     }
 
-    @CallSuper
     override fun draw(canvas: Canvas): Unit =
         if (clipToBounds) {
             canvas.withClip(bounds) { drawContent(this) }

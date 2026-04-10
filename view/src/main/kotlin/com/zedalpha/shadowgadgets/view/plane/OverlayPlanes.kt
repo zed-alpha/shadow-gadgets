@@ -2,7 +2,6 @@ package com.zedalpha.shadowgadgets.view.plane
 
 import android.graphics.Canvas
 import android.view.ViewGroup
-import androidx.annotation.CallSuper
 import com.zedalpha.shadowgadgets.view.R
 import com.zedalpha.shadowgadgets.view.internal.OnPreDraw
 import com.zedalpha.shadowgadgets.view.internal.addOnPreDraw
@@ -62,14 +61,14 @@ internal class OverlayPlane(
         viewTag.set(this)
         viewGroup.addOnPreDraw(checkInvalidate)
         invalidator.add(this)
+        drawable.attach()
     }
 
-    @CallSuper
     private fun dispose() {
         viewTag.set(null)
         viewGroup.removeOnPreDraw(checkInvalidate)
         invalidator.remove(this)
-        drawable.dispose()
+        drawable.detach()
     }
 
     override fun invalidate() {

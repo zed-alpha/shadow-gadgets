@@ -43,14 +43,12 @@ private constructor(private val group: ListGroup<E>) : Group<E> by group {
     var isDisposed: Boolean = false
         private set
 
-    @CallSuper
-    override fun add(element: E) {
+    final override fun add(element: E) {
         check(!isDisposed) { "${javaClass.simpleName} is disposed" }
         group.add(element)
     }
 
-    @CallSuper
-    override fun remove(element: E) {
+    final override fun remove(element: E) {
         check(!isDisposed) { "${javaClass.simpleName} is disposed" }
         group.remove(element)
         if (isEmpty()) dispose()

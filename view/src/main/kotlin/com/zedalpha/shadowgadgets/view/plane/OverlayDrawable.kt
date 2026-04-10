@@ -15,13 +15,16 @@ internal open class OverlayDrawable(
     private val updateBounds =
         OnLayoutChangeSizeAdapter { w, h -> superSetBounds(0, 0, w, h) }
 
-    init {
-        viewGroup.overlay.add(this)
-        viewGroup.addOnLayoutChangeListener(updateBounds)
+    @CallSuper
+    open fun attach() {
+        val group = viewGroup
+        group.overlay.add(this)
+        group.addOnLayoutChangeListener(updateBounds)
+        superSetBounds(0, 0, group.width, group.height)
     }
 
     @CallSuper
-    open fun dispose() {
+    open fun detach() {
         viewGroup.overlay.remove(this)
         viewGroup.removeOnLayoutChangeListener(updateBounds)
     }

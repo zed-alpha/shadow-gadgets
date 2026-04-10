@@ -16,7 +16,7 @@ see-through backgrounds.
     <img
         src="images/intro_clip_broken.png" 
         alt="Examples of various translucent UI elements showing the artifacts." 
-        width="45%" />
+        width="50%" />
 </p>
 
 The clip tools use the same classes and methods that the framework uses to
@@ -28,7 +28,7 @@ render shadows, simply replacing the originals with clipped copies.
     <img
         src="images/intro_clip_fixed.png" 
         alt="The above examples with the clip fix applied to each." 
-        width="45%" />
+        width="50%" />
 </p>
 
 The clip feature is now also available for Compose's new drop shadow modifiers.
@@ -52,7 +52,7 @@ shadows at this level.
     <img
         src="images/intro_color_compat.png" 
         alt="A shadow with native colors, and another tinted with color compat." 
-        width="30%" />
+        width="25%" />
 </p>
 
 Though the differences are noticeable when compared side by side, the compat

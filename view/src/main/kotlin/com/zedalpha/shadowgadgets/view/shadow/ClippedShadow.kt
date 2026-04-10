@@ -1,6 +1,5 @@
 package com.zedalpha.shadowgadgets.view.shadow
 
-import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.graphics.Outline
 import android.graphics.Path
@@ -8,11 +7,11 @@ import android.os.Build
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.withSave
+import com.zedalpha.shadowgadgets.view.internal.OutlinePathReflector
 import com.zedalpha.shadowgadgets.view.internal.ThreadLocalGraphicsTemps
 import com.zedalpha.shadowgadgets.view.internal.clipOutPath
 import com.zedalpha.shadowgadgets.view.internal.getOutlineRadius
 import com.zedalpha.shadowgadgets.view.internal.getOutlineRect
-import java.lang.reflect.Field
 
 internal fun interface PathProvider {
     fun getPath(path: Path)
@@ -40,14 +39,25 @@ internal class ClippedShadow(val shadow: Shadow) : Shadow by shadow {
 
         if (outline.isEmpty) return
 
-        val temps = this.temps
-        val bounds = temps.rect
+        val radius = getOutlineRadius(outline)
         when {
-            getOutlineRect(outline, bounds) && !bounds.isEmpty -> {
-                val radius = getOutlineRadius(outline)
-                val boundsF = temps.rectF
-                boundsF.set(bounds)
-                clip.addRoundRect(boundsF, radius, radius, Path.Direction.CW)
+            radius >= 0F -> {
+                val rect = temps.rect
+
+                getOutlineRect(outline, rect)
+                if (rect.isEmpty) return
+
+                // No special case for zero radius. Seems Skia may skip the
+                // shadow draw if a rect clip-out matches the content area.
+                clip.addRoundRect(
+                    /* left = */ rect.left.toFloat(),
+                    /* top = */ rect.top.toFloat(),
+                    /* right = */ rect.right.toFloat(),
+                    /* bottom = */ rect.bottom.toFloat(),
+                    /* rx = */ radius,
+                    /* ry = */ radius,
+                    /* dir = */ Path.Direction.CW
+                )
             }
 
             Build.VERSION.SDK_INT < 30 -> {
@@ -59,8 +69,10 @@ internal class ClippedShadow(val shadow: Shadow) : Shadow by shadow {
     }
 
     override fun draw(canvas: Canvas) {
+        if (!canvas.isHardwareAccelerated) return
+
         val clip = this.clip
-        if (!canvas.isHardwareAccelerated || clip.isEmpty) return
+        if (clip.isEmpty) return
 
         val shadow = this.shadow
         val temps = this.temps
@@ -74,35 +86,6 @@ internal class ClippedShadow(val shadow: Shadow) : Shadow by shadow {
         canvas.withSave {
             clipOutPath(this, path)
             shadow.draw(this)
-        }
-    }
-}
-
-private object OutlinePathReflector {
-
-    @SuppressLint("PrivateApi", "SoonBlockedPrivateApi")
-    private val mPath: Field? =
-        try {
-            if (Build.VERSION.SDK_INT >= 28) {
-                Class::class.java
-                    .getDeclaredMethod("getDeclaredField", String::class.java)
-                    .invoke(Outline::class.java, "mPath") as Field
-            } else {
-                Outline::class.java.getDeclaredField("mPath")
-            }
-        } catch (_: Exception) {
-            null
-        }
-
-    fun getPath(outline: Outline, outPath: Path): Boolean {
-        val pathField = mPath ?: return false
-
-        return try {
-            val path = pathField.get(outline) as Path
-            outPath.set(path)
-            true
-        } catch (_: Exception) {
-            false
         }
     }
 }

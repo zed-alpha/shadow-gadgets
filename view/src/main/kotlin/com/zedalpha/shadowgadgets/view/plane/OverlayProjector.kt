@@ -37,13 +37,15 @@ internal abstract class OverlayProjector(
             }
     }
 
-    init {
+    @CallSuper
+    override fun attach() {
+        super.attach()
         if (viewGroup.background == null) viewGroup.background = EmptyDrawable
     }
 
     @CallSuper
-    override fun dispose() {
-        super.dispose()
+    override fun detach() {
+        super.detach()
         if (viewGroup.background === EmptyDrawable) viewGroup.background = null
     }
 
@@ -74,8 +76,8 @@ private class RenderNodeProjector(
         canvas.drawRenderNode(base)
     }
 
-    override fun dispose() {
-        super.dispose()
+    override fun detach() {
+        super.detach()
         base.discardDisplayList()
         projector.discardDisplayList()
     }
@@ -103,8 +105,8 @@ private class RenderNodeWrapperProjector(
         base.drawRenderNode(canvas)
     }
 
-    override fun dispose() {
-        super.dispose()
+    override fun detach() {
+        super.detach()
         base.discardDisplayList()
         projector.discardDisplayList()
     }
@@ -133,12 +135,13 @@ private class ViewProjector(viewGroup: ViewGroup, content: (Canvas) -> Unit) :
 
     private val painter = viewGroup.obtainViewPainter()
 
-    init {
+    override fun attach() {
+        super.attach()
         painter?.add(base)
     }
 
-    override fun dispose() {
-        super.dispose()
+    override fun detach() {
+        super.detach()
         painter?.remove(base)
     }
 

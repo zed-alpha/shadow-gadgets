@@ -191,8 +191,6 @@ private class ShadowState : DropShadowScope, MutableDensity {
     override var radius: Float = 0F
     override var spread: Float = 0F
 
-    // This is bad DX in dropShadow. Color.Unspecified states
-    // that it's treated as transparent outside of comparisons.
     override var color: Color = Color.Black
         set(value) {
             field = value.takeOrElse { Color.Black }

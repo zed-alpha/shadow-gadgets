@@ -17,15 +17,19 @@ import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.layout.positionOnScreen
+import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.GlobalPositionAwareModifierNode
 import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.toIntSize
+import com.zedalpha.shadowgadgets.compose.currentDefaultLayerCompositingStrategy
 
 internal val ClipRequiresLayer = Build.VERSION.SDK_INT in 24..28
 
 internal class LayerNode(private val shadowNode: ShadowNode) :
-    GlobalPositionAwareModifierNode, Modifier.Node() {
+    Modifier.Node(),
+    GlobalPositionAwareModifierNode,
+    CompositionLocalConsumerModifierNode {
 
     override val shouldAutoInvalidate: Boolean get() = false
 
@@ -35,17 +39,12 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
         set(value) {
             if (field == value) return
             field = value
-            layer.setColorFilter(value)
+            layer.setTint(value)
         }
 
-    override fun onAttach() {
-        val layer = requireGraphicsContext().createGraphicsLayer()
-        layer.setColorFilter(color)
-        this.layer = layer
-    }
+    override fun onAttach() = obtainLayer()
 
-    override fun onDetach() =
-        requireGraphicsContext().releaseGraphicsLayer(layer)
+    override fun onDetach() = releaseLayer()
 
     private var positionOnScreen = Offset.Unspecified
     private var positionInLayer = Offset.Unspecified
@@ -60,13 +59,8 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
         when {
             layer.colorFilter != null &&
                     this.positionOnScreen != positionOnScreen -> {
-                val graphics = requireGraphicsContext()
-                graphics.releaseGraphicsLayer(layer)
-
-                val layer = graphics.createGraphicsLayer()
-                layer.setColorFilter(color)
-                this.layer = layer
-
+                releaseLayer()
+                obtainLayer()
                 shadowNode.invalidateDraw()
             }
 
@@ -80,6 +74,36 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
         this.positionInLayer = positionInLayer
         this.layerSize = layerSize
     }
+
+    private fun obtainLayer() {
+        val layer = requireGraphicsContext().createGraphicsLayer()
+        layer.setTint(color)
+        this.layer = layer
+    }
+
+    private fun GraphicsLayer.setTint(color: Color) =
+        if (color.isTint) {
+            this.alpha = 1F
+            this.colorFilter =
+                ColorMatrixColorFilter(
+                    ColorMatrix(
+                        floatArrayOf(
+                            0F, 0F, 0F, 0F, 255 * color.red,
+                            0F, 0F, 0F, 0F, 255 * color.green,
+                            0F, 0F, 0F, 0F, 255 * color.blue,
+                            0F, 0F, 0F, color.alpha, 0F
+                        )
+                    )
+                )
+            this.compositingStrategy = CompositingStrategy.Offscreen
+        } else {
+            this.alpha = color.alpha
+            this.colorFilter = null
+            this.compositingStrategy = currentDefaultLayerCompositingStrategy()
+        }
+
+    private fun releaseLayer() =
+        requireGraphicsContext().releaseGraphicsLayer(layer)
 
     fun draw(scope: DrawScope) {
         val positionInLayer = this.positionInLayer
@@ -101,30 +125,12 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
         }
 
         layer.record(scope, scope.layoutDirection, size) {
-            translate(offset.x, offset.y) { shadowNode.drawShadow(this) }
+            translate(offset.x, offset.y) {
+                shadowNode.drawShadow(this)
+            }
         }
-        scope.translate(-offset.x, -offset.y) { drawLayer(layer) }
-    }
-}
-
-private fun GraphicsLayer.setColorFilter(color: Color) {
-    if (color.isTint) {
-        alpha = color.alpha
-        colorFilter =
-            ColorMatrixColorFilter(
-                ColorMatrix(
-                    floatArrayOf(
-                        0F, 0F, 0F, 0F, 255 * color.red,
-                        0F, 0F, 0F, 0F, 255 * color.green,
-                        0F, 0F, 0F, 0F, 255 * color.blue,
-                        0F, 0F, 0F, 1F, 0F
-                    )
-                )
-            )
-        compositingStrategy = CompositingStrategy.Offscreen
-    } else {
-        alpha = if (color.isDefault) 1F else 0F
-        colorFilter = null
-        compositingStrategy = CompositingStrategy.ModulateAlpha
+        scope.translate(-offset.x, -offset.y) {
+            drawLayer(layer)
+        }
     }
 }

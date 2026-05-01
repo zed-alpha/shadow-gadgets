@@ -9,15 +9,18 @@ plugins {
 android {
     namespace = "com.zedalpha.shadowgadgets.view"
 
-    defaultConfig.minSdk = 21
-    buildFeatures.buildConfig = true
-
     compileSdk {
-        version = release(36) { minorApiLevel = 1 }
+        version = release(37)
+    }
+    defaultConfig {
+        minSdk = 21
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    buildFeatures {
+        buildConfig = true
     }
     buildTypes {
         release { consumerProguardFiles("consumer-rules.pro") }

@@ -50,38 +50,27 @@ internal class RegularManager<T>(
         if (attached) return
 
         val attributes = xmlAttributes?.remove(child.id)
-        if (attributes == null) {
-            if (child.isPlaneNotSet && isGroupPlaneSet) {
-                child.shadowPlane = childShadowsPlane
-            }
 
-            if (child.isClipNotSet && isGroupClipSet) {
-                child.clipOutlineShadow = clipAllChildShadows
-            }
-
-            if (child.isColorNotSet && isGroupColorSet) {
-                child.outlineShadowColorCompat =
-                    childOutlineShadowsColorCompat
-            }
-
-            if (child.isForceNotSet && isGroupForceSet) {
-                child.forceOutlineShadowColorCompat =
-                    forceChildOutlineShadowsColorCompat
-            }
-        } else {
-            val plane = attributes.shadowPlane
+        if (child.isPlaneNotSet) {
+            val plane = attributes?.shadowPlane
                 ?: childShadowsPlane.takeIf { isGroupPlaneSet }
             plane?.let { child.shadowPlane = it }
+        }
 
-            val clip = attributes.clipOutlineShadow
+        if (child.isClipNotSet) {
+            val clip = attributes?.clipOutlineShadow
                 ?: clipAllChildShadows.takeIf { isGroupClipSet }
             clip?.let { child.clipOutlineShadow = it }
+        }
 
-            val color = attributes.outlineShadowColorCompat
+        if (child.isColorNotSet) {
+            val color = attributes?.outlineShadowColorCompat
                 ?: childOutlineShadowsColorCompat.takeIf { isGroupColorSet }
             color?.let { child.outlineShadowColorCompat = it }
+        }
 
-            val force = attributes.forceOutlineShadowColorCompat
+        if (child.isForceNotSet) {
+            val force = attributes?.forceOutlineShadowColorCompat
                 ?: forceChildOutlineShadowsColorCompat.takeIf { isGroupForceSet }
             force?.let { child.forceOutlineShadowColorCompat = it }
         }

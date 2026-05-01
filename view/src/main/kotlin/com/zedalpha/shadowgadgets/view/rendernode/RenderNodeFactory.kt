@@ -7,7 +7,7 @@ import com.zedalpha.shadowgadgets.view.ShadowGadgets
 
 internal object RenderNodeFactory {
 
-    private val isCapable: Boolean =
+    val isCapable: Boolean =
         when {
             Build.VERSION.SDK_INT >= 29 -> true
             Build.VERSION.SDK_INT == 28 -> false

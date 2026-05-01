@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.addOutline
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.layer.CompositingStrategy
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
@@ -18,7 +19,6 @@ import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.requireDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.roundToIntSize
-import com.zedalpha.shadowgadgets.compose.currentDefaultLayerCompositingStrategy
 
 internal abstract class ClippedDropShadowNode(protected var shape: Shape) :
     DelegatingNode(), CompositionLocalConsumerModifierNode {
@@ -71,7 +71,12 @@ internal abstract class ClippedDropShadowNode(protected var shape: Shape) :
         clip: Path
     ): DrawResult {
         val layer = scope.obtainGraphicsLayer()
-        layer.compositingStrategy = currentDefaultLayerCompositingStrategy()
+        layer.compositingStrategy =
+            if (ClipRequiresOffscreenLayer) {
+                CompositingStrategy.Offscreen
+            } else {
+                CompositingStrategy.ModulateAlpha
+            }
 
         // Sizing is from androidx.compose.ui.graphics.shadow.DropShadowPainter.
         val margin = shadowMargin // = radius + spread

@@ -31,7 +31,7 @@ render shadows, simply replacing the originals with clipped copies.
         width="50%" />
 </p>
 
-The clip feature is now also available for Compose's new drop shadow modifiers.
+This clip feature is also available for Compose's new drop shadow modifiers.
 
 <br />
 
@@ -74,8 +74,7 @@ results are likely sufficient for many cases.
   `compose` package contains just two functions (plus overloads) as direct
   replacements for the inbuilt shadow.
 
-  Additionally, a new modifier that applies the clip feature to drop shadows is
-  now available as well.
+  The clip feature is now available for drop shadows as well.
 
 - [**Notes**][Notes]
 
@@ -101,7 +100,6 @@ results are likely sufficient for many cases.
 <details>
   <summary>Subsections</summary>
 
-- [Overview](#overview)
 - [Limitations and recourses](#limitations-and-recourses)
   - [Overlapping sibling Views](#overlapping-sibling-views)
   - [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
@@ -110,10 +108,8 @@ results are likely sufficient for many cases.
 - [Miscellanea](#miscellanea)
 </details>
 
-### Overview
-
 Nobody wants to mess with a whole library for such small issues that should've
-been handled already in the native framework and its support packages, so these
+been handled already in the native framework or supporting packages, so these
 tools have been designed to be as simple and familiar as possible.
 
 ```kotlin
@@ -142,8 +138,8 @@ the shadow automatically animates and transforms along with its target, and it
 will handle moving itself to any new parents should the target be moved.
 
 It is hoped that the base features will cover most cases. For those setups that
-might be problematic, the library offers a couple of other configuration
-properties as possible remedies.
+might be problematic, the library offers a couple of configuration properties as
+potential remedies.
 
 ### Limitations and recourses
 
@@ -225,13 +221,13 @@ applying, testing, and debugging library features.
 - A [`ShadowGadgets`][ShadowGadgets] object holds a few flags for the active
   draw method, logs, and error handling. ([wiki page][ShadowGadgetsWiki])
 
-- [`ShadowException`][ShadowException] has been defined for known error states.
-  There are about half a dozen, and all but one can be remedied with design-time
-  alterations. ([wiki page][ShadowExceptionWiki])
+- The [`ShadowException`][ShadowException] class has been added for known error
+  states. There are about half a dozen, and all but one can be addressed with
+  design-time alterations. ([wiki page][ShadowExceptionWiki])
 
 - The [`ShadowMode`][ShadowMode] enum has been added along with `View`
-  extensions to get the current mode and set a change callback, meant mainly for
-  runtime error handling. ([wiki page][ShadowModeWiki])
+  extensions to get the current mode and to set a change callback, meant mainly
+  for runtime error handling. ([wiki page][ShadowModeWiki])
 
 - Lastly, a couple of `View` extensions have been added to allow efficient
   modification of multiple shadow properties at once, helpful especially in
@@ -288,7 +284,7 @@ start, so no need for a compat version here. ([wiki page][ComposeDropWiki])
 
 - #### Color compat
 
-  Color compat is handled with additional parameters in an overload.
+  Color compat is handled here through parameters.
 
   ```kotlin
   Modifier
@@ -305,8 +301,8 @@ start, so no need for a compat version here. ([wiki page][ComposeDropWiki])
 
   There is now also an overload that takes a lambda to allow for efficient
   updates of shadow properties without recomposition. This mimics the lambda
-  version of `dropShadow`; dimensions are accepted in pixels rather than `Dp`,
-  but the scope is a `Density` so conversions are trivial.
+  version of `dropShadow`; elevation is in pixels rather than `Dp`, but the
+  scope is a `Density` so conversions are trivial.
 
   ```kotlin
   Modifier
@@ -337,7 +333,7 @@ start, so no need for a compat version here. ([wiki page][ComposeDropWiki])
 - #### Lambda
 
   `shadowCompat` also has a lambda overload that is exactly like
-  `clippedShadow`'s except for the name of its scope interface, which itself is
+  `clippedShadow`'s except for the name of its scope interface, which is itself
   otherwise identical.
 
   ```kotlin

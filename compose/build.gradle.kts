@@ -9,10 +9,12 @@ plugins {
 
 android {
     namespace = "com.zedalpha.shadowgadgets.compose"
-    defaultConfig.minSdk = 23
 
     compileSdk {
-        version = release(36) { minorApiLevel = 1 }
+        version = release(37)
+    }
+    defaultConfig {
+        minSdk = 23
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

@@ -39,7 +39,6 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zedalpha.shadowgadgets.compose.LocalInlineDefaultShadowLayers
 import com.zedalpha.shadowgadgets.compose.clippedShadow
 import com.zedalpha.shadowgadgets.demo.R
 import com.zedalpha.shadowgadgets.demo.databinding.ComposeViewBinding
@@ -77,15 +76,13 @@ class ComposeIntroFragment :
 private fun ComposeIntroContent() {
     Row(modifier = Modifier.fillMaxSize()) {
 
-        CompositionLocalProvider(LocalInlineDefaultShadowLayers provides true) {
-            ColorfulLazyColumn(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(0.6F)
-                    .padding(start = 20.dp, end = 10.dp),
-                shadowModifier = { clippedShadow(ItemElevation, ItemShape) }
-            )
-        }
+        ColorfulLazyColumn(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(0.6F)
+                .padding(start = 20.dp, end = 10.dp),
+            shadowModifier = { clippedShadow(ItemElevation, ItemShape) }
+        )
 
         Column(
             modifier = Modifier

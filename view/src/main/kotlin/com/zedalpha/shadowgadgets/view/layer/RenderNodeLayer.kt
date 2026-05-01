@@ -1,6 +1,7 @@
 package com.zedalpha.shadowgadgets.view.layer
 
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.view.View
 import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
 import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeWrapper
@@ -11,14 +12,18 @@ internal class RenderNodeLayer(link: View, content: (Canvas) -> Unit) :
 
     private var layerNode = createLayerNode()
 
+    init {
+        updatePaint()
+    }
+
     override fun dispose() = layerNode.discardDisplayList()
 
-    override fun updateLayerBounds() {
+    override fun updateBounds() {
         with(bounds) { layerNode.setPosition(left, top, right, bottom) }
     }
 
-    override fun updateLayerPaint() {
-        layerNode.setUseCompositingLayer(true, paint)
+    override fun updateLayer(offscreen: Boolean, paint: Paint?) {
+        layerNode.setUseCompositingLayer(offscreen, paint)
     }
 
     override fun drawLayer(canvas: Canvas) {

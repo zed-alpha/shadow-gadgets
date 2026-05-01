@@ -43,13 +43,8 @@ private fun handleAttach(target: View) {
         val parentWillNotCreateProxy =
             parent !is ShadowsViewGroup || !parent.isRecycling ||
                     target.isInitializedForRecyclingShadowsViewGroup
-
         if (parentWillNotCreateProxy) target.createProxy()
     } else {
-        check(proxy.isChildOfRecyclingViewGroup) {
-            "Child of non-recycling ViewGroup attached with Proxy"
-        }
-
         if (proxy.plane.viewGroup === parent) {
             proxy.isShown = true
         } else {

@@ -8,8 +8,9 @@ import androidx.annotation.RequiresApi
 
 internal const val DefaultShadowColor: Int = Color.BLACK
 
-internal inline val Int.isNotDefault: Boolean
-    get() = this != DefaultShadowColor
+internal inline val Int.isDefault: Boolean get() = this == DefaultShadowColor
+
+internal inline val Int.isNotDefault: Boolean get() = this != DefaultShadowColor
 
 internal inline val Int.isTint: Boolean
     get() = this.isNotDefault && this != Color.TRANSPARENT

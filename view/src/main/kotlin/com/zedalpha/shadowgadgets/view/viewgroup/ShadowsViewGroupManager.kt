@@ -101,6 +101,20 @@ internal abstract class ShadowsViewGroupManager<T>(
                         /* defValue = */ clipAllChildShadows
                     )
             }
+            if (hasValue(R.styleable.ShadowsViewGroup_childOutlineShadowsColorCompat)) {
+                childOutlineShadowsColorCompat =
+                    getColor(
+                        /* index = */ R.styleable.ShadowsViewGroup_childOutlineShadowsColorCompat,
+                        /* defValue = */ DefaultShadowColor
+                    )
+            }
+            if (hasValue(R.styleable.ShadowsViewGroup_forceChildOutlineShadowsColorCompat)) {
+                forceChildOutlineShadowsColorCompat =
+                    getBoolean(
+                        /* index = */ R.styleable.ShadowsViewGroup_forceChildOutlineShadowsColorCompat,
+                        /* defValue = */ false
+                    )
+            }
             if (hasValue(R.styleable.ShadowsViewGroup_ignoreInlineChildShadows)) {
                 ignoreInlineChildShadows =
                     getBoolean(

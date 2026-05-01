@@ -9,6 +9,7 @@ import android.os.Build
 import android.view.View
 import com.zedalpha.shadowgadgets.view.clipOutlineShadow
 import com.zedalpha.shadowgadgets.view.internal.DefaultShadowColor
+import com.zedalpha.shadowgadgets.view.internal.isDefault
 import com.zedalpha.shadowgadgets.view.internal.isTint
 import com.zedalpha.shadowgadgets.view.outlineShadowColorCompat
 import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
@@ -17,6 +18,7 @@ import com.zedalpha.shadowgadgets.view.tintOutlineShadow
 internal interface Layer {
     var color: Int
     var bounds: Rect
+    val isOffscreen: Boolean
     fun draw(canvas: Canvas)
     fun recreate()
     fun dispose()
@@ -37,26 +39,47 @@ internal abstract class AbstractLayer(
     protected val content: (Canvas) -> Unit
 ) : Layer {
 
-    protected val paint = Paint()
-
     final override var color: Int = DefaultShadowColor
-        set(color) {
-            if (field == color) return
-            field = color
-            paint.setTint(color)
-            updateLayerPaint()
+        set(value) {
+            if (field == value) return
+            field = value
+            updatePaint()
         }
 
-    protected abstract fun updateLayerPaint()
+    final override var isOffscreen: Boolean = false
+        private set
+
+    private var paint: Paint? = null
+
+    // Must call in subclass init.
+    protected fun updatePaint() {
+        val color = this.color
+
+        val offscreen = color.requiresOffscreenLayer()
+        isOffscreen = offscreen
+
+        val paint: Paint?
+        if (color.isTint) {
+            paint = this.paint ?: Paint().also { this.paint = it }
+            paint.setTint(color)
+        } else {
+            paint = null
+            this.paint = null
+        }
+
+        updateLayer(offscreen, paint)
+    }
+
+    protected abstract fun updateLayer(offscreen: Boolean, paint: Paint?)
 
     final override var bounds = Rect()
         set(value) {
             if (field == value) return
             field.set(value)
-            updateLayerBounds()
+            updateBounds()
         }
 
-    protected abstract fun updateLayerBounds()
+    protected abstract fun updateBounds()
 
     final override fun draw(canvas: Canvas) {
         if (canvas.isHardwareAccelerated) drawLayer(canvas)
@@ -65,11 +88,11 @@ internal abstract class AbstractLayer(
     protected abstract fun drawLayer(canvas: Canvas)
 
     final override fun recreate() {
-        if (paint.colorFilter == null) return
+        if (!isOffscreen) return
 
         recreateLayer()
-        updateLayerPaint()
-        updateLayerBounds()
+        updatePaint()
+        updateBounds()
     }
 
     protected abstract fun recreateLayer()
@@ -93,6 +116,12 @@ private fun Paint.setTint(color: Int) =
     }
 
 internal val ClipRequiresLayer = Build.VERSION.SDK_INT in 24..28
+
+internal val ClipRequiresOffscreenLayer = Build.VERSION.SDK_INT == 24
+
+// We can assume isClipped on the ||'s rhs since no tint + no clip = no Proxy.
+internal fun Int.requiresOffscreenLayer(): Boolean =
+    this.isTint || this.isDefault && ClipRequiresOffscreenLayer
 
 internal fun View.desiredLayerColor(): Int? =
     when {

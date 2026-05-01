@@ -48,7 +48,7 @@ internal class ClippedShadow(val shadow: Shadow) : Shadow by shadow {
                 if (rect.isEmpty) return
 
                 // No special case for zero radius. Seems Skia may skip the
-                // shadow draw if a rect clip-out matches the content area.
+                // shadow draw if the clipped-out Rect matches the Outline.
                 clip.addRoundRect(
                     /* left = */ rect.left.toFloat(),
                     /* top = */ rect.top.toFloat(),

@@ -5,7 +5,6 @@ import com.zedalpha.shadowgadgets.view.internal.Group
 import com.zedalpha.shadowgadgets.view.internal.ListGroup
 import com.zedalpha.shadowgadgets.view.internal.OnMove
 import com.zedalpha.shadowgadgets.view.internal.addOnMove
-import com.zedalpha.shadowgadgets.view.internal.isTint
 import com.zedalpha.shadowgadgets.view.internal.removeOnMove
 import com.zedalpha.shadowgadgets.view.plane.Plane
 
@@ -33,7 +32,7 @@ internal class LayerGroup<T : Layer>(
 
     fun updateRecreateCount() {
         var count = 0
-        iterate { if (it.color.isTint) count++ }
+        iterate { if (it.isOffscreen) count++ }
         recreateCount = count
     }
 }

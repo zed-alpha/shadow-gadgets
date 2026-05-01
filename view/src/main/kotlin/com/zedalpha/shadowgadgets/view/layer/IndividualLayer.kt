@@ -3,7 +3,6 @@ package com.zedalpha.shadowgadgets.view.layer
 import android.view.View
 import com.zedalpha.shadowgadgets.view.internal.OnMove
 import com.zedalpha.shadowgadgets.view.internal.addOnMove
-import com.zedalpha.shadowgadgets.view.internal.isTint
 import com.zedalpha.shadowgadgets.view.internal.removeOnMove
 
 internal abstract class IndividualLayer(
@@ -21,12 +20,12 @@ internal abstract class IndividualLayer(
     final override var color: Int
         get() = layer.color
         set(next) {
-            val current = layer.color
-            if (current == next) return
+            val layer = this.layer
+            if (layer.color == next) return
 
-            val nextIsTint = next.isTint
-            if (current.isTint != nextIsTint) {
-                if (nextIsTint) owner.addOnMove(recreateLayer)
+            val nextOffscreen = next.requiresOffscreenLayer()
+            if (layer.isOffscreen != nextOffscreen) {
+                if (nextOffscreen) owner.addOnMove(recreateLayer)
                 else owner.removeOnMove(recreateLayer)
             }
 

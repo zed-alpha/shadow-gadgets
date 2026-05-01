@@ -22,9 +22,6 @@ import androidx.compose.ui.node.GlobalPositionAwareModifierNode
 import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.toIntSize
-import com.zedalpha.shadowgadgets.compose.currentDefaultLayerCompositingStrategy
-
-internal val ClipRequiresLayer = Build.VERSION.SDK_INT in 24..28
 
 internal class LayerNode(private val shadowNode: ShadowNode) :
     Modifier.Node(),
@@ -57,7 +54,7 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
         val layerSize = rootCoordinates.size
 
         when {
-            layer.colorFilter != null &&
+            layer.compositingStrategy == CompositingStrategy.Offscreen &&
                     this.positionOnScreen != positionOnScreen -> {
                 releaseLayer()
                 obtainLayer()
@@ -80,27 +77,6 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
         layer.setTint(color)
         this.layer = layer
     }
-
-    private fun GraphicsLayer.setTint(color: Color) =
-        if (color.isTint) {
-            this.alpha = 1F
-            this.colorFilter =
-                ColorMatrixColorFilter(
-                    ColorMatrix(
-                        floatArrayOf(
-                            0F, 0F, 0F, 0F, 255 * color.red,
-                            0F, 0F, 0F, 0F, 255 * color.green,
-                            0F, 0F, 0F, 0F, 255 * color.blue,
-                            0F, 0F, 0F, color.alpha, 0F
-                        )
-                    )
-                )
-            this.compositingStrategy = CompositingStrategy.Offscreen
-        } else {
-            this.alpha = color.alpha
-            this.colorFilter = null
-            this.compositingStrategy = currentDefaultLayerCompositingStrategy()
-        }
 
     private fun releaseLayer() =
         requireGraphicsContext().releaseGraphicsLayer(layer)
@@ -134,3 +110,37 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
         }
     }
 }
+
+private fun GraphicsLayer.setTint(color: Color) =
+    if (color.isTint) {
+        this.alpha = 1F
+        this.colorFilter =
+            ColorMatrixColorFilter(
+                ColorMatrix(
+                    floatArrayOf(
+                        0F, 0F, 0F, 0F, 255 * color.red,
+                        0F, 0F, 0F, 0F, 255 * color.green,
+                        0F, 0F, 0F, 0F, 255 * color.blue,
+                        0F, 0F, 0F, color.alpha, 0F
+                    )
+                )
+            )
+        this.compositingStrategy = CompositingStrategy.Offscreen
+    } else {
+        this.alpha = color.alpha
+        this.colorFilter = null
+        // Technically we should check isClipped, but the only unclipped setup
+        // that reaches here is a lambda shadowCompat tinted black, which should
+        // be just a temporary state, otherwise shadowCompat is kinda pointless.
+        // It's not worth it to pass that value through for only that edge case.
+        this.compositingStrategy =
+            if (color.isDefault && ClipRequiresOffscreenLayer) {
+                CompositingStrategy.Offscreen
+            } else {
+                CompositingStrategy.ModulateAlpha
+            }
+    }
+
+internal val ClipRequiresLayer = Build.VERSION.SDK_INT in 24..28
+
+internal val ClipRequiresOffscreenLayer = Build.VERSION.SDK_INT == 24

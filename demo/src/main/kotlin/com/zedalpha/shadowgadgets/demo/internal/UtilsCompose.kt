@@ -53,7 +53,7 @@ internal val ZeroFloatingActionButtonElevation =
             State(0.dp)
     }
 
-internal val ItemElevation = 15.dp
+internal val ItemElevation = 10.dp
 internal val ItemShape = RoundedCornerShape(6.dp)
 internal val ItemShadowRadius = 8.dp
 

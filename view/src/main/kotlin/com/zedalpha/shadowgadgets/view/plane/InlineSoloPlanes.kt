@@ -139,7 +139,7 @@ internal abstract class InlineSoloPlane(protected val proxy: ShadowProxy) :
         dispose()
     }
 
-    final override fun Shadow.doesNotMatch(target: View): Boolean {
+    final override fun Shadow.differsFrom(target: View): Boolean {
         if (this.translationZ != target.translationZ) return true
         if (this.alpha != target.alpha) return true
         if (this.elevation != target.elevation) return true

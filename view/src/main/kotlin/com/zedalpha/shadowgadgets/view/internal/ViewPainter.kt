@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.view.R
 
+// Just returns null on non-VG roots; updatePlane() disables everything else.
 internal fun View.obtainViewPainter(): ViewPainter? {
     val root = this.rootView as? ViewGroup ?: return null
     return root.viewPainter ?: ViewPainter(root)
@@ -76,8 +77,8 @@ private class Painter(context: Context) : ViewGroup(context) {
     override fun onDescendantInvalidated(child: View, target: View) = Unit
 
     @Deprecated("Library stop")
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-    }
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) =
+        Unit
 
     @Deprecated("Library stop")
     @SuppressLint("MissingSuperCall")

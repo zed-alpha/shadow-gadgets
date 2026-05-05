@@ -216,7 +216,7 @@ page][DrawableWiki].
 ### Miscellanea
 
 Aside from the main shadow tools, there are a handful of utilities to help with
-applying, testing, and debugging library features.
+applying, testing, and debugging the library's features.
 
 - A [`ShadowGadgets`][ShadowGadgets] object holds a few flags for the active
   draw method, logs, and error handling. ([wiki page][ShadowGadgetsWiki])
@@ -227,7 +227,7 @@ applying, testing, and debugging library features.
 
 - The [`ShadowMode`][ShadowMode] enum has been added along with `View`
   extensions to get the current mode and to set a change callback, meant mainly
-  for runtime error handling. ([wiki page][ShadowModeWiki])
+  for runtime handling of known error states. ([wiki page][ShadowModeWiki])
 
 - Lastly, a couple of `View` extensions have been added to allow efficient
   modification of multiple shadow properties at once, helpful especially in

@@ -32,11 +32,13 @@ class ViewIrregularFragment :
             ui.caveat.isVisible = true
         }
 
-        ui.viewFixed.pathProvider = ViewPathProvider { view, path ->
-            val side = view.width.toFloat()
-            val radii = floatArrayOf(side / 2, side / 2, 0F, 0F, 0F, 0F, 0F, 0F)
-            path.addRoundRect(0F, 0F, side, side, radii, Path.Direction.CW)
-        }
+        ui.viewFixed.pathProvider =
+            ViewPathProvider { view, path ->
+                val side = view.width.toFloat()
+                val radius = side / 2
+                val radii = floatArrayOf(radius, radius, 0F, 0F, 0F, 0F, 0F, 0F)
+                path.addRoundRect(0F, 0F, side, side, radii, Path.Direction.CW)
+            }
         ui.buttonFixed.pathProvider = MaterialShapeDrawableViewPathProvider()
 
         ui.clipSwitch.setOnCheckedChangeListener { _, isChecked ->

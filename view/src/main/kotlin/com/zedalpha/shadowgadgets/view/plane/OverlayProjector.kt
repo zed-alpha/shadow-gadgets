@@ -101,8 +101,8 @@ private class RenderNodeWrapperProjector(
 
     override fun draw(canvas: Canvas) {
         projector.record { super.draw(it) }
-        base.record { projector.drawRenderNode(it) }
-        base.drawRenderNode(canvas)
+        base.record { projector.draw(it) }
+        base.draw(canvas)
     }
 
     override fun detach() {

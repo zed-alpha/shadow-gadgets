@@ -63,7 +63,7 @@ internal sealed interface RenderNodeWrapper {
 
     fun getInverseMatrix(outMatrix: Matrix)
 
-    fun drawRenderNode(canvas: Canvas)
+    fun draw(canvas: Canvas)
 
     fun setClipToBounds(clipToBounds: Boolean): Boolean
 

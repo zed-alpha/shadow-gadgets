@@ -11,24 +11,24 @@ internal interface Plane {
     fun addProxy(proxy: ShadowProxy)
     fun updateLayer(proxy: ShadowProxy)
     fun removeProxy(proxy: ShadowProxy)
-    fun Shadow.doesNotMatch(target: View): Boolean
+    fun Shadow.differsFrom(target: View): Boolean
     fun invalidate()
 
     @SuppressLint("StaticFieldLeak")
-    data object Initial : Inert()
+    data object Null : Void()
 
     @SuppressLint("StaticFieldLeak")
-    data object Null : Inert()
+    data object Error : Void()
 
-    sealed class Inert : Plane {
-        override val viewGroup: ViewGroup? = null
-        override fun addProxy(proxy: ShadowProxy) {}
-        override fun updateLayer(proxy: ShadowProxy) {}
-        override fun removeProxy(proxy: ShadowProxy) {}
-        override fun Shadow.doesNotMatch(target: View): Boolean = false
-        override fun invalidate() {}
+    sealed class Void : Plane {
+        final override val viewGroup: ViewGroup? = null
+        final override fun addProxy(proxy: ShadowProxy) {}
+        final override fun updateLayer(proxy: ShadowProxy) {}
+        final override fun removeProxy(proxy: ShadowProxy) {}
+        final override fun Shadow.differsFrom(target: View): Boolean = false
+        final override fun invalidate() {}
     }
 }
 
 internal fun Plane.isInvalid(proxy: ShadowProxy): Boolean =
-    proxy.isShown && proxy.shadow.doesNotMatch(proxy.target)
+    proxy.isShown && proxy.shadow.differsFrom(proxy.target)

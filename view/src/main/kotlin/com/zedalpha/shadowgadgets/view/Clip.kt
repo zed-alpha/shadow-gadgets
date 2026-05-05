@@ -45,7 +45,7 @@ public var View.clipOutlineShadow: Boolean
 public fun interface ViewPathProvider {
 
     /**
-     * Called for non-rectangular shapes on API levels 30 and above.
+     * Called for irregular shapes on API levels 30 and above.
      *
      * The [view] is the target itself, and the [path] is an empty instance that
      * should be set appropriately. If the Path is left empty, no shadow will be

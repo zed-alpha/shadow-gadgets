@@ -25,8 +25,9 @@ internal open class OverlayDrawable(
 
     @CallSuper
     open fun detach() {
-        viewGroup.overlay.remove(this)
-        viewGroup.removeOnLayoutChangeListener(updateBounds)
+        val group = viewGroup
+        group.overlay.remove(this)
+        group.removeOnLayoutChangeListener(updateBounds)
     }
 
     @CallSuper

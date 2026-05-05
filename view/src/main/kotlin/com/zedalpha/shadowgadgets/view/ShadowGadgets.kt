@@ -26,24 +26,33 @@ public object ShadowGadgets {
      * THe draw method for a given shadow instance is determined during its
      * initialization, so this value does not necessarily mean that all current
      * library shadows are using the indicated method, e.g, if
-     * [forceFallbackDrawMethod] has been toggled.
+     * [forceFallbackDrawMethod][com.zedalpha.shadowgadgets.view.ShadowGadgets.forceFallbackDrawMethod]
+     * has been toggled.
      */
     public val isPrimaryDrawMethodEnabled: Boolean
         get() = RenderNodeFactory.isOpen
 
     /**
-     * Flag that allows the fallback draw method to be forced, which may be
-     * useful in testing and debugging. This should be set as early as possible,
-     * e.g., in an [Application][android.app.Application] subclass.
+     * A flag to force the fallback draw method, which may be useful in testing
+     * and debugging. The fallback is normally used only on API levels 21..28
+     * whenever the library is unable to access the (hidden) classes and methods
+     * necessary for the primary method.
      *
-     * This is a passive flag; it does _not_ recreate existing library shadows.
-     * If it needs to be toggled at runtime, those shadows will need to be
-     * toggled as well. In order to ensure that the internals sync correctly,
-     * the active shadows in a given hierarchy must be disabled all at
-     * once first. Recreating the [Activity][android.app.Activity] or
+     * This flag should be set as early as possible, e.g., in an
+     * [Application][android.app.Application] subclass.
+     *
+     * This is a passive flag; changing it does _not_ recreate existing library
+     * shadows. If it needs to be toggled at runtime, those shadows will need to
+     * be toggled as well. In order to ensure that the library's internals sync
+     * correctly, all active shadows in a given hierarchy must be disabled all
+     * at once first. Recreating the [Activity][android.app.Activity] or
      * [Dialog][android.app.Dialog] might be the easiest way to handle this.
      */
-    public var forceFallbackDrawMethod: Boolean = false
+    public var forceFallbackDrawMethod: Boolean
+        get() = !RenderNodeFactory.isEnabled
+        set(forceFallback) {
+            RenderNodeFactory.isEnabled = !forceFallback
+        }
 
     /**
      * A flag for the library's Exception behavior if the target has no
@@ -63,13 +72,13 @@ public object ShadowGadgets {
     public var throwOnUnhandledErrors: Boolean = false
 
     /**
-     * By default, messages for known error states are logged in debug builds
-     * whenever the target has no [doOnShadowModeChange] set. This flag allows
-     * those logs to be suppressed.
+     * By default, messages for known error states are logged in debug builds.
+     * This flag allows those logs to be suppressed.
      *
      * If the library throws due to
      * [throwOnUnhandledErrors][com.zedalpha.shadowgadgets.view.ShadowGadgets.throwOnUnhandledErrors],
-     * these logs are skipped.
+     * those logs are skipped anyway, since the [ShadowException] messages would
+     * be identical.
      *
      * No logs are printed in release builds.
      */

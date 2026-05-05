@@ -17,18 +17,20 @@ internal abstract class IndividualLayer(
             invalidate()
         }
 
+    private var recreateOnMove: Boolean = false
+        set(value) {
+            if (field == value) return
+            field = value
+            if (value) owner.addOnMove(recreateLayer)
+            else owner.removeOnMove(recreateLayer)
+        }
+
     final override var color: Int
         get() = layer.color
         set(next) {
             val layer = this.layer
             if (layer.color == next) return
-
-            val nextOffscreen = next.requiresOffscreenLayer()
-            if (layer.isOffscreen != nextOffscreen) {
-                if (nextOffscreen) owner.addOnMove(recreateLayer)
-                else owner.removeOnMove(recreateLayer)
-            }
-
             layer.color = next
+            recreateOnMove = isOffscreen
         }
 }

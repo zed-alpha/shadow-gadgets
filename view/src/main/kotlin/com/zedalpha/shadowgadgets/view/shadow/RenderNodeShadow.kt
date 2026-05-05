@@ -7,120 +7,120 @@ import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
 
 internal class RenderNodeShadow : CoreShadow() {
 
-    private val shadow = RenderNodeFactory.create("Shadow")
+    private val renderNode = RenderNodeFactory.create("Shadow")
 
     override fun dispose() {}
 
     override var alpha: Float
-        get() = shadow.alpha
+        get() = renderNode.alpha
         set(value) {
-            shadow.alpha = value
+            renderNode.alpha = value
         }
 
     override var cameraDistance: Float
-        get() = shadow.cameraDistance
+        get() = renderNode.cameraDistance
         set(value) {
-            shadow.cameraDistance = value
+            renderNode.cameraDistance = value
         }
 
     override var elevation: Float
-        get() = shadow.elevation
+        get() = renderNode.elevation
         set(value) {
-            shadow.elevation = value
+            renderNode.elevation = value
         }
 
     override var pivotX: Float
-        get() = shadow.pivotX
+        get() = renderNode.pivotX
         set(value) {
-            shadow.pivotX = value
+            renderNode.pivotX = value
         }
 
     override var pivotY: Float
-        get() = shadow.pivotY
+        get() = renderNode.pivotY
         set(value) {
-            shadow.pivotY = value
+            renderNode.pivotY = value
         }
 
     override var rotationX: Float
-        get() = shadow.rotationX
+        get() = renderNode.rotationX
         set(value) {
-            shadow.rotationX = value
+            renderNode.rotationX = value
         }
 
     override var rotationY: Float
-        get() = shadow.rotationY
+        get() = renderNode.rotationY
         set(value) {
-            shadow.rotationY = value
+            renderNode.rotationY = value
         }
 
     override var rotationZ: Float
-        get() = shadow.rotationZ
+        get() = renderNode.rotationZ
         set(value) {
-            shadow.rotationZ = value
+            renderNode.rotationZ = value
         }
 
     override var scaleX: Float
-        get() = shadow.scaleX
+        get() = renderNode.scaleX
         set(value) {
-            shadow.scaleX = value
+            renderNode.scaleX = value
         }
 
     override var scaleY: Float
-        get() = shadow.scaleY
+        get() = renderNode.scaleY
         set(value) {
-            shadow.scaleY = value
+            renderNode.scaleY = value
         }
 
     override var translationX: Float
-        get() = shadow.translationX
+        get() = renderNode.translationX
         set(value) {
-            shadow.translationX = value
+            renderNode.translationX = value
         }
 
     override var translationY: Float
-        get() = shadow.translationY
+        get() = renderNode.translationY
         set(value) {
-            shadow.translationY = value
+            renderNode.translationY = value
         }
 
     override var translationZ: Float
-        get() = shadow.translationZ
+        get() = renderNode.translationZ
         set(value) {
-            shadow.translationZ = value
+            renderNode.translationZ = value
         }
 
     override var ambientColor: Int
-        get() = shadow.ambientColor
+        get() = renderNode.ambientColor
         set(value) {
-            shadow.ambientColor = value
+            renderNode.ambientColor = value
         }
 
     override var spotColor: Int
-        get() = shadow.spotColor
+        get() = renderNode.spotColor
         set(value) {
-            shadow.spotColor = value
+            renderNode.spotColor = value
         }
 
-    override val left: Int get() = shadow.left
+    override val left: Int get() = renderNode.left
 
-    override val top: Int get() = shadow.top
+    override val top: Int get() = renderNode.top
 
-    override val right: Int get() = shadow.right
+    override val right: Int get() = renderNode.right
 
-    override val bottom: Int get() = shadow.bottom
+    override val bottom: Int get() = renderNode.bottom
 
     override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) {
-        shadow.setPosition(left, top, right, bottom)
+        renderNode.setPosition(left, top, right, bottom)
     }
 
-    override fun setOutline(outline: Outline) = shadow.setOutline(outline)
+    override fun setOutline(outline: Outline) = renderNode.setOutline(outline)
 
-    override fun hasIdentityMatrix(): Boolean = shadow.hasIdentityMatrix()
+    override fun hasIdentityMatrix(): Boolean = renderNode.hasIdentityMatrix()
 
-    override fun getMatrix(outMatrix: Matrix) = shadow.getMatrix(outMatrix)
+    override fun getMatrix(outMatrix: Matrix) = renderNode.getMatrix(outMatrix)
 
     override fun getInverseMatrix(outMatrix: Matrix) =
-        shadow.getInverseMatrix(outMatrix)
+        renderNode.getInverseMatrix(outMatrix)
 
-    override fun onDraw(canvas: Canvas) = shadow.drawRenderNode(canvas)
+    override fun onDraw(canvas: Canvas) = renderNode.draw(canvas)
 }

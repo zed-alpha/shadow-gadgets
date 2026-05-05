@@ -43,19 +43,19 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
 
     override fun onDetach() = releaseLayer()
 
-    private var positionOnScreen = Offset.Unspecified
+    private var rootPositionOnScreen = Offset.Unspecified
     private var positionInLayer = Offset.Unspecified
     private var layerSize = IntSize.Zero
 
     override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
         val rootCoordinates = coordinates.findRootCoordinates()
-        val positionOnScreen = rootCoordinates.positionOnScreen()
+        val rootPositionOnScreen = rootCoordinates.positionOnScreen()
         val positionInLayer = coordinates.positionInRoot()
         val layerSize = rootCoordinates.size
 
         when {
             layer.compositingStrategy == CompositingStrategy.Offscreen &&
-                    this.positionOnScreen != positionOnScreen -> {
+                    this.rootPositionOnScreen != rootPositionOnScreen -> {
                 releaseLayer()
                 obtainLayer()
                 shadowNode.invalidateDraw()
@@ -67,7 +67,7 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
             }
         }
 
-        this.positionOnScreen = positionOnScreen
+        this.rootPositionOnScreen = rootPositionOnScreen
         this.positionInLayer = positionInLayer
         this.layerSize = layerSize
     }

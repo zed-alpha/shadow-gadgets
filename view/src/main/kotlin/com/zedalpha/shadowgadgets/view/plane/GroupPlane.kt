@@ -14,7 +14,7 @@ internal abstract class GroupPlane(override val viewGroup: ViewGroup) :
     protected fun Group<ShadowProxy>.isInvalid(): Boolean =
         this.has { proxy -> isInvalid(proxy) }
 
-    final override fun Shadow.doesNotMatch(target: View): Boolean {
+    final override fun Shadow.differsFrom(target: View): Boolean {
         if (this.top != target.top) return true
         if (this.left != target.left) return true
         if (this.right != target.right) return true

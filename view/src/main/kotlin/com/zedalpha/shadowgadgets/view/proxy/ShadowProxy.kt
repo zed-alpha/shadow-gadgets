@@ -50,6 +50,7 @@ internal class ShadowProxy(val target: View) {
 
     fun updatePathProvider() {
         val shadow = this.shadow as? ClippedShadow ?: return
+
         setPathProvider(shadow)
         target.invalidateOutline()
         plane.invalidate()
@@ -70,7 +71,7 @@ internal class ShadowProxy(val target: View) {
     fun requireParentRecyclingViewGroup(): ViewGroup =
         checkNotNull(recyclingParent) { "Missing RecyclingParent" }.viewGroup
 
-    var plane: Plane = Plane.Initial
+    var plane: Plane = Plane.Null
         set(next) {
             if (field === next) return
 

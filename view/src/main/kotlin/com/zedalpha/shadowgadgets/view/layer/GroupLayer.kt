@@ -37,7 +37,9 @@ internal class InertGroupLayer : GroupLayer, Group<ShadowProxy> by ListGroup() {
     override val isOffscreen: Boolean = false
 
     override fun draw(canvas: Canvas) = iterate { it.updateAndDraw(canvas) }
+
     override fun recreate() {}
+
     override fun dispose() {}
 }
 

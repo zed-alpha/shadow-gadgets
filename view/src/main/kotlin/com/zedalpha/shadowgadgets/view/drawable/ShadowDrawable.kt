@@ -26,28 +26,34 @@ import kotlin.math.roundToInt
  * This class is a thin wrapper around the library's core draw functionalities,
  * allowing its shadows to be drawn manually.
  *
+ * The user is responsible for invalidating the current draw whenever a
+ * property's value is changed. Failure to do so can result in a few different
+ * possible defects, depending on the specific setup, including misaligned clip
+ * regions, stale draws, etc.
+ *
  * Clipped instances with irregular shapes on API levels 30+ must have the
  * outline Path set manually using the [setClipPathProvider] function. This is
  * analogous to setting a
  * [ViewPathProvider][com.zedalpha.shadowgadgets.view.ViewPathProvider] on a
  * target View.
  *
- * The user is responsible for invalidating the current draw whenever a
- * property's value is changed. Failure to do so can result in a few different
- * possible defects, depending on the specific setup, including misaligned clip
- * regions, stale draws, etc.
+ * All ShadowDrawable instances created with an [owner] should call
+ * [dispose]. This is technically not necessary for the those created with the
+ * `@RequiresApi(29)` constructor, but it is still safe to call [dispose] on
+ * such instances. Use after disposal is not an automatic `Exception`, but it is
+ * not advised, and there is no guaranteed behavior.
+ *
+ * The [Drawable] class's required [setColorFilter][Drawable.setColorFilter]
+ * override is a no-op here.
  *
  * The color compat functionality is exposed here through the [colorCompat]
- * property, which is set to black by default, disabling the compat tinting.
- * Setting any non-black color enables color compat, and the [ambientColor]
- * and [spotColor] values are then ignored.
+ * property, which is set to black by default, disabling the tinting. Setting
+ * any non-black color enables color compat, and the [ambientColor] and
+ * [spotColor] values are then ignored.
  *
- * Color compat requires an [owner] View in order to be able to hook into the
- * hardware-accelerated draw routine, and that View must be attached to the
- * onscreen hierarchy. Instances created with the @RequiresApi(29) constructor
- * will throw an [IllegalStateException] upon attempts to modify [colorCompat].
- *
- * Color compat shadows are always clipped to the drawable's bounds.
+ * Color compat requires an [owner] View that must be attached to the onscreen
+ * hierarchy. Instances created with the `@RequiresApi(29)` constructor will
+ * throw an [IllegalStateException] upon any attempt to set [colorCompat].
  *
  * Normally the [owner] is just the View in which the draw happens, though
  * that's not strictly necessary. However, due to a limitation in the core
@@ -55,14 +61,7 @@ import kotlin.math.roundToInt
  * location, and the lighting effects may go out of sync with the expected
  * appearance if the drawing View moves differently than the [owner].
  *
- * All ShadowDrawable instances created with an [owner] should call
- * [dispose]. This is technically not necessary for the @RequiresApi(29) ones,
- * but it is still safe to call [dispose] on those instances. Use after disposal
- * is not an automatic Exception, but it is not advised, and there is no
- * guaranteed behavior.
- *
- * The Drawable class's required [setColorFilter][Drawable.setColorFilter]
- * override is a no-op here.
+ * Color compat shadows are always clipped to the drawable's bounds.
  */
 public open class ShadowDrawable
 private constructor(
@@ -107,7 +106,11 @@ private constructor(
      */
     @RequiresApi(29)
     public constructor(isClipped: Boolean) :
-            this(if (isClipped) ClippedShadow() else Shadow(), null, isClipped)
+            this(
+                shadow = if (isClipped) ClippedShadow() else Shadow(),
+                owner = null,
+                isClipped = isClipped
+            )
 
     /**
      * Sets the function through which to provide irregular Paths for clipping
@@ -330,14 +333,14 @@ private constructor(
     /**
      * The color that the compat mechanism uses to tint the shadow.
      * The default value is black (#FF000000), which disables the tint. If any
-     * other color is set, the compat mechanism takes over, and the ambient and
-     * spot values are ignored.
+     * other color is set, the compat mechanism takes over, and the
+     * [ambientColor] and [spotColor] values are ignored.
      *
-     * Color compat requires that the drawable instance be created with a View
-     * object that's attached to the onscreen hierarchy. If the View is not
-     * attached to the hierarchy, there is no guaranteed behavior. If the
-     * @RequiresApi(29) constructor is used, attempting to set color compat
-     * will throw an [IllegalStateException].
+     * Color compat requires that the drawable instance be created with an
+     * [owner] View that's attached to the onscreen hierarchy. If the View is
+     * not attached, there is no guaranteed behavior. If the `@RequiresApi(29)`
+     * constructor is used, attempting to set color compat will throw an
+     * [IllegalStateException].
      *
      * Color compat shadows are always clipped to the drawable's bounds.
      */

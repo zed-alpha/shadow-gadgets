@@ -5,10 +5,10 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-import android.text.SpannedString
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.text.style.TypefaceSpan
+import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,22 +31,17 @@ internal class Topic<T : TopicFragment<*>>(
         }
 
     fun createDescription(context: Context): CharSequence =
-        context.getText(descriptionResId).let { text ->
-            if (text !is SpannedString) return@let text
-
-            SpannableString(text).apply {
-                getSpans<StyleSpan>()
-                    .filter { it.style == Typeface.ITALIC }
-                    .forEach { span ->
-                        val start = getSpanStart(span)
-                        val end = getSpanEnd(span)
-                        removeSpan(span)
-                        val mono = TypefaceSpan("sans-serif-monospace")
-                        setSpan(mono, start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
-                        val color = ForegroundColorSpan(0xff224466.toInt())
-                        setSpan(color, start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
-                    }
-            }
+        SpannableString(context.getText(descriptionResId)).apply {
+            getSpans<UnderlineSpan>()
+                .forEach { span ->
+                    val start = getSpanStart(span)
+                    val end = getSpanEnd(span)
+                    removeSpan(span)
+                    val mono = TypefaceSpan("sans-serif-monospace")
+                    setSpan(mono, start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
+                    val color = ForegroundColorSpan(0xff224466.toInt())
+                    setSpan(color, start, end, SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
         }
 
     fun createFragment(): T = fragmentClass.getConstructor().newInstance()

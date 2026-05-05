@@ -141,15 +141,17 @@ internal abstract class ShadowsViewGroupManager<T>(
 
     abstract fun onViewAdded(child: View)
 
-    private var unsorted = arrayOfNulls<View>(ChildArrayInitialCapacity)
-    private var sorted = arrayOfNulls<View>(ChildArrayInitialCapacity)
-
     private var inlinePlane: Plane? = null
 
+    private var sorted = arrayOfNulls<View>(ChildArrayCapacityStep)
+    private var unsorted = arrayOfNulls<View>(ChildArrayCapacityStep)
+
     fun dispatchDraw(canvas: Canvas) {
+        val group = viewGroup
+
         val inlinePlane =
             if (canvas.isHardwareAccelerated) {
-                viewGroup.inlinePlane
+                group.inlinePlane
             } else {
                 null
             }
@@ -158,24 +160,32 @@ internal abstract class ShadowsViewGroupManager<T>(
         if (inlinePlane == null) {
             superDispatchDraw(canvas)
         } else {
-            val childCount = viewGroup.childCount
+            val childCount = group.childCount
 
-            if (unsorted.size < childCount) {
-                val size = nextSize(childCount)
-                unsorted = arrayOfNulls(size)
+            var sorted = this.sorted
+            val unsorted: Array<View?>
+            if (sorted.size < childCount) {
+                val size = childArrayCapacity(childCount)
                 sorted = arrayOfNulls(size)
+                unsorted = arrayOfNulls(size)
+                this.sorted = sorted
+                this.unsorted = unsorted
+            } else {
+                unsorted = this.unsorted
             }
 
             for (index in 0..<childCount) {
-                val child = viewGroup.getChildAt(index)
-                unsorted[index] = child
+                val child = group.getChildAt(index)
                 sorted[index] = child
+                unsorted[index] = child
             }
             sorted.sortWith(UnsafeZComparator, 0, childCount)
 
             reorderChildren(sorted, childCount)
             superDispatchDraw(canvas)
             reorderChildren(unsorted, childCount)
+
+            this.inlinePlane = null
         }
     }
 
@@ -219,11 +229,10 @@ internal val View.isForceNotSet: Boolean
     get() = this.getTag(R.id.force_outline_shadow_color_compat) == null
 
 // Mirroring ViewGroup's mChildren capacity
-private const val ChildArrayInitialCapacity = 12
-private const val ChildArrayCapacityIncrement = 12
+private const val ChildArrayCapacityStep = 12
 
-private fun nextSize(childCount: Int) =
-    (childCount / ChildArrayCapacityIncrement + 1) * ChildArrayCapacityIncrement
+private fun childArrayCapacity(childCount: Int) =
+    (childCount / ChildArrayCapacityStep + 1) * ChildArrayCapacityStep
 
 private val UnsafeZComparator =
     Comparator<View?> { v1, v2 -> v1!!.z.compareTo(v2!!.z) }

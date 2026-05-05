@@ -32,26 +32,44 @@ public open class ShadowsMaterialButtonToggleGroup
         )
 
     override var childShadowsPlane: ShadowPlane
-            by manager::childShadowsPlane
+        get() = manager.childShadowsPlane
+        set(value) {
+            manager.childShadowsPlane = value
+        }
 
     override var clipAllChildShadows: Boolean
-            by manager::clipAllChildShadows
+        get() = manager.clipAllChildShadows
+        set(value) {
+            manager.clipAllChildShadows = value
+        }
 
     override var childOutlineShadowsColorCompat: Int
-            by manager::childOutlineShadowsColorCompat
+        get() = manager.childOutlineShadowsColorCompat
+        set(value) {
+            manager.childOutlineShadowsColorCompat = value
+        }
 
     override var forceChildOutlineShadowsColorCompat: Boolean
-            by manager::forceChildOutlineShadowsColorCompat
+        get() = manager.forceChildOutlineShadowsColorCompat
+        set(value) {
+            manager.forceChildOutlineShadowsColorCompat = value
+        }
 
     override var takeOverDrawForInlineChildShadows: Boolean
-            by manager::takeOverDrawForInlineChildShadows
+        get() = manager.takeOverDrawForInlineChildShadows
+        set(value) {
+            manager.takeOverDrawForInlineChildShadows = value
+        }
 
     @Deprecated(
         "Use takeOverDrawForInlineChildShadows " +
                 "instead. It has opposite but clearer semantics."
     )
     override var ignoreInlineChildShadows: Boolean
-            by manager::ignoreInlineChildShadows
+        get() = manager.ignoreInlineChildShadows
+        set(value) {
+            manager.ignoreInlineChildShadows = value
+        }
 
     override fun generateLayoutParams(attrs: AttributeSet?): LayoutParams {
         manager.generateLayoutParams(attrs)

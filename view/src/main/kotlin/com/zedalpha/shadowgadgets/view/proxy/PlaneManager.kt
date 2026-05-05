@@ -27,6 +27,9 @@ import com.zedalpha.shadowgadgets.view.shadowPlane
 import com.zedalpha.shadowgadgets.view.tintOutlineShadow
 import com.zedalpha.shadowgadgets.view.viewgroup.ShadowsViewGroup
 
+// This return – true if changed – is used only by updateTint(); when true,
+// updateLayer() is skipped. In order to reduce complexity below, plane errors
+// always return false, since Plane.Error's updateLayer() is empty anyway.
 internal fun ShadowProxy.updatePlane(): Boolean {
     val target = this.target
     if (target.isInShadowUpdate) return false
@@ -163,18 +166,16 @@ private fun handleError(proxy: ShadowProxy, message: () -> String) {
     val target = proxy.target
 
     when {
-        ShadowGadgets.throwOnUnhandledErrors &&
-                target.onShadowModeChange == null ||
-                target.isInEditMode -> {
+        target.isInEditMode ||
+                target.onShadowModeChange == null &&
+                ShadowGadgets.throwOnUnhandledErrors -> {
             throw ShadowException("${target.debugId()}: ${message()}")
         }
 
-        BuildConfig.DEBUG &&
-                target.onShadowModeChange == null &&
-                !ShadowGadgets.suppressLogs -> {
+        BuildConfig.DEBUG && !ShadowGadgets.suppressLogs -> {
             Log.e("ShadowGadgets", "${target.debugId()}: ${message()}")
         }
     }
 
-    proxy.plane = Plane.Null
+    proxy.plane = Plane.Error
 }

@@ -55,7 +55,9 @@ internal abstract class AbstractLayer(
     protected fun updatePaint() {
         val color = this.color
 
-        val offscreen = color.requiresOffscreenLayer()
+        // isClipped is true on the || rhs since no tint + no clip = no Proxy.
+        val offscreen =
+            color.isTint || color.isDefault && ClipRequiresOffscreenLayer
         isOffscreen = offscreen
 
         val paint: Paint?
@@ -118,10 +120,6 @@ private fun Paint.setTint(color: Int) =
 internal val ClipRequiresLayer = Build.VERSION.SDK_INT in 24..28
 
 internal val ClipRequiresOffscreenLayer = Build.VERSION.SDK_INT == 24
-
-// We can assume isClipped on the ||'s rhs since no tint + no clip = no Proxy.
-internal fun Int.requiresOffscreenLayer(): Boolean =
-    this.isTint || this.isDefault && ClipRequiresOffscreenLayer
 
 internal fun View.desiredLayerColor(): Int? =
     when {

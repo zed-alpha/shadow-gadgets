@@ -127,12 +127,12 @@ internal abstract class ClippedDropShadowNode(protected var shape: Shape) :
     }
 
     private fun checkDensity() {
-        val density = this.density
+        val current = this.density
         val next = requireDensity()
-        if (density.density != next.density ||
-            density.fontScale != next.fontScale
+        if (current.density != next.density ||
+            current.fontScale != next.fontScale
         ) {
-            updateDensity(density, next)
+            updateDensity(current, next)
         }
     }
 

@@ -16,7 +16,7 @@ internal inline val Color.isTint: Boolean
 internal fun Color.isOrBlendsToDefault(ambient: Color, spot: Color) =
     this.isDefault || this.isUnspecified && ambient.isDefault && spot.isDefault
 
-// Technically, we should account for configuration changes here,
+// Technically we should account for configuration changes here,
 // but since it's not really possible to modify these alphas without
 // creating a new Activity instance, I think it's mostly safe to ignore.
 internal class ColorBlender(context: Context) {

@@ -18,6 +18,7 @@ private class ViewTagProperty<T : View, V>(
     private val onChange: (T.(newValue: V) -> Unit)?
 ) : ReadWriteProperty<T, V> {
 
+    // Ensures correct has-been-set logic.
     class Holder<V>(var value: V)
 
     override fun getValue(thisRef: T, property: KProperty<*>): V {

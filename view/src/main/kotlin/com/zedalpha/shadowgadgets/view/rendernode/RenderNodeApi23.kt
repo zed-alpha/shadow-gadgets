@@ -10,7 +10,7 @@ import androidx.annotation.RequiresApi
 @RequiresApi(23)
 internal class RenderNodeApi23(name: String?) : RenderNodeApi21(name) {
 
-    override fun drawRenderNode(canvas: Canvas) {
+    override fun draw(canvas: Canvas) {
         if (!renderNode.isValid) recordEmptyDisplayList()
         (canvas as DisplayListCanvas).drawRenderNode(renderNode)
     }

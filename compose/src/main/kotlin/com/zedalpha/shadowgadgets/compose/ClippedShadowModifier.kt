@@ -28,10 +28,8 @@ import com.zedalpha.shadowgadgets.compose.internal.WorkingShadowScopeImpl
  * Refer to [shadow][androidx.compose.ui.draw.shadow]'s docs for parameter
  * details.
  *
- * **NB:** This should not be used for shadows that extend beyond the root
- * composable's bounds on API levels 24..28. The clip feature requires a
- * compositing layer on those versions due to a bug in the system graphics, and
- * layers can be no larger than the root.
+ * **NB:** On API levels 24..28, these shadows are clipped to the root
+ * Composable's bounds.
  */
 @Stable
 public fun Modifier.clippedShadow(
@@ -73,13 +71,9 @@ public fun Modifier.clippedShadow(
  * The color blending formula gives good results only if the ambient and spot
  * colors are both fully opaque; i.e., only if both have maximum alpha values.
  *
- * **NB:** This should not be used for shadows that extend beyond the root
- * composable's bounds on API levels 24..28. The clip feature requires a
- * compositing layer on those versions due to a bug in the system graphics, and
- * layers can be no larger than the root.
- *
- * Color compat, on any API level, has the same restriction, as its tint is
- * applied through a compositing layer.
+ * **NB:** On API levels 24..28, these shadows are clipped to the root
+ * Composable's bounds. Shadows using color compat have the same restriction on
+ * all API levels.
  */
 @Stable
 public fun Modifier.clippedShadow(
@@ -194,10 +188,15 @@ private class SimpleClippedShadowNode(
     private val clip = Path()
 
     override fun onSetOutline(outline: Outline) =
-        clip.run { rewind(); addOutline(outline) }
+        clip.run {
+            rewind()
+            addOutline(outline)
+        }
 
     override fun drawShadow(scope: DrawScope) =
-        scope.clipPath(clip, ClipOp.Difference) { super.drawShadow(this) }
+        scope.clipPath(clip, ClipOp.Difference) {
+            super.drawShadow(this)
+        }
 }
 
 /**
@@ -215,13 +214,9 @@ public interface ClippedShadowScope : ShadowGadgetsScope
  * The rest of the original parameters – `elevation`, `ambientColor`,
  * `spotColor`, `colorCompat`, and `forceColorCompat` – are now inside [block].
  *
- * **NB:** This should not be used for shadows that extend beyond the root
- * composable's bounds on API levels 24..28. The clip feature requires a
- * compositing layer on those versions due to a bug in the system graphics, and
- * layers can be no larger than the root.
- *
- * Color compat, on any API level, has the same restriction, as its tint is
- * applied through a compositing layer.
+ * **NB:** On API levels 24..28, these shadows are clipped to the root
+ * Composable's bounds. Shadows using color compat have the same restriction on
+ * all API levels.
  */
 @Stable
 public fun Modifier.clippedShadow(
@@ -281,10 +276,15 @@ private class BlockClippedShadowNode(
     private val clip = Path()
 
     override fun onSetOutline(outline: Outline) =
-        clip.run { rewind(); addOutline(outline) }
+        clip.run {
+            rewind()
+            addOutline(outline)
+        }
 
     override fun drawShadow(scope: DrawScope) =
-        scope.clipPath(clip, ClipOp.Difference) { super.drawShadow(this) }
+        scope.clipPath(clip, ClipOp.Difference) {
+            super.drawShadow(this)
+        }
 }
 
 private class ClippedShadowScopeImpl :

@@ -23,7 +23,7 @@ import com.zedalpha.shadowgadgets.compose.internal.MutableDensity
 
 /**
  * Creates a [dropShadow][androidx.compose.ui.draw.dropShadow] replacement with
- * the content area clipped out.
+ * the interior clipped out.
  *
  * Refer to [dropShadow][androidx.compose.ui.draw.dropShadow]'s docs for
  * parameter details.
@@ -94,7 +94,7 @@ private class SimpleClippedDropShadowNode(
 
 /**
  * Creates a [dropShadow][androidx.compose.ui.draw.dropShadow] replacement with
- * the content area clipped out.
+ * the interior clipped out.
  *
  * Refer to [dropShadow][androidx.compose.ui.draw.dropShadow]'s docs for
  * parameter details.

@@ -133,7 +133,7 @@ internal open class RenderNodeApi21(name: String?) : RenderNodeWrapper {
         renderNode.getInverseMatrix(outMatrix)
     }
 
-    override fun drawRenderNode(canvas: Canvas) {
+    override fun draw(canvas: Canvas) {
         if (!renderNode.isValid) recordEmptyDisplayList()
         (canvas as HardwareCanvas).drawRenderNode(renderNode)
     }

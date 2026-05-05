@@ -129,7 +129,7 @@ internal class RenderNodeApi29(name: String?) : RenderNodeWrapper {
     override fun getInverseMatrix(outMatrix: Matrix) =
         renderNode.getInverseMatrix(outMatrix)
 
-    override fun drawRenderNode(canvas: Canvas) =
+    override fun draw(canvas: Canvas) =
         canvas.drawRenderNode(renderNode)
 
     override fun setClipToBounds(clipToBounds: Boolean): Boolean =

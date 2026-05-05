@@ -3,9 +3,10 @@ package com.zedalpha.shadowgadgets.view.rendernode
 import android.graphics.Matrix
 import android.graphics.Outline
 import android.os.Build
-import com.zedalpha.shadowgadgets.view.ShadowGadgets
 
 internal object RenderNodeFactory {
+
+    var isEnabled: Boolean = true
 
     val isCapable: Boolean =
         when {
@@ -14,8 +15,7 @@ internal object RenderNodeFactory {
             else -> testWrapper()
         }
 
-    val isOpen: Boolean
-        get() = isCapable && !ShadowGadgets.forceFallbackDrawMethod
+    val isOpen: Boolean get() = isCapable && isEnabled
 
     fun create(name: String? = null): RenderNodeWrapper {
         check(isOpen) { "RenderNodes are unavailable" }

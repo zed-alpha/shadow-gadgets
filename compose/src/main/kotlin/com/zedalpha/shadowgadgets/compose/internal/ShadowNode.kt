@@ -135,9 +135,9 @@ internal abstract class ShadowNode(protected var shape: Shape) :
         if (isAttached) updateDensity(shadowScope, requireDensity())
     }
 
-    private fun updateDensity(working: MutableDensity, next: Density) {
-        working.density = next.density
-        working.fontScale = next.fontScale
+    private fun updateDensity(density: MutableDensity, next: Density) {
+        density.density = next.density
+        density.fontScale = next.fontScale
         onDensityInvalidated()
         invalidateDrawCache()
     }
@@ -145,12 +145,12 @@ internal abstract class ShadowNode(protected var shape: Shape) :
     protected open fun onDensityInvalidated() {}
 
     private fun checkDensity() {
-        val working = shadowScope
+        val current = shadowScope
         val next = requireDensity()
-        if (working.density != next.density ||
-            working.fontScale != next.fontScale
+        if (current.density != next.density ||
+            current.fontScale != next.fontScale
         ) {
-            updateDensity(working, next)
+            updateDensity(current, next)
         }
     }
 

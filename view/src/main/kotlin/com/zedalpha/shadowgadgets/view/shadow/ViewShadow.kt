@@ -16,145 +16,145 @@ import com.zedalpha.shadowgadgets.view.internal.obtainViewPainter
 
 internal class ViewShadow(link: View) : CoreShadow() {
 
-    private val shadow = ShadowView(link.context)
+    private val view = ShadowView(link.context)
 
     private val painter = link.obtainViewPainter()
 
     init {
-        painter?.add(shadow)
+        painter?.add(view)
     }
 
     override fun dispose() {
-        painter?.remove(shadow)
+        painter?.remove(view)
     }
 
     override var alpha: Float
-        get() = shadow.alpha
+        get() = view.alpha
         set(value) {
-            shadow.alpha = value
+            view.alpha = value
         }
 
     override var cameraDistance: Float
-        get() = shadow.cameraDistance
+        get() = view.cameraDistance
         set(value) {
-            shadow.cameraDistance = value
+            view.cameraDistance = value
         }
 
     override var elevation: Float
-        get() = shadow.elevation
+        get() = view.elevation
         set(value) {
-            shadow.elevation = value
+            view.elevation = value
         }
 
     override var pivotX: Float
-        get() = shadow.pivotX
+        get() = view.pivotX
         set(value) {
-            shadow.pivotX = value
+            view.pivotX = value
         }
 
     override var pivotY: Float
-        get() = shadow.pivotY
+        get() = view.pivotY
         set(value) {
-            shadow.pivotY = value
+            view.pivotY = value
         }
 
     override var rotationX: Float
-        get() = shadow.rotationX
+        get() = view.rotationX
         set(value) {
-            shadow.rotationX = value
+            view.rotationX = value
         }
 
     override var rotationY: Float
-        get() = shadow.rotationY
+        get() = view.rotationY
         set(value) {
-            shadow.rotationY = value
+            view.rotationY = value
         }
 
     override var rotationZ: Float
-        get() = shadow.rotation
+        get() = view.rotation
         set(value) {
-            shadow.rotation = value
+            view.rotation = value
         }
 
     override var scaleX: Float
-        get() = shadow.scaleX
+        get() = view.scaleX
         set(value) {
-            shadow.scaleX = value
+            view.scaleX = value
         }
 
     override var scaleY: Float
-        get() = shadow.scaleY
+        get() = view.scaleY
         set(value) {
-            shadow.scaleY = value
+            view.scaleY = value
         }
 
     override var translationX: Float
-        get() = shadow.translationX
+        get() = view.translationX
         set(value) {
-            shadow.translationX = value
+            view.translationX = value
         }
 
     override var translationY: Float
-        get() = shadow.translationY
+        get() = view.translationY
         set(value) {
-            shadow.translationY = value
+            view.translationY = value
         }
 
     override var translationZ: Float
-        get() = shadow.translationZ
+        get() = view.translationZ
         set(value) {
-            shadow.translationZ = value
+            view.translationZ = value
         }
 
     override var ambientColor: Int
         get() =
             if (Build.VERSION.SDK_INT >= 28) {
-                ViewShadowColorsHelper.getAmbientColor(shadow)
+                ViewShadowColorsHelper.getAmbientColor(view)
             } else {
                 DefaultShadowColor
             }
         set(value) {
             if (Build.VERSION.SDK_INT >= 28) {
-                ViewShadowColorsHelper.setAmbientColor(shadow, value)
+                ViewShadowColorsHelper.setAmbientColor(view, value)
             }
         }
 
     override var spotColor: Int
         get() =
             if (Build.VERSION.SDK_INT >= 28) {
-                ViewShadowColorsHelper.getSpotColor(shadow)
+                ViewShadowColorsHelper.getSpotColor(view)
             } else {
                 DefaultShadowColor
             }
         set(value) {
             if (Build.VERSION.SDK_INT >= 28) {
-                ViewShadowColorsHelper.setSpotColor(shadow, value)
+                ViewShadowColorsHelper.setSpotColor(view, value)
             }
         }
 
-    override val left: Int get() = shadow.left
+    override val left: Int get() = view.left
 
-    override val top: Int get() = shadow.top
+    override val top: Int get() = view.top
 
-    override val right: Int get() = shadow.right
+    override val right: Int get() = view.right
 
-    override val bottom: Int get() = shadow.bottom
+    override val bottom: Int get() = view.bottom
 
     override fun setPosition(left: Int, top: Int, right: Int, bottom: Int) =
-        shadow.fastLayout(left, top, right, bottom)
+        view.fastLayout(left, top, right, bottom)
 
-    override fun setOutline(outline: Outline) = shadow.setOutline(outline)
+    override fun setOutline(outline: Outline) = view.setOutline(outline)
 
-    override fun hasIdentityMatrix(): Boolean = shadow.matrix.isIdentity
+    override fun hasIdentityMatrix(): Boolean = view.matrix.isIdentity
 
-    override fun getMatrix(outMatrix: Matrix) = outMatrix.set(shadow.matrix)
+    override fun getMatrix(outMatrix: Matrix) = outMatrix.set(view.matrix)
 
     override fun getInverseMatrix(outMatrix: Matrix) {
-        shadow.matrix.invert(outMatrix)
+        view.matrix.invert(outMatrix)
     }
 
     override fun onDraw(canvas: Canvas) {
-        painter?.drawView(canvas, shadow)
+        painter?.drawView(canvas, view)
     }
 }
 

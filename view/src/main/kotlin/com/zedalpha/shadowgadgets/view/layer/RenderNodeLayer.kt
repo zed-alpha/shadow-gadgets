@@ -10,33 +10,33 @@ import com.zedalpha.shadowgadgets.view.rendernode.record
 internal class RenderNodeLayer(link: View, content: (Canvas) -> Unit) :
     AbstractLayer(link, content) {
 
-    private var layerNode = createLayerNode()
+    private var renderNode = createRenderNode()
 
     init {
         updatePaint()
     }
 
-    override fun dispose() = layerNode.discardDisplayList()
+    override fun dispose() = renderNode.discardDisplayList()
 
     override fun updateBounds() {
-        with(bounds) { layerNode.setPosition(left, top, right, bottom) }
+        with(bounds) { renderNode.setPosition(left, top, right, bottom) }
     }
 
     override fun updateLayer(offscreen: Boolean, paint: Paint?) {
-        layerNode.setUseCompositingLayer(offscreen, paint)
+        renderNode.setUseCompositingLayer(offscreen, paint)
     }
 
     override fun drawLayer(canvas: Canvas) {
-        val node = layerNode
+        val node = renderNode
         node.record { content(it) }
-        node.drawRenderNode(canvas)
+        node.draw(canvas)
     }
 
     override fun recreateLayer() {
-        layerNode.discardDisplayList()
-        layerNode = createLayerNode()
+        renderNode.discardDisplayList()
+        renderNode = createRenderNode()
     }
 
-    private fun createLayerNode(): RenderNodeWrapper =
+    private fun createRenderNode(): RenderNodeWrapper =
         RenderNodeFactory.create("Layer")
 }

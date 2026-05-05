@@ -26,12 +26,12 @@ internal abstract class BlockShadowNode<T : WorkingShadowScopeImpl>(
     abstract override val shadowScope: T
 
     final override fun onDraw(scope: DrawScope) {
-        val nextBlock = block
-        if (currentBlock !== nextBlock) {
+        val block = this.block
+        if (currentBlock !== block) {
             val shadowScope = this.shadowScope
             shadowScope.reset()
-            observeReads { shadowScope.nextBlock() }
-            currentBlock = nextBlock
+            observeReads { shadowScope.block() }
+            currentBlock = block
             updateShadow()
         }
 

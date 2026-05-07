@@ -24,8 +24,10 @@ internal class LayerGroup<T : Layer>(
             if (field == value) return
             check(value >= 0) { "recreateCount cannot be negative: $value" }
 
-            if (field == 0) viewGroup.addOnMove(recreateLayers)
-            if (value == 0) viewGroup.removeOnMove(recreateLayers)
+            when {
+                field == 0 -> viewGroup.addOnMove(recreateLayers)
+                value == 0 -> viewGroup.removeOnMove(recreateLayers)
+            }
 
             field = value
         }

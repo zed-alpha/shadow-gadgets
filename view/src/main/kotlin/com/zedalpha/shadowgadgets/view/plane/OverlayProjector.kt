@@ -1,7 +1,6 @@
 package com.zedalpha.shadowgadgets.view.plane
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Build
@@ -65,10 +64,10 @@ private class RenderNodeProjector(
     content: (Canvas) -> Unit
 ) : OverlayProjector(viewGroup, content) {
 
-    private val base = nativeRenderNode("ProjectorBase")
-
     private val projector =
         nativeRenderNode("Projector").apply { setProjectBackwards(true) }
+
+    private val base = nativeRenderNode("ProjectorBase")
 
     override fun draw(canvas: Canvas) {
         projector.record { super.draw(it) }
@@ -78,13 +77,13 @@ private class RenderNodeProjector(
 
     override fun detach() {
         super.detach()
-        base.discardDisplayList()
         projector.discardDisplayList()
+        base.discardDisplayList()
     }
 
     override fun updateSize(width: Int, height: Int) {
-        base.setPosition(0, 0, width, height)
         projector.setPosition(0, 0, width, height)
+        base.setPosition(0, 0, width, height)
     }
 }
 
@@ -93,11 +92,11 @@ private class RenderNodeWrapperProjector(
     content: (Canvas) -> Unit
 ) : OverlayProjector(viewGroup, content) {
 
-    private val base = RenderNodeFactory.create("ProjectorBase")
-
     private val projector =
         RenderNodeFactory.create("Projector")
             .apply { setProjectBackwards(true) }
+
+    private val base = RenderNodeFactory.create("ProjectorBase")
 
     override fun draw(canvas: Canvas) {
         projector.record { super.draw(it) }
@@ -107,31 +106,32 @@ private class RenderNodeWrapperProjector(
 
     override fun detach() {
         super.detach()
-        base.discardDisplayList()
         projector.discardDisplayList()
+        base.discardDisplayList()
     }
 
     override fun updateSize(width: Int, height: Int) {
-        base.setPosition(0, 0, width, height)
         projector.setPosition(0, 0, width, height)
+        base.setPosition(0, 0, width, height)
     }
 }
 
-private class ViewProjector(viewGroup: ViewGroup, content: (Canvas) -> Unit) :
-    OverlayProjector(viewGroup, content) {
+private class ViewProjector(
+    viewGroup: ViewGroup,
+    content: (Canvas) -> Unit
+) : OverlayProjector(viewGroup, content) {
 
     private val projector =
         object : BaseDrawable() {
 
             override fun isProjected(): Boolean = true
 
-            @Suppress("RedundantOverride")
-            override fun draw(canvas: Canvas) =
-                super@ViewProjector.draw(canvas)
+            @Suppress("RedundantOverride")  // <- Inspection bug, apparently.
+            override fun draw(canvas: Canvas) = super@ViewProjector.draw(canvas)
         }
 
     private val base =
-        ProjectorBase(viewGroup.context).apply { background = projector }
+        BaseView(viewGroup.context).apply { background = projector }
 
     private val painter = viewGroup.obtainViewPainter()
 
@@ -152,9 +152,7 @@ private class ViewProjector(viewGroup: ViewGroup, content: (Canvas) -> Unit) :
     }
 
     override fun updateSize(width: Int, height: Int) {
-        base.fastLayout(0, 0, width, height)
         projector.superSetBounds(0, 0, width, height)
+        base.fastLayout(0, 0, width, height)
     }
 }
-
-private class ProjectorBase(context: Context) : BaseView(context)

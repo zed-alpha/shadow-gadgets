@@ -218,8 +218,8 @@ page][DrawableWiki].
 Aside from the main shadow tools, there are a handful of utilities to help with
 applying, testing, and debugging the library's features.
 
-- A [`ShadowGadgets`][ShadowGadgets] object holds a few flags for the active
-  draw method, logs, and error handling. ([wiki page][ShadowGadgetsWiki])
+- A [`ShadowGadgets`][ShadowGadgets] object holds a few flags for the draw
+  method, log behavior, and error handling. ([wiki page][ShadowGadgetsWiki])
 
 - The [`ShadowException`][ShadowException] class has been added for known error
   states. There are about half a dozen, and all but one can be addressed with

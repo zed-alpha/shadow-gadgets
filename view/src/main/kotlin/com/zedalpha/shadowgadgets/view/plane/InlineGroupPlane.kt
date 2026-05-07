@@ -64,12 +64,12 @@ internal class InlineGroupPlane<T>(override val viewGroup: T) :
         val color = proxy.target.desiredLayerColor()
         if (current?.color == color) return
 
-        if (color == null) {
-            disposeLayer(proxy)
-        } else {
+        if (color != null) {
             val layer = current
                 ?: createLayer(proxy).also { proxy.layer = it }
             layer.color = color
+        } else {
+            disposeLayer(proxy)
         }
 
         layers?.updateRecreateCount()

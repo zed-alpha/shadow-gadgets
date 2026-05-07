@@ -101,13 +101,12 @@ internal class LayerNode(private val shadowNode: ShadowNode) :
         }
 
         layer.record(scope, scope.layoutDirection, size) {
-            translate(offset.x, offset.y) {
-                shadowNode.drawShadow(this)
-            }
+            translate(offset.x, offset.y) { shadowNode.drawShadow(this) }
         }
-        scope.translate(-offset.x, -offset.y) {
-            drawLayer(layer)
-        }
+        layer.translationX = -offset.x
+        layer.translationY = -offset.y
+
+        scope.drawLayer(layer)
     }
 }
 

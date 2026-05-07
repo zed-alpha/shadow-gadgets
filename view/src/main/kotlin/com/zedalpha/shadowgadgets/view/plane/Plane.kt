@@ -1,6 +1,5 @@
 package com.zedalpha.shadowgadgets.view.plane
 
-import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import com.zedalpha.shadowgadgets.view.proxy.ShadowProxy
@@ -14,19 +13,18 @@ internal interface Plane {
     fun Shadow.differsFrom(target: View): Boolean
     fun invalidate()
 
-    @SuppressLint("StaticFieldLeak")
-    data object Null : Void()
+    companion object {
+        val Null: Plane = Void()
+        val Error: Plane = Void()
+    }
 
-    @SuppressLint("StaticFieldLeak")
-    data object Error : Void()
-
-    sealed class Void : Plane {
-        final override val viewGroup: ViewGroup? = null
-        final override fun addProxy(proxy: ShadowProxy) {}
-        final override fun updateLayer(proxy: ShadowProxy) {}
-        final override fun removeProxy(proxy: ShadowProxy) {}
-        final override fun Shadow.differsFrom(target: View): Boolean = false
-        final override fun invalidate() {}
+    private class Void : Plane {
+        override val viewGroup: ViewGroup? = null
+        override fun addProxy(proxy: ShadowProxy) {}
+        override fun updateLayer(proxy: ShadowProxy) {}
+        override fun removeProxy(proxy: ShadowProxy) {}
+        override fun Shadow.differsFrom(target: View): Boolean = false
+        override fun invalidate() {}
     }
 }
 

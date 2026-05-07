@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 
-internal abstract class BaseView(context: Context) : View(context) {
+internal open class BaseView(context: Context) : View(context) {
 
     fun superInvalidate() = super.invalidate()
 

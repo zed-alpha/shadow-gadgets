@@ -20,6 +20,7 @@ internal open class AutoPositionLayer(
 
     private val updateBounds = OnLayoutChangeSizeAdapter(::updateBounds)
 
+    // Must declare before init calls updateBounds().
     private val rect = ThreadLocalGraphicsTemps.rect
 
     init {

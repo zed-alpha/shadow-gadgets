@@ -93,7 +93,7 @@ internal abstract class InlineSoloPlane(protected val proxy: ShadowProxy) :
             override fun draw(canvas: Canvas) {
                 if (!proxy.updateAndConfirmDraw()) return
 
-                val matrix = matrix
+                val matrix = this.matrix
                 proxy.shadow.getInverseMatrix(matrix)
 
                 onDraw(canvas, matrix)
@@ -123,12 +123,12 @@ internal abstract class InlineSoloPlane(protected val proxy: ShadowProxy) :
         val color = proxy.target.desiredLayerColor()
         if (proxy.layer?.color == color) return
 
-        if (color == null) {
-            proxy.layer?.let { it.dispose(); proxy.layer = null }
-        } else {
+        if (color != null) {
             val layer = proxy.layer
                 ?: createLayer().also { proxy.layer = it }
             layer.color = color
+        } else {
+            proxy.layer?.let { it.dispose(); proxy.layer = null }
         }
     }
 

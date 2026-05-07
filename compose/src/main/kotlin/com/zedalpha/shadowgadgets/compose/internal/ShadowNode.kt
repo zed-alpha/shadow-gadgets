@@ -83,8 +83,7 @@ internal abstract class ShadowNode(protected var shape: Shape) :
             changed = true
         }
 
-        val layerColor = this.layerNode?.color ?: Color.Unspecified
-        val nextColor =
+        val nextLayer: Color =
             if (noTint || scope.isColorCompatDefault()) {
                 if (isClipped && ClipRequiresLayer) DefaultShadowColor
                 else Color.Unspecified
@@ -96,11 +95,11 @@ internal abstract class ShadowNode(protected var shape: Shape) :
                     blender.blend(scope.ambientColor, scope.spotColor)
                 }
             }
-        if (layerColor != nextColor) {
-            if (nextColor.isSpecified) {
+        if (layerNode?.color != nextLayer) {
+            if (nextLayer.isSpecified) {
                 val layer = layerNode
                     ?: LayerNode(this).also { delegate(it); layerNode = it }
-                layer.color = nextColor
+                layer.color = nextLayer
             } else {
                 layerNode?.let { undelegate(it); layerNode = null }
             }

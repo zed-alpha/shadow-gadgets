@@ -188,15 +188,10 @@ private class SimpleClippedShadowNode(
     private val clip = Path()
 
     override fun onSetOutline(outline: Outline) =
-        clip.run {
-            rewind()
-            addOutline(outline)
-        }
+        clip.run { rewind(); addOutline(outline) }
 
     override fun drawShadow(scope: DrawScope) =
-        scope.clipPath(clip, ClipOp.Difference) {
-            super.drawShadow(this)
-        }
+        scope.clipPath(clip, ClipOp.Difference) { super.drawShadow(this) }
 }
 
 /**
@@ -276,15 +271,10 @@ private class BlockClippedShadowNode(
     private val clip = Path()
 
     override fun onSetOutline(outline: Outline) =
-        clip.run {
-            rewind()
-            addOutline(outline)
-        }
+        clip.run { rewind(); addOutline(outline) }
 
     override fun drawShadow(scope: DrawScope) =
-        scope.clipPath(clip, ClipOp.Difference) {
-            super.drawShadow(this)
-        }
+        scope.clipPath(clip, ClipOp.Difference) { super.drawShadow(this) }
 }
 
 private class ClippedShadowScopeImpl :

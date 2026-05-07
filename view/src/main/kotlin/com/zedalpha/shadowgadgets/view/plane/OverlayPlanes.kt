@@ -103,22 +103,22 @@ internal class OverlayPlane(
         }
 
         val next =
-            if (color == null) {
-                recycled?.let { disposeActiveLayer(it) }
-                inertLayer ?: InertGroupLayer().also { inertLayer = it }
-            } else {
+            if (color != null) {
                 val layers = activeLayers
                     ?: LayerGroup<GroupLayer>(viewGroup, this)
                         .also { activeLayers = it }
 
                 val existing = layers.find { it.color == color }
-                if (existing == null) {
-                    (recycled ?: GroupLayer(viewGroup).also { layers.add(it) })
-                        .also { it.color = color }
-                } else {
+                if (existing != null) {
                     recycled?.let { disposeActiveLayer(it) }
                     existing
+                } else {
+                    (recycled ?: GroupLayer(viewGroup).also { layers.add(it) })
+                        .also { it.color = color }
                 }
+            } else {
+                recycled?.let { disposeActiveLayer(it) }
+                inertLayer ?: InertGroupLayer().also { inertLayer = it }
             }
 
         next.add(proxy)

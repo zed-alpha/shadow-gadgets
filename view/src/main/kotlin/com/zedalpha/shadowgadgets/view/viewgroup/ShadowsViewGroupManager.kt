@@ -157,9 +157,7 @@ internal abstract class ShadowsViewGroupManager<T>(
             }
         this.inlinePlane = inlinePlane
 
-        if (inlinePlane == null) {
-            superDispatchDraw(canvas)
-        } else {
+        if (inlinePlane != null) {
             val childCount = group.childCount
 
             var sorted = this.sorted
@@ -186,6 +184,8 @@ internal abstract class ShadowsViewGroupManager<T>(
             reorderChildren(unsorted, childCount)
 
             this.inlinePlane = null
+        } else {
+            superDispatchDraw(canvas)
         }
     }
 

@@ -40,32 +40,32 @@ internal abstract class ClippedDropShadowNode(protected var shape: Shape) :
     protected abstract fun createPainter(scope: CacheDrawScope): Painter
 
     private fun cacheDraw(scope: CacheDrawScope): DrawResult {
-        val painter =
-            currentPainter ?: createPainter(scope).also { currentPainter = it }
-
+        val size = scope.size
         val clip = this.clip
-        if (isClipInvalidated || currentSize != scope.size) {
+
+        if (isClipInvalidated || currentSize != size) {
             val outline =
-                shape.createOutline(scope.size, scope.layoutDirection, scope)
+                shape.createOutline(size, scope.layoutDirection, scope)
             clip.rewind()
             clip.addOutline(outline)
 
             isClipInvalidated = false
-            currentSize = scope.size
+            currentSize = size
         }
 
+        val painter = currentPainter
+            ?: createPainter(scope).also { currentPainter = it }
+
         return if (ClipRequiresLayer) {
-            layerDraw(scope, painter, clip)
+            drawWithLayer(scope, painter, clip)
         } else {
-            scope.onDrawBehind {
-                drawShadow(scope, painter, clip)
-            }
+            scope.onDrawBehind { drawShadow(painter, clip, size) }
         }
     }
 
     protected abstract val shadowMargin: Float
 
-    private fun layerDraw(
+    private fun drawWithLayer(
         scope: CacheDrawScope,
         painter: Painter,
         clip: Path
@@ -86,26 +86,17 @@ internal abstract class ClippedDropShadowNode(protected var shape: Shape) :
         val layerSize = Size(size.width + outset, size.height + outset)
 
         layer.record(scope, scope.layoutDirection, layerSize.roundToIntSize()) {
-            translate(margin, margin) {
-                drawShadow(scope, painter, clip)
-            }
+            translate(margin, margin) { drawShadow(painter, clip, size) }
         }
+        layer.translationX = -margin
+        layer.translationY = -margin
 
-        return scope.onDrawBehind {
-            translate(-margin, -margin) {
-                drawLayer(layer)
-            }
-        }
+        return scope.onDrawBehind { drawLayer(layer) }
     }
 
-    private fun DrawScope.drawShadow(
-        scope: CacheDrawScope,
-        painter: Painter,
-        clip: Path
-    ) =
-        clipPath(clip, ClipOp.Difference) {
-            painter.run { draw(scope.size) }
-        }
+    // Must pass size because layer's DrawScope is bigger.
+    private fun DrawScope.drawShadow(painter: Painter, clip: Path, size: Size) =
+        clipPath(clip, ClipOp.Difference) { painter.run { draw(size) } }
 
     final override fun onLayoutDirectionChange() {
         invalidateClip()

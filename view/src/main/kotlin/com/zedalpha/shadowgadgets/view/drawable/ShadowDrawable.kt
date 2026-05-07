@@ -342,7 +342,9 @@ private constructor(
      * constructor is used, attempting to set color compat will throw an
      * [IllegalStateException].
      *
-     * Color compat shadows are always clipped to the drawable's bounds.
+     * Color compat shadows are always clipped to the drawable's bounds. Also,
+     * due to a bug in the underlying system graphics, all clipped shadows are
+     * also clipped to the bounds on API level 24.
      */
     @get:ColorInt
     @setparam:ColorInt
@@ -430,7 +432,7 @@ private constructor(
     }
 
     override fun draw(canvas: Canvas): Unit =
-        if (clipToBounds) {
+        if (clipToBounds && layer?.isOffscreen != true) {
             canvas.withClip(bounds) { drawContent(this) }
         } else {
             drawContent(canvas)

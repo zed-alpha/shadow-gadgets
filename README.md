@@ -462,7 +462,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
 [shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
 [clippedDropShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-drop-shadow.html
-[ComposeNativeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Native-material-shadows
-[ComposeDropWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Clipped-drop-shadows
+[ComposeNativeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Native-shadows
+[ComposeDropWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drop-shadows
 [JitPack]: https://jitpack.io/#zed-alpha/shadow-gadgets
 [Releases]: https://github.com/zed-alpha/shadow-gadgets/releases

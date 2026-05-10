@@ -1,6 +1,7 @@
 package com.zedalpha.shadowgadgets.view.layer
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.View
@@ -51,14 +52,14 @@ internal class ViewLayer(link: View, content: (Canvas) -> Unit) :
         view = next
     }
 
-    private fun createView(): LayerView = LayerView(link, content)
+    private fun createView() = LayerView(link.context, content)
 }
 
 @SuppressLint("ViewConstructor")
 private class LayerView(
-    link: View,
+    context: Context,
     private val content: (Canvas) -> Unit
-) : BaseView(link.context) {
+) : BaseView(context) {
 
     @SuppressLint("MissingSuperCall")
     override fun draw(canvas: Canvas) = content(canvas)

@@ -31,7 +31,7 @@ render shadows, simply replacing the originals with clipped copies.
         width="50%" />
 </p>
 
-This clip feature is also available for Compose's new drop shadow modifiers.
+This clip feature is now also available for Compose's new drop shadow modifiers.
 
 <br />
 
@@ -74,7 +74,8 @@ results are likely sufficient for many cases.
   `compose` package contains just two functions (plus overloads) as direct
   replacements for the inbuilt shadow.
 
-  The clip feature is now available for drop shadows as well.
+  A pair of extensions that apply the clip feature to drop shadows are now
+  available as well.
 
 - [**Notes**][Notes]
 
@@ -284,7 +285,7 @@ start, so no need for a compat version here. ([wiki page][ComposeDropWiki])
 
 - #### Color compat
 
-  Color compat is handled here through parameters.
+  Color compat is handled here through additional parameters in an overload.
 
   ```kotlin
   Modifier
@@ -301,8 +302,8 @@ start, so no need for a compat version here. ([wiki page][ComposeDropWiki])
 
   There is now also an overload that takes a lambda to allow for efficient
   updates of shadow properties without recomposition. This mimics the lambda
-  version of `dropShadow`; elevation is in pixels rather than `Dp`, but the
-  scope is a `Density` so conversions are trivial.
+  version of `dropShadow`; elevation is taken in pixels rather than `Dp`, but
+  the scope is a `Density` so conversions are trivial.
 
   ```kotlin
   Modifier
@@ -317,7 +318,7 @@ start, so no need for a compat version here. ([wiki page][ComposeDropWiki])
 - #### Simple
 
   The [`shadowCompat`][shadowCompat] modifier is a more performant option for
-  those cases where only color compat is needed.
+  those cases where only color compat is needed, without the clip.
 
   ```kotlin
   Modifier

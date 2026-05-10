@@ -33,7 +33,7 @@ public val View.shadowMode: ShadowMode
     get() = this.shadowProxy?.plane?.shadowMode ?: ShadowMode.Native
 
 internal val Plane.shadowMode: ShadowMode
-    get() = if (this == Plane.Error) ShadowMode.Error else ShadowMode.Library
+    get() = if (this === Plane.Error) ShadowMode.Error else ShadowMode.Library
 
 /**
  * Callback for [ShadowMode] changes. The target [View] is passed as the

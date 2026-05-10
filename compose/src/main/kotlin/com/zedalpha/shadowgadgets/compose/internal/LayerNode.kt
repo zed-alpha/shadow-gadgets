@@ -128,6 +128,7 @@ private fun GraphicsLayer.setTint(color: Color) =
     } else {
         this.alpha = color.alpha
         this.colorFilter = null
+
         // Technically we should check isClipped, but the only unclipped setup
         // that reaches here is a lambda shadowCompat tinted black, which should
         // be just a temporary state, otherwise shadowCompat is kinda pointless.

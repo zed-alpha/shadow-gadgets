@@ -134,10 +134,6 @@ internal class ShadowProxy(val target: View) {
         target.onShadowModeChange?.invoke(target, ShadowMode.Native)
     }
 
-    fun updateAndDraw(canvas: Canvas) {
-        if (updateAndConfirmDraw()) shadow.draw(canvas)
-    }
-
     fun updateAndConfirmDraw(): Boolean =
         shadow.run {
             val view = target
@@ -161,6 +157,10 @@ internal class ShadowProxy(val target: View) {
             }
             isShown && view.isVisible && view.z > 0F
         }
+
+    fun updateAndDraw(canvas: Canvas) {
+        if (updateAndConfirmDraw()) shadow.draw(canvas)
+    }
 
     fun invalidate() = plane.invalidate()
 }

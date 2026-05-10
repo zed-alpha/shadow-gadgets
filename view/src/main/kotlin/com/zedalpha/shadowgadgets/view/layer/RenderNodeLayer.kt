@@ -4,7 +4,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.View
 import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeFactory
-import com.zedalpha.shadowgadgets.view.rendernode.RenderNodeWrapper
 import com.zedalpha.shadowgadgets.view.rendernode.record
 
 internal class RenderNodeLayer(link: View, content: (Canvas) -> Unit) :
@@ -37,6 +36,5 @@ internal class RenderNodeLayer(link: View, content: (Canvas) -> Unit) :
         renderNode = createRenderNode()
     }
 
-    private fun createRenderNode(): RenderNodeWrapper =
-        RenderNodeFactory.create("Layer")
+    private fun createRenderNode() = RenderNodeFactory.create("Layer")
 }

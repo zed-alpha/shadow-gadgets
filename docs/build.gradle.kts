@@ -7,8 +7,8 @@ plugins {
 }
 
 dependencies {
-    dokka(libs.shadowgagdgets.view)
-    dokka(libs.shadowgagdgets.compose)
+    dokka(project(":view"))
+    dokka(project(":compose"))
     dokkaHtmlPlugin(libs.dokka.versioning.plugin)
 }
 
@@ -21,7 +21,6 @@ project.version = rootProperties.requireProperty("library.version")
 dokka {
     moduleName = "Shadow Gadgets"
     basePublicationsDirectory = project.layout.projectDirectory
-    dokkaPublications.html { suppressInheritedMembers = true }
 
     pluginsConfiguration {
         html {

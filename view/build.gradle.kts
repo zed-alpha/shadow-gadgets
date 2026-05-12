@@ -52,10 +52,14 @@ project.group = requireProperty("group.id")
 project.version = requireProperty("library.version")
 
 dokka {
+    dokkaPublications.html { suppressInheritedMembers = true }
+
     dokkaSourceSets.configureEach {
+        val repoUrl = requireProperty("repository.url")
+
         pluginsConfiguration {
             html {
-                homepageLink = requireProperty("repository.url")
+                homepageLink = repoUrl
                 footerMessage =
                     "© ${Year.now().value} ${requireProperty("developer.name")}"
             }
@@ -63,7 +67,6 @@ dokka {
 
         sourceLink {
             localDirectory = project.layout.projectDirectory.dir("src")
-            val repoUrl = requireProperty("repository.url")
             remoteUrl = uri("$repoUrl/tree/main/${project.name}/src")
             remoteLineSuffix = "#L"
         }

@@ -223,7 +223,7 @@ applying, testing, and debugging the library's features.
   method, log behavior, and error handling. ([wiki page][ShadowGadgetsWiki])
 
 - The [`ShadowException`][ShadowException] class has been added for known error
-  states. There are about half a dozen, and all but one can be addressed with
+  states. There are about half a dozen, and all but one can be prevented with
   design-time alterations. ([wiki page][ShadowExceptionWiki])
 
 - The [`ShadowMode`][ShadowMode] enum has been added along with `View`

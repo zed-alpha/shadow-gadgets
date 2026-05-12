@@ -5,6 +5,15 @@ import android.graphics.RectF
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearancePathProvider
 
+internal fun Path.setFromMaterialShapeDrawable(msd: MaterialShapeDrawable) {
+    val pathShaper =
+        MaterialShapeDrawablePathShaperThreadLocal.get()
+            ?: MaterialShapeDrawablePathShaper()
+                .also { MaterialShapeDrawablePathShaperThreadLocal.set(it) }
+
+    pathShaper.shapePath(msd, this)
+}
+
 private class MaterialShapeDrawablePathShaper {
 
     private val pathProvider = ShapeAppearancePathProvider()
@@ -22,15 +31,6 @@ private class MaterialShapeDrawablePathShaper {
             /* path = */ path
         )
     }
-}
-
-internal fun Path.setFromMaterialShapeDrawable(msd: MaterialShapeDrawable) {
-    val pathShaper =
-        MaterialShapeDrawablePathShaperThreadLocal.get()
-            ?: MaterialShapeDrawablePathShaper()
-                .also { MaterialShapeDrawablePathShaperThreadLocal.set(it) }
-
-    pathShaper.shapePath(msd, this)
 }
 
 private val MaterialShapeDrawablePathShaperThreadLocal =

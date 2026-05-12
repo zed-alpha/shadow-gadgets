@@ -37,8 +37,6 @@ lint-cli = { module = "com.android.tools.lint:lint", version.ref = "lint" }
 lint-tests = { module = "com.android.tools.lint:lint-tests", version.ref = "lint" }
 
 dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
-shadowgagdgets-compose = { module = "com.zedalpha.shadowgadgets:compose" }
-shadowgagdgets-view = { module = "com.zedalpha.shadowgadgets:view" }
 
 [bundles]
 lint-api = ["kotlin-stdlib", "lint-api", "lint-checks"]

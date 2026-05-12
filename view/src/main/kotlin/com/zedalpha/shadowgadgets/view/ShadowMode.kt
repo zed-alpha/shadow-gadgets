@@ -50,7 +50,7 @@ internal val Plane.shadowMode: ShadowMode
  *
  * ```kotlin
  * target.doOnShadowModeChange { mode ->
- *     if (mode == ShadowMode.Disabled) {
+ *     if (mode == ShadowMode.Error) {
  *         foreground = FallbackDrawable()
  *     }
  * }
@@ -61,7 +61,7 @@ internal val Plane.shadowMode: ShadowMode
  * ```kotlin
  * target.doOnShadowModeChange { mode ->
  *     foreground =
- *         if (mode == ShadowMode.Disabled) {
+ *         if (mode == ShadowMode.Error) {
  *             FallbackDrawable()
  *         } else {
  *             null

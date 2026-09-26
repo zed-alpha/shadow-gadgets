@@ -63,24 +63,24 @@ private class Painter(context: Context) : ViewGroup(context) {
         drawChild(canvas, view, drawingTime)
     }
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     fun damageInParent() = Unit
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     override fun getChildCount(): Int = 0
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     override fun hasFocus(): Boolean = false
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     @SuppressLint("MissingSuperCall")
     override fun onDescendantInvalidated(child: View, target: View) = Unit
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) =
         Unit
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     @SuppressLint("MissingSuperCall")
     override fun requestLayout() = Unit
 }

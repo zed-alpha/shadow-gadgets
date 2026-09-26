@@ -1,29 +1,24 @@
 package com.zedalpha.shadowgadgets.view.lint
 
 import com.android.tools.lint.checks.RelativeOverlapDetector
-import com.android.tools.lint.detector.api.Implementation
-import com.android.tools.lint.detector.api.Scope
+import com.android.tools.lint.detector.api.Issue
 import com.zedalpha.shadowgadgets.view.lint.internal.BaseDetector
 import com.zedalpha.shadowgadgets.view.lint.internal.SHADOWS_RELATIVE_LAYOUT
+import com.zedalpha.shadowgadgets.view.lint.internal.copy
 
-class RelativeOverlapDetectorSG : BaseDetector() {
+class RelativeOverlapDetectorSG :
+    BaseDetector<RelativeOverlapDetector>(::RelativeOverlapDetector) {
 
     companion object {
 
         @JvmField
-        val ISSUE_SG = RelativeOverlapDetector.ISSUE.copy(
-            Implementation(
-                RelativeOverlapDetectorSG::class.java,
-                Scope.RESOURCE_FILE_SCOPE
-            )
-        )
+        val ISSUE_SG: Issue =
+            RelativeOverlapDetector.ISSUE
+                .copy(RelativeOverlapDetectorSG::class.java)
     }
 
-    override val detector = RelativeOverlapDetector()
+    override val issues: Map<Issue, Issue> =
+        mapOf(RelativeOverlapDetector.ISSUE to ISSUE_SG)
 
-    override val issues = mapOf(
-        RelativeOverlapDetector.ISSUE to ISSUE_SG
-    )
-
-    override val elements = listOf(SHADOWS_RELATIVE_LAYOUT)
+    override val elements: Collection<String> = listOf(SHADOWS_RELATIVE_LAYOUT)
 }

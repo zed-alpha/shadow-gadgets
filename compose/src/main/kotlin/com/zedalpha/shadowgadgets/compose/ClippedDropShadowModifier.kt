@@ -144,11 +144,9 @@ private class BlockClippedDropShadowNode(
     private var block: DropShadowScope.() -> Unit
 ) : ClippedDropShadowNode(shape), ObserverModifierNode {
 
-    private val shadowState = ShadowState()
+    override val density: MutableDensity field = ShadowState()
 
-    override val density: MutableDensity get() = shadowState
-
-    override val shadowMargin: Float get() = shadowState.run { radius + spread }
+    override val shadowMargin: Float get() = density.run { radius + spread }
 
     // Despite its comments, dropShadow creates a new Shadow & Painter if offset
     // changes; they're both immutable, so that's the only way to update. Since
@@ -156,7 +154,7 @@ private class BlockClippedDropShadowNode(
     // scope value change will need new objects. Just don't do unrelated state
     // reads within the shadow's block, but that's a universal recommendation.
     override fun createPainter(scope: CacheDrawScope): Painter {
-        val state = shadowState
+        val state = density
         state.reset()
         observeReads { state.block() }
         val shadow = state.toShadow()

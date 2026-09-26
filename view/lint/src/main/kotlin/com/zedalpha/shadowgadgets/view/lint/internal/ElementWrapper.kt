@@ -5,13 +5,12 @@ import com.android.SdkConstants
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 
-internal class ElementWrapper(
-    private val wrapped: Element,
-) : Element by wrapped {
+internal class ElementWrapper(private val wrapped: Element) :
+    Element by wrapped {
 
-    override fun getParentNode(): Node = run {
+    override fun getParentNode(): Node {
         val node = wrapped.parentNode
-        if (node is Element) ElementWrapper(node) else node
+        return if (node is Element) ElementWrapper(node) else node
     }
 
     override fun getTagName(): String =
@@ -25,7 +24,5 @@ internal class ElementWrapper(
             else -> actual
         }
 
-    override fun toString(): String {
-        return wrapped.toString()
-    }
+    override fun toString(): String = wrapped.toString()
 }

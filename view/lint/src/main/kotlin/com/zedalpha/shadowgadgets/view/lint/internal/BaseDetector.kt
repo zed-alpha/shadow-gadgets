@@ -6,14 +6,18 @@ import com.android.tools.lint.detector.api.Detector
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Issue
 import com.android.tools.lint.detector.api.Project
+import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.TextFormat
 import com.android.tools.lint.detector.api.XmlContext
 import com.android.tools.lint.detector.api.XmlScanner
 import org.w3c.dom.Element
+import java.lang.reflect.Field
+import java.util.EnumSet
 
-abstract class BaseDetector : Detector(), XmlScanner {
+abstract class BaseDetector<T : Detector>(createDetector: () -> T) :
+    Detector(), XmlScanner {
 
-    abstract val detector: Detector
+    protected val detector: T = createDetector()
 
     abstract val issues: Map<Issue, Issue>
 
@@ -37,38 +41,43 @@ abstract class BaseDetector : Detector(), XmlScanner {
         xmlContextWrapper = XmlContextWrapper(context as XmlContext, issues)
     }
 
-    override fun visitElement(context: XmlContext, element: Element) {
+    override fun visitElement(context: XmlContext, element: Element) =
         detector.visitElement(xmlContextWrapper, element)
-    }
-
-    companion object {
-
-        internal fun Issue.copy(implementation: Implementation): Issue =
-            Issue.create(
-                id = "${id}SG",
-                briefDescription = getBriefDescription(TextFormat.RAW),
-                explanation = getExplanation(TextFormat.RAW),
-                category = category,
-                priority = priority,
-                severity = defaultSeverity,
-                implementation = implementation
-            )
-    }
 }
+
+internal fun Issue.copy(
+    detectorClass: Class<out Detector>,
+    scope: EnumSet<Scope>? = null
+): Issue =
+    Issue.create(
+        id = "${this.id}SG",
+        briefDescription = getBriefDescription(TextFormat.RAW),
+        explanation = getExplanation(TextFormat.RAW),
+        category = this.category,
+        priority = this.priority,
+        severity = this.defaultSeverity,
+        implementation =
+            Implementation(
+                /* detectorClass = */ detectorClass,
+                /* scope = */ scope ?: this.implementation.scope,
+                /* ...analysisScopes = */ *this.implementation.analysisScopes
+            )
+    )
 
 private fun Context.wrapProjectConfiguration(issues: Map<Issue, Issue>) {
     val wrapper = ConfigurationWrapper(project.getConfiguration(driver), issues)
     try {
         ProjectConfigurationField?.set(project, wrapper)
-    } catch (e: Throwable) {
+    } catch (_: Throwable) {
         /* ignore */
     }
 }
 
-private val ProjectConfigurationField = try {
-    Project::class.java
-        .getDeclaredField("configuration")
-        .apply { isAccessible = true }
-} catch (e: Throwable) {
-    null
-}
+private val ProjectConfigurationField: Field? =
+    try {
+        Project::class.java
+            .getDeclaredField("configuration")
+            .apply { isAccessible = true }
+    } catch (_: Throwable) {
+        null
+    }

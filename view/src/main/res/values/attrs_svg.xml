@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Each ShadowsViewGroup, so attributes resolve in the editor. -->
-
     <declare-styleable name="ShadowsChipGroup">
         <attr name="childShadowsPlane" />
         <attr name="clipAllChildShadows" />

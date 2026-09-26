@@ -28,59 +28,56 @@ internal class ConfigurationWrapper(
         targetMap: MutableMap<String, Severity>,
         registry: IssueRegistry,
         specificOnly: Boolean,
-    ) {
+    ) =
         wrapped.addConfiguredIssues(targetMap, registry, specificOnly)
-    }
 
     override fun ignore(
         context: Context,
         issue: Issue,
         location: Location?,
         message: String,
-    ) {
+    ) =
         wrapped.ignore(context, issueMap[issue] ?: issue, location, message)
-    }
 
-    override fun ignore(issue: Issue, file: File) {
+    override fun ignore(issue: Issue, file: File) =
         wrapped.ignore(issueMap[issue] ?: issue, file)
-    }
 
     override fun ignore(issueId: String, file: File) {
         val issue = issueMap.entries.firstOrNull { it.key.id == issueId }?.value
         wrapped.ignore(issue?.id ?: issueId, file)
     }
 
-    override fun setSeverity(issue: Issue, severity: Severity?) {
+    override fun setSeverity(issue: Issue, severity: Severity?) =
         wrapped.setSeverity(issueMap[issue] ?: issue, severity)
-    }
 
     override fun getDefaultSeverity(
         issue: Issue,
         visibleDefault: Severity
-    ): Severity = super.getDefaultSeverity(
-        issueMap[issue] ?: issue,
-        visibleDefault
-    )
+    ): Severity =
+        super.getDefaultSeverity(issueMap[issue] ?: issue, visibleDefault)
 
     override fun getDefinedSeverity(
         issue: Issue,
         source: Configuration,
         visibleDefault: Severity
-    ): Severity? = super.getDefinedSeverity(
-        issueMap[issue] ?: issue,
-        source,
-        visibleDefault
-    )
+    ): Severity? =
+        super.getDefinedSeverity(
+            issue = issueMap[issue] ?: issue,
+            source = source,
+            visibleDefault = visibleDefault
+        )
 
     override fun getOption(
         issue: Issue,
         name: String,
         default: String?
-    ): String? = super.getOption(issueMap[issue] ?: issue, name, default)
+    ): String? =
+        super.getOption(issueMap[issue] ?: issue, name, default)
 
     override fun getOptionAsFile(
         issue: Issue,
         name: String,
         default: File?
-    ): File? = super.getOptionAsFile(issueMap[issue] ?: issue, name, default)
+    ): File? =
+        super.getOptionAsFile(issueMap[issue] ?: issue, name, default)
 }

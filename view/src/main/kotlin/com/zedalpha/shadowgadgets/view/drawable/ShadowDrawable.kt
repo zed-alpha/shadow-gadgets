@@ -26,7 +26,7 @@ import kotlin.math.roundToInt
  * This class is a thin wrapper around the library's core draw functionalities,
  * allowing its shadows to be drawn manually.
  *
- * The user is responsible for invalidating the current draw whenever a
+ * The developer is responsible for invalidating the current draw whenever a
  * property's value is changed. Failure to do so can result in a few different
  * possible defects, depending on the specific setup, including misaligned clip
  * regions, stale draws, etc.
@@ -61,7 +61,9 @@ import kotlin.math.roundToInt
  * location, and the lighting effects may go out of sync with the expected
  * appearance if the drawing View moves differently than the [owner].
  *
- * Color compat shadows are always clipped to the drawable's bounds.
+ * Color compat shadows are always clipped to the drawable's bounds. Also,
+ * due to a bug in the underlying system graphics, all shadows are clipped to
+ * the bounds on API level 24, Nougat.
  */
 public open class ShadowDrawable
 private constructor(
@@ -343,8 +345,8 @@ private constructor(
      * [IllegalStateException].
      *
      * Color compat shadows are always clipped to the drawable's bounds. Also,
-     * due to a bug in the underlying system graphics, all clipped shadows are
-     * also clipped to the bounds on API level 24.
+     * due to a bug in the underlying system graphics, all shadows are clipped
+     * to the bounds on API level 24, Nougat.
      */
     @get:ColorInt
     @setparam:ColorInt

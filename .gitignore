@@ -1,12 +1,9 @@
-*.iml
+# DO NOT REMOVE!
+local.properties
+
 .idea/
-captures/
 
 .gradle/
 build/
 
 .kotlin/
-
-local.properties
-
-.DS_Store

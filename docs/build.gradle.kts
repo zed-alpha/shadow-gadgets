@@ -1,22 +1,19 @@
+import org.jetbrains.dokka.gradle.DokkaExtension
 import java.time.Year
-import java.util.Properties
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.dokka)
 }
 
+val targets = listOf(projects.compose, projects.view)
+
 dependencies {
-    dokka(project(":view"))
-    dokka(project(":compose"))
+    targets.forEach { dokka(it) }
     dokkaHtmlPlugin(libs.dokka.versioning.plugin)
 }
 
-val rootProperties = Properties()
-rootProperties.load(file("../gradle.properties").reader())
-
-project.group = rootProperties.requireProperty("group.id")
-project.version = rootProperties.requireProperty("library.version")
+val footer = "© ${Year.now().value} ${stringProperty("POM_DEVELOPER_NAME")}"
+val repoUrl = stringProperty("POM_URL")
 
 dokka {
     moduleName = "Shadow Gadgets"
@@ -25,17 +22,44 @@ dokka {
     pluginsConfiguration {
         html {
             customAssets.from(file("../images/logo-icon.svg"))
-            homepageLink = rootProperties.requireProperty("repository.url")
-            footerMessage =
-                "© ${Year.now().value} " +
-                        rootProperties.requireProperty("developer.name")
+            footerMessage = footer
+            homepageLink = repoUrl
         }
         versioning {
             olderVersionsDir = basePublicationsDirectory.dir("previous")
-            version = project.version.toString()
+            version = stringProperty("VERSION_NAME")
         }
     }
 }
 
-fun Properties.requireProperty(name: String): String =
-    requireNotNull(this[name]) { "Cannot find property: $name" }.toString()
+configure(targets) {
+    val target = project(this.path)
+    target.pluginManager.withPlugin(libs.plugins.dokka.get().pluginId) {
+        target.extensions.configure<DokkaExtension> {
+            dokkaPublications.html {
+                failOnWarning = true
+                suppressInheritedMembers = true
+            }
+
+            dokkaSourceSets.configureEach {
+                reportUndocumented = true
+
+                pluginsConfiguration {
+                    html {
+                        footerMessage = footer
+                        homepageLink = repoUrl
+                    }
+                }
+
+                sourceLink {
+                    localDirectory = project.layout.projectDirectory.dir("src")
+                    remoteUrl = uri("$repoUrl/tree/main/${project.name}/src")
+                    remoteLineSuffix = "#L"
+                }
+            }
+        }
+    }
+}
+
+fun Project.stringProperty(name: String): String =
+    this.providers.gradleProperty(name).get()

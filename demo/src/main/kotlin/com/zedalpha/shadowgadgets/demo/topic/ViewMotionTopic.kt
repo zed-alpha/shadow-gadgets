@@ -20,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlin.time.Duration.Companion.milliseconds
 
 internal val ViewMotionTopic =
     Topic(
@@ -47,19 +48,19 @@ class ViewMotionFragment :
 
         ui.fabUp.setAnimations {
             snackbar.await(Show)
-            delay(500)
+            delay(500.milliseconds)
             snackbar.await(Hide)
         }
         ui.fabBoth.setAnimations {
             snackbar.await(Show)
             ui.fabUp.hide(); ui.fabBoth.hide(); ui.fabHide.await(Hide)
-            delay(500)
+            delay(500.milliseconds)
             ui.fabUp.show(); ui.fabBoth.show(); ui.fabHide.await(Show)
             snackbar.await(Hide)
         }
         ui.fabHide.setAnimations {
             ui.fabUp.hide(); ui.fabBoth.hide(); ui.fabHide.await(Hide)
-            delay(500)
+            delay(500.milliseconds)
             ui.fabUp.show(); ui.fabBoth.show(); ui.fabHide.await(Show)
         }
     }

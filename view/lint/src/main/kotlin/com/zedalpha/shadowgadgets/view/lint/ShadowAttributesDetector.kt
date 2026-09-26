@@ -27,25 +27,30 @@ class ShadowAttributesDetector : LayoutDetector() {
     companion object {
 
         @JvmField
-        val MISSING_ID = Issue.create(
-            id = "MissingIdWithShadowAttributes",
-            briefDescription = "Missing ID on child with shadow attributes in a ShadowsViewGroup",
-            explanation = """
-                An android:id is necessary on children of ShadowsViewGroups in order to enable
-                their individual shadow attributes. Views without IDs can still have shadow
-                properties set through their parents' tags, but their own attributes will be
-                ignored by the ShadowsViewGroup.""",
-            category = Category.CORRECTNESS,
-            priority = 7,
-            severity = Severity.ERROR,
-            implementation = Implementation(
-                ShadowAttributesDetector::class.java,
-                Scope.RESOURCE_FILE_SCOPE
+        val MISSING_ID: Issue =
+            Issue.create(
+                id = "MissingIdWithShadowAttributes",
+                briefDescription =
+                    "Missing ID on child with shadow attributes " +
+                            "in a ShadowsViewGroup",
+                explanation = """
+                    An android:id is necessary on children of ShadowsViewGroups 
+                    in order to enable their individual shadow attributes. Views
+                    without IDs can still have shadow properties set through
+                    their parents' tags, but their own attributes will be
+                    ignored by the ShadowsViewGroup.""",
+                category = Category.CORRECTNESS,
+                priority = 7,
+                severity = Severity.ERROR,
+                implementation = Implementation(
+                    ShadowAttributesDetector::class.java,
+                    Scope.RESOURCE_FILE_SCOPE
+                )
             )
-        )
     }
 
-    override fun getApplicableElements() = SHADOWS_VIEW_GROUPS
+    override fun getApplicableElements(): Collection<String> =
+        SHADOWS_VIEW_GROUPS
 
     override fun visitElement(context: XmlContext, element: Element) {
         for (child in element) {
@@ -54,11 +59,14 @@ class ShadowAttributesDetector : LayoutDetector() {
                 !child.hasAttributeNS(ANDROID_URI, ATTR_ID)
             ) {
                 context.report(
-                    MISSING_ID,
-                    context.getNameLocation(child),
-                    "This ${child.tagName} requires an android:id to enable its shadow attributes",
-                    fix().set().todo(ANDROID_URI, ATTR_ID, NEW_ID_PREFIX)
-                        .build()
+                    issue = MISSING_ID,
+                    location = context.getNameLocation(child),
+                    message =
+                        "This ${child.tagName} requires an android:id " +
+                                "to enable its shadow attributes",
+                    quickfixData =
+                        fix().set().todo(ANDROID_URI, ATTR_ID, NEW_ID_PREFIX)
+                            .build()
                 )
             }
         }

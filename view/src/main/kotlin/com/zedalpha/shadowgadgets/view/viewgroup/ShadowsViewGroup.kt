@@ -47,8 +47,8 @@ import com.zedalpha.shadowgadgets.view.ShadowPlane
  *
  * To help prevent confusion over the runtime behavior, these groups will set
  * their properties on children only until the group first attaches to a Window.
- * After that, the group's properties can no longer be modified, and any
- * user-added Views will not have any shadow properties set automatically.
+ * After that, the group's properties can no longer be modified, and any Views
+ * then added will _not_ have their shadow properties set automatically.
  *
  * The Regular groups recognize the following XML attributes on child elements:
  *   + `app:shadowPlane`

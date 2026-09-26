@@ -7,10 +7,8 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-
     @Suppress("UnstableApiUsage")
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-
     @Suppress("UnstableApiUsage")
     repositories {
         google()
@@ -22,10 +20,11 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "shadow-gadgets"
 
-include(":stubs")
-include(":view")
-include(":view:lint")
-include(":compose")
-include(":demo")
+include(
+    ":stubs", ":view", ":view:lint",
+    ":compose",
+    ":demo",
+    ":docs",
+    ":bulletin"
 
-//include("docs")
+)

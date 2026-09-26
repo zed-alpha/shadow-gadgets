@@ -14,26 +14,26 @@ internal abstract class BaseDrawable : Drawable() {
     @Deprecated("Deprecated in Drawable")
     final override fun getOpacity() = PixelFormat.TRANSLUCENT
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     final override fun setAlpha(alpha: Int) = Unit
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     final override fun setColorFilter(filter: ColorFilter?) = Unit
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     final override fun getOutline(outline: Outline) = Unit
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     final override fun getPadding(padding: Rect): Boolean = false
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     final override fun setBounds(bounds: Rect) = Unit
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     final override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) =
         Unit
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     final override fun setVisible(visible: Boolean, restart: Boolean): Boolean =
         false
 }

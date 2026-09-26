@@ -16,7 +16,7 @@ import com.zedalpha.shadowgadgets.view.proxy.updateProxy
  *
  * While this feature is active, the receiver's
  * [ViewOutlineProvider][android.view.ViewOutlineProvider] is wrapped
- * in a custom library implementation. Any user implementations should be set
+ * in a custom library implementation. Any custom implementations should be set
  * before enabling this feature, or at least before the View attaches to its
  * Window.
  *

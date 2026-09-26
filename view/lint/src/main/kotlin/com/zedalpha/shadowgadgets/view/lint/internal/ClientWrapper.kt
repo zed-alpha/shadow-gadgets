@@ -53,14 +53,15 @@ class ClientWrapper(
     override fun getConfiguration(
         project: Project,
         driver: LintDriver?
-    ): Configuration = ConfigurationWrapper(
-        delegate.getConfiguration(project, driver),
-        issueMap
-    )
+    ): Configuration {
+        val wrapped = delegate.getConfiguration(project, driver)
+        return ConfigurationWrapper(wrapped, issueMap)
+    }
 
-    override fun getConfiguration(file: File): Configuration? =
-        delegate.getConfiguration(file)
-            ?.let { ConfigurationWrapper(it, issueMap) }
+    override fun getConfiguration(file: File): Configuration? {
+        val configuration = delegate.getConfiguration(file) ?: return null
+        return ConfigurationWrapper(configuration, issueMap)
+    }
 
     override fun report(
         context: Context,
@@ -97,9 +98,8 @@ class ClientWrapper(
     override fun resolveMergeManifestSources(
         mergedManifest: Document,
         reportFile: Any
-    ) {
+    ) =
         delegate.resolveMergeManifestSources(mergedManifest, reportFile)
-    }
 
     override fun findManifestSourceNode(mergedNode: Node): Pair<File, out Node>? =
         delegate.findManifestSourceNode(mergedNode)
@@ -110,11 +110,11 @@ class ClientWrapper(
     override fun getXmlDocument(
         file: File,
         contents: CharSequence?
-    ): Document? = delegate.getXmlDocument(file, contents)
+    ): Document? =
+        delegate.getXmlDocument(file, contents)
 
-    override fun getClientDisplayName(): String {
-        return delegate.getClientDisplayName()
-    }
+    override fun getClientDisplayName(): String =
+        delegate.getClientDisplayName()
 
     override fun getDisplayPath(
         file: File,
@@ -128,7 +128,8 @@ class ClientWrapper(
         exception: Throwable?,
         format: String?,
         vararg args: Any
-    ) = delegate.log(severity, exception, format, *args)
+    ) =
+        delegate.log(severity, exception, format, *args)
 
     override fun getTestLibraries(project: Project): List<File> =
         delegate.getTestLibraries(project)
@@ -161,7 +162,8 @@ class ClientWrapper(
     override fun getJavaLibraries(
         project: Project,
         includeProvided: Boolean
-    ): List<File> = delegate.getJavaLibraries(project, includeProvided)
+    ): List<File> =
+        delegate.getJavaLibraries(project, includeProvided)
 
     override fun getTestSourceFolders(project: Project): List<File> =
         delegate.getTestSourceFolders(project)
@@ -195,7 +197,8 @@ class ClientWrapper(
     override fun initializeProjects(
         driver: LintDriver?,
         knownProjects: Collection<Project>
-    ): Unit = throw UnsupportedOperationException()
+    ): Unit =
+        throw UnsupportedOperationException()
 
     override fun disposeProjects(knownProjects: Collection<Project>): Unit =
         throw UnsupportedOperationException()
@@ -214,7 +217,8 @@ class ClientWrapper(
         project: Project,
         name: String,
         superClassName: String
-    ): Boolean? = delegate.isSubclassOf(project, name, superClassName)
+    ): Boolean? =
+        delegate.isSubclassOf(project, name, superClassName)
 
     override fun getProjectName(project: Project): String =
         delegate.getProjectName(project)
@@ -228,7 +232,8 @@ class ClientWrapper(
     override fun findGlobalRuleJars(
         driver: LintDriver?,
         warnDeprecated: Boolean
-    ): List<File> = delegate.findGlobalRuleJars(driver, warnDeprecated)
+    ): List<File> =
+        delegate.findGlobalRuleJars(driver, warnDeprecated)
 
     override fun findRuleJars(project: Project): Iterable<File> =
         delegate.findRuleJars(project)
@@ -253,12 +258,14 @@ class ClientWrapper(
     override fun createUrlClassLoader(
         urls: Array<URL>,
         parent: ClassLoader
-    ): ClassLoader = delegate.createUrlClassLoader(urls, parent)
+    ): ClassLoader =
+        delegate.createUrlClassLoader(urls, parent)
 
     override fun createUrlClassLoader(
         files: List<File>,
         parent: ClassLoader
-    ): ClassLoader = delegate.createUrlClassLoader(files, parent)
+    ): ClassLoader =
+        delegate.createUrlClassLoader(files, parent)
 
     override fun checkForSuppressComments(): Boolean =
         delegate.checkForSuppressComments()
@@ -266,7 +273,8 @@ class ClientWrapper(
     override fun getResources(
         project: Project,
         scope: ResourceRepositoryScope
-    ): ResourceRepository = delegate.getResources(project, scope)
+    ): ResourceRepository =
+        delegate.getResources(project, scope)
 
     override fun createResourceItemHandle(
         item: ResourceItem,
@@ -278,7 +286,8 @@ class ClientWrapper(
     override fun getLatestSdkTarget(
         minApi: Int,
         includePreviews: Boolean
-    ): IAndroidTarget? = delegate.getLatestSdkTarget(minApi, includePreviews)
+    ): IAndroidTarget? =
+        delegate.getLatestSdkTarget(minApi, includePreviews)
 
     override fun getPlatformLookup(): PlatformLookup? =
         delegate.getPlatformLookup()
@@ -336,18 +345,19 @@ class ClientWrapper(
 
     override fun getRootDir(): File? = delegate.getRootDir()
 
-    override val pathVariables: PathVariables
-        get() = delegate.pathVariables
+    override val pathVariables: PathVariables get() = delegate.pathVariables
 
     override fun isEdited(
         file: File,
         returnIfUnknown: Boolean,
         savedSinceMsAgo: Long
-    ): Boolean = delegate.isEdited(file, returnIfUnknown, savedSinceMsAgo)
+    ): Boolean =
+        delegate.isEdited(file, returnIfUnknown, savedSinceMsAgo)
 
     override fun fileExists(
         file: File,
         requireFile: Boolean,
         requireDirectory: Boolean
-    ): Boolean = delegate.fileExists(file, requireFile, requireDirectory)
+    ): Boolean =
+        delegate.fileExists(file, requireFile, requireDirectory)
 }

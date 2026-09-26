@@ -22,8 +22,10 @@ private constructor(private val list: MutableList<E>) : Group<E> {
 
     override fun isEmpty(): Boolean = list.isEmpty()
 
-    override fun add(element: E) =
-        check(list.add(element)) { "Element is already present" }
+    override fun add(element: E) {
+        check(element !in list) { "Element is already present" }
+        list.add(element)
+    }
 
     override fun remove(element: E) =
         check(list.remove(element)) { "Element is not present" }
@@ -36,12 +38,17 @@ private constructor(private val list: MutableList<E>) : Group<E> {
 }
 
 internal open class AutoDisposeListGroup<E>
-private constructor(private val group: ListGroup<E>) : Group<E> by group {
+private constructor(private val group: ListGroup<E>) : Group<E> {
 
     constructor() : this(ListGroup())
 
+    // Checked only in mutators.
     var isDisposed: Boolean = false
         private set
+
+    final override val size: Int get() = group.size
+
+    final override fun isEmpty(): Boolean = group.isEmpty()
 
     final override fun add(element: E) {
         check(!isDisposed) { "${javaClass.simpleName} is disposed" }
@@ -53,6 +60,15 @@ private constructor(private val group: ListGroup<E>) : Group<E> by group {
         group.remove(element)
         if (isEmpty()) dispose()
     }
+
+    final override fun iterate(block: (E) -> Unit) =
+        group.iterate(block)
+
+    final override fun find(condition: (E) -> Boolean): E? =
+        group.find(condition)
+
+    final override fun has(condition: (E) -> Boolean): Boolean =
+        group.has(condition)
 
     @CallSuper
     protected open fun dispose() {

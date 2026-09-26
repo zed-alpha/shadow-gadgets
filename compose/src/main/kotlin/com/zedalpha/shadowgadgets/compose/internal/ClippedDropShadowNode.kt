@@ -30,11 +30,11 @@ internal abstract class ClippedDropShadowNode(protected var shape: Shape) :
 
     private var currentPainter: Painter? = null
 
+    private var currentSize = Size.Unspecified
+
     private val clip = Path()
 
     private var isClipInvalidated = false
-
-    private var currentSize = Size.Unspecified
 
     protected abstract fun createPainter(scope: CacheDrawScope): Painter
 

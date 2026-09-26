@@ -176,7 +176,7 @@ private class ShadowView(context: Context) : BaseView(context) {
         superInvalidateOutline()
     }
 
-    @Deprecated("Library stop")
+    @Deprecated("Library stop", level = DeprecationLevel.ERROR)
     @SuppressLint("MissingSuperCall")
     override fun draw(canvas: Canvas) = Unit
 }

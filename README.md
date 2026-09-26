@@ -106,7 +106,7 @@ results are likely sufficient for many cases.
   - [Irregular shapes on Android R+](#irregular-shapes-on-android-r)
 - [ViewGroups](#viewgroups)
 - [Drawable](#drawable)
-- [Miscellanea](#miscellanea)
+- [Helpers](#helpers)
 </details>
 
 Nobody wants to mess with a whole library for such small issues that should've
@@ -168,8 +168,8 @@ potential remedies.
 - #### Irregular shapes on Android R+
 
   Starting with API level 30, `View`s that are not shaped as circles, plain
-  rectangles, or single-radius rounded rectangles require that the user provide
-  the outline `Path` for the clip.
+  rectangles, or single-radius rounded rectangles require that the developer
+  provide the outline `Path` for the clip.
 
   <!--suppress HtmlDeprecatedAttribute -->
   <p align="center">
@@ -210,29 +210,21 @@ with descriptions of their behaviors and usage in layout XML can be found on the
 ### Drawable
 
 [`ShadowDrawable`][ShadowDrawable] is a thin wrapper around the core classes
-that allows these shadows to be drawn manually. Information on requirements and
-usage, and links to examples are available on the [Drawable wiki
-page][DrawableWiki].
+that allows these shadows to be drawn manually, or used with standard `Drawable`
+APIs. Information on requirements and usage, and links to examples are available
+on the [Drawable wiki page][DrawableWiki].
 
-### Miscellanea
+### Helpers
 
-Aside from the main shadow tools, there are a handful of utilities to help with
-applying, testing, and debugging the library's features.
+The library also offers [a `View` extension][View.updateShadowWiki] that allows
+for updating multiple shadow properties at once, which can benefit performance
+in recycling `Adapter`s, and help to avoid invalid states when
+[`throwOnUnhandledErrors`][throwOnUnhandledErrorsWiki] is enabled.
 
-- A [`ShadowGadgets`][ShadowGadgets] object holds a few flags for the draw
-  method, log behavior, and error handling. ([wiki page][ShadowGadgetsWiki])
-
-- The [`ShadowException`][ShadowException] class has been added for known error
-  states. There are about half a dozen, and all but one can be prevented with
-  design-time alterations. ([wiki page][ShadowExceptionWiki])
-
-- The [`ShadowMode`][ShadowMode] enum has been added along with `View`
-  extensions to get the current mode and to set a change callback, meant mainly
-  for runtime handling of known error states. ([wiki page][ShadowModeWiki])
-
-- Lastly, a couple of `View` extensions have been added to allow efficient
-  modification of multiple shadow properties at once, helpful especially in
-  recycling `Adapter`s. ([wiki page][ShadowUpdateWiki])
+[The object][ShadowGadgetsWiki] containing the throw property also holds a few
+other flags for the (internal) draw method, and log and error behavior. To
+assist with runtime error handling, an [enum and extension
+function][ShadowModeWiki] are available to act as a mode change callback.
 
 <br />
 
@@ -241,9 +233,9 @@ applying, testing, and debugging the library's features.
 <details>
   <summary>Subsections</summary>
 
-- [Modifier.clippedShadow](#modifierclippedshadow) 
-  - [Simple](#simple) 
-  - [Color compat](#color-compat) 
+- [Modifier.clippedShadow](#modifierclippedshadow)
+  - [Simple](#simple)
+  - [Color compat](#color-compat)
   - [Lambda](#lambda)
 - [Modifier.shadowCompat](#modifiershadowcompat)
   - [Simple](#simple-1)
@@ -251,7 +243,7 @@ applying, testing, and debugging the library's features.
 - [Modifier.clippedDropShadow](#modifierclippeddropshadow)
   - [Simple](#simple-2)
   - [Lambda](#lambda-2)
-</details>
+  </details>
 
 Since Compose already allows shadows to be handled and manipulated as discrete
 UI elements, employing the library's features here is straightforward and
@@ -260,19 +252,19 @@ routine.
 There are two replacements for the inbuilt `shadow` modifier:
 [`clippedShadow`][clippedShadow] and [`shadowCompat`][shadowCompat], the latter
 being the more performant option when only color compat is needed.
-([wiki page][ComposeNativeWiki])
+([wiki][ComposeNativeWiki])
 
 The last modifier, [`clippedDropShadow`][clippedDropShadow], adds the clip
 feature to the new `dropShadow` modifier, which has supported color from the
-start, so no need for a compat version here. ([wiki page][ComposeDropWiki])
+start, so there's no need for a compat version here. ([wiki][ComposeDropWiki])
 
 ### Modifier.clippedShadow
 
 - #### Simple
 
   The base [`clippedShadow`][clippedShadow] is a drop-in replacement for
-  `shadow`, with the exact same signature and defaults, and identical
-  usage. For example:
+  `shadow`, with the exact same signature and defaults, and identical usage. For
+  example:
 
   ```kotlin
   Modifier
@@ -365,8 +357,8 @@ start, so no need for a compat version here. ([wiki page][ComposeDropWiki])
 
 - #### Lambda
 
-  This version allows for shadow property updates without recomposition. It is
-  a drop-in replacement as well.
+  This version allows for shadow property updates without recomposition. It is a
+  drop-in replacement as well.
 
   ```kotlin
   Modifier
@@ -406,10 +398,15 @@ module, directly, or through your `libs.versions.toml`:
 ```kotlin
 dependencies {
     …
-    implementation("com.github.zed-alpha.shadow-gadgets:view:[latest-release]")
-    implementation("com.github.zed-alpha.shadow-gadgets:compose:[latest-release]")
+    implementation("com.github.zed-alpha.shadow-gadgets:view:?.?.?")
+    implementation("com.github.zed-alpha.shadow-gadgets:compose:?.?.?")
 }
 ```
+
+Please note that this project doesn't follow Semantic Versioning very strictly,
+even though the version numbers are in that format. The main difference is that
+I prefer to handle small breaking changes in minor versions rather than major.
+Sorry if that's an inconvenience.
 
 <br />
 
@@ -438,31 +435,41 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 [Notes]: https://github.com/zed-alpha/shadow-gadgets/wiki/Notes
 [Documentation]: https://zed-alpha.github.io/shadow-gadgets
 [Issues]: https://github.com/zed-alpha/shadow-gadgets/issues
-[clipOutlineShadow]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/clip-outline-shadow.html
-[outlineShadowColorCompat]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/outline-shadow-color-compat.html
-[ViewColorCompatWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat
-[ShadowPlane]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-plane/index.html
+[clipOutlineShadow]:
+  https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/clip-outline-shadow.html
+[outlineShadowColorCompat]:
+  https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/outline-shadow-color-compat.html
+[ViewColorCompatWiki]:
+  https://github.com/zed-alpha/shadow-gadgets/wiki/Color-compat
+[ShadowPlane]:
+  https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-plane/index.html
 [ShadowPlaneWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowPlane
-[ViewPathProvider]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-view-path-provider/index.html
-[ViewPathProviderWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewPathProvider
+[ViewPathProvider]:
+  https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-view-path-provider/index.html
+[ViewPathProviderWiki]:
+  https://github.com/zed-alpha/shadow-gadgets/wiki/ViewPathProvider
 [ViewGroupsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ViewGroups
-[ShadowDrawable]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
+[ShadowDrawable]:
+  https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view.drawable/-shadow-drawable/index.html
 [DrawableWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drawable
-[ShadowGadgets]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-gadgets/index.html
-[ShadowGadgetsWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowGadgets
-[ShadowException]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-exception/index.html
-[ShadowExceptionWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowException
-[ShadowMode]: https://zed-alpha.github.io/shadow-gadgets/view/com.zedalpha.shadowgadgets.view/-shadow-mode/index.html
+[View.updateShadowWiki]:
+  https://github.com/zed-alpha/shadow-gadgets/wiki/Multi–property-update#viewupdateshadow
+[throwOnUnhandledErrorsWiki]:
+  https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowGadgets#throwOnUnhandledErrors
+[ShadowGadgetsWiki]:
+  https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowGadgets
 [ShadowModeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/ShadowMode
-[ShadowUpdateWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Shadow-update
-[clippedShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
-[shadowCompat]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
-[clippedDropShadow]: https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-drop-shadow.html
-[ComposeNativeWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Native-shadows
+[clippedShadow]:
+  https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-shadow.html
+[shadowCompat]:
+  https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/shadow-compat.html
+[clippedDropShadow]:
+  https://zed-alpha.github.io/shadow-gadgets/compose/com.zedalpha.shadowgadgets.compose/clipped-drop-shadow.html
+[ComposeNativeWiki]:
+  https://github.com/zed-alpha/shadow-gadgets/wiki/Native-shadows
 [ComposeDropWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drop-shadows
 [JitPack]: https://jitpack.io/#zed-alpha/shadow-gadgets
 [Releases]: https://github.com/zed-alpha/shadow-gadgets/releases

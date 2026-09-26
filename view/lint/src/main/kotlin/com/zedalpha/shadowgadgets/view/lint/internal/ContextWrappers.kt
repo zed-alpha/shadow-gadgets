@@ -18,12 +18,13 @@ private constructor(
     contents: CharSequence?,
 ) : Context(driver, project, null, file, contents) {
 
-    constructor(wrapped: Context, issues: Map<Issue, Issue>) : this(
-        createDriver(wrapped, issues),
-        wrapped.project,
-        wrapped.file,
-        wrapped.getContents(),
-    )
+    constructor(wrapped: Context, issues: Map<Issue, Issue>) :
+            this(
+                driver = createDriver(wrapped, issues),
+                project = wrapped.project,
+                file = wrapped.file,
+                contents = wrapped.getContents(),
+            )
 }
 
 class XmlContextWrapper
@@ -36,14 +37,15 @@ private constructor(
     document: Document,
 ) : XmlContext(driver, project, null, file, folderType, contents, document) {
 
-    constructor(wrapped: XmlContext, issues: Map<Issue, Issue>) : this(
-        createDriver(wrapped, issues),
-        wrapped.project,
-        wrapped.file,
-        wrapped.resourceFolderType,
-        wrapped.getContents(),
-        wrapped.document
-    )
+    constructor(wrapped: XmlContext, issues: Map<Issue, Issue>) :
+            this(
+                driver = createDriver(wrapped, issues),
+                project = wrapped.project,
+                file = wrapped.file,
+                folderType = wrapped.resourceFolderType,
+                contents = wrapped.getContents(),
+                document = wrapped.document
+            )
 }
 
 private fun createDriver(
@@ -51,21 +53,21 @@ private fun createDriver(
     issues: Map<Issue, Issue>
 ): LintDriver {
     val clientWrapper = ClientWrapper(wrappedContext.client, issues)
-    val driver = wrappedContext.driver.run {
-        LintDriver(registry, clientWrapper, request)
-    }
+    val wrapped = wrappedContext.driver
+    val driver = LintDriver(wrapped.registry, clientWrapper, wrapped.request)
     try {
         LintDriverClientField?.set(driver, clientWrapper)
-    } catch (e: Throwable) {
+    } catch (_: Throwable) {
         /* ignore */
     }
     return driver
 }
 
-private val LintDriverClientField: Field? = try {
-    LintDriver::class.java
-        .getDeclaredField("client")
-        .apply { isAccessible = true }
-} catch (e: Throwable) {
-    null
-}
+private val LintDriverClientField: Field? =
+    try {
+        LintDriver::class.java
+            .getDeclaredField("client")
+            .apply { isAccessible = true }
+    } catch (_: Throwable) {
+        null
+    }

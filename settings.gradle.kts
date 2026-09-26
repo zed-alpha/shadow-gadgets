@@ -21,10 +21,8 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "shadow-gadgets"
 
 include(
-    ":stubs", ":view", ":view:lint",
-    ":compose",
+    ":view", ":stubs", ":view:lint",
+    ":compose", ":compose:lint",
     ":demo",
-    ":docs",
-    ":bulletin"
-
+    ":docs"
 )

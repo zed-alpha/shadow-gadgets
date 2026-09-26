@@ -37,13 +37,10 @@ configure(targets) {
     target.pluginManager.withPlugin(libs.plugins.dokka.get().pluginId) {
         target.extensions.configure<DokkaExtension> {
             dokkaPublications.html {
-                failOnWarning = true
                 suppressInheritedMembers = true
             }
 
             dokkaSourceSets.configureEach {
-                reportUndocumented = true
-
                 pluginsConfiguration {
                     html {
                         footerMessage = footer

@@ -1,17 +1,16 @@
-package com.zedalpha.shadowgadgets.move
+package com.zedalpha.shadowgadgets.view.lint
 
-import com.android.tools.lint.checks.infrastructure.TestFiles.gradleToml
-import com.android.tools.lint.checks.infrastructure.TestFiles.kts
-import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
+import com.android.tools.lint.checks.infrastructure.TestFiles
+import com.android.tools.lint.checks.infrastructure.TestLintTask
 import org.junit.Test
 
-class MoveAlertDetectorTest {
+class JitPackGroupDetectorTest {
 
     @Test
     fun testWarnings() {
-        lint()
+        TestLintTask.lint()
             .files(
-                kts(
+                TestFiles.kts(
                     "build.gradle.kts",
                     """
                     dependencies {
@@ -21,7 +20,7 @@ class MoveAlertDetectorTest {
                     }
                     """.trimIndent()
                 ),
-                gradleToml(
+                TestFiles.gradleToml(
                     """
                     [versions]
                     shadowGadgets="2.5.1"
@@ -33,14 +32,14 @@ class MoveAlertDetectorTest {
                     """.trimIndent()
                 )
             )
-            .issues(MoveAlertDetector.ISSUE)
+            .issues(JitPackGroupDetector.ISSUE)
             .run()
             .expect(
                 """
-                build.gradle.kts:3: Hint: Shadow Gadgets moved to Maven Central: https://github.com/zed-alpha/shadow-gadgets#download [ShadowGadgetsMoved]
+                build.gradle.kts:3: Hint: Shadow Gadgets has moved to Maven Central: https://github.com/zed-alpha/shadow-gadgets#download [ShadowGadgetsMoved]
                     implementation("com.github.zed-alpha.shadow-gadgets:view:2.5.1")
                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                ../gradle/libs.versions.toml:6: Hint: Shadow Gadgets moved to Maven Central: https://github.com/zed-alpha/shadow-gadgets#download [ShadowGadgetsMoved]
+                ../gradle/libs.versions.toml:6: Hint: Shadow Gadgets has moved to Maven Central: https://github.com/zed-alpha/shadow-gadgets#download [ShadowGadgetsMoved]
                 shadow-gadgets = { module = "com.github.zed-alpha.shadow-gadgets:view", version.ref = "shadowGadgets" }
                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 0 errors, 0 warnings, 2 hints
@@ -50,9 +49,9 @@ class MoveAlertDetectorTest {
 
     @Test
     fun testNoWarnings() {
-        lint()
+        TestLintTask.lint()
             .files(
-                kts(
+                TestFiles.kts(
                     "build.gradle.kts",
                     """
                     dependencies {
@@ -61,7 +60,7 @@ class MoveAlertDetectorTest {
                     }
                     """.trimIndent()
                 ),
-                gradleToml(
+                TestFiles.gradleToml(
                     """
                     [versions]
                     shadowGadgets="2.5.1"
@@ -72,7 +71,7 @@ class MoveAlertDetectorTest {
                     """.trimIndent()
                 )
             )
-            .issues(MoveAlertDetector.ISSUE)
+            .issues(JitPackGroupDetector.ISSUE)
             .run()
             .expectClean()
     }

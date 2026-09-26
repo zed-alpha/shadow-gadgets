@@ -1,4 +1,4 @@
-package com.zedalpha.shadowgadgets.move
+package com.zedalpha.shadowgadgets.view.lint
 
 import com.android.tools.lint.client.api.LintTomlDocument
 import com.android.tools.lint.client.api.LintTomlMapValue
@@ -13,9 +13,10 @@ import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Issue
 import com.android.tools.lint.detector.api.Location
 import com.android.tools.lint.detector.api.Scope
+import com.android.tools.lint.detector.api.Scope.Companion.GRADLE_AND_TOML_SCOPE
 import com.android.tools.lint.detector.api.Severity
 
-class MoveAlertDetector : Detector(), GradleScanner, TomlScanner {
+class JitPackGroupDetector : Detector(), GradleScanner, TomlScanner {
 
     companion object {
 
@@ -23,7 +24,7 @@ class MoveAlertDetector : Detector(), GradleScanner, TomlScanner {
             "com.github.zed-alpha.shadow-gadgets"
 
         private const val MESSAGE =
-            "Shadow Gadgets moved to Maven Central: " +
+            "Shadow Gadgets has moved to Maven Central: " +
                     "https://github.com/zed-alpha/shadow-gadgets#download"
 
         @JvmField
@@ -37,8 +38,8 @@ class MoveAlertDetector : Detector(), GradleScanner, TomlScanner {
                 severity = Severity.INFORMATIONAL,
                 implementation =
                     Implementation(
-                        /* detectorClass = */ MoveAlertDetector::class.java,
-                        /* scope = */ Scope.GRADLE_AND_TOML_SCOPE
+                        /* detectorClass = */ JitPackGroupDetector::class.java,
+                        /* scope = */ GRADLE_AND_TOML_SCOPE
                     )
             )
 

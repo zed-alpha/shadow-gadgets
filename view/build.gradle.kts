@@ -1,10 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.vanniktech.publish)
     alias(libs.plugins.dokka)
-}
-
-if (providers.gradleProperty("enablePublishing").orNull == "true") {
-    pluginManager.apply(libs.plugins.vanniktech.publish.get().pluginId)
 }
 
 android {
@@ -32,6 +29,14 @@ kotlin {
     explicitApi()
 }
 
+mavenPublishing {
+    if (System.getenv("JITPACK") == "true") {
+        logger.quiet("JitPack build; skipping signing.")
+    } else {
+        signAllPublications()
+    }
+}
+
 dependencies {
     compileOnly(projects.stubs)
 
@@ -42,9 +47,4 @@ dependencies {
     testImplementation(libs.junit)
 
     lintPublish(projects.view.lint)
-
-    if (System.getenv("JITPACK") == "true") {
-        logger.quiet("JitPack build: adding move bulletin to :$name.")
-        lintPublish(projects.bulletin)
-    }
 }

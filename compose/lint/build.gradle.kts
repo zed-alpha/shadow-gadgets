@@ -19,5 +19,4 @@ kotlin {
 
 dependencies {
     compileOnly(libs.bundles.lint.api)
-    testImplementation(libs.bundles.lint.tests)
 }

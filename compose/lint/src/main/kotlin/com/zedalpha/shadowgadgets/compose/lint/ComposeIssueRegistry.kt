@@ -1,11 +1,11 @@
-package com.zedalpha.shadowgadgets.move
+package com.zedalpha.shadowgadgets.compose.lint
 
 import com.android.tools.lint.client.api.IssueRegistry
 import com.android.tools.lint.client.api.Vendor
 import com.android.tools.lint.detector.api.CURRENT_API
 import com.android.tools.lint.detector.api.Issue
 
-class MoveAlertIssueRegistry : IssueRegistry() {
+class ComposeIssueRegistry : IssueRegistry() {
 
     override val api: Int get() = CURRENT_API
 
@@ -18,5 +18,5 @@ class MoveAlertIssueRegistry : IssueRegistry() {
             feedbackUrl = "https://github.com/zed-alpha/shadow-gadgets/issues"
         )
 
-    override val issues: List<Issue> = listOf(MoveAlertDetector.ISSUE)
+    override val issues: List<Issue> = listOf(JitPackGroupDetector.ISSUE)
 }

@@ -43,7 +43,8 @@ class ViewIssueRegistry : IssueRegistry() {
                 WrongIdDetectorSG.NOT_SIBLING_SG,
                 WrongIdDetectorSG.INVALID_SG,
                 WrongIdDetectorSG.UNKNOWN_ID_LAYOUT_SG,
-                ShadowAttributesDetector.MISSING_ID
+                ShadowAttributesDetector.MISSING_ID,
+                JitPackGroupDetector.ISSUE
             )
     }
 }

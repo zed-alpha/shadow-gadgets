@@ -7,6 +7,7 @@ import com.android.tools.lint.client.api.TomlScanner
 import com.android.tools.lint.detector.api.Category
 import com.android.tools.lint.detector.api.Context
 import com.android.tools.lint.detector.api.Detector
+import com.android.tools.lint.detector.api.Detector.GradleScanner
 import com.android.tools.lint.detector.api.GradleContext
 import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Issue
@@ -16,7 +17,7 @@ import com.android.tools.lint.detector.api.Severity
 
 // Duplicated from :view:lint; tests are there. Lint publishing can get bent.
 
-class JitPackGroupDetector : Detector(), Detector.GradleScanner, TomlScanner {
+class JitPackGroupDetector : Detector(), GradleScanner, TomlScanner {
 
     companion object {
 
@@ -38,8 +39,13 @@ class JitPackGroupDetector : Detector(), Detector.GradleScanner, TomlScanner {
                 severity = Severity.INFORMATIONAL,
                 implementation =
                     Implementation(
-                        /* detectorClass = */ JitPackGroupDetector::class.java,
-                        /* scope = */ Scope.GRADLE_AND_TOML_SCOPE
+                        /* detectorClass = */
+                        JitPackGroupDetector::class.java,
+                        /* scope = */
+                        Scope.GRADLE_AND_TOML_SCOPE,
+                        /* ...analysisScopes = */
+                        Scope.GRADLE_SCOPE,
+                        Scope.TOML_SCOPE
                     )
             )
 

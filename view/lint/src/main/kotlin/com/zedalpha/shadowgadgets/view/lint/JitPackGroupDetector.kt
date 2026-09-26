@@ -13,7 +13,6 @@ import com.android.tools.lint.detector.api.Implementation
 import com.android.tools.lint.detector.api.Issue
 import com.android.tools.lint.detector.api.Location
 import com.android.tools.lint.detector.api.Scope
-import com.android.tools.lint.detector.api.Scope.Companion.GRADLE_AND_TOML_SCOPE
 import com.android.tools.lint.detector.api.Severity
 
 class JitPackGroupDetector : Detector(), GradleScanner, TomlScanner {
@@ -38,8 +37,13 @@ class JitPackGroupDetector : Detector(), GradleScanner, TomlScanner {
                 severity = Severity.INFORMATIONAL,
                 implementation =
                     Implementation(
-                        /* detectorClass = */ JitPackGroupDetector::class.java,
-                        /* scope = */ GRADLE_AND_TOML_SCOPE
+                        /* detectorClass = */
+                        JitPackGroupDetector::class.java,
+                        /* scope = */
+                        Scope.GRADLE_AND_TOML_SCOPE,
+                        /* ...analysisScopes = */
+                        Scope.GRADLE_SCOPE,
+                        Scope.TOML_SCOPE
                     )
             )
 

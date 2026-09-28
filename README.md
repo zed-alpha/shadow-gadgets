@@ -203,8 +203,8 @@ useful during design.
         width="40%" />
 </p>
 
-Information on the two general types of groups – Regular and Recycling – along
-with descriptions of their behaviors and usage in layout XML can be found on the
+Information on the two general types – Regular and Recycling – along with
+descriptions of their behaviors and usage in layout XML can be found on the
 [ViewGroups wiki page][ViewGroupsWiki].
 
 ### Drawable
@@ -374,15 +374,62 @@ start, so there's no need for a compat version here. ([wiki][ComposeDropWiki])
 ## Download
 
 > [!IMPORTANT]
-> Remember to check [the Notes][Notes] for anything that might be relevant to
+> Remember to check [the Notes][Notes] for anything that might be pertinent to
 > your project.
 
-The library is available as compiled dependencies through the very handy service
-[JitPack][JitPack]. To enable download in a modern Gradle setup, add their Maven
-URL to the `repositories` block inside the `dependencyResolutionManagement` in
-the root project's `settings.gradle.kts` file; e.g.:
+Starting with version 2.5.1, the libraries will be published to Maven Central.
+They'll still be available on JitPack for one or two releases more, but the
+relevant configuration will eventually be removed.
+
+A custom lint rule for dependencies has been added to both modules to alert
+JitPack users of the move. Be warned that if you use both libraries in a single
+project, you will get double, redundant alerts, one from each. This is only a
+temporary notice, so I didn't waste time trying to coordinate them.
+
+The snippets that follow are all `kts`, they use `?.?.?` as a placeholder for
+[the latest version number][latest-release], and they register the dependencies
+with inline literals, though you're probably using a `libs.versions.toml` these
+days.
+
+### Versions 2.5.1+
+
+**[Maven Central][MavenCentral]**
+
+Any Android project created with the standard templates is already set up for
+this, but in case it's not, all it takes is a single function call in the
+`repositories` block shown, usually found in `settings.gradle[.kts]`.
 
 ```kotlin
+…
+dependencyResolutionManagement {
+    …
+    repositories {
+        …
+        mavenCentral()
+    }
+}
+```
+
+And the `dependencies`, usually in `build.gradle[.kts]`:
+
+```kotlin
+…
+dependencies {
+    …
+    implementation("io.github.zed-alpha.shadow-gadgets:view:?.?.?")
+    implementation("io.github.zed-alpha.shadow-gadgets:compose:?.?.?")
+}
+```
+
+### Versions <= 2.5.0
+
+**[JitPack][JitPack]**
+
+This setup will have to be added manually, unless you happen to be using it
+already. Again, it's just a single function call.
+
+```kotlin
+…
 dependencyResolutionManagement {
     …
     repositories {
@@ -392,10 +439,11 @@ dependencyResolutionManagement {
 }
 ```
 
-Then, add a dependency for [the latest release][Releases] of each required
-module, directly, or through your `libs.versions.toml`:
+The only difference here is the coordinate group's TLD; this one is `com`
+instead of Maven Central's `io`.
 
 ```kotlin
+…
 dependencies {
     …
     implementation("com.github.zed-alpha.shadow-gadgets:view:?.?.?")
@@ -403,10 +451,12 @@ dependencies {
 }
 ```
 
-Please note that this project doesn't follow Semantic Versioning very strictly,
-even though the version numbers are in that format. The main difference is that
-I prefer to handle small breaking changes in minor versions rather than major.
-Sorry if that's an inconvenience.
+### Semantic-ish Versioning
+
+Please note that this project doesn't follow SemVer very strictly, even though
+the version numbers are in that format. The main difference is that I prefer to
+handle small breaking changes in minor versions rather than major. Sorry if
+that's an inconvenience.
 
 <br />
 
@@ -471,5 +521,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [ComposeNativeWiki]:
   https://github.com/zed-alpha/shadow-gadgets/wiki/Native-shadows
 [ComposeDropWiki]: https://github.com/zed-alpha/shadow-gadgets/wiki/Drop-shadows
+[MavenCentral]: https://central.sonatype.com/
 [JitPack]: https://jitpack.io/#zed-alpha/shadow-gadgets
-[Releases]: https://github.com/zed-alpha/shadow-gadgets/releases
+[latest-release]: https://github.com/zed-alpha/shadow-gadgets/releases/latest

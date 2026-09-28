@@ -15,7 +15,7 @@ import com.android.tools.lint.detector.api.Location
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 
-// Duplicated from :view:lint; tests are there. Lint publishing can get bent.
+// Duplicated from :view:lint; tests are there.
 
 class JitPackGroupDetector : Detector(), GradleScanner, TomlScanner {
 
@@ -26,7 +26,7 @@ class JitPackGroupDetector : Detector(), GradleScanner, TomlScanner {
 
         private const val MESSAGE =
             "Shadow Gadgets has moved to Maven Central: " +
-                    "https://github.com/zed-alpha/shadow-gadgets#download"
+                    "https://github.com/zed-alpha/shadow-gadgets#download."
 
         @JvmField
         val ISSUE: Issue =

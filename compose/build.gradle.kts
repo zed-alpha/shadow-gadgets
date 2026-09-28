@@ -24,12 +24,10 @@ kotlin {
     explicitApi()
 }
 
-mavenPublishing {
-    if (System.getenv("JITPACK") == "true") {
-        logger.quiet("JitPack build; skipping signing.")
-    } else {
-        signAllPublications()
-    }
+if (System.getenv("JITPACK") == "true") {
+    logger.quiet("JitPack build; skipping signing.")
+} else {
+    mavenPublishing { signAllPublications() }
 }
 
 dependencies {

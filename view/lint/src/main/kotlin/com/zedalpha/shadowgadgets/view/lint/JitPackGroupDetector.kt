@@ -24,7 +24,7 @@ class JitPackGroupDetector : Detector(), GradleScanner, TomlScanner {
 
         private const val MESSAGE =
             "Shadow Gadgets has moved to Maven Central: " +
-                    "https://github.com/zed-alpha/shadow-gadgets#download"
+                    "https://github.com/zed-alpha/shadow-gadgets#download."
 
         @JvmField
         val ISSUE: Issue =

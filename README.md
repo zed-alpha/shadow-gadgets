@@ -31,7 +31,7 @@ render shadows, simply replacing the originals with clipped copies.
         width="50%" />
 </p>
 
-This clip feature is now also available for Compose's new drop shadow modifiers.
+This clip feature is also available for Compose's drop shadow modifiers.
 
 <br />
 
@@ -63,36 +63,10 @@ results are likely sufficient for many cases.
 ## Contents
 
 - [**Views**](#views)
-
-  The `view` package contains several extension properties and helper classes to
-  apply the library's clip fix and color compat functionalities in Android's
-  native framework.
-
 - [**Compose**](#compose)
-
-  For the analogous features for native shadows in the modern UI toolkit, the
-  `compose` package contains just two functions (plus overloads) as direct
-  replacements for the inbuilt shadow.
-
-  A pair of extensions that apply the clip feature to drop shadows are now
-  available as well.
-
-- [**Notes**][Notes]
-
-  Important information and caveats for each framework and the project overall.
-
 - [**Download**](#download)
-
-  Compiled artifacts are available through JitPack.
-
 - [**Documentation**<sup>↗</sup>][Documentation]
-
-  Note that inherited members are suppressed to prevent, for example, all of
-  `ViewGroup`'s visible members being listed for each `ShadowsViewGroup`.
-
-- [**Issues**][Issues]
-
-  Please report bugs and any other problems encountered while using the library.
+- [**Notes**][Notes]
 
 <br />
 
@@ -382,9 +356,9 @@ They'll still be available on JitPack for one or two releases more, but the
 relevant configuration will eventually be removed.
 
 A custom lint rule for dependencies has been added to both modules to alert
-JitPack users of the move. Be warned that if you use both libraries in a single
-project, you will get double, redundant alerts, one from each. This is only a
-temporary notice, so I didn't waste time trying to coordinate them.
+JitPack users of the move. Be aware that if you use both libraries in a single
+project, you may get double, redundant alerts, one from each. This is only a
+temporary notice, so I didn't bother trying to coordinate them.
 
 The snippets that follow are all `kts`, they use `?.?.?` as a placeholder for
 [the latest version number][latest-release], and they register the dependencies
@@ -396,8 +370,8 @@ days.
 **[Maven Central][MavenCentral]**
 
 Any Android project created with the standard templates is already set up for
-this, but in case it's not, all it takes is a single function call in the
-`repositories` block shown, usually found in `settings.gradle[.kts]`.
+this. All that's required is a single function call in the `repositories` block
+shown below, usually found in `settings.gradle[.kts]`.
 
 ```kotlin
 …
@@ -425,8 +399,8 @@ dependencies {
 
 **[JitPack][JitPack]**
 
-This setup will have to be added manually, unless you happen to be using it
-already. Again, it's just a single function call.
+This `maven` entry will have to be added manually, unless you happen to be using
+it already.
 
 ```kotlin
 …
@@ -439,7 +413,7 @@ dependencyResolutionManagement {
 }
 ```
 
-The only difference here is the coordinate group's TLD; this one is `com`
+The only difference below is the coordinate group's TLD; this one is `com`
 instead of Maven Central's `io`.
 
 ```kotlin
@@ -454,9 +428,8 @@ dependencies {
 ### Semantic-ish Versioning
 
 Please note that this project doesn't follow SemVer very strictly, even though
-the version numbers are in that format. The main difference is that I prefer to
-handle small breaking changes in minor versions rather than major. Sorry if
-that's an inconvenience.
+the version numbers are in that format. I prefer to handle small breaking
+changes in minor versions rather than major. Sorry if that's an inconvenience.
 
 <br />
 
